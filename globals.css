@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Base colors */
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --secondary: #22c55e;
+  --secondary-dark: #16a34a;
+  --accent: #8b5cf6;
+  --accent-dark: #7c3aed;
+  
+  /* Background colors */
+  --background: #ffffff;
+  --background-light: #f9fafb;
+  --background-dark: #f3f4f6;
+  
+  /* Foreground/text colors */
+  --foreground: #171717;
+  --foreground-light: #374151;
+  --foreground-muted: #6b7280;
+  
+  /* System colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Chat bubble colors */
+  --bubble-sent: #e9f5ff;
+  --bubble-received: #f1f5f9;
+  
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Base colors - dark mode */
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary: #22c55e;
+    --secondary-dark: #16a34a;
+    --accent: #a78bfa;
+    --accent-dark: #8b5cf6;
+    
+    /* Background colors - dark mode */
+    --background: #0a0a0a;
+    --background-light: #121212;
+    --background-dark: #1f1f1f;
+    
+    /* Foreground/text colors - dark mode */
+    --foreground: #ededed;
+    --foreground-light: #d1d5db;
+    --foreground-muted: #9ca3af;
+    
+    /* Chat bubble colors - dark mode */
+    --bubble-sent: #1e3a8a;
+    --bubble-received: #1f2937;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn {
+    @apply rounded-full px-4 py-2 font-medium transition-colors;
+  }
+  
+  .btn-primary {
+    @apply bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)];
+  }
+  
+  .btn-secondary {
+    @apply bg-[var(--secondary)] text-white hover:bg-[var(--secondary-dark)];
+  }
+  
+  .input {
+    @apply rounded-lg border border-[var(--foreground-muted)] bg-[var(--background)] p-2 focus:border-[var(--primary)] focus:outline-none;
+  }
+}

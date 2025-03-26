@@ -1,0 +1,103 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: String!
+  email: String!
+  password: String!
+  name: String!
+  twoFactorEnabled: Boolean!
+  twoFactorMethod: String
+  recoveryEmail: String
+  recoveryPhone: String
+}
+
+type LoginResponse {
+  access_token: String!
+  user: User!
+}
+
+type Chat {
+  id: ID!
+  user: User!
+  userId: String!
+  name: String!
+  type: String!
+}
+
+type Message {
+  id: ID!
+  chat: Chat!
+  chatId: String!
+  content: String!
+  sender: User!
+  senderId: String!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Call {
+  id: ID!
+  callerId: String!
+  calleeId: String!
+  chatId: String!
+  status: String!
+}
+
+type Query {
+  getUser(id: Int!): User
+  getUsers: [User!]!
+  getDevices(id: Int!): [String!]!
+  getChat(id: ID!): Chat
+  getChats: [Chat!]!
+  getMessages(chatId: ID!, limit: Float, offset: Float): [Message!]!
+}
+
+type Mutation {
+  createUser(email: String!, password: String!, name: String!): User!
+  updateUser(id: Int!, input: UpdateUserInput!): User
+  deleteUser(id: Int!): Boolean!
+  generateRecoveryCodes(id: Int!): [String!]!
+  verifyDevice(id: Int!, code: String!): Boolean!
+  logoutDevice(deviceId: String!): Boolean!
+  register(registerInput: RegisterInput!): LoginResponse!
+  login(loginInput: LoginInput!): LoginResponse!
+  logoutUser: Boolean!
+  createChat(userId: ID!): Chat!
+  deleteChat(id: ID!): Boolean!
+  sendMessage(chatId: ID!, content: String!, senderId: ID!): Message!
+  sendVerificationCode(email: String!, code: String!): Boolean!
+  enableTwoFactorAuth(userId: Int!): Boolean!
+  disableTwoFactorAuth(userId: Int!): Boolean!
+  sendTwoFactorCode(userId: Int!, code: String!): Boolean!
+  initiateCall(calleeId: ID!, chatId: ID!): Call!
+  acceptCall(callId: ID!): Call!
+  endCall(callId: ID!): Boolean!
+}
+
+input UpdateUserInput {
+  email: String
+  password: String
+  name: String
+  twoFactorEnabled: Boolean
+  twoFactorMethod: String
+  recoveryEmail: String
+  recoveryPhone: String
+  devices: String
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}

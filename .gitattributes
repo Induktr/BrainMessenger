@@ -1,0 +1,9 @@
+frontend/node_modules/@next/swc-win32-x64-msvc/next-swc.win32-x64-msvc.node filter=lfs diff=lfs merge=lfs -text
+
+# Handle package lock files with special merge strategy
+package-lock.json merge=ours
+yarn.lock merge=ours
+pnpm-lock.yaml merge=ours
+
+# Treat package.json files as binary to avoid merge conflicts in version numbers
+package.json diff
