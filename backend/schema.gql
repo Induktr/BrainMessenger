@@ -2,36 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: String!
+type UserDto {
+  id: ID!
   email: String!
-  password: String!
   name: String!
-  twoFactorEnabled: Boolean!
-  twoFactorMethod: String
-  recoveryEmail: String
-  recoveryPhone: String
 }
 
 type LoginResponse {
   access_token: String!
-  user: User!
+  user: UserDto!
 }
 
-type Chat {
+type MessageDto {
   id: ID!
-  user: User!
-  userId: String!
-  name: String!
-  type: String!
-}
-
-type Message {
-  id: ID!
-  chat: Chat!
   chatId: String!
   content: String!
-  sender: User!
+  sender: UserDto
   senderId: String!
   createdAt: DateTime!
 }
@@ -41,7 +27,16 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type Call {
+type ChatDto {
+  id: ID!
+  user: UserDto
+  userId: String!
+  name: String!
+  type: String!
+  messages: [MessageDto]
+}
+
+type CallDto {
   id: ID!
   callerId: String!
   calleeId: String!
@@ -49,35 +44,49 @@ type Call {
   status: String!
 }
 
+type FileDto {
+  id: ID!
+  name: String!
+  url: String!
+  size: Int!
+  type: String!
+  uploader: UserDto
+  createdAt: DateTime!
+}
+
 type Query {
-  getUser(id: Int!): User
-  getUsers: [User!]!
-  getDevices(id: Int!): [String!]!
-  getChat(id: ID!): Chat
-  getChats: [Chat!]!
-  getMessages(chatId: ID!, limit: Float, offset: Float): [Message!]!
+  getUser(id: ID!): UserDto
+  getUsers: [UserDto!]!
+  getDevices(id: ID!): [String!]!
+  getChat(id: ID!): ChatDto
+  getChats: [ChatDto!]!
+  getMessages(chatId: ID!, limit: Float, offset: Float): [MessageDto]
+  getCallHistory(userId: ID!): [CallDto!]!
+  getFiles: [FileDto!]!
 }
 
 type Mutation {
-  createUser(email: String!, password: String!, name: String!): User!
-  updateUser(id: Int!, input: UpdateUserInput!): User
-  deleteUser(id: Int!): Boolean!
-  generateRecoveryCodes(id: Int!): [String!]!
-  verifyDevice(id: Int!, code: String!): Boolean!
+  createUser(email: String!, password: String!, name: String!): UserDto!
+  updateUser(id: ID!, input: UpdateUserInput!): UserDto
+  deleteUser(id: ID!): Boolean!
+  generateRecoveryCodes(id: ID!): [String!]!
+  verifyDevice(id: ID!, code: String!): Boolean!
   logoutDevice(deviceId: String!): Boolean!
   register(registerInput: RegisterInput!): LoginResponse!
   login(loginInput: LoginInput!): LoginResponse!
   logoutUser: Boolean!
-  createChat(userId: ID!): Chat!
+  createChat(userId: ID!): ChatDto!
   deleteChat(id: ID!): Boolean!
-  sendMessage(chatId: ID!, content: String!, senderId: ID!): Message!
+  sendMessage(chatId: ID!, content: String!, senderId: ID!): MessageDto
   sendVerificationCode(email: String!, code: String!): Boolean!
   enableTwoFactorAuth(userId: Int!): Boolean!
   disableTwoFactorAuth(userId: Int!): Boolean!
   sendTwoFactorCode(userId: Int!, code: String!): Boolean!
-  initiateCall(calleeId: ID!, chatId: ID!): Call!
-  acceptCall(callId: ID!): Call!
+  initiateCall(calleeId: ID!, chatId: ID!): CallDto!
+  acceptCall(callId: ID!): CallDto
   endCall(callId: ID!): Boolean!
+  uploadFile(file: Upload!): FileDto!
+  deleteFile(fileId: ID!): Boolean!
 }
 
 input UpdateUserInput {
@@ -101,3 +110,6 @@ input LoginInput {
   email: String!
   password: String!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload

@@ -14,13 +14,14 @@ import { NhostModule } from './nhost/nhost.module';
 import { CallModule } from './call/call.module';
 import { WebrtcSignalingGateway } from './webrtc-signaling';
 import { CallHistoryModule } from './call-history/call-history.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSource } from './orm.config';
 import { AwsModule } from './aws/aws.module';
 import { PrivacySettingsModule } from './privacy-settings/privacy-settings.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { FileModule } from './file/file.module'; // Import FileModule
 
 @Module({
   imports: [
+    PrismaModule, // Add PrismaModule here
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -30,10 +31,6 @@ import { PrivacySettingsModule } from './privacy-settings/privacy-settings.modul
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
-    }),
-    TypeOrmModule.forRoot({
-      ...dataSource.options,
-      autoLoadEntities: true,
     }),
     NhostModule,
     AwsModule,
@@ -45,6 +42,7 @@ import { PrivacySettingsModule } from './privacy-settings/privacy-settings.modul
     CallModule,
     CallHistoryModule,
     PrivacySettingsModule,
+    FileModule, // Add FileModule here
   ],
   controllers: [AppController],
   providers: [AppService, WebrtcSignalingGateway],

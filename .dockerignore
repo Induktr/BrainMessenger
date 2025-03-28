@@ -1,0 +1,40 @@
+# Git files
+.git
+.gitignore
+
+# Node modules (будут установлены внутри контейнера)
+node_modules
+backend/node_modules
+frontend/node_modules
+
+# Next.js build cache
+frontend/.next
+
+# NestJS build output (будет сгенерировано внутри контейнера)
+backend/dist
+
+# Log files
+*.log
+logs
+*.log.*
+
+# Environment files (лучше передавать через переменные окружения Docker Compose)
+.env
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor specific files
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Test reports
+coverage

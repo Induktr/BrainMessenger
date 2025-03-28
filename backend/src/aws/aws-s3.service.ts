@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3 } from 'aws-sdk';
+import { Readable } from 'stream'; // Import Readable
 
 @Injectable()
 export class AwsS3Service {
@@ -15,17 +16,18 @@ export class AwsS3Service {
   }
 
   /**
-   * Upload a file to AWS S3
-   * @param file - The file buffer to upload
+   * Upload a file stream to AWS S3
+   * @param stream - The readable stream of the file
    * @param fileName - The name to give the file in S3
    * @returns Promise with upload result
    */
-  async uploadFile(file: Buffer, fileName: string): Promise<S3.ManagedUpload.SendData> {
-    const params = {
+  async uploadFile(stream: Readable, fileName: string): Promise<S3.ManagedUpload.SendData> {
+    const params = { // Removed explicit type S3.PutObjectRequest
       Bucket: this.configService.get<string>('AWS_S3_BUCKET'),
       Key: `uploads/${fileName}`,
-      Body: file,
+      Body: stream, // Changed 'file' to 'stream'
       ACL: 'private',
+      // ContentType might be needed here
     };
     
     return this.s3.upload(params).promise();

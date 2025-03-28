@@ -17,14 +17,17 @@ const httpLink = new HttpLink({
   uri: httpUrl,
 });
 
+// Re-enable wsLink and splitLink
 const wsLink = typeof window !== 'undefined'
   ? new GraphQLWsLink(
     createClient({
       url: wsUrl,
+      // Optional: connectionParams, keepAlive, etc.
     })
   )
-  : undefined;
+  : undefined; // Assign undefined on the server
 
+// Use splitLink to route subscriptions via wsLink and other operations via httpLink
 const splitLink = typeof window !== 'undefined' && wsLink
   ? split(
       ({ query }) => {
@@ -34,13 +37,13 @@ const splitLink = typeof window !== 'undefined' && wsLink
           definition.operation === 'subscription'
         );
       },
-      wsLink,
-      httpLink,
+      wsLink, // Use wsLink for subscriptions
+      httpLink, // Use httpLink for queries and mutations
     )
-  : httpLink;
+  : httpLink; // Fallback to httpLink on the server or if wsLink is undefined
 
 const client = new ApolloClient({
-  link: splitLink,
+  link: splitLink, // Use the splitLink
   cache: new InMemoryCache(),
 });
 

@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  password         String
+  name             String
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorMethod  String?
+  recoveryEmail    String?
+  recoveryPhone    String?
+  sentMessages     Message[] @relation("SentMessages")
+  chats            Chat[]
+  callsAsCaller    Call[]    @relation("CallsAsCaller")
+  callsAsCallee    Call[]    @relation("CallsAsCallee")
+  uploadedFiles    File[]    // Added relation for uploaded files
+  // transactions     Transaction[] // Add later after clarifying ID type mismatch
+}
+
+model Chat {
+  id       String    @id @default(uuid())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String
+  name     String
+  type     String // Consider using an Enum if types are fixed (e.g., PRIVATE, GROUP)
+  messages Message[]
+  calls    Call[] // Added relation
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  content   String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId  String
+  createdAt DateTime @default(now())
+}
+
+model Call {
+  id        String   @id @default(uuid())
+  caller    User     @relation("CallsAsCaller", fields: [callerId], references: [id])
+  callerId  String   // Matches User ID type (UUID)
+  callee    User     @relation("CallsAsCallee", fields: [calleeId], references: [id])
+  calleeId  String   // Matches User ID type (UUID)
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   // Matches Chat ID type (UUID)
+  status    String   // Consider Enum: Ringing, InProgress, Ended, Missed, Declined
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// model Transaction {
+//   id        Int      @id @default(autoincrement()) // ID is Int here
+//   caller    User     @relation("CallsAsCaller", fields: [callerId], references: [id]) // Needs clarification
+//   callerId  String
+//   callee    User     @relation("CallsAsCallee", fields: [calleeId], references: [id]) // Needs clarification
+//   calleeId  String
+//   chat      Chat     @relation(fields: [chatId], references: [id]) // Needs clarification if chatId is UUID
+//   chatId    String
+//   status    String // Consider Enum (INITIATED, ACCEPTED, ENDED, MISSED etc.)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Transaction {
+//   id        Int      @id @default(autoincrement()) // ID is Int here
+//   user      User     @relation(fields: [userId], references: [id]) // Mismatch: User ID is String (UUID)
+//   userId    String   // Should match User ID type
+//   amount    Decimal  @db.Decimal(10, 2)
+//   createdAt DateTime @default(now())
+// }
+
+model File {
+  id         String   @id @default(uuid())
+  name       String
+  url        String // URL from S3
+  size       Int // Size in bytes
+  type       String // MIME type
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+  uploaderId String
+  createdAt  DateTime @default(now())
+  // TODO: Add fields/relations for sharedWith, favorite, lastModified etc. later
+}

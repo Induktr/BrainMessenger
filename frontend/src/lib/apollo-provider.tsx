@@ -1,7 +1,7 @@
 'use client';
 
 import React, { ReactNode } from 'react';
-import AppApolloProvider from '../../providers/ApolloProvider';
+import AppApolloProvider from '../../providers/ApolloProvider'; // Corrected import path
 
 interface ApolloProviderProps {
   children: ReactNode;

@@ -8,7 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "node", // Keep "node" or change to "bundler" for newer setups
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -18,10 +18,11 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".", // Optional: Define base URL for paths
     "paths": {
-      "@/*": ["./frontend/*"]
+      "@/*": ["./src/*"] // Corrected path alias to point to src directory
     }
   },
-  "include": ["next-env.d.ts", "frontend/**/*.ts", "frontend/**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["backend/**/*"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // Corrected include paths
+  "exclude": ["node_modules"] // Standard exclude
 }

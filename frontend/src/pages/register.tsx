@@ -1,245 +1,102 @@
-import React, { useState, useEffect } from 'react';
+'use client'; // Add this directive
+
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { NextSeo } from 'next-seo';
+import { useMutation, gql } from '@apollo/client'; // Import gql here
+// import { REGISTER } from '../../graphql/mutations'; // Temporarily remove import
+// TODO: Import types for RegisterInput and RegisterMutation response if available/generated
 
 const RegisterPage = () => {
   const router = useRouter();
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    password: '',
     name: '',
     email: '',
-    confirmationCode: '',
+    password: '',
   });
-  const [isCodeValid, setIsCodeValid] = useState(false);
   const [errors, setErrors] = useState({
-    password: '',
     name: '',
     email: '',
-    confirmationCode: ''
+    password: '',
+    api: '', // For API errors
   });
 
+  // Use the useMutation hook
+  // Temporarily use inline gql string instead of imported REGISTER
+  const [registerUser, { loading, error: apiError }] = useMutation(gql`
+    mutation Register($registerInput: RegisterInput!) {
+      register(registerInput: $registerInput) {
+        access_token
+        user {
+          id
+          name
+          email
+        }
+      }
+    }
+  `, {
+    onCompleted: (data) => {
+      console.log('Registration successful:', data);
+      // TODO: Store the access_token (e.g., in localStorage or state management)
+      // localStorage.setItem('token', data.register.access_token);
+      router.push('/chat'); // Redirect to chat page on success
+    },
+    onError: (error) => {
+      console.error('Registration error:', error);
+      setErrors(prev => ({ ...prev, api: error.message || 'Registration failed. Please try again.' }));
+    }
+  });
+
+  // --- Validation Functions (Keep them simple for now) ---
   const validatePassword = (password: string) => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
+    if (password.length < 8) return 'Password must be at least 8 characters long';
     return '';
   };
-
   const validateName = (name: string) => {
-    if (name.length < 2 || name.length > 50) {
-      return 'Name must be between 2 and 50 characters';
-    }
-    if (!/^[A-Za-z\s]+$/.test(name)) {
-      return 'Name can only contain letters and spaces';
-    }
+    if (!name.trim()) return 'Name is required';
+    if (name.length < 2 || name.length > 50) return 'Name must be between 2 and 50 characters';
+    // Basic validation, adjust as needed
+    if (!/^[A-Za-z\s]+$/.test(name)) return 'Name can only contain letters and spaces';
     return '';
   };
-
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return 'Please enter a valid email address';
-    }
+    if (!emailRegex.test(email)) return 'Please enter a valid email address';
     return '';
   };
-
-  const validateConfirmationCode = (code: string) => {
-    if (code.length !== 8 || !/^\d+$/.test(code)) {
-      return 'Confirmation code must be 8 digits';
-    }
-    return '';
-  };
+  // --- End Validation Functions ---
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-
-    if (step === 4 && name === 'confirmationCode') {
-      const isValid = validateConfirmationCode(value) === '';
-      setIsCodeValid(isValid);
-    }
-
-    // Clear error when user starts typing
-    setErrors({
-      ...errors,
-      [name]: ''
-    });
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear specific field error and API error on input change
+    setErrors(prev => ({ ...prev, [name]: '', api: '' }));
   };
 
-  const handleNextStep = () => {
-    let isValid = true;
-    let newErrors = { ...errors };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrors({ name: '', email: '', password: '', api: '' }); // Clear previous errors
 
-    switch (step) {
-      case 1: // Password validation
-        newErrors.password = validatePassword(formData.password);
-        if (newErrors.password) isValid = false;
-        break;
-      case 2: // Name validation
-        newErrors.name = validateName(formData.name);
-        if (newErrors.name) isValid = false;
-        break;
-      case 3: // Email validation
-        newErrors.email = validateEmail(formData.email);
-        if (newErrors.email) isValid = false;
-        break;
-      case 4: // Confirmation code validation
-        newErrors.confirmationCode = validateConfirmationCode(formData.confirmationCode);
-        if (newErrors.confirmationCode) isValid = false;
-        break;
+    const nameError = validateName(formData.name);
+    const emailError = validateEmail(formData.email);
+    const passwordError = validatePassword(formData.password);
+
+    if (nameError || emailError || passwordError) {
+      setErrors({ name: nameError, email: emailError, password: passwordError, api: '' });
+      return;
     }
 
-    setErrors(newErrors);
-
-    if (isValid) {
-      if (step < 4) {
-        setStep(step + 1);
-      } else {
-        // Submit registration
-        handleSubmit();
+    // Call the mutation
+    registerUser({
+      variables: {
+        registerInput: { // Ensure variable name matches mutation definition
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }
       }
-    }
-  };
-
-  const handlePrevStep = () => {
-    if (step > 1) {
-      setStep(step - 1);
-    }
-  };
-
-  const handleSubmit = async () => {
-    // Here you would typically make an API call to register the user
-    // For now, we'll just simulate success and redirect to the main page
-    console.log('Registration data:', formData);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      router.push('/chat');
-    }, 1500);
-  };
-
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="step-container">
-            <h2 className="text-h1 font-bold mb-6 text-center text-primary-light">Step 1</h2>
-            <div className="mb-6">
-              <div className="relative">
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
-                  placeholder="Password"
-                  style={{ width: '400px' }}
-                />
-                <button
-                  onClick={handleNextStep}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to text-textPrimary-dark hover:opacity-90"
-                >
-                  <img style={{width: '20px', height: '20px', filter: 'grayscale(1) brightness(0.8)' }} src="https://res.cloudinary.com/dsjalneil/image/upload/v1734771378/--shape--arrow-with-the-effect-of-forward-movement_doyeth.svg"></img>
-                </button>
-              </div>
-              {errors.password && <p className="mt-2 text-sm text-error-text">{errors.password}</p>}
-              <p className="mt-2 text-xs text-textSecondary-light dark:text-textSecondary-dark">Password must be at least 8 characters long</p>
-            </div>
-          </div>
-        );
-      case 2:
-        return (
-          <div className="step-container">
-            <h2 className="text-h1 font-bold mb-6 text-center text-primary-light">Step 2</h2>
-            <div className="mb-6">
-              <div className="relative">
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
-                  placeholder="Your name"
-                  style={{ width: '400px' }}
-                />
-                <button
-                  onClick={handleNextStep}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to text-textPrimary-dark hover:opacity-90"
-                >
-                  <img style={{width: '20px', height: '20px', filter: 'grayscale(1) brightness(0.8)' }} src="https://res.cloudinary.com/dsjalneil/image/upload/v1734771378/--shape--arrow-with-the-effect-of-forward-movement_doyeth.svg"></img>
-                </button>
-              </div>
-              {errors.name && <p className="mt-2 text-sm text-error-text">{errors.name}</p>}
-            </div>
-          </div>
-        );
-      case 3:
-        return (
-          <div className="step-container">
-            <h2 className="text-h1 font-bold mb-6 text-center text-primary-light">Step 3</h2>
-            <div className="mb-6">
-              <div className="relative">
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
-                  placeholder="Email"
-                  style={{ width: '400px' }}
-                />
-                <button
-                  onClick={handleNextStep}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to text-textPrimary-dark hover:opacity-90"
-                >
-                  <img style={{width: '20px', height: '20px', filter: 'grayscale(1) brightness(0.8)' }} src="https://res.cloudinary.com/dsjalneil/image/upload/v1734771378/--shape--arrow-with-the-effect-of-forward-movement_doyeth.svg"></img>
-                </button>
-              </div>
-              {errors.email && <p className="mt-2 text-sm text-error-text">{errors.email}</p>}
-            </div>
-          </div>
-        );
-      case 4:
-        return (
-          <div className="step-container">
-            <h2 className="text-h1 font-bold mb-6 text-center text-primary dark:text-primary-light">Confirm Your Email</h2>
-            <p className="text-center text-textSecondary-light dark:text-textSecondary-dark mb-6">We've sent a confirmation code to {formData.email}</p>
-            <div className="mb-6">
-                <input
-                  type="text"
-                  id="confirmationCode"
-                  name="confirmationCode"
-                  value={formData.confirmationCode}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 rounded-lg border ${errors.confirmationCode ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
-                  placeholder="Enter 8-digit code"
-                  maxLength={8}
-                  style={{ width: '400px' }}
-                />
-              <button
-                  onClick={handleNextStep}
-                  disabled={!isCodeValid}
-                  className={`mx-auto w-full transform -translate-y-1/2 px-4 py-2 rounded-lg ${isCodeValid ? 'bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to hover:opacity-90' : 'bg-gray-400 cursor-not-allowed'} text-textPrimary-dark`}>
-                  Confirm
-                </button>
-              {errors.confirmationCode && <p className="mt-2 text-sm text-error-text">{errors.confirmationCode}</p>}
-              <p className="mt-4 text-center text-sm text-textSecondary-light dark:text-textSecondary-dark">
-                Didn't receive a code? <a href="#" className="text-secondary hover:underline">Resend Code</a>
-              </p>
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
+    });
   };
 
   return (
@@ -249,51 +106,82 @@ const RegisterPage = () => {
         description="Create your BrainMessenger account"
       />
       <div className="min-h-screen flex items-center justify-center bg-background-dark p-4">
-          
-          <div className="mb-8 flex flex-col items-center">
-            {/* BrainMessenger Logo */}
-            <div className="mb-8">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to flex items-center justify-center">
-                <span className="text-2xl font-bold text-textPrimary-dark">😎</span>
-              </div>
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <div className="mb-8 flex justify-center">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to flex items-center justify-center">
+              <span className="text-2xl font-bold text-textPrimary-dark">😎</span>
             </div>
-            <div className="flex justify-between items-center mb-6 w-32 relative">
-                          {[1, 2, 3].map((stepNumber) => {
-                            const isCurrentStep = stepNumber === step;
-                            const isCompletedStep = stepNumber < step;
-                            return (
-                              <div
-                                key={stepNumber}
-                                className={`step-indicator w-8 h-8 rounded-full flex items-center justify-center ${isCurrentStep ? 'bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to text-textPrimary-dark' : isCompletedStep ? 'bg-success text-textPrimary-dark' : 'bg-disabled-dark text-textSecondary-dark'}`}
-                              >
-                                {isCompletedStep ? (
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                  </svg>
-                                ) : stepNumber}
-                              </div>
-                            );
-                          })}
-                          {step > 1 && (
-                            <div
-                              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-20 rounded-full"
-                              style={{
-                                backgroundColor: '#96C93D',
-                                opacity: 0.1,
-                                clipPath: 'polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 0% 100%, 0% 0%)',
-                                transform: `rotate(${Math.min((step - 1) * 90, 180)}deg)`,
-                              }}
-                            />
-                          )}
-                        </div>
-                      
-                      {renderStep()}
-                      
-                      <div className="mt-4 text-center">
-                        <a href="/login" className="text-sm text-textSecondary-dark hover:underline">Already have an Account? Login</a>
-                      </div>
-                    </div>
+          </div>
 
+          <h2 className="text-2xl font-bold mb-6 text-center text-primary-light dark:text-primary-light">Create Account</h2>
+
+          <form onSubmit={handleSubmit}>
+            {/* Name Input */}
+            <div className="mb-4">
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
+                placeholder="Your name"
+                required
+              />
+              {errors.name && <p className="mt-1 text-xs text-error-text">{errors.name}</p>}
+            </div>
+
+            {/* Email Input */}
+            <div className="mb-4">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.email ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
+                placeholder="Email"
+                required
+              />
+              {errors.email && <p className="mt-1 text-xs text-error-text">{errors.email}</p>}
+            </div>
+
+            {/* Password Input */}
+            <div className="mb-6">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={`w-full px-4 py-3 rounded-lg border ${errors.password ? 'border-error-text' : 'border-border-light dark:border-border-dark'} focus:outline-none focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-textPrimary-dark`}
+                placeholder="Password"
+                required
+              />
+              {errors.password && <p className="mt-1 text-xs text-error-text">{errors.password}</p>}
+               <p className="mt-1 text-xs text-textSecondary-light dark:text-textSecondary-dark">Password must be at least 8 characters long</p>
+            </div>
+
+            {/* API Error Display */}
+            {errors.api && <p className="mb-4 text-sm text-center text-error-text">{errors.api}</p>}
+            {apiError && !errors.api && <p className="mb-4 text-sm text-center text-error-text">{apiError.message || 'An unexpected error occurred.'}</p>}
+
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full px-4 py-3 rounded-lg ${loading ? 'bg-gray-500' : 'bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to hover:opacity-90'} text-textPrimary-dark font-semibold transition duration-200`}
+            >
+              {loading ? 'Registering...' : 'Register'}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <a href="/login" className="text-sm text-textSecondary-dark hover:underline">Already have an Account? Login</a>
+          </div>
+        </div>
       </div>
     </>
   );

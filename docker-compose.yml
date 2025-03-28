@@ -1,0 +1,107 @@
+services:
+  # Сервис для бэкенда (NestJS)
+  backend:
+    build:
+      context: ./backend # Путь к директории с Dockerfile бэкенда
+      dockerfile: Dockerfile
+      target: development # Используем этап development для разработки с hot-reload
+    container_name: brainmessenger-backend
+    # Монтируем исходный код бэкенда в контейнер для hot-reloading
+    # Исключаем node_modules, чтобы использовать установленные в контейнере
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    # Запускаем в режиме разработки с watch
+    command: npm run start:dev
+    ports:
+      - "4000:4000" # Пробрасываем порт 4000 (бэкенд)
+      - "9229:9229" # Опционально: порт для отладки Node.js
+    environment:
+      # Передаем переменные окружения, если они нужны бэкенду
+      # Например, для подключения к базе данных или внешним сервисам
+      # DATABASE_URL: postgresql://user:password@db:5432/mydb
+      # JWT_SECRET: your_jwt_secret
+      # NHOS_SUBDOMAIN: your_nhost_subdomain
+      # NHOS_REGION: your_nhost_region
+      # AWS_REGION: your_aws_region
+      # AWS_ACCESS_KEY_ID: your_aws_key_id
+      # AWS_SECRET_ACCESS_KEY: your_aws_secret_key
+      # AWS_S3_BUCKET_NAME: your_s3_bucket_name
+      PORT: 4000 # Указываем порт явно
+    depends_on:
+      # - db # Раскомментируйте, если добавляете сервис базы данных
+      - nhost # Добавляем зависимость от Nhost, если он нужен для старта
+    networks:
+      - brainmessenger-network
+
+  # Сервис для фронтенда (Next.js)
+  frontend:
+    build:
+      context: ./frontend # Путь к директории с Dockerfile фронтенда
+      dockerfile: Dockerfile
+      # target: development # Для разработки можно не указывать target или создать отдельный этап
+    container_name: brainmessenger-frontend
+    # Монтируем исходный код фронтенда для hot-reloading
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next # Исключаем .next хоста, чтобы использовать сгенерированный в контейнере
+    # Запускаем в режиме разработки
+    command: npm run dev
+    ports:
+      - "3000:3000" # Пробрасываем порт 3000 (фронтенд)
+    environment:
+      # Передаем переменные окружения для фронтенда
+      NEXT_PUBLIC_GRAPHQL_URL: http://backend:4000/graphql # Используем имя сервиса 'backend'
+      NEXT_PUBLIC_WS_URL: ws://backend:4000/graphql       # Используем имя сервиса 'backend'
+      # CHOKIDAR_USEPOLLING: "true" # Может понадобиться для hot-reload на некоторых системах
+    depends_on:
+      - backend # Фронтенд зависит от бэкенда
+    networks:
+      - brainmessenger-network
+
+  # Сервис для Nhost (если используется локально)
+  nhost:
+    image: nhost/nhost:latest # Или конкретная версия
+    container_name: brainmessenger-nhost
+    ports:
+      - "1337:1337" # Порт Nhost Dashboard
+      - "8080:8080" # Порт Hasura GraphQL Engine
+      - "5432:5432" # Порт PostgreSQL
+      # Другие порты Nhost, если нужны (Auth, Storage, Functions)
+    volumes:
+      - ./nhost:/app/nhost # Монтируем конфигурацию Nhost (если есть)
+      # - nhost-db-data:/var/lib/postgresql/data # Сохранение данных БД
+    environment:
+      # Переменные окружения для Nhost (пароли и т.д.)
+      POSTGRES_PASSWORD: your_postgres_password
+      HASURA_GRAPHQL_ADMIN_SECRET: your_hasura_admin_secret
+      # ... другие переменные Nhost
+    networks:
+      - brainmessenger-network
+
+  # Опционально: Сервис для базы данных PostgreSQL (если не используется Nhost)
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: brainmessenger-db
+  #   environment:
+  #     POSTGRES_USER: your_db_user
+  #     POSTGRES_PASSWORD: your_db_password
+  #     POSTGRES_DB: brainmessenger
+  #   volumes:
+  #     - postgres-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5433:5432" # Пробрасываем порт БД (5433, чтобы не конфликтовать с локальным)
+  #   networks:
+  #     - brainmessenger-network
+
+# Определяем сеть для взаимодействия контейнеров
+networks:
+  brainmessenger-network:
+    driver: bridge
+
+# Определяем тома для сохранения данных (если нужны)
+volumes:
+  # postgres-data:
+  nhost-db-data: # Если используется том для данных Nhost
+    driver: local

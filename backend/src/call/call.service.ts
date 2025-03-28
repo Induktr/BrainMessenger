@@ -1,53 +1,70 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Call } from './call.entity';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client'; // Import Prisma namespace
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PubSub } from 'graphql-subscriptions';
-import { v4 as uuidv4 } from 'uuid';
+// Removed: import { Call } from './call.entity';
+// Removed: import { InjectRepository } from '@nestjs/typeorm';
+// Removed: import { Repository } from 'typeorm';
+// Removed: import { v4 as uuidv4 } from 'uuid'; // Prisma handles ID generation
 
 const pubSub = new PubSub();
 
 @Injectable()
 export class CallService {
   constructor(
-    @InjectRepository(Call)
-    private callRepository: Repository<Call>,
+    private prisma: PrismaService, // Inject PrismaService
   ) {}
 
-  async initiateCall(callerId: string, calleeId: string, chatId: string): Promise<Call> {
-    const call = this.callRepository.create({
-      callerId,
-      calleeId,
-      chatId,
-      status: 'ringing',
+  // Return type will be Prisma.Call once model is defined
+  async initiateCall(callerId: string, calleeId: string, chatId: string) {
+    // Prisma handles ID generation
+    const call = await this.prisma.call.create({
+      data: {
+        callerId, // Assuming relation fields will be added later
+        calleeId, // Assuming relation fields will be added later
+        chatId,   // Assuming relation fields will be added later
+        status: 'ringing',
+      },
     });
-    call.id = uuidv4();
-
-    await this.callRepository.save(call);
-    pubSub.publish('callEvents', { callEvents: call });
+    // TODO: Define Call model in schema.prisma and uncomment pubSub if needed
+    // pubSub.publish('callEvents', { callEvents: call });
     return call;
   }
 
-  async acceptCall(callId: string): Promise<Call> {
-    const call = await this.callRepository.findOne({ where: { id: callId } });
-    if (!call) {
-      throw new Error('Call not found');
+  // Return type will be Prisma.Call once model is defined
+  async acceptCall(callId: string) {
+    try {
+      const call = await this.prisma.call.update({
+        where: { id: callId },
+        data: { status: 'in_progress' },
+      });
+      // TODO: Define Call model in schema.prisma and uncomment pubSub if needed
+      // pubSub.publish('callEvents', { callEvents: call });
+      return call;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+        throw new NotFoundException(`Call with ID ${callId} not found`);
+      }
+      throw error;
     }
-
-    call.status = 'in_progress';
-    await this.callRepository.save(call);
-    //pubSub.publish('callEvents', { callEvents: call }); //Re-enable this later
-    return call;
   }
 
   async endCall(callId: string): Promise<boolean> {
-    const call = await this.callRepository.findOne({ where: { id: callId } });
-    if (!call) {
-      return false;
+    try {
+      const call = await this.prisma.call.update({
+        where: { id: callId },
+        data: { status: 'ended' },
+      });
+      // TODO: Define Call model in schema.prisma and uncomment pubSub if needed
+      // pubSub.publish('callEvents', { callEvents: call });
+      return true;
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+        console.warn(`Call with ID ${callId} not found for ending.`);
+        return false; // Indicate call was not found
+      }
+      throw error;
     }
-    call.status = 'ended';
-    await this.callRepository.save(call);
-    pubSub.publish('callEvents', { callEvents: call });
-    return true;
   }
 }

@@ -1,7 +1,6 @@
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
-import { User } from '../user.entity';
 import * as bcrypt from 'bcrypt';
 import { LoginResponse } from './dto/login-response';
 import { RegisterInput } from './dto/register-input';

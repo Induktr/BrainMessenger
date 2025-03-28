@@ -1,59 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { NextSeo } from 'next-seo';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_USER } from '../../graphql/queries'; // Import GET_USER query
+import { UPDATE_USER } from '../../graphql/mutations'; // Import UPDATE_USER mutation
+// TODO: Import generated types for queries/mutations
 
-interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  phone?: string;
-  bio?: string;
-  status?: 'online' | 'away' | 'busy' | 'offline';
-  lastSeen?: Date;
-  joinedDate: Date;
-  language: string;
-  theme: 'light' | 'dark' | 'system';
-  notifications: {
-    messages: boolean;
-    calls: boolean;
-    groupMessages: boolean;
-  };
-}
+// Remove mock interface UserProfile
 
 const ProfilePage = () => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  
-  // Mock user profile data
-  const [profile, setProfile] = useState<UserProfile>({
-    id: 'user123',
-    name: 'Alex Johnson',
-    email: 'alex.johnson@example.com',
-    avatar: '/avatars/alex.jpg',
-    phone: '+1 (555) 123-4567',
-    bio: 'Software developer passionate about creating useful applications',
-    status: 'online',
-    lastSeen: new Date(),
-    joinedDate: new Date(2023, 0, 15),
-    language: 'English',
-    theme: 'system',
-    notifications: {
-      messages: true,
-      calls: true,
-      groupMessages: true
+
+  // TODO: Get current user ID from authentication context/state
+  const currentUserId = 'user123'; // Replace with actual dynamic user ID
+
+  // --- Fetch User Data ---
+  const { data: userData, loading: userLoading, error: userError, refetch } = useQuery(GET_USER, {
+    variables: { id: currentUserId },
+    skip: !currentUserId, // Skip query if no user ID
+    onCompleted: (data) => {
+      // Initialize formData when data is loaded
+      if (data?.getUser) {
+        setFormData({
+          name: data.getUser.name || '',
+          email: data.getUser.email || '',
+          // Only include fields present in UpdateUserInput and UserDto
+        });
+      }
     }
   });
+  const profile = userData?.getUser;
+  // --- End Fetch User Data ---
 
-  const [formData, setFormData] = useState({
-    name: profile.name,
-    email: profile.email,
-    phone: profile.phone || '',
-    bio: profile.bio || '',
-    status: profile.status || 'online',
-    language: profile.language,
-    theme: profile.theme
+  // --- Update User Mutation ---
+  const [updateUserMutation, { loading: updateLoading, error: updateError }] = useMutation(UPDATE_USER, {
+    onCompleted: (data) => {
+      console.log('Profile updated:', data);
+      setIsEditing(false);
+      refetch(); // Refetch user data after update
+    },
+    onError: (error) => {
+      console.error('Update error:', error);
+      // TODO: Show error to user
+    }
   });
+  // --- End Update User Mutation ---
+
+  // State for form data during editing
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    // Removed fields not in backend: phone, bio, status, language, theme
+  });
+
+  // Reset formData when editing starts or profile data loads
+  useEffect(() => {
+    if (profile && !isEditing) {
+      setFormData({
+        name: profile.name || '',
+        email: profile.email || '',
+      });
+    }
+  }, [profile, isEditing]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -63,64 +73,56 @@ const ProfilePage = () => {
     });
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    const [category, setting] = name.split('.');
-    
-    if (category === 'notifications') {
-      setProfile({
-        ...profile,
-        notifications: {
-          ...profile.notifications,
-          [setting]: checked
-        }
-      });
-    }
-  };
+  // Removed handleCheckboxChange as notification settings are not in backend model
 
   const handleSaveProfile = () => {
-    // In a real app, this would send data to the backend
-    setProfile({
-      ...profile,
+    if (!currentUserId) return;
+
+    // Prepare input based on UpdateUserInput type in GraphQL schema
+    const updateInput = {
       name: formData.name,
       email: formData.email,
-      phone: formData.phone,
-      bio: formData.bio,
-      status: formData.status as 'online' | 'away' | 'busy' | 'offline',
-      language: formData.language,
-      theme: formData.theme as 'light' | 'dark' | 'system'
+      // Add other fields from UpdateUserInput if they exist and are editable
+    };
+
+    updateUserMutation({
+      variables: {
+        id: currentUserId,
+        input: updateInput
+      }
     });
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
-    // Reset form data to current profile values
-    setFormData({
-      name: profile.name,
-      email: profile.email,
-      phone: profile.phone || '',
-      bio: profile.bio || '',
-      status: profile.status || 'online',
-      language: profile.language,
-      theme: profile.theme
-    });
+    // Reset form data to current profile values from query
+    if (profile) {
+       setFormData({
+        name: profile.name || '',
+        email: profile.email || '',
+      });
+    }
     setIsEditing(false);
   };
 
-  const formatDate = (date: Date) => {
+  // Keep formatDate if needed elsewhere, or remove
+  const formatDate = (dateString: string | Date | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      year: 'numeric', month: 'long', day: 'numeric'
     });
   };
 
+  if (userLoading) return <p>Loading profile...</p>; // Add a loading state
+  if (userError) return <p>Error loading profile: {userError.message}</p>; // Add an error state
+  if (!profile && !userLoading) return <p>User not found.</p> // Handle case where user data is not available
+
   return (
     <>
-        <NextSeo
-          title="Profile - BrainMessenger"
-          description="Your profile on BrainMessenger"
-        />
+      <NextSeo
+        title="Profile - BrainMessenger"
+        description="Your profile on BrainMessenger"
+      />
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-gray-800 shadow overflow-hidden rounded-lg">
@@ -133,15 +135,17 @@ const ProfilePage = () => {
                     <div className="flex space-x-2">
                       <button
                         onClick={handleCancel}
-                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        disabled={updateLoading}
+                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
                       >
                         Cancel
                       </button>
                       <button
                         onClick={handleSaveProfile}
-                        className="px-3 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        disabled={updateLoading}
+                        className="px-3 py-1 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                       >
-                        Save
+                        {updateLoading ? 'Saving...' : 'Save'}
                       </button>
                     </div>
                   ) : (
@@ -155,37 +159,31 @@ const ProfilePage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Profile content */}
             <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:p-6">
               <div className="flex flex-col md:flex-row">
-                {/* Avatar section */}
+                {/* Avatar section - simplified */}
                 <div className="flex flex-col items-center md:w-1/3 mb-6 md:mb-0">
                   <div className="relative">
                     <img
-                      src={profile.avatar || '/avatars/default.jpg'}
+                      src={'/avatars/default.jpg'} // Placeholder avatar
                       alt={profile.name}
                       className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-md"
                     />
-                    {profile.status === 'online' && (
-                      <div className="absolute bottom-2 right-2 w-4 h-4 bg-green-500 rounded-full border-2 border-white dark:border-gray-700"></div>
-                    )}
+                    {/* Online status removed */}
                   </div>
                   <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">{profile.name}</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{profile.email}</p>
-                  <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    <p>Joined {formatDate(profile.joinedDate)}</p>
-                  </div>
+                  {/* Joined date removed */}
                 </div>
-                
+
                 {/* Profile details */}
                 <div className="md:w-2/3 md:pl-8">
                   {isEditing ? (
                     <div className="space-y-4">
                       <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Name
-                        </label>
+                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
                         <input
                           type="text"
                           name="name"
@@ -195,11 +193,8 @@ const ProfilePage = () => {
                           className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                         />
                       </div>
-                      
                       <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Email
-                        </label>
+                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                         <input
                           type="email"
                           name="email"
@@ -209,88 +204,8 @@ const ProfilePage = () => {
                           className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
                         />
                       </div>
-                      
-                      <div>
-                        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Phone
-                        </label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          id="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Bio
-                        </label>
-                        <textarea
-                          name="bio"
-                          id="bio"
-                          rows={3}
-                          value={formData.bio}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Status
-                        </label>
-                        <select
-                          name="status"
-                          id="status"
-                          value={formData.status}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        >
-                          <option value="online">Online</option>
-                          <option value="away">Away</option>
-                          <option value="busy">Busy</option>
-                          <option value="offline">Offline</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="language" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Language
-                        </label>
-                        <select
-                          name="language"
-                          id="language"
-                          value={formData.language}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        >
-                          <option value="English">English</option>
-                          <option value="Spanish">Spanish</option>
-                          <option value="French">French</option>
-                          <option value="German">German</option>
-                          <option value="Russian">Russian</option>
-                        </select>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Theme
-                        </label>
-                        <select
-                          name="theme"
-                          id="theme"
-                          value={formData.theme}
-                          onChange={handleInputChange}
-                          className="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-white"
-                        >
-                          <option value="light">Light</option>
-                          <option value="dark">Dark</option>
-                          <option value="system">System</option>
-                        </select>
-                      </div>
+                      {/* Removed phone, bio, status, language, theme inputs */}
+                       {updateError && <p className="text-sm text-error-text mt-2">{updateError.message || 'Failed to update profile.'}</p>}
                     </div>
                   ) : (
                     <div className="space-y-6">
@@ -304,64 +219,10 @@ const ProfilePage = () => {
                             </svg>
                             <span className="ml-2 text-gray-700 dark:text-gray-300">{profile.email}</span>
                           </div>
-                          
-                          {profile.phone && (
-                            <div className="flex items-center">
-                              <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                              </svg>
-                              <span className="ml-2 text-gray-700 dark:text-gray-300">{profile.phone}</span>
-                            </div>
-                          )}
+                          {/* Removed phone display */}
                         </div>
                       </div>
-                      
-                      {profile.bio && (
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Bio</h4>
-                          <p className="mt-2 text-gray-700 dark:text-gray-300">{profile.bio}</p>
-                        </div>
-                      )}
-                      
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Settings</h4>
-                        <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          <div>
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Language:</span>
-                            <span className="ml-2 text-gray-700 dark:text-gray-300">{profile.language}</span>
-                          </div>
-                          <div>
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Theme:</span>
-                            <span className="ml-2 text-gray-700 dark:text-gray-300">
-                              {profile.theme.charAt(0).toUpperCase() + profile.theme.slice(1)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Notification Preferences</h4>
-                        <div className="mt-2 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Messages</span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${profile.notifications.messages ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
-                              {profile.notifications.messages ? 'Enabled' : 'Disabled'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Calls</span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${profile.notifications.calls ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
-                              {profile.notifications.calls ? 'Enabled' : 'Disabled'}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-700 dark:text-gray-300">Group Messages</span>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${profile.notifications.groupMessages ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
-                              {profile.notifications.groupMessages ? 'Enabled' : 'Disabled'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+                      {/* Removed Bio, Settings, Notifications sections */}
                     </div>
                   )}
                 </div>

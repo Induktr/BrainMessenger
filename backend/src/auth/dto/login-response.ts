@@ -1,11 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from '../../user.entity';
+import { UserDto } from '../../user/dto/user.dto'; // Import UserDto
 
 @ObjectType()
 export class LoginResponse {
   @Field()
   access_token: string;
 
-  @Field(() => User)
-  user: User;
+  @Field(() => UserDto) // Use UserDto
+  user: UserDto; // Use UserDto
 }

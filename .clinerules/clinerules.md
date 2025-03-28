@@ -69,7 +69,6 @@ The project is currently in the development phase. Many UI components and basic 
 ## Upcoming Tasks
 
 ### Priority 1: Audio and Video Calls
-<<<<<<< HEAD
 - [x] Implement audio or video calls with another user (FR-16)
   - [x] Implement WebRTC signaling
   - [x] Implement ICE candidate exchange
@@ -109,12 +108,7 @@ The project is currently in the development phase. Many UI components and basic 
   - [ ] Implement viewing payment history (FR-32)
 
 ### Priority 5: Multi-language Support
-- [ ] Implement multi-language support (FR-28)
-  - [ ] Add Russian language support
-  - [ ] Add French language support
-<<<<<<< HEAD
-  - [ ] Add Arabic language support
-  - [ ] Implement RTL support for Arabic language
+  - [ ] Add Arabic language support and RTL support
 
 ### Priority 6: UI Design Implementation
 - [ ] Implement color palette for Light and Dark modes (DD-1)
