@@ -60,3 +60,6 @@ frontend/dist/
 .idea/
 .vscode/
 *.sublime-*
+
+# Ignore disabled git directory
+.git_disabled/
