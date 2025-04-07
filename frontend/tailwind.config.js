@@ -1,3 +1,5 @@
+const { Height } = require('@mui/icons-material');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -94,6 +96,15 @@ module.exports = {
         caption: '14px',
         button: '16px',
       },
+      scale: {
+        w: {
+          '24': '24px',
+          "100": "100px",
+        },
+        h: {
+          '24': '24px',
+        },
+      }
     },
   },
   plugins: [],

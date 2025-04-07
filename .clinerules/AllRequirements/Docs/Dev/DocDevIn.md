@@ -52,13 +52,12 @@ BrainMessenger/
 ├── docs/                      # Документация проекта
 ├── turbo.json                 # Конфигурация Turborepo
 └── .env.example               # Пример переменных окружения
-
 ```
 
 - **core:** Общий код (логика, API-клиент, хуки), переиспользуемый между платформами.
 - **mobile-desktop:** Приложение для Android и Windows (React Native).
 - **web:** Веб-приложение (Next.js).
-- **backend:** Логика API, интеграции (Nhost, AWS S3, Firebase).
+- **backend:** Логика API, интеграции (Neon, Cloudflare R2, Firebase).
 - **infrastructure:** Настройка серверов и кластера.
 
 ---
@@ -73,8 +72,8 @@ BrainMessenger/
 | Frontend: Общее | TypeScript | 5.x | Строгая типизация для всех платформ |
 | Backend | NestJS | 10.x | GraphQL API, бизнес-логика |
 | ORM | Prisma | 5.x | Работа с базой данных (PostgreSQL) |
-| База данных | PostgreSQL (Nhost) | 15.x | Хранение данных пользователей |
-| Хранилище | AWS S3 | - | Файлы (медиа, документы, звуки) |
+| База данных | PostgreSQL (Neon) | 15.x | Хранение метаданных (ID, ссылки, сообщения) |
+| Хранилище | Cloudflare R2 | - | Файлы (медиа, аватарки, записи звонков, зашифрованные данные) |
 | Кэширование | Redis | 7.x | Лимиты, временные данные |
 | Асинхронность | Kafka | 3.x | Фоновые задачи (обработка изображений) |
 | Оркестрация | Kubernetes | 1.24+ | Масштабирование серверов |
@@ -87,321 +86,342 @@ BrainMessenger/
 
 ### 4. Стандарты кодирования
 
-### 4.1. Общие принципы
+#### 4.1. Общие принципы
 
 - Следуйте принципам **DRY** (Don’t Repeat Yourself) и **KISS** (Keep It Simple, Stupid).
 - Используйте английский язык для названий переменных, функций и комментариев.
 - Комментарии обязательны для сложной логики (например, шифрование, интеграции, работа с множествами).
 
-### 4.2. Конвенции именования
+#### 4.2. Конвенции именования
 
 - **Переменные и функции:** camelCase
-    - Пример: `getUserProfile`, `userId`.
+  - Пример: `getUserProfile`, `userId`.
 - **Классы и модули:** PascalCase
-    - Пример: `UserService`, `AuthModule`.
+  - Пример: `UserService`, `AuthModule`.
 - **Константы:** UPPER_CASE
-    - Пример: `MAX_FILE_SIZE`.
+  - Пример: `MAX_FILE_SIZE`.
 - **Файлы:** kebab-case
-    - Пример: `user-service.ts`, `chat-screen.tsx`.
+  - Пример: `user-service.ts`, `chat-screen.tsx`.
 - **API endpoints:** REST-style в GraphQL (например, `getUser`, `sendMessage`).
 
-### 4.3. Форматирование
+#### 4.3. Форматирование
 
 - Используйте **Prettier** для автоматического форматирования:
-    - Настройки: `.prettierrc` (2 пробела, без точек с запятой).
-        
-        ```json
-        {
-          "tabWidth": 2,
-          "semi": false,
-          "singleQuote": true
-        }
-        
-        ```
-        
+  - Настройки: `.prettierrc` (2 пробела, без точек с запятой).
+    ```json
+    {
+      "tabWidth": 2,
+      "semi": false,
+      "singleQuote": true
+    }
+    ```
 - Линтинг: **ESLint** с конфигурацией Airbnb.
 
-### 4.4. Структура кода
+#### 4.4. Структура кода
 
 - **Core (общий код):**
-    - API-клиент: `/packages/core/src/api/index.ts`.
-    - Хуки: `/packages/core/src/hooks/useAuth.ts`.
-    - Утилиты: `/packages/core/src/utils/formatDate.ts`.
+  - API-клиент: `/packages/core/src/api/index.ts`.
+  - Хуки: `/packages/core/src/hooks/useAuth.ts`.
+  - Утилиты: `/packages/core/src/utils/formatDate.ts`.
 - **Mobile-Desktop (React Native):**
-    - Компоненты: `/packages/mobile-desktop/src/components/Button.tsx`.
-    - Экраны: `/packages/mobile-desktop/src/screens/ChatScreen.tsx`.
-    - Хуки: `/packages/mobile-desktop/src/hooks/useChat.ts`.
+  - Компоненты: `/packages/mobile-desktop/src/components/Button.tsx`.
+  - Экраны: `/packages/mobile-desktop/src/screens/ChatScreen.tsx`.
+  - Хуки: `/packages/mobile-desktop/src/hooks/useChat.ts`.
 - **Web (Next.js):**
-    - Страницы: `/packages/web/pages/index.tsx`.
-    - Компоненты: `/packages/web/components/ChatList.tsx`.
-    - Стили: `/packages/web/styles/tailwind.css`.
+  - Страницы: `/packages/web/pages/index.tsx`.
+  - Компоненты: `/packages/web/components/ChatList.tsx`.
+  - Стили: `/packages/web/styles/tailwind.css`.
 - **Backend (NestJS):**
-    - Модули: `/backend/src/auth/auth.module.ts`.
-    - Сервисы: `/backend/src/user/user.service.ts`.
-    - Резолверы: `/backend/src/chat/chat.resolver.ts`.
+  - Модули: `/backend/src/auth/auth.module.ts`.
+  - Сервисы: `/backend/src/user/user.service.ts`.
+  - Резолверы: `/backend/src/chat/chat.resolver.ts`.
 
 ---
 
 ### 5. Используемые библиотеки
 
-### 5.1. Core (общий код)
+#### 5.1. Core (общий код)
 
-- @apollo/client — GraphQL-запросы к Nhost, переиспользуемые на всех платформах.
+- `@apollo/client` — GraphQL-запросы к Neon, переиспользуемые на всех платформах.
 
-### 5.2. Mobile-Desktop (React Native)
+#### 5.2. Mobile-Desktop (React Native)
 
-- @react-navigation/native — Навигация между экранами.
-- react-native-sound — Воспроизведение звуков (см. Документацию звуков).
+- `@react-navigation/native` — Навигация между экранами.
+- `react-native-sound` — Воспроизведение звуков (см. Документацию звуков).
 
-### 5.3. Web (Next.js)
+#### 5.3. Web (Next.js)
 
-- next — Фреймворк для веб-приложения (SSR/SSG).
-- tailwindcss — Утилитарная стилизация компонентов.
-- @apollo/client — GraphQL-запросы (переиспользуется из core).
+- `next` — Фреймворк для веб-приложения (SSR/SSG).
+- `tailwindcss` — Утилитарная стилизация компонентов.
+- `@apollo/client` — GraphQL-запросы (переиспользуется из core).
 
-### 5.4. Backend
+#### 5.4. Backend
 
-- @nestjs/graphql — GraphQL API.
-- @nestjs/prisma — Интеграция с Prisma для работы с базой данных.
-- @nestjs/jwt — Аутентификация через JWT.
-- aws-sdk — Работа с AWS S3.
-- @nhost/nhost-js — Интеграция с Nhost.
+- `@nestjs/graphql` — GraphQL API.
+- `@nestjs/prisma` — Интеграция с Prisma для работы с базой данных.
+- `@nestjs/jwt` — Аутентификация через JWT.
+- `@aws-sdk/client-s3` — Работа с Cloudflare R2.
 
-### 5.5. Общие
+#### 5.5. Общие
 
-- winston — Логирование (см. Руководство по мониторингу).
-- @sentry/node — Отслеживание ошибок.
-- core-js — Полифиллы для новых методов (например, Set из ECMAScript 2024).
+- `winston` — Логирование (см. Руководство по мониторингу).
+- `@sentry/node` — Отслеживание ошибок.
+- `core-js` — Полифиллы для новых методов (например, Set из ECMAScript 2024).
 
-### 5.6. Работа с множествами (Set)
+#### 5.6. Работа с множествами (Set)
 
 BrainMessenger использует объект `Set` для управления уникальными данными, такими как списки чатов, уведомлений, активных звонков и прав доступа. Начиная с ECMAScript 2024, доступны новые методы для упрощения операций с множествами. Эти методы должны использоваться в соответствии с их назначением для повышения читаемости, производительности и безопасности кода.
 
 - **Для операций с множествами:**
-    - `union(s2)`: Объединить два множества (например, списки чатов).
-        
-        ```tsx
-        const userChats = new Set([1, 2, 3])
-        const groupChats = new Set([3, 4, 5])
-        const allChats = userChats.union(groupChats) // [1, 2, 3, 4, 5]
-        
-        ```
-        
-    - `intersection(s2)`: Найти общие элементы (например, общие участники чатов).
-        
-        ```tsx
-        const commonChats = userChats.intersection(groupChats) // [3]
-        
-        ```
-        
-    - `difference(s2)`: Найти уникальные элементы (например, для синхронизации).
-        
-        ```tsx
-        const uniqueUserChats = userChats.difference(groupChats) // [1, 2]
-        
-        ```
-        
+  - `union(s2)`: Объединить два множества (например, списки чатов).
+    ```tsx
+    const userChats = new Set([1, 2, 3])
+    const groupChats = new Set([3, 4, 5])
+    const allChats = userChats.union(groupChats) // [1, 2, 3, 4, 5]
+    ```
+  - `intersection(s2)`: Найти общие элементы (например, общие участники чатов).
+    ```tsx
+    const commonChats = userChats.intersection(groupChats) // [3]
+    ```
+  - `difference(s2)`: Найти уникальные элементы (например, для синхронизации).
+    ```tsx
+    const uniqueUserChats = userChats.difference(groupChats) // [1, 2]
+    ```
 - **Для проверок отношений:**
-    - `isSubsetOf(s2)`: Проверить, является ли одно множество подмножеством другого (например, для прав доступа).
-        
-        ```tsx
-        const userPermissions = new Set(['read', 'write'])
-        const requiredPermissions = new Set(['read'])
-        const hasAccess = requiredPermissions.isSubsetOf(userPermissions) // true
-        
-        ```
-        
-    - `isDisjointFrom(s2)`: Проверить, нет ли общих элементов (например, для проверки конфликтов прав).
-        
-        ```tsx
-        const userPermissions = new Set(['read', 'write'])
-        const forbiddenPermissions = new Set(['delete'])
-        const isSafe = userPermissions.isDisjointFrom(forbiddenPermissions) // true
-        
-        ```
-        
+  - `isSubsetOf(s2)`: Проверить, является ли одно множество подмножеством другого (например, для прав доступа).
+    ```tsx
+    const userPermissions = new Set(['read', 'write'])
+    const requiredPermissions = new Set(['read'])
+    const hasAccess = requiredPermissions.isSubsetOf(userPermissions) // true
+    ```
+  - `isDisjointFrom(s2)`: Проверить, нет ли общих элементов (например, для проверки конфликтов прав).
+    ```tsx
+    const userPermissions = new Set(['read', 'write'])
+    const forbiddenPermissions = new Set(['delete'])
+    const isSafe = userPermissions.isDisjointFrom(forbiddenPermissions) // true
+    ```
 - **Для управления элементами:**
-    - `add(value)`, `delete(value)`, `has(value)`: Используйте для добавления, удаления и проверки элементов.
-        
-        ```tsx
-        const activeNotifications = new Set<number>()
-        activeNotifications.add(1) // Добавить уведомление
-        if (activeNotifications.has(1)) {
-          console.log('Уведомление активно')
-        }
-        activeNotifications.delete(1) // Удалить уведомление
-        
-        ```
-        
+  - `add(value)`, `delete(value)`, `has(value)`: Используйте для добавления, удаления и проверки элементов.
+    ```tsx
+    const activeNotifications = new Set<number>()
+    activeNotifications.add(1) // Добавить уведомление
+    if (activeNotifications.has(1)) {
+      console.log('Уведомление активно')
+    }
+    activeNotifications.delete(1) // Удалить уведомление
+    ```
 - **Рекомендации:**
-    - Используйте декларативные методы (`union`, `intersection`, `difference`) вместо ручных реализаций через циклы, так как они более читаемы и оптимизированы.
-    - Экономьте память: Если вам не нужно новое множество, используйте `has` и циклы вместо создания новых множеств (например, вместо `intersection` для проверки наличия общих элементов).
-    - Совместимость: Убедитесь, что среда выполнения (Node.js 22+, Chrome 122+) поддерживает новые методы. Для старых сред используйте полифиллы (`core-js/proposals/set-methods-v2`).
-    - Типизация: В TypeScript указывайте типы для `Set` (например, `Set<number>`), чтобы избежать ошибок.
-        
-        ```tsx
-        const chats: Set<number> = new Set([1, 2, 3])
-        
-        ```
-        
+  - Используйте декларативные методы (`union`, `intersection`, `difference`) вместо ручных реализаций через циклы, так как они более читаемы и оптимизированы.
+  - Экономьте память: Если вам не нужно новое множество, используйте `has` и циклы вместо создания новых множеств (например, вместо `intersection` для проверки наличия общих элементов).
+  - Совместимость: Убедитесь, что среда выполнения (Node.js 22+, Chrome 122+) поддерживает новые методы. Для старых сред используйте полифиллы (`core-js/proposals/set-methods-v2`).
+  - Типизация: В TypeScript указывайте типы для `Set` (например, `Set<number>`), чтобы избежать ошибок.
+    ```tsx
+    const chats: Set<number> = new Set([1, 2, 3])
+    ```
 
 ---
 
 ### 6. Процесс разработки
 
-### 6.1. Установка окружения
+#### 6.1. Установка окружения
 
 1. Клонируйте репозиторий:
-    
-    ```bash
-    git clone <https://github.com/xAI/BrainMessenger.git>
-    cd BrainMessenger
-    
-    ```
-    
+   ```bash
+   git clone <https://github.com/xAI/BrainMessenger.git>
+   cd BrainMessenger
+   ```
 2. Установите зависимости:
-    
-    ```bash
-    npm install # Устанавливает зависимости для всех пакетов через Turborepo
-    
-    ```
-    
-3. Скопируйте `.env.example` в `.env` и заполните переменные (см. Руководство по развертыванию).
+   ```bash
+   npm install # Устанавливает зависимости для всех пакетов через Turborepo
+   ```
+3. Скопируйте `.env.example` в `.env` и заполните переменные:
+   ```env
+   # Neon
+   NEON_DATABASE_URL=postgresql://user:password@neon-host:port/dbname
 
-### 6.2. Локальный запуск
+   # Cloudflare R2
+   R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com
+   R2_ACCESS_KEY=your-access-key
+   R2_SECRET_KEY=your-secret-key
+   ENCRYPTION_KEY=your-32-byte-encryption-key
+
+   # Redis
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+
+   # Kafka
+   KAFKA_BROKERS=kafka:9092
+
+   # API Gateway
+   API_GATEWAY_URL=https://api.brainmessenger.com/graphql
+   ```
+
+#### 6.2. Локальный запуск
 
 - **Backend:**
-    
-    ```bash
-    cd backend
-    npm run start:dev
-    
-    ```
-    
+  ```bash
+  cd backend
+  npm run start:dev
+  ```
 - **Mobile-Desktop (React Native):**
-    
-    ```bash
-    cd packages/mobile-desktop
-    npm run android  # или npm run windows
-    
-    ```
-    
+  ```bash
+  cd packages/mobile-desktop
+  npm run android  # или npm run windows
+  ```
 - **Web (Next.js):**
-    
-    ```bash
-    cd packages/web
-    npm run dev
-    
-    ```
-    
+  ```bash
+  cd packages/web
+  npm run dev
+  ```
 
-### 6.3. Коммиты и ветки
+#### 6.3. Коммиты и ветки
 
 - **Формат коммитов:** Conventional Commits
-    - Пример: `feat(chat): add message sending`, `fix(auth): resolve JWT expiration`.
+  - Пример: `feat(chat): add message sending`, `fix(auth): resolve JWT expiration`.
 - **Ветки:**
-    - `main` — стабильная версия.
-    - `develop` — текущая разработка.
-    - `feature/<name>` — новые функции (например, `feature/ai-assistant`).
-    - `fix/<name>` — исправления (например, `fix/bug-123`).
+  - `main` — стабильная версия.
+  - `develop` — текущая разработка.
+  - `feature/<name>` — новые функции (например, `feature/ai-assistant`).
+  - `fix/<name>` — исправления (например, `fix/bug-123`).
 
-### 6.4. Pull Request (PR) и код-ревью
+#### 6.4. Pull Request (PR) и код-ревью
 
 - Создавайте PR из feature/fix веток в `develop`.
 - Требования к PR:
-    - Описание задачи и изменений.
-    - Ссылка на задачу в Jira (например, `BM-123`).
-    - Прохождение тестов (`npm test`).
+  - Описание задачи и изменений.
+  - Ссылка на задачу в Jira (например, `BM-123`).
+  - Прохождение тестов (`npm test`).
 - Код-ревью: Минимум 1 аппрув от другого разработчика.
 
-### 6.5. Тестирование
+#### 6.5. Тестирование
 
 - Запуск тестов:
-    
-    ```bash
-    npm run test  # Запускает тесты для всех пакетов через Turborepo
-    
-    ```
-    
+  ```bash
+  npm run test  # Запускает тесты для всех пакетов через Turborepo
+  ```
 - Используйте Jest для модульных тестов, Cypress для веб, Detox для мобильных (см. Руководство по тестированию).
 
 ---
 
 ### 7. Рекомендации по разработке
 
-### 7.1. Core (общий код)
+#### 7.1. Core (общий код)
 
 - **API-клиент:** Используйте Apollo Client с кэшированием запросов.
-    
-    typescript
-    
-    СвернутьПереносКопировать
-    
-    `import { ApolloClient, InMemoryCache } from '@apollo/client'
-    export const client = new ApolloClient({
-      uri: process.env.API_GATEWAY_URL,
-      cache: new InMemoryCache(),
-    })`
-    
+  ```typescript
+  import { ApolloClient, InMemoryCache } from '@apollo/client'
+
+  export const client = new ApolloClient({
+    uri: process.env.API_GATEWAY_URL,
+    cache: new InMemoryCache(),
+  })
+  ```
 - **Хуки:** Создавайте переиспользуемые хуки (например, useTheme, useChats).
 
-### 7.2. Mobile-Desktop (React Native)
+#### 7.2. Mobile-Desktop (React Native)
 
 - **Компоненты:** Делайте их переиспользуемыми и с минимальной логикой.
-    - Пример: <Button title="Send" onPress={handleSend} />.
+  - Пример: `<Button title="Send" onPress={handleSend} />`.
 - **Звуки:** Используйте react-native-sound для воспроизведения (см. Документацию звуков).
 
-### 7.3. Web (Next.js)
+#### 7.3. Web (Next.js)
 
 - **SEO:** Используйте SSR/SSG для страниц (например, getStaticProps).
-    
-    typescript
-    
-    СвернутьПереносКопировать
-    
-    `export async function getStaticProps() {
-      return {
-        props: { title: 'BrainMessenger - Secure Chat App' },
-      }
-    }`
-    
+  ```typescript
+  export async function getStaticProps() {
+    return {
+      props: { title: 'BrainMessenger - Secure Chat App' },
+    }
+  }
+  ```
 - **Стили:** Используйте Tailwind CSS для утилитарной стилизации.
-    
-    typescript
-    
-    СвернутьПереносКопировать
-    
-    `<div className="bg-gray-900 text-white p-4">
-      <h1 className="text-2xl font-bold">Welcome to BrainMessenger</h1>
-    </div>`
-    
+  ```typescript
+  <div className="bg-gray-900 text-white p-4">
+    <h1 className="text-2xl font-bold">Welcome to BrainMessenger</h1>
+  </div>
+  ```
 
-### 7.4. Backend
+#### 7.4. Backend
 
 - **GraphQL:** Оптимизируйте резолверы, избегайте N+1 запросов (см. "Руководство по оптимизации BrainMessenger").
 - **Prisma:** Используйте Prisma для работы с базой данных.
-    
-    typescript
-    
-    СвернутьПереносКопировать
-    
-    `import { PrismaService } from 'nestjs-prisma'
-    
-    @Injectable()
-    class UserService {
-      constructor(private prisma: PrismaService) {}
-    
-      async getUser(email: string) {
-        return this.prisma.user.findUnique({ where: { email } })
-      }
-    }`
-    
+  ```typescript
+  import { PrismaService } from 'nestjs-prisma'
+
+  @Injectable()
+  class UserService {
+    constructor(private prisma: PrismaService) {}
+
+    async getUser(id: string) {
+      return this.prisma.user.findUnique({ where: { id } })
+    }
+  }
+  ```
 - **Интеграции:**
-    - Nhost: Используйте @nhost/nhost-js для авторизации и запросов.
-    - AWS S3: Загружайте файлы асинхронно с aws-sdk.
+  - **Neon:** Используйте Prisma для работы с базой данных Neon.
+  - **Cloudflare R2:** Загружайте файлы асинхронно с `@aws-sdk/client-s3`.
+    ```typescript
+    import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+    import { createCipheriv, randomBytes } from 'crypto'
+
+    @Injectable()
+    class StorageService {
+      private r2 = new S3Client({
+        region: 'auto',
+        endpoint: process.env.R2_ENDPOINT,
+        credentials: { accessKeyId: process.env.R2_ACCESS_KEY, secretAccessKey: process.env.R2_SECRET_KEY },
+      })
+
+      private encrypt(data: string): { encrypted: string, iv: string } {
+        const iv = randomBytes(16)
+        const cipher = createCipheriv('aes-256-cbc', Buffer.from(process.env.ENCRYPTION_KEY), iv)
+        let encrypted = cipher.update(data, 'utf8', 'hex')
+        encrypted += cipher.final('hex')
+        return { encrypted, iv: iv.toString('hex') }
+      }
+
+      async storeUserData(userId: string, email: string, password: string, avatar?: Buffer) {
+        const encryptedEmail = this.encrypt(email)
+        const encryptedPassword = this.encrypt(password)
+
+        await this.r2.send(new PutObjectCommand({
+          Bucket: 'brainmessenger-users',
+          Key: `${userId}/metadata.json`,
+          Body: JSON.stringify({
+            email: encryptedEmail.encrypted,
+            emailIv: encryptedEmail.iv,
+            password: encryptedPassword.encrypted,
+            passwordIv: encryptedPassword.iv,
+          }),
+        }))
+
+        if (avatar) {
+          await this.r2.send(new PutObjectCommand({
+            Bucket: 'brainmessenger-users',
+            Key: `${userId}/avatar.jpg`,
+            Body: avatar,
+          }))
+        }
+
+        return {
+          metadataUrl: `https://r2.brainmessenger.com/${userId}/metadata.json`,
+          avatarUrl: avatar ? `https://r2.brainmessenger.com/${userId}/avatar.jpg` : null,
+        }
+      }
+
+      async storeCallRecording(callId: string, recording: Buffer) {
+        await this.r2.send(new PutObjectCommand({
+          Bucket: 'brainmessenger-users',
+          Key: `call-${callId}.mp4`,
+          Body: recording,
+        }))
+        return `https://r2.brainmessenger.com/call-${callId}.mp4`
+      }
+    }
+    ```
 - **Ошибки:** Логируйте через Winston, отправляйте в Sentry (см. Руководство по мониторингу).
 
-### 7.5. Безопасность
+#### 7.5. Безопасность
 
 - Не коммитьте ключи в Git — используйте .env.
 - Шифруйте чувствительные данные перед сохранением (см. Руководство по безопасности).
@@ -417,92 +437,80 @@ BrainMessenger использует объект `Set` для управлени
 2. **Оптимизация:** Примените конкретные техники или инструменты.
 3. **Повторное измерение:** Убедитесь, что оптимизация дала эффект и не вызвала регрессий.
 
-### 8.1. Обработка и оптимизация изображений
+#### 8.1. Обработка и оптимизация изображений
 
 **Библиотека:** `sharp` (на базе libvips)
 
 **Почему:** Быстрее и менее ресурсоёмко, чем ImageMagick, с отличной интеграцией в Node.js.
 
-**Области применения:** Обработка загрузок пользователей (аватары, изображения в чатах).
+**Области применения:** Обработка загрузок пользователей (аватарки, изображения в чатах).
 
 **Шаги по использованию:**
 
 1. Установите:
-Убедитесь, что `libvips` установлен (особенно в Docker).
-    
-    ```bash
-    npm install sharp
-    
-    ```
-    
+   ```bash
+   npm install sharp
+   ```
 2. Создайте сервис в NestJS:
-    
-    ```tsx
-    @Injectable()
-    class ImageProcessingService {
-      async processImage(buffer: Buffer, width: number, height: number) {
-        return sharp(buffer)
-          .resize(width, height, { withoutEnlargement: true })
-          .webp({ quality: 80 })
-          .withMetadata({ orientation: true }) // Удаление EXIF, кроме ориентации
-          .toBuffer()
-      }
-    }
-    
-    ```
-    
+   ```typescript
+   import sharp from 'sharp'
+
+   @Injectable()
+   class ImageProcessingService {
+     async processImage(buffer: Buffer, width: number, height: number) {
+       return sharp(buffer)
+         .resize(width, height, { withoutEnlargement: true })
+         .webp({ quality: 80 })
+         .withMetadata({ orientation: true }) // Удаление EXIF, кроме ориентации
+         .toBuffer()
+     }
+   }
+   ```
 3. Интеграция в контроллер:
-    
-    ```tsx
-    @Post('upload')
-    @UseInterceptors(FileInterceptor('file'))
-    async uploadImage(@UploadedFile() file: Express.Multer.File) {
-      const processedImage = await this.imageProcessingService.processImage(file.buffer, 300, 300)
-      // Сохранение в AWS S3
-    }
-    
-    ```
-    
+   ```typescript
+   @Post('upload')
+   @UseInterceptors(FileInterceptor('file'))
+   async uploadImage(@UploadedFile() file: Express.Multer.File) {
+     const processedImage = await this.imageProcessingService.processImage(file.buffer, 300, 300)
+     const userId = 'user-id' // Пример
+     const { avatarUrl } = await this.storageService.storeUserData(userId, 'email@example.com', 'password', processedImage)
+     return { avatarUrl }
+   }
+   ```
 4. Асинхронность: Вынесите обработку в фоновые задачи через Kafka (см. раздел 8.7).
 
 **Совет:** Всегда удаляйте EXIF-метаданные для экономии размера.
 
-### 8.2. Оптимизация базы данных (Nhost/PostgreSQL)
+#### 8.2. Оптимизация базы данных (Neon/PostgreSQL)
 
 **Подход 1: Индексация**
 
 **Почему:** Ускоряет запросы `SELECT`, `JOIN`, `WHERE`, `ORDER BY`.
 
-**Области применения:** Поля для поиска (например, `userId`, `chatId`, `email`).
+**Области применения:** Поля для поиска (например, `userId`, `chatId`).
 
 **Шаги:**
 
 1. Добавьте индексы в `schema.prisma`:
-    
-    ```
-    model Message {
-      id        String   @id @default(cuid())
-      content   String
-      createdAt DateTime @default(now())
-      chatId    String
-      userId    String
-      chat      Chat     @relation(fields: [chatId], references: [id])
-      user      User     @relation(fields: [userId], references: [id])
-    
-      @@index([chatId, createdAt])
-      @@index([userId])
-    }
-    
-    ```
-    
+   ```prisma
+   model Message {
+     id        String   @id @default(cuid())
+     content   String
+     createdAt DateTime @default(now())
+     chatId    String
+     userId    String
+     chat      Chat     @relation(fields: [chatId], references: [id])
+     user      User     @relation(fields: [userId], references: [id])
+
+     @@index([chatId, createdAt])
+     @@index([userId])
+   }
+   ```
 2. Примените миграцию:
-    
-    ```bash
-    npx prisma migrate dev --name add_message_indices
-    
-    ```
-    
-3. Анализируйте запросы с помощью `EXPLAIN ANALYZE` через SQL-клиент Nhost.
+   ```bash
+   npx prisma migrate dev --name add_message_indices
+   ```
+3. Анализируйте запросы с помощью `EXPLAIN ANALYZE` через SQL-клиент Neon.
 
 **Подход 2: Оптимизация запросов (Prisma)**
 
@@ -511,15 +519,12 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Выбирайте только нужные поля:
-    
-    ```tsx
-    const chats = await prisma.chat.findMany({
-      where: { userId: ctx.userId },
-      select: { id: true, name: true },
-    })
-    
-    ```
-    
+  ```typescript
+  const chats = await prisma.chat.findMany({
+    where: { userId: ctx.userId },
+    select: { id: true, name: true },
+  })
+  ```
 - Избегайте N+1: Используйте `include` для связей.
 - Пагинация: Используйте `skip`, `take`, `cursor` для списков.
 
@@ -529,7 +534,7 @@ BrainMessenger использует объект `Set` для управлени
 
 **Шаги:** Настройте Prisma Accelerate (см. документацию Prisma).
 
-### 8.3. Оптимизация GraphQL API (NestJS + Prisma)
+#### 8.3. Оптимизация GraphQL API (NestJS + Prisma)
 
 **Инструмент 1: DataLoader**
 
@@ -538,41 +543,32 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install dataloader
-    
-    ```
-    
+   ```bash
+   npm install dataloader
+   ```
 2. Создайте лоадер:
-    
-    ```tsx
-    @Injectable({ scope: Scope.REQUEST })
-    class UserLoader {
-      private loader = new DataLoader(async (ids: string[]) => {
-        const users = await this.prisma.user.findMany({ where: { id: { in: ids } } })
-        return ids.map(id => users.find(user => user.id === id))
-      })
-    
-      constructor(private prisma: PrismaService) {}
-    
-      load(id: string) {
-        return this.loader.load(id)
-      }
-    }
-    
-    ```
-    
+   ```typescript
+   @Injectable({ scope: Scope.REQUEST })
+   class UserLoader {
+     private loader = new DataLoader(async (ids: string[]) => {
+       const users = await this.prisma.user.findMany({ where: { id: { in: ids } } })
+       return ids.map(id => users.find(user => user.id === id))
+     })
+
+     constructor(private prisma: PrismaService) {}
+
+     load(id: string) {
+       return this.loader.load(id)
+     }
+   }
+   ```
 3. Используйте в резолверах:
-    
-    ```tsx
-    @ResolveField()
-    async user(@Parent() message: Message, @Context() { loaders }: { loaders: { userLoader: UserLoader } }) {
-      return loaders.userLoader.load(message.userId)
-    }
-    
-    ```
-    
+   ```typescript
+   @ResolveField()
+   async user(@Parent() message: Message, @Context() { loaders }: { loaders: { userLoader: UserLoader } }) {
+     return loaders.userLoader.load(message.userId)
+   }
+   ```
 
 **Инструмент 2: Анализ сложности запросов**
 
@@ -583,22 +579,16 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install graphql-query-complexity
-    
-    ```
-    
+   ```bash
+   npm install graphql-query-complexity
+   ```
 2. Настройте в NestJS:
-    
-    ```tsx
-    const complexityPlugin = new QueryComplexityPlugin({
-      maximumComplexity: 100,
-      estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })],
-    })
-    
-    ```
-    
+   ```typescript
+   const complexityPlugin = new QueryComplexityPlugin({
+     maximumComplexity: 100,
+     estimators: [fieldExtensionsEstimator(), simpleEstimator({ defaultComplexity: 1 })],
+   })
+   ```
 
 **Подход 3: Persisted Queries**
 
@@ -606,7 +596,7 @@ BrainMessenger использует объект `Set` для управлени
 
 **Шаги:** Настройте Apollo Client и Server для поддержки persisted queries, используйте Redis для хранения запросов.
 
-### 8.4. Оптимизация backend логики (NestJS)
+#### 8.4. Оптимизация backend логики (NestJS)
 
 **Инструмент 1: Профилирование Node.js**
 
@@ -615,12 +605,9 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Запустите с профилированием:
-    
-    ```bash
-    node --prof dist/main.js
-    
-    ```
-    
+   ```bash
+   node --prof dist/main.js
+   ```
 2. Нагрузите API (например, с помощью `k6`).
 3. Анализируйте лог с помощью `-prof-process` или Chrome DevTools.
 
@@ -631,23 +618,18 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install heapdump
-    
-    ```
-    
+   ```bash
+   npm install heapdump
+   ```
 2. Сделайте снапшоты кучи:
-    
-    ```tsx
-    import * as heapdump from 'heapdump'
-    heapdump.writeSnapshot('heapdump-1.heapsnapshot')
-    
-    ```
-    
+   ```typescript
+   import * as heapdump from 'heapdump'
+
+   heapdump.writeSnapshot('heapdump-1.heapsnapshot')
+   ```
 3. Сравните в Chrome DevTools (Memory Tab).
 
-### 8.5. Кэширование (Redis)
+#### 8.5. Кэширование (Redis)
 
 **Библиотека:** `ioredis`
 
@@ -658,48 +640,40 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install ioredis @nestjs/cache-manager cache-manager-redis-store
-    
-    ```
-    
+   ```bash
+   npm install ioredis @nestjs/cache-manager cache-manager-redis-store
+   ```
 2. Настройте в NestJS:
-    
-    ```tsx
-    @Module({
-      imports: [
-        CacheModule.registerAsync({
-          useFactory: () => ({
-            store: redisStore,
-            host: process.env.REDIS_HOST,
-            port: process.env.REDIS_PORT,
-          }),
-        }),
-      ],
-    })
-    export class AppModule {}
-    
-    ```
-    
+   ```typescript
+   @Module({
+     imports: [
+       CacheModule.registerAsync({
+         useFactory: () => ({
+           store: redisStore,
+           host: process.env.REDIS_HOST,
+           port: process.env.REDIS_PORT,
+         }),
+       }),
+     ],
+   })
+   export class AppModule {}
+   ```
 3. Используйте:
-    
-    ```tsx
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    async getUserProfile(userId: string) {
-      const cacheKey = `user:profile:${userId}`
-      const cached = await this.cacheManager.get(cacheKey)
-      if (cached) return cached
-      const user = await this.prisma.user.findUnique({ where: { id: userId } })
-      await this.cacheManager.set(cacheKey, user, { ttl: 3600 })
-      return user
-    }
-    
-    ```
-    
+   ```typescript
+   @Inject(CACHE_MANAGER) private cacheManager: Cache
+
+   async getUserProfile(userId: string) {
+     const cacheKey = `user:profile:${userId}`
+     const cached = await this.cacheManager.get(cacheKey)
+     if (cached) return cached
+     const user = await this.prisma.user.findUnique({ where: { id: userId } })
+     await this.cacheManager.set(cacheKey, user, { ttl: 3600 })
+     return user
+   }
+   ```
 4. Инвалидация: Удаляйте ключи при обновлении данных.
 
-### 8.6. Оптимизация push-уведомлений (Firebase FCM)
+#### 8.6. Оптимизация push-уведомлений (Firebase FCM)
 
 **Подход 1: Батчинг**
 
@@ -708,16 +682,13 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Отправляйте до 500 уведомлений одним вызовом:
-    
-    ```tsx
-    const tokens = ['token1', 'token2']
-    await admin.messaging().sendMulticast({
-      tokens,
-      notification: { title: 'New Message', body: 'You have a new message' },
-    })
-    
-    ```
-    
+  ```typescript
+  const tokens = ['token1', 'token2']
+  await admin.messaging().sendMulticast({
+    tokens,
+    notification: { title: 'New Message', body: 'You have a new message' },
+  })
+  ```
 
 **Подход 2: Темы (Topics)**
 
@@ -726,22 +697,16 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Клиент подписывается:
-    
-    ```tsx
-    FirebaseMessaging.instance.subscribeToTopic('chat_123')
-    
-    ```
-    
+  ```typescript
+  FirebaseMessaging.instance.subscribeToTopic('chat_123')
+  ```
 - Бэкенд отправляет:
-    
-    ```tsx
-    await admin.messaging().send({
-      topic: 'chat_123',
-      notification: { title: 'New Message', body: 'Group chat updated' },
-    })
-    
-    ```
-    
+  ```typescript
+  await admin.messaging().send({
+    topic: 'chat_123',
+    notification: { title: 'New Message', body: 'Group chat updated' },
+  })
+  ```
 
 **Подход 3: Data Messages**
 
@@ -750,30 +715,24 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Бэкенд отправляет:
-    
-    ```tsx
-    await admin.messaging().send({
-      token: 'device_token',
-      data: { chatId: '123', messageId: '456', senderName: 'Alice' },
-    })
-    
-    ```
-    
+  ```typescript
+  await admin.messaging().send({
+    token: 'device_token',
+    data: { chatId: '123', messageId: '456', senderName: 'Alice' },
+  })
+  ```
 - Клиент обрабатывает:
-    
-    ```tsx
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      await notifee.displayNotification({
-        title: `${remoteMessage.data.senderName} sent a message`,
-        body: 'Tap to view',
-        data: remoteMessage.data,
-      })
+  ```typescript
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    await notifee.displayNotification({
+      title: `${remoteMessage.data.senderName} sent a message`,
+      body: 'Tap to view',
+      data: remoteMessage.data,
     })
-    
-    ```
-    
+  })
+  ```
 
-### 8.7. Асинхронная обработка (Kafka)
+#### 8.7. Асинхронная обработка (Kafka)
 
 **Библиотека:** `kafkajs`
 
@@ -782,39 +741,30 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install kafkajs
-    
-    ```
-    
+   ```bash
+   npm install kafkajs
+   ```
 2. Настройте продюсер:
-    
-    ```tsx
-    const kafka = new Kafka({ clientId: 'brainmessenger', brokers: ['kafka:9092'] })
-    const producer = kafka.producer()
-    await producer.connect()
-    await producer.send({
-      topic: 'image-processing',
-      messages: [{ key: userId, value: JSON.stringify({ filePath }) }],
-    })
-    
-    ```
-    
+   ```typescript
+   const kafka = new Kafka({ clientId: 'brainmessenger', brokers: ['kafka:9092'] })
+   const producer = kafka.producer()
+   await producer.connect()
+   await producer.send({
+     topic: 'image-processing',
+     messages: [{ key: userId, value: JSON.stringify({ filePath }) }],
+   })
+   ```
 3. Настройте консьюмер:
-    
-    ```tsx
-    const consumer = kafka.consumer({ groupId: 'image-workers' })
-    await consumer.subscribe({ topic: 'image-processing' })
-    await consumer.run({
-      eachMessage: async ({ message }) => {
-        const payload = JSON.parse(message.value.toString())
-        // Обработка изображения
-      },
-    })
-    
-    ```
-    
+   ```typescript
+   const consumer = kafka.consumer({ groupId: 'image-workers' })
+   await consumer.subscribe({ topic: 'image-processing' })
+   await consumer.run({
+     eachMessage: async ({ message }) => {
+       const payload = JSON.parse(message.value.toString())
+       // Обработка изображения
+     },
+   })
+   ```
 
 **Подход:** Партиционирование
 
@@ -823,37 +773,28 @@ BrainMessenger использует объект `Set` для управлени
 **Инструмент:** Kafdrop
 
 - Разверните Kafdrop для мониторинга топиков и сообщений:
-    
-    ```bash
-    docker run -d --name kafdrop -p 9000:9000 obsidiandynamics/kafdrop --kafka.brokerConnect=kafka:9092
-    
-    ```
-    
+  ```bash
+  docker run -d --name kafdrop -p 9000:9000 obsidiandynamics/kafdrop --kafka.brokerConnect=kafka:9092
+  ```
 
-### 8.8. Оптимизация взаимодействия клиент-API-БД
+#### 8.8. Оптимизация взаимодействия клиент-API-БД
 
 **Клиент:**
 
 - Используйте TanStack Query или Apollo Client для кэширования запросов.
-    
-    ```tsx
-    const { data } = useQuery(['chats', userId], () => client.query({ query: GET_CHATS, variables: { userId } }))
-    
-    ```
-    
+  ```typescript
+  const { data } = useQuery(['chats', userId], () => client.query({ query: GET_CHATS, variables: { userId } }))
+  ```
 
 **Сеть:**
 
 - Включите HTTP/2 или HTTP/3 на сервере.
 - Настройте сжатие (Gzip/Brotli) в NestJS:
-    
-    ```tsx
-    app.use(compression())
-    
-    ```
-    
+  ```typescript
+  app.use(compression())
+  ```
 
-### 8.9. Оптимизация аутентификации
+#### 8.9. Оптимизация аутентификации
 
 **Подход 1: Stateless (JWT)**
 
@@ -866,22 +807,16 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install @nestjs/throttler
-    
-    ```
-    
+   ```bash
+   npm install @nestjs/throttler
+   ```
 2. Настройте:
-    
-    ```tsx
-    @Module({
-      imports: [ThrottlerModule.forRoot({ ttl: 60, limit: 100 })],
-    })
-    export class AppModule {}
-    
-    ```
-    
+   ```typescript
+   @Module({
+     imports: [ThrottlerModule.forRoot({ ttl: 60, limit: 100 })],
+   })
+   export class AppModule {}
+   ```
 
 **Подход 3: Безопасные заголовки**
 
@@ -890,47 +825,35 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 1. Установите:
-    
-    ```bash
-    npm install helmet
-    
-    ```
-    
+   ```bash
+   npm install helmet
+   ```
 2. Настройте:
-    
-    ```tsx
-    app.use(helmet())
-    
-    ```
-    
+   ```typescript
+   app.use(helmet())
+   ```
 
-### 8.10. Оптимизация чатов (WebSocket)
+#### 8.10. Оптимизация чатов (WebSocket)
 
 **Библиотека:** NestJS Gateways (`@nestjs/websockets`)
 
 **Шаги:**
 
 1. Настройте WebSocket:
-    
-    ```tsx
-    @WebSocketGateway()
-    class ChatGateway {
-      @SubscribeMessage('message')
-      handleMessage(client: Socket, payload: { chatId: string, content: string }) {
-        this.server.to(payload.chatId).emit('message', payload)
-      }
-    }
-    
-    ```
-    
+   ```typescript
+   @WebSocketGateway()
+   class ChatGateway {
+     @SubscribeMessage('message')
+     handleMessage(client: Socket, payload: { chatId: string, content: string }) {
+       this.server.to(payload.chatId).emit('message', payload)
+     }
+   }
+   ```
 2. Клиент подключается:
-    
-    ```tsx
-    const socket = io('<https://api.brainmessenger.com>')
-    socket.emit('message', { chatId: '123', content: 'Hello' })
-    
-    ```
-    
+   ```typescript
+   const socket = io('<https://api.brainmessenger.com>')
+   socket.emit('message', { chatId: '123', content: 'Hello' })
+   ```
 
 **Оптимизация:**
 
@@ -940,16 +863,13 @@ BrainMessenger использует объект `Set` для управлени
 **Управление присутствием:**
 
 - Используйте heartbeats и Redis для отслеживания статуса:
-    
-    ```tsx
-    const setOnlineStatus = async (userId: string) => {
-      await redis.set(`user:status:${userId}`, 'online', 'EX', 60)
-    }
-    
-    ```
-    
+  ```typescript
+  const setOnlineStatus = async (userId: string) => {
+    await redis.set(`user:status:${userId}`, 'online', 'EX', 60)
+  }
+  ```
 
-### 8.11. Оптимизация анимаций
+#### 8.11. Оптимизация анимаций
 
 **Mobile-Desktop (React Native):**
 
@@ -958,16 +878,13 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Используйте для плавных анимаций:
-    
-    ```tsx
-    const progress = useSharedValue(0)
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ translateX: progress.value }],
-    }))
-    progress.value = withSpring(100)
-    
-    ```
-    
+  ```typescript
+  const progress = useSharedValue(0)
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: progress.value }],
+  }))
+  progress.value = withSpring(100)
+  ```
 
 **Web (Next.js):**
 
@@ -976,23 +893,21 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Используйте для переходов:
-    
-    ```tsx
-    import { motion } from 'framer-motion'
-    const Component = () => (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Hello
-      </motion.div>
-    )
-    
-    ```
-    
+  ```typescript
+  import { motion } from 'framer-motion'
 
-### 8.12. Оптимизация обработки данных в базе данных
+  const Component = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      Hello
+    </motion.div>
+  )
+  ```
+
+#### 8.12. Оптимизация обработки данных в базе данных
 
 **Подход 1: Материализованные представления**
 
@@ -1001,22 +916,16 @@ BrainMessenger использует объект `Set` для управлени
 **Шаги:**
 
 - Создайте:
-    
-    ```sql
-    CREATE MATERIALIZED VIEW chat_stats AS
-    SELECT chatId, COUNT(*) as messageCount
-    FROM "Message"
-    GROUP BY chatId;
-    
-    ```
-    
+  ```sql
+  CREATE MATERIALIZED VIEW chat_stats AS
+  SELECT chatId, COUNT(*) as messageCount
+  FROM "Message"
+  GROUP BY chatId;
+  ```
 - Обновляйте:
-    
-    ```sql
-    REFRESH MATERIALIZED VIEW chat_stats;
-    
-    ```
-    
+  ```sql
+  REFRESH MATERIALIZED VIEW chat_stats;
+  ```
 
 **Подход 2: Партиционирование таблиц**
 
@@ -1030,35 +939,23 @@ BrainMessenger использует объект `Set` для управлени
 
 - **Локально:** Используйте Docker Compose (см. Руководство по развертыванию).
 - **Продакшен:**
-    1. Сборка Docker-образов:
-        
-        ```bash
-        docker build -t brainmessenger-backend ./backend
-        
-        ```
-        
-    2. Деплой в Kubernetes:
-        
-        ```bash
-        kubectl apply -f infrastructure/k8s/
-        
-        ```
-        
-    3. Деплой веб-приложения:
-        
-        ```bash
-        cd packages/web
-        vercel deploy
-        
-        ```
-        
-    4. Проверка:
-        
-        ```bash
-        curl <https://api.brainmessenger.com/health>
-        
-        ```
-        
+  1. Сборка Docker-образов:
+     ```bash
+     docker build -t brainmessenger-backend ./backend
+     ```
+  2. Деплой в Kubernetes:
+     ```bash
+     kubectl apply -f infrastructure/k8s/
+     ```
+  3. Деплой веб-приложения:
+     ```bash
+     cd packages/web
+     vercel deploy
+     ```
+  4. Проверка:
+     ```bash
+     curl <https://api.brainmessenger.com/health>
+     ```
 
 ---
 
@@ -1076,7 +973,7 @@ BrainMessenger использует объект `Set` для управлени
 
 ---
 
-### 10. Примечания
+### 11. Примечания
 
 - **Онбординг:** Новые разработчики должны изучить Техническую документацию, Документацию дизайна и Документацию звуков перед стартом.
 - **Обновления:** Стандарты могут корректироваться с ростом проекта (например, при переходе на микросервисы в Q1 2026).

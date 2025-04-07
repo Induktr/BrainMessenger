@@ -10,7 +10,7 @@ export class FileDto {
   name: string;
 
   @Field()
-  url: string; // S3 URL
+  url: string; // File URL (e.g., local path or from storage provider)
 
   @Field(() => Int)
   size: number; // Size in bytes

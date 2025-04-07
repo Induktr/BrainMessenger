@@ -10,15 +10,13 @@ import { ChatModule } from './chat/chat.module';
 import { MessageModule } from './message/message.module';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
-import { NhostModule } from './nhost/nhost.module';
 import { CallModule } from './call/call.module';
 import { WebrtcSignalingGateway } from './webrtc-signaling';
 import { CallHistoryModule } from './call-history/call-history.module';
-import { AwsModule } from './aws/aws.module';
 import { PrivacySettingsModule } from './privacy-settings/privacy-settings.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { FileModule } from './file/file.module'; // Import FileModule
-
+import { CloudflareModule } from './cloudflare/cloudflare.module'; // Import CloudflareModule
 @Module({
   imports: [
     PrismaModule, // Add PrismaModule here
@@ -32,8 +30,6 @@ import { FileModule } from './file/file.module'; // Import FileModule
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
     }),
-    NhostModule,
-    AwsModule,
     UserModule,
     AuthModule,
     ChatModule,
@@ -43,6 +39,7 @@ import { FileModule } from './file/file.module'; // Import FileModule
     CallHistoryModule,
     PrivacySettingsModule,
     FileModule, // Add FileModule here
+    CloudflareModule, // Add CloudflareModule here
   ],
   controllers: [AppController],
   providers: [AppService, WebrtcSignalingGateway],

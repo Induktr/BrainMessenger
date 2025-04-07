@@ -39,9 +39,9 @@ const WelcomeSlider = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 10000000);
+    }, 10000000); // Increased interval significantly
     return () => clearInterval(interval);
-  }, [currentSlide]);
+  }, [currentSlide]); // Dependency array includes currentSlide
 
   const nextSlide = () => {
     setCurrentSlide((prevSlide) => (prevSlide === slides.length - 1 ? 0 : prevSlide + 1));
@@ -52,7 +52,7 @@ const WelcomeSlider = () => {
   };
 
   const handleGetStarted = () => {
-    router.push('/register');
+    router.push('/register'); // Navigate to register page
   };
 
   return (
@@ -116,7 +116,7 @@ const WelcomeSlider = () => {
           />
         </button>
       </div>
-      
+
       {/* Get Started Button */}
       <button
         onClick={handleGetStarted}

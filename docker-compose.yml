@@ -15,22 +15,28 @@ services:
     command: npm run start:dev
     ports:
       - "4000:4000" # Пробрасываем порт 4000 (бэкенд)
-      - "9229:9229" # Опционально: порт для отладки Node.js
     environment:
       # Передаем переменные окружения, если они нужны бэкенду
-      # Например, для подключения к базе данных или внешним сервисам
-      # DATABASE_URL: postgresql://user:password@db:5432/mydb
-      # JWT_SECRET: your_jwt_secret
-      # NHOS_SUBDOMAIN: your_nhost_subdomain
-      # NHOS_REGION: your_nhost_region
-      # AWS_REGION: your_aws_region
-      # AWS_ACCESS_KEY_ID: your_aws_key_id
-      # AWS_SECRET_ACCESS_KEY: your_aws_secret_key
-      # AWS_S3_BUCKET_NAME: your_s3_bucket_name
-      PORT: 4000 # Указываем порт явно
+      # Используем DATABASE_URL из .env для подключения к Neon
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:-your-default-jwt-secret} # Use from .env or default
+      # Cloudflare R2 Credentials from .env
+      R2_ACCESS_KEY: ${R2_ACCESS_KEY}
+      R2_SECRET_KEY: ${R2_SECRET_KEY}
+      R2_ENDPOINT: ${R2_ENDPOINT}
+      R2_BUCKET: ${R2_BUCKET}
+      # Firebase Credentials from .env
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY}
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID}
+      # Redis Config from .env
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD} # Optional, will be empty if not set in .env
+      # Other variables
+      PORT: ${PORT:-4000} # Use from .env or default
     depends_on:
       # - db # Раскомментируйте, если добавляете сервис базы данных
-      - nhost # Добавляем зависимость от Nhost, если он нужен для старта
+      # - nhost # Removed Nhost dependency
     networks:
       - brainmessenger-network
 
@@ -60,26 +66,7 @@ services:
     networks:
       - brainmessenger-network
 
-  # Сервис для Nhost (если используется локально)
-  nhost:
-    image: nhost/nhost:latest # Или конкретная версия
-    container_name: brainmessenger-nhost
-    ports:
-      - "1337:1337" # Порт Nhost Dashboard
-      - "8080:8080" # Порт Hasura GraphQL Engine
-      - "5432:5432" # Порт PostgreSQL
-      # Другие порты Nhost, если нужны (Auth, Storage, Functions)
-    volumes:
-      - ./nhost:/app/nhost # Монтируем конфигурацию Nhost (если есть)
-      # - nhost-db-data:/var/lib/postgresql/data # Сохранение данных БД
-    environment:
-      # Переменные окружения для Nhost (пароли и т.д.)
-      POSTGRES_PASSWORD: your_postgres_password
-      HASURA_GRAPHQL_ADMIN_SECRET: your_hasura_admin_secret
-      # ... другие переменные Nhost
-    networks:
-      - brainmessenger-network
-
+# --- Nhost Service Definition Removed ---
   # Опционально: Сервис для базы данных PostgreSQL (если не используется Nhost)
   # db:
   #   image: postgres:15-alpine
@@ -101,7 +88,3 @@ networks:
     driver: bridge
 
 # Определяем тома для сохранения данных (если нужны)
-volumes:
-  # postgres-data:
-  nhost-db-data: # Если используется том для данных Nhost
-    driver: local

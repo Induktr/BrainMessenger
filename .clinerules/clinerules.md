@@ -96,7 +96,7 @@ The project is currently in the development phase. Many UI components and basic 
   - [ ] Implement subscribing to public channels
   - [ ] Implement reading content from public channels
 - [ ] Implement file sending and receiving (FR-20)
-  - [ ] Implement file upload functionality
+  - [x] Implement file upload functionality
   - [ ] Implement file download functionality
 
 ### Priority 4: Premium Subscription
@@ -111,13 +111,13 @@ The project is currently in the development phase. Many UI components and basic 
   - [ ] Add Arabic language support and RTL support
 
 ### Priority 6: UI Design Implementation
-- [ ] Implement color palette for Light and Dark modes (DD-1)
-  - [ ] Set primary gradient, accent colors, secondary colors, etc.
-- [ ] Implement typography using Roboto font (DD-2)
-  - [ ] Set font sizes and styles for headings, body text, captions, and buttons
+- [x] Implement color palette for Light and Dark modes (DD-1)
+  - [x] Set primary gradient, accent colors, secondary colors, etc.
+- [x] Implement typography using Roboto font (DD-2)
+  - [x] Set font sizes and styles for headings, body text, captions, and buttons
 - [ ] Implement animations for UI elements (DD-3)
   - [ ] Implement slide transitions, button presses, message sending, etc.
-- [ ] Implement layout and grid system (DD-4)
+- [x] Implement layout and grid system (DD-4)
   - [ ] Use 8px grid system for spacing and define responsive breakpoints
 - [ ] Implement accessibility guidelines (DD-5)
   - [ ] Ensure UI adheres to WCAG 2.1 AA guidelines
@@ -153,7 +153,7 @@ The project is currently in the development phase. Many UI components and basic 
 - [ ] Implement monitoring (SU-5)
   - [ ] Implement monitoring using Prometheus, Grafana, and Sentry
 - [ ] Implement backup and recovery (SU-6)
-  - [ ] Implement backup and recovery procedures for PostgreSQL and AWS S3
+  - [ ] Implement backup and recovery procedures for Neon (PostgreSQL) and Cloudflare R2
 - [ ] Implement update management (SU-7)
   - [ ] Implement update management procedures for patches, minor releases, and major releases
 - [ ] Implement incident response (SU-8)
@@ -168,7 +168,7 @@ The project is currently in the development phase. Many UI components and basic 
 - GraphQL is used for API communication
 - WebSockets are used for real-time messaging
 - Redis is used for caching
-- Nhost and AWS S3 are used for storage
+- Neon (PostgreSQL) and Cloudflare R2 are used for database and storage respectively
 - Firebase is used for notifications
 - Kafka is used for queues
 - Stripe is used for payments

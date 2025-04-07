@@ -41,6 +41,9 @@ COPY --from=development /usr/src/app/schema.gql ./schema.gql
 # Открываем порт, на котором будет работать приложение (мы изменили на 4000)
 EXPOSE 4000
 
++# Генерируем Prisma Client перед запуском
++RUN npx prisma generate
++
 # Команда для запуска приложения
 # Запускаем миграции Prisma перед стартом (если они используются)
 # CMD ["npx", "prisma", "migrate", "deploy", "&&", "node", "dist/main"]

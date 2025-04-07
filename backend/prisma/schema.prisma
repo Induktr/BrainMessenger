@@ -18,6 +18,7 @@ model User {
   email            String    @unique
   password         String
   name             String
+  emailVerified    Boolean   @default(false) // Добавлено поле для отслеживания верификации email
   twoFactorEnabled Boolean   @default(false)
   twoFactorMethod  String?
   recoveryEmail    String?
@@ -27,7 +28,19 @@ model User {
   callsAsCaller    Call[]    @relation("CallsAsCaller")
   callsAsCallee    Call[]    @relation("CallsAsCallee")
   uploadedFiles    File[]    // Added relation for uploaded files
+  verificationCodes VerificationCode[] // Добавлена связь с кодами верификации
   // transactions     Transaction[] // Add later after clarifying ID type mismatch
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid())
+  code      String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  type      String   // EMAIL_VERIFICATION, PASSWORD_RESET, TWO_FACTOR, etc.
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  attempts  Int      @default(0) // Счетчик попыток использования кода
 }
 
 model Chat {

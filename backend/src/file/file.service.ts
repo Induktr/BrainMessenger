@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common'; // Added NotImplementedException
 import { PrismaService } from '../prisma/prisma.service';
-import { AwsS3Service } from '../aws/aws-s3.service';
+import { CloudflareR2Service } from '../cloudflare/cloudflare-r2.service'; // Import R2 Service
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { createReadStream, ReadStream } from 'fs'; // Keep ReadStream for type hint if needed
@@ -8,27 +8,14 @@ import { createReadStream, ReadStream } from 'fs'; // Keep ReadStream for type h
 
 // Removed streamToBuffer helper function
 
-// Helper function to extract S3 key from URL
-const getKeyFromUrl = (url: string): string | null => {
-  try {
-    const parsedUrl = new URL(url);
-    const pathname = parsedUrl.pathname;
-    // Remove leading slash if present, assuming key is like 'uploads/filename.ext'
-    const key = pathname.startsWith('/') ? pathname.substring(1) : pathname;
-    // Decode URI components in case filename has special characters
-    return decodeURIComponent(key);
-  } catch (e) {
-    console.error("Error parsing S3 URL:", e);
-    return null;
-  }
-};
+// Removed getKeyFromUrl helper function (was S3 specific)
 
 
 @Injectable()
 export class FileService {
   constructor(
     private prisma: PrismaService,
-    private awsS3Service: AwsS3Service,
+    private cloudflareR2Service: CloudflareR2Service, // Inject R2 Service
   ) {}
 
   // Using 'any' for FileUpload and return type
@@ -41,33 +28,38 @@ export class FileService {
     const uniqueFilename = `${Date.now()}-${filename}`;
 
     try {
-      // Pass the stream directly to AwsS3Service
-      const uploadResult = await this.awsS3Service.uploadFile(stream, uniqueFilename);
+      // Define the key for R2 (e.g., using a folder structure)
+      const r2Key = `uploads/${uploaderId}/${uniqueFilename}`;
+
+      // Upload the file stream to R2
+      const uploadResult = await this.cloudflareR2Service.uploadFile(stream, r2Key, mimetype);
 
       if (!uploadResult || !uploadResult.Location) {
-        throw new InternalServerErrorException('Failed to upload file to S3');
+        throw new InternalServerErrorException('Failed to upload file to R2');
       }
 
       // TODO: Determine file size accurately.
-      // This might require reading headers or buffering, depending on setup.
+      // This might require reading headers or buffering the stream before upload.
       let fileSize = 0; // Placeholder
 
-      const fileData: any /* Prisma.FileCreateInput */ = {
+      // Save file metadata to the database
+      const fileData: Prisma.FileCreateInput = {
         name: filename,
-        url: uploadResult.Location,
+        url: uploadResult.Location, // Store the R2 public URL
         size: fileSize,
         type: mimetype,
         uploader: { connect: { id: uploaderId } },
+        // Add messageId, chatId if needed based on your schema
       };
 
-      // Accessing model via string index as workaround
-      const savedFile = await this.prisma['file'].create({ data: fileData });
+      const savedFile = await this.prisma.file.create({ data: fileData });
       return savedFile;
 
     } catch (error) {
       console.error('Error uploading file:', error);
-      // Consider deleting from S3 if DB save fails
-      // await this.awsS3Service.deleteFile(uniqueFilename); // Use uniqueFilename as key
+      // Note: No need to manually delete from R2 on DB error here,
+      // as the file might not have been successfully uploaded if uploadResult is invalid.
+      // Consider more robust error handling/cleanup if needed.
       throw new InternalServerErrorException('Failed to process file upload.');
     }
   }
@@ -95,21 +87,36 @@ export class FileService {
       throw new Error('User not authorized to delete this file.');
     }
 
-    const s3Key = getKeyFromUrl(file.url);
-    if (!s3Key) {
-        console.error(`Could not extract S3 key from URL: ${file.url}`);
+    // Extract the R2 key from the stored URL
+    let r2Key: string | null = null;
+    try {
+      // Assuming URL is like https://<endpoint>/<bucket>/<key>
+      const urlParts = new URL(file.url);
+      const bucketName = this.cloudflareR2Service.bucketName; // Access bucket name from service
+      if (urlParts.pathname.startsWith(`/${bucketName}/`)) {
+          r2Key = urlParts.pathname.substring(`/${bucketName}/`.length);
+      }
+    } catch (e) {
+       console.error(`Error parsing file URL for R2 key: ${file.url}`, e);
+       throw new InternalServerErrorException('Could not determine file key for deletion.');
+    }
+
+    if (!r2Key) {
+        console.error(`Could not extract R2 key from URL: ${file.url}`);
         throw new InternalServerErrorException('Could not process file deletion.');
     }
 
     try {
-      // Pass the extracted key to deleteFile
-      await this.awsS3Service.deleteFile(s3Key);
+      // Delete from R2 first
+      await this.cloudflareR2Service.deleteFile(r2Key);
 
-       // Accessing model via string index as workaround
-      await this.prisma['file'].delete({ where: { id: fileId } });
+      // Then delete from the database
+      await this.prisma.file.delete({ where: { id: fileId } });
       return true;
     } catch (error) {
-      console.error(`Error deleting file ${fileId} (key: ${s3Key}):`, error);
+      // If R2 deletion fails but DB deletion succeeds, or vice versa,
+      // you might have orphaned data. Consider more robust transaction/cleanup logic.
+      console.error(`Error deleting file ${fileId} (key: ${r2Key}):`, error);
       throw new InternalServerErrorException('Failed to delete file.');
     }
   }

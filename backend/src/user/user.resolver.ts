@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Args, Int, ID, ObjectType } from '@nestjs/gr
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto'; // Import UserDto
 import { InputType, Field } from '@nestjs/graphql';
+import { LoginResponse } from '../auth/dto/login-response'; // Import LoginResponse from auth module
 
 @InputType()
 class UpdateUserInput {
@@ -53,28 +54,8 @@ export class LoginInput {
   password!: string;
 }
 
-@ObjectType()
-export class LoginResponse {
-  @Field()
-  access_token!: string;
-
-  @Field(() => UserDto)
-  user!: UserDto;
-}
-
 // --- End Input/Response Types ---
-
-// Helper function to map Nhost User data to UserDto
-// Adjust based on the actual structure returned by NhostService
-const mapNhostUserToDto = (user: any): UserDto | null => {
-  if (!user) return null;
-  return {
-    id: user.id, // Assuming Nhost returns id as string (UUID)
-    email: user.email,
-    name: user.name,
-    // Map other fields if they exist in Nhost response and UserDto
-  };
-};
+// Removed mapNhostUserToDto helper function
 
 @Resolver(() => UserDto) // Use UserDto
 export class UserResolver {
@@ -84,14 +65,18 @@ export class UserResolver {
   @Query(() => UserDto, { nullable: true }) // Use UserDto
   async getUser(@Args('id', { type: () => ID }) id: string): Promise<UserDto | null> {
     // userService.findOne now accepts string ID
-    const user = await this.userService.findOne(id);
-    return mapNhostUserToDto(user);
+    // TODO: Update when userService.findOne is implemented with Prisma
+    // const user = await this.userService.findOne(id);
+    // return user; // Assuming userService returns UserDto or null
+    return null; // Placeholder
   }
 
   @Query(() => [UserDto]) // Use UserDto
   async getUsers(): Promise<UserDto[]> {
-    const users = await this.userService.findAll();
-    return users.map(mapNhostUserToDto).filter(dto => dto !== null) as UserDto[];
+    // TODO: Update when userService.findAll is implemented with Prisma
+    // const users = await this.userService.findAll();
+    // return users; // Assuming userService returns UserDto[]
+    return []; // Placeholder
   }
 
   // Note: createUser likely needs password hashing before calling service
@@ -100,10 +85,11 @@ export class UserResolver {
     @Args('email') email: string,
     @Args('password') password: string,
     @Args('name') name: string
-  ): Promise<UserDto> {
-    // TODO: Hash password before sending to service/Nhost
-    const newUser = await this.userService.create({ email, password, name });
-    return mapNhostUserToDto(newUser) as UserDto; // Assuming create returns the created user data
+  ): Promise<UserDto | null> { // Return type might need adjustment
+    // TODO: Update when userService.create is implemented with Prisma
+    // const newUser = await this.userService.create({ email, password, name });
+    // return newUser; // Assuming userService returns UserDto or similar
+    return null; // Placeholder
   }
 
   // Changed Args ID type from Int to ID
@@ -113,8 +99,10 @@ export class UserResolver {
     @Args('input') input: UpdateUserInput,
   ): Promise<UserDto | null> {
     // userService.update now accepts string ID
-    const updatedUser = await this.userService.update(id, input);
-    return mapNhostUserToDto(updatedUser);
+    // TODO: Update when userService.update is implemented with Prisma
+    // const updatedUser = await this.userService.update(id, input);
+    // return updatedUser; // Assuming userService returns UserDto or null
+    return null; // Placeholder
   }
 
   // Changed Args ID type from Int to ID
@@ -175,9 +163,8 @@ export class UserResolver {
   // --- Add Logout Mutation (Placeholder - Assuming it's needed based on schema) ---
   @Mutation(() => Boolean)
   async logoutUser(): Promise<boolean> {
-    // TODO: Implement logout logic in userService.logoutUser
-    // This might involve invalidating tokens on the backend/Nhost side
-    return this.userService.logoutUser();
+    // TODO: Implement logout logic in userService.logoutUser if needed
+    return this.userService.logoutUser(); // Keep call, service handles logic
   }
   // --- End Logout Mutation ---
 }

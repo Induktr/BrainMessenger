@@ -18,6 +18,8 @@ async function bootstrap() {
   // Add graphql-upload middleware
   app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 1 })); // Example limits: 10MB, 1 file
 
-  await app.listen(process.env.PORT ?? 4000); // Changed default port to 4000
+  const port = process.env.PORT ?? 4000;
+  await app.listen(port, '0.0.0.0'); // Listen on all interfaces
+  console.log(`Nest application is listening on port ${port}`); // Add confirmation log
 }
 bootstrap();

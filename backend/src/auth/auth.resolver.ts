@@ -5,12 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { LoginResponse } from './dto/login-response';
 import { RegisterInput } from './dto/register-input';
 import { LoginInput } from './dto/login-input';
+import { MailService } from '../mail/mail.service';
 
 @Resolver()
 export class AuthResolver {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly mailService: MailService,
   ) {}
 
   @Mutation(() => LoginResponse)
@@ -40,5 +42,36 @@ export class AuthResolver {
   @Mutation(() => Boolean)
   async logoutUser(): Promise<boolean> {
     return true;
+  }
+
+  @Mutation(() => LoginResponse)
+  async verifyEmail(
+    @Args('email') email: string,
+    @Args('code') code: string,
+  ): Promise<LoginResponse> {
+    return this.authService.verifyConfirmationCode(email, code);
+  }
+
+  @Mutation(() => Boolean)
+  async resendVerificationCode(
+    @Args('email') email: string,
+  ): Promise<boolean> {
+    try {
+      // Находим пользователя по email
+      const user = await this.userService.findOneByEmail(email);
+      if (!user) {
+        throw new Error('Пользователь с таким email не найден');
+      }
+
+      // Генерируем новый код подтверждения
+      const code = this.authService.generateConfirmationCode();
+      
+      // Отправляем код на email
+      await this.mailService.sendVerificationCode(email, code, user.id);
+      return true;
+    } catch (error) {
+      console.error('Error resending verification code:', error);
+      return false;
+    }
   }
 }

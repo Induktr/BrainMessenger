@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserResolver } from './user.resolver';
-import { NhostModule } from '../nhost/nhost.module';
 
 @Module({
-  imports: [NhostModule],
+  imports: [],
   providers: [UserService, UserResolver],
   exports: [UserService],
 })

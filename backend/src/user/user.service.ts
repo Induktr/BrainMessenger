@@ -1,118 +1,64 @@
-import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common'; // Added exceptions
-import { NhostService } from '../nhost/nhost.service';
+import { Injectable, UnauthorizedException, InternalServerErrorException, NotImplementedException } from '@nestjs/common'; // Added exceptions
+import { PrismaService } from '../prisma/prisma.service'; // Assuming PrismaService is available
 import * as crypto from 'crypto';
-import { RegisterInput, LoginInput, LoginResponse } from './user.resolver'; // Import types from resolver
+import { RegisterInput, LoginInput } from './user.resolver'; // Import types from resolver (removed LoginResponse)
+import { LoginResponse } from '../auth/dto/login-response'; // Import LoginResponse from auth module
 import { UserDto } from './dto/user.dto'; // Import UserDto
 
 @Injectable()
 export class UserService {
-  constructor(private nhostService: NhostService) {}
+  constructor(private prisma: PrismaService) {} // Inject PrismaService instead
 
-  async findOne(id: string): Promise<any | null> { // Changed id type to string
-    const nhost = this.nhostService.getNhostClient();
-    // GraphQL query already expects uuid! which is compatible with string
-    const result = await nhost.graphql.request(`
-      query GetUser($id: uuid!) {
-        user(id: $id) {
-          id
-          email
-          name
-        }
-      }
-    `, { id });
-    return result.data?.user;
+  async findOne(id: string): Promise<any | null> {
+    // TODO: Implement with Prisma
+    throw new NotImplementedException('findOne not implemented');
+    // Example Prisma implementation (adjust based on your schema):
+    // return this.prisma.user.findUnique({ where: { id } });
   }
 
   async findAll(): Promise<any[]> {
-    const nhost = this.nhostService.getNhostClient();
-    const result = await nhost.graphql.request(`
-      query GetUsers {
-        users {
-          id
-          email
-          name
-        }
-      }
-    `);
-    return result.data?.users;
+    // TODO: Implement with Prisma
+    throw new NotImplementedException('findAll not implemented');
+    // Example Prisma implementation:
+    // return this.prisma.user.findMany();
   }
 
   async create(user: any): Promise<any> {
-    const nhost = this.nhostService.getNhostClient();
-    const result = await nhost.graphql.request(`
-      mutation InsertUser($email: String!, $password: String!, $name: String!) {
-        insert_users_one(object: {email: $email, password: $password, name: $name}) {
-          id
-          email
-          name
-        }
-      }
-    `, { email: user.email, password: user.password, name: user.name });
-    return result.data?.insert_users_one;
+    // TODO: Implement with Prisma (handle password hashing)
+    throw new NotImplementedException('create not implemented');
+    // Example Prisma implementation:
+    // const hashedPassword = await bcrypt.hash(user.password, 10); // Assuming bcrypt is available
+    // return this.prisma.user.create({
+    //   data: { ...user, password: hashedPassword },
+    // });
   }
 
-  async update(id: string, user: any): Promise<any | null> { // Changed id type to string
-    const nhost = this.nhostService.getNhostClient();
-    // GraphQL query already expects uuid! which is compatible with string
-    const result = await nhost.graphql.request(
-      `
-      mutation UpdateUser($id: uuid!, $user: users_set_input!) {
-        update_users_by_pk(pk_columns: {id: $id}, _set: $user) {
-          id
-          email
-          name
-          twoFactorEnabled
-          twoFactorMethod
-          recoveryEmail
-          recoveryPhone
-        }
-      }
-    `,
-      {
-        id,
-        user: {
-          email: user.email,
-          name: user.name,
-          password: user.password,
-          twoFactorEnabled: user.twoFactorEnabled,
-          twoFactorMethod: user.twoFactorMethod,
-          recoveryEmail: user.recoveryEmail,
-          recoveryPhone: user.recoveryPhone,
-        },
-      }
-    );
-    return result.data?.update_users_by_pk;
+  async update(id: string, user: any): Promise<any | null> {
+    // TODO: Implement with Prisma (handle password update carefully)
+    throw new NotImplementedException('update not implemented');
+    // Example Prisma implementation:
+    // return this.prisma.user.update({
+    //   where: { id },
+    //   data: user, // Be careful about updating password here if included
+    // });
   }
 
   async findOneByEmail(email: string): Promise<any | null> {
-    const nhost = this.nhostService.getNhostClient();
-    const result = await nhost.graphql.request(`
-      query GetUserByEmail($email: String!) {
-        users(where: {email: {_eq: $email}}) {
-          id
-          email
-          name
-        }
-      }
-    `, { email });
-    return result.data?.users[0];
+    // TODO: Implement with Prisma
+    throw new NotImplementedException('findOneByEmail not implemented');
+    // Example Prisma implementation:
+    // return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async remove(id: string): Promise<void> { // Changed id type to string
-    const nhost = this.nhostService.getNhostClient();
-    // GraphQL query already expects uuid! which is compatible with string
-    await nhost.graphql.request(`
-      mutation DeleteUser($id: uuid!) {
-        delete_users_by_pk(id: $id) {
-          id
-        }
-      }
-    `, { id });
+  async remove(id: string): Promise<void> {
+    // TODO: Implement with Prisma
+    throw new NotImplementedException('remove not implemented');
+    // Example Prisma implementation:
+    // await this.prisma.user.delete({ where: { id } });
   }
 
   async generateRecoveryCodes(id: string): Promise<string[]> { // Changed id type to string
-    // Note: This method doesn't interact with DB via Nhost currently,
-    // but changing type for consistency with resolver.
+    // This method might not need DB interaction if codes are generated/stored elsewhere
     const codes: string[] = [];
     for (let i = 0; i < 8; i++) {
       const randomBytes = crypto.randomBytes(4);
@@ -127,15 +73,13 @@ export class UserService {
   }
 
   async verifyDevice(id: string, code: string): Promise<boolean> { // Changed id type to string
-    // Note: This method doesn't interact with DB via Nhost currently,
-    // but changing type for consistency with resolver.
+    // This method might need DB interaction to check device codes
     // TODO: Implement device verification logic
     return false;
   }
 
   async getDevices(id: string): Promise<string[]> { // Changed id type to string
-    // Note: This method doesn't interact with DB via Nhost currently,
-    // but changing type for consistency with resolver.
+    // This method might need DB interaction to fetch associated devices
     // TODO: Implement get devices logic
     return [];
   }
@@ -150,126 +94,52 @@ export class UserService {
   // --- Authentication Methods ---
 
   async register(registerInput: RegisterInput): Promise<LoginResponse> {
-    const nhost = this.nhostService.getNhostClient();
-    try {
-      // Use Nhost Auth SDK for sign up
-      const { session, error } = await nhost.auth.signUp({
-        email: registerInput.email,
-        password: registerInput.password,
-        options: {
-          displayName: registerInput.name,
-          // Nhost automatically handles email verification flow if enabled in settings
-          // You might need to configure allowed roles if using Hasura permissions
-          // allowedRoles: ['user'],
-          // defaultRole: 'user',
-        }
-      });
-
-      if (error) {
-        console.error("Nhost SignUp Error:", error);
-        // Provide more specific feedback if possible
-        if (error.message.includes('Email already in use')) {
-           throw new UnauthorizedException('Email already exists.');
-        }
-        if (error.message.includes('Password is too weak')) {
-            throw new UnauthorizedException('Password is too weak. Please choose a stronger password.');
-        }
-        throw new InternalServerErrorException(error.message || 'Registration failed');
-      }
-
-      if (!session || !session.user) {
-          // This case might indicate email verification is required before a session is active
-          // Or an unexpected issue with Nhost signup flow
-          console.warn("Nhost SignUp: No session returned. Email verification might be pending or an issue occurred.");
-          // Depending on desired UX, you might throw an error or return a specific status
-          // For now, throwing an error as login won't be possible immediately.
-          throw new InternalServerErrorException('Registration initiated, but requires email verification or encountered an issue.');
-          // Alternatively, if you want to allow login immediately (less secure, depends on Nhost settings):
-          // throw new InternalServerErrorException('Registration completed but no session or user returned.');
-      }
-
-      // Map Nhost user to UserDto
-      const userDto: UserDto = {
-        id: session.user.id,
-        email: session.user.email ?? '', // Handle potential null email
-        name: session.user.displayName ?? registerInput.name, // Use displayName or fallback to input name
-      };
-
-      return {
-        access_token: session.accessToken,
-        user: userDto,
-      };
-
-    } catch (err) {
-      console.error("Register Service Error:", err);
-      if (err instanceof InternalServerErrorException || err instanceof UnauthorizedException) {
-        throw err; // Re-throw specific exceptions
-      }
-      // Catch-all for unexpected errors
-      throw new InternalServerErrorException('An unexpected error occurred during registration.');
-    }
+    // TODO: Implement registration with Prisma and password hashing
+    throw new NotImplementedException('register not implemented');
+    // Example Prisma implementation:
+    // const existingUser = await this.prisma.user.findUnique({ where: { email: registerInput.email } });
+    // if (existingUser) {
+    //   throw new UnauthorizedException('Email already exists.');
+    // }
+    // const hashedPassword = await bcrypt.hash(registerInput.password, 10); // Assuming bcrypt is available
+    // const newUser = await this.prisma.user.create({
+    //   data: {
+    //     email: registerInput.email,
+    //     password: hashedPassword,
+    //     name: registerInput.name,
+    //   },
+    // });
+    // const payload = { username: newUser.email, sub: newUser.id };
+    // const accessToken = this.jwtService.sign(payload); // Assuming JwtService is injected
+    // return { access_token: accessToken, user: { id: newUser.id, email: newUser.email, name: newUser.name } };
   }
 
   async login(loginInput: LoginInput): Promise<LoginResponse> {
-    const nhost = this.nhostService.getNhostClient();
-    try {
-      // Use Nhost Auth SDK for sign in
-      const { session, error } = await nhost.auth.signIn({
-        email: loginInput.email,
-        password: loginInput.password,
-      });
-
-      if (error) {
-        console.error("Nhost SignIn Error:", error);
-        // Nhost often returns specific error messages for invalid credentials
-        if (error.message.includes('Invalid email or password') || error.message.includes('Invalid credentials')) {
-           throw new UnauthorizedException('Invalid email or password.');
-        }
-        if (error.message.includes('Email not confirmed')) {
-            throw new UnauthorizedException('Please verify your email before logging in.');
-        }
-        throw new InternalServerErrorException(error.message || 'Login failed');
-      }
-
-      if (!session || !session.user) {
-          throw new InternalServerErrorException('Login successful but no session or user returned.');
-      }
-
-      // Map Nhost user to UserDto
-      const userDto: UserDto = {
-        id: session.user.id,
-        email: session.user.email ?? '',
-        name: session.user.displayName ?? '', // Nhost might not return displayName on login, adjust if needed
-      };
-
-      return {
-        access_token: session.accessToken,
-        user: userDto,
-      };
-
-    } catch (err) {
-       console.error("Login Service Error:", err);
-       if (err instanceof UnauthorizedException || err instanceof InternalServerErrorException) {
-           throw err; // Re-throw specific exceptions
-       }
-       throw new InternalServerErrorException('An unexpected error occurred during login.');
-    }
+    // TODO: Implement login with Prisma and password verification
+    throw new NotImplementedException('login not implemented');
+    // Example Prisma implementation:
+    // const user = await this.prisma.user.findUnique({ where: { email: loginInput.email } });
+    // if (!user) {
+    //   throw new UnauthorizedException('Invalid credentials.');
+    // }
+    // const isPasswordMatching = await bcrypt.compare(loginInput.password, user.password); // Assuming bcrypt
+    // if (!isPasswordMatching) {
+    //   throw new UnauthorizedException('Invalid credentials.');
+    // }
+    // const payload = { username: user.email, sub: user.id };
+    // const accessToken = this.jwtService.sign(payload); // Assuming JwtService is injected
+    // return { access_token: accessToken, user: { id: user.id, email: user.email, name: user.name } };
   }
 
   async logoutUser(): Promise<boolean> {
-      const nhost = this.nhostService.getNhostClient();
+      // TODO: Implement logout if needed (e.g., token invalidation)
+      // Depending on your JWT strategy, logout might be handled client-side
+      // by simply discarding the token. If you implement server-side token
+      // blacklisting, you'd add that logic here.
       try {
-          // Use Nhost Auth SDK for sign out
-          const { error } = await nhost.auth.signOut();
-
-          if (error) {
-              console.error("Nhost SignOut Error:", error);
-              // SignOut errors are usually less critical, but log them.
-              // Depending on the error, you might decide if it warrants throwing an exception.
-              // For now, return false indicating logout might not have fully completed on Nhost side.
-              return false;
-          }
-          return true; // Logout successful
+          // Placeholder: Assume logout is successful if no server-side action needed
+          console.log("User logout requested (server-side action may be needed)");
+          return true;
       } catch (err) {
           console.error("Logout Service Error:", err);
           throw new InternalServerErrorException('An unexpected error occurred during logout.');
