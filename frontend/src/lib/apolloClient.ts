@@ -6,43 +6,25 @@ import { useMemo } from 'react';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-const httpUrl = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql';
-const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000/graphql';
+// Use relative path for HTTP requests, which will be handled by Next.js rewrites
+const httpUrl = '/api/graphql';
+// WebSocket URL still needs the direct address (rewrites don't work for WS)
+// Ensure NEXT_PUBLIC_WS_URL is set correctly in your .env.local or environment
+const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000/graphql'; // Fallback might need adjustment if NEXT_PUBLIC_WS_URL isn't set
 
-function createIsomorphicLink() {
-  // Create links only on the client side where 'window' is defined
-  if (typeof window === 'undefined') {
-    // Server-side: only use HTTP link
-    return new HttpLink({ uri: httpUrl });
-  } else {
-    // Client-side: use split link for HTTP and WS
-    const httpLink = new HttpLink({ uri: httpUrl });
-
-    const wsLink = new GraphQLWsLink(
-      createClient({
-        url: wsUrl,
-      })
-    );
-
-    // Use splitLink to route subscriptions via wsLink and other operations via httpLink
-    return split(
-      ({ query }) => {
-        const definition = getMainDefinition(query);
-        return (
-          definition.kind === 'OperationDefinition' &&
-          definition.operation === 'subscription'
-        );
-      },
-      wsLink,
-      httpLink,
-    );
-  }
+// Temporarily simplified link creation for debugging
+function createHttpLink() {
+  // Always use the relative path for HTTP link
+  return new HttpLink({ uri: httpUrl });
 }
+
+// NOTE: This simplification breaks WebSocket subscriptions.
+// We will restore createIsomorphicLink later if this fixes the HTTP issue.
 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined', // Enable SSR mode on the server
-    link: createIsomorphicLink(),
+    link: createHttpLink(), // Use the simplified HTTP link
     cache: new InMemoryCache(),
   });
 }

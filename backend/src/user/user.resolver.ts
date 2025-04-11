@@ -1,8 +1,11 @@
-import { Resolver, Query, Mutation, Args, Int, ID, ObjectType } from '@nestjs/graphql'; // Added ObjectType
+import { Resolver, Query, Mutation, Args, Int, ID, ObjectType, Context } from '@nestjs/graphql'; // Added ObjectType, Context
+import { UseGuards, UnauthorizedException } from '@nestjs/common'; // Import UseGuards
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto'; // Import UserDto
 import { InputType, Field } from '@nestjs/graphql';
 import { LoginResponse } from '../auth/dto/login-response'; // Import LoginResponse from auth module
+import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Проверяем путь импорта Guard
+// Возможно, понадобится декоратор CurrentUser, если он у вас есть, или будем извлекать из context
 
 @InputType()
 class UpdateUserInput {
@@ -78,6 +81,35 @@ export class UserResolver {
     // return users; // Assuming userService returns UserDto[]
     return []; // Placeholder
   }
+
+  // --- Добавляем Query для получения текущего пользователя ---
+  @Query(() => UserDto, { name: 'getCurrentUser', nullable: true }) // Имя запроса как на фронтенде
+  @UseGuards(JwtAuthGuard) // Включаем Guard обратно!
+  async getCurrentUser(@Context() context): Promise<UserDto | null> {
+    // JwtAuthGuard добавляет объект user в request, который доступен через context.
+    // Проверяем стандартные поля payload: userId (если добавлено в стратегии) или sub (стандартное JWT поле для ID)
+    const userId = context.req.user?.userId ?? context.req.user?.sub;
+
+    if (!userId) {
+      // Эта ошибка будет видна на бэкенде, если Guard пропустит запрос без user ID или стратегия не вернет ID
+      console.error('User ID not found in context after JwtAuthGuard. Check JwtStrategy payload.');
+      // Важно выбросить ошибку, чтобы фронтенд получил не 400, а 401/403
+      throw new UnauthorizedException('Authentication required: User ID not found in token payload.');
+    }
+
+    // Используем реализованный метод findOne
+    const user = await this.userService.findOne(userId);
+    if (!user) {
+        // Эта ошибка будет видна на бэкенде, если пользователь с таким ID не найден в базе
+        console.error(`User with ID ${userId} not found in database.`);
+        // Возвращаем null, так как запрос getCurrentUser помечен как nullable
+        return null;
+        // Или можно выбросить NotFoundException, если фронтенд должен обрабатывать это как ошибку
+        // throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    return user; // Возвращаем найденного пользователя (DTO)
+  }
+  // --- Конец добавленного Query ---
 
   // Note: createUser likely needs password hashing before calling service
   @Mutation(() => UserDto) // Use UserDto

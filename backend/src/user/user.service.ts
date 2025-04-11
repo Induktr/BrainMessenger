@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException, InternalServerErrorException, NotImplementedException } from '@nestjs/common'; // Added exceptions
 import { PrismaService } from '../prisma/prisma.service'; // Assuming PrismaService is available
+import { User } from '@prisma/client'; // Import User type from Prisma Client
 import * as crypto from 'crypto';
 import { RegisterInput, LoginInput } from './user.resolver'; // Import types from resolver (removed LoginResponse)
 import { LoginResponse } from '../auth/dto/login-response'; // Import LoginResponse from auth module
@@ -9,18 +10,41 @@ import { UserDto } from './dto/user.dto'; // Import UserDto
 export class UserService {
   constructor(private prisma: PrismaService) {} // Inject PrismaService instead
 
-  async findOne(id: string): Promise<any | null> {
-    // TODO: Implement with Prisma
-    throw new NotImplementedException('findOne not implemented');
-    // Example Prisma implementation (adjust based on your schema):
-    // return this.prisma.user.findUnique({ where: { id } });
+  async findOne(id: string): Promise<UserDto | null> {
+    // Implement with Prisma
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    if (!user) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, verificationCode, verificationCodeExpiresAt, ...result } = user; // Exclude sensitive fields
+    return result;
   }
 
-  async findAll(): Promise<any[]> {
-    // TODO: Implement with Prisma
-    throw new NotImplementedException('findAll not implemented');
-    // Example Prisma implementation:
-    // return this.prisma.user.findMany();
+  // --- TEMPORARY METHOD FOR TESTING ---
+  async findFirstUser(): Promise<UserDto | null> {
+    console.warn("Executing TEMPORARY findFirstUser method in UserService!");
+    const user = await this.prisma.user.findFirst(); // Get the first user found
+     if (!user) {
+      return null;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, verificationCode, verificationCodeExpiresAt, ...result } = user; // Exclude sensitive fields
+    return result;
+  }
+  // --- END TEMPORARY METHOD ---
+
+  async findAll(): Promise<UserDto[]> { // Changed return type
+    // Implement with Prisma
+    const users = await this.prisma.user.findMany();
+    return users.map(user => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, verificationCode, verificationCodeExpiresAt, ...result } = user;
+        return result;
+    });
+    // throw new NotImplementedException('findAll not implemented');
   }
 
   async create(user: any): Promise<any> {

@@ -1,12 +1,11 @@
+// backend/src/mail/mail.module.ts
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
-import { MailResolver } from './mail.resolver';
-import { PrismaModule } from '../prisma/prisma.module';
-import { UserModule } from '../user/user.module';
+import { ConfigModule } from '@nestjs/config'; // Import ConfigModule
 
 @Module({
-  imports: [PrismaModule, UserModule],
-  providers: [MailService, MailResolver],
-  exports: [MailService], // Экспортируем MailService для использования в AuthModule
+  imports: [ConfigModule], // Import ConfigModule to use environment variables
+  providers: [MailService],
+  exports: [MailService], // Export MailService so other modules can use it
 })
 export class MailModule {}

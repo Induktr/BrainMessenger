@@ -3,12 +3,12 @@ import { gql } from '@apollo/client';
 // User queries
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
+    # Предполагаем, что resolver getCurrentUser возвращает поля из UserDto
     getCurrentUser {
       id
-      username
+      name # Используем name вместо username
       email
-      avatar
-      status
+      # bio, username (если отличается от name), status - будут добавлены позже
     }
   }
 `;

@@ -57,6 +57,7 @@ type FileDto {
 type Query {
   getUser(id: ID!): UserDto
   getUsers: [UserDto!]!
+  getCurrentUser: UserDto
   getDevices(id: ID!): [String!]!
   getChat(id: ID!): ChatDto
   getChats: [ChatDto!]!
@@ -72,16 +73,14 @@ type Mutation {
   generateRecoveryCodes(id: ID!): [String!]!
   verifyDevice(id: ID!, code: String!): Boolean!
   logoutDevice(deviceId: String!): Boolean!
-  register(registerInput: RegisterInput!): LoginResponse!
+  register(registerInput: RegisterInput!): UserDto!
   login(loginInput: LoginInput!): LoginResponse!
   logoutUser: Boolean!
+  verifyEmail(email: String!, code: String!): LoginResponse!
+  resendVerificationCode(email: String!): Boolean!
   createChat(userId: ID!): ChatDto!
   deleteChat(id: ID!): Boolean!
   sendMessage(chatId: ID!, content: String!, senderId: ID!): MessageDto
-  sendVerificationCode(email: String!, code: String!): Boolean!
-  enableTwoFactorAuth(userId: Int!): Boolean!
-  disableTwoFactorAuth(userId: Int!): Boolean!
-  sendTwoFactorCode(userId: Int!, code: String!): Boolean!
   initiateCall(calleeId: ID!, chatId: ID!): CallDto!
   acceptCall(callId: ID!): CallDto
   endCall(callId: ID!): Boolean!

@@ -57,10 +57,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 USER nextjs
 
 # Открываем порт, на котором будет работать приложение Next.js (по умолчанию 3000)
-EXPOSE 3000
+EXPOSE 4000
 
 # Устанавливаем порт для приложения
-ENV PORT 3000
+ENV PORT 4000
 
 # Команда для запуска приложения Next.js в production режиме
 CMD ["node", "server.js"]

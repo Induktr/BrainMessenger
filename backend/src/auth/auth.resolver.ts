@@ -1,5 +1,7 @@
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql'; // Added Context
 import { AuthService } from './auth.service';
+import { PrismaService } from '../prisma/prisma.service'; // Added PrismaService
+import { UserDto } from '../user/dto/user.dto'; // Added UserDto (removed .ts)
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
 import { LoginResponse } from './dto/login-response';
@@ -13,12 +15,13 @@ export class AuthResolver {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
+    private readonly prisma: PrismaService, // Injected PrismaService
   ) {}
 
-  @Mutation(() => LoginResponse)
+  @Mutation(() => UserDto) // Changed return type to UserDto
   async register(
     @Args('registerInput') registerInput: RegisterInput,
-  ): Promise<LoginResponse> {
+  ): Promise<UserDto> { // Changed return type to UserDto
     const { email, password, name } = registerInput;
 
     const user = await this.authService.register(email, password, name);
@@ -26,7 +29,9 @@ export class AuthResolver {
       throw new Error('Registration failed');
     }
 
-    return this.authService.login(user);
+    // Don't log in immediately, return user info instead
+    // The user object returned by authService.register already excludes password
+    return user;
   }
 
   @Mutation(() => LoginResponse)
@@ -53,25 +58,53 @@ export class AuthResolver {
   }
 
   @Mutation(() => Boolean)
-  async resendVerificationCode(
-    @Args('email') email: string,
-  ): Promise<boolean> {
-    try {
-      // Находим пользователя по email
-      const user = await this.userService.findOneByEmail(email);
-      if (!user) {
-        throw new Error('Пользователь с таким email не найден');
-      }
+  async resendVerificationCode(@Args('email') email: string): Promise<boolean> {
+    // Find user by email
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
-      // Генерируем новый код подтверждения
-      const code = this.authService.generateConfirmationCode();
-      
-      // Отправляем код на email
-      await this.mailService.sendVerificationCode(email, code, user.id);
-      return true;
+    if (!user) {
+      // It's often better not to reveal if an email exists for security reasons
+      // Log the attempt but return true to the client
+      console.warn(`Attempt to resend verification code for non-existent email: ${email}`);
+      return true; // Or throw a generic error if preferred
+      // throw new Error('User not found.'); // Less secure
+    }
+
+    // Check if user is already verified
+    if (user.isVerified) {
+      console.warn(`Attempt to resend verification code for already verified email: ${email}`);
+      // Optionally throw an error or just return true
+      // throw new Error('Email is already verified.');
+      return true; // Indicate success even if no email is sent
+    }
+
+    // Generate new code and expiration
+    const code = this.authService.generateConfirmationCode();
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10); // 10 minute expiration
+
+    try {
+      // Update user with new code and expiration time
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          verificationCode: code,
+          verificationCodeExpiresAt: expiresAt,
+        },
+      });
+
+      // Send the new code via email (asynchronously)
+      // Send the new code via email (asynchronously)
+      this.mailService.sendVerificationEmail(email, code).catch(err => {
+        // Log error but don't fail the mutation for the client
+        console.error(`Failed to resend verification email to ${email}: ${err.message}`, err.stack);
+      });
+
+      return true; // Indicate success
     } catch (error) {
-      console.error('Error resending verification code:', error);
-      return false;
+      console.error(`Error updating user or sending email during resendVerificationCode for ${email}:`, error);
+      // Throw a generic error to the client
+      throw new Error('Failed to resend verification code. Please try again later.');
     }
   }
 }

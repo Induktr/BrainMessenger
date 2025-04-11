@@ -11,7 +11,8 @@ interface ApolloProviderProps {
   children: ReactNode;
 }
 
-const httpUrl = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql';
+// Use relative path for HTTP requests, handled by Next.js rewrites
+const httpUrl = '/api/graphql';
 const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000/graphql';
 
 // Функция для создания экземпляра Apollo Client

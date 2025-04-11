@@ -1,6 +1,7 @@
 import React from 'react';
+import { useQuery } from '@apollo/client'; // Импортируем useQuery
 import Avatar from './ui/Avatar'; // Import the Avatar component
-
+import { GET_CURRENT_USER } from '../../graphql/queries'; // Импортируем запрос
 // Define types for props if needed
 interface SettingsSidebarProps {
   onNavigateRequest: (path: string) => void; // Function to signal navigation/action
@@ -9,14 +10,26 @@ interface SettingsSidebarProps {
 
 // TODO: Define UserType based on actual user data structure
 
+// Определим тип User здесь или импортируем, если он есть глобально
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  // Добавить avatarUrl, username позже
+}
+
 const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ onNavigateRequest }) => {
-  // TODO: Replace with actual user data passed via props
-  const user = {
-    name: 'Nikits',
-    email: 'lvdf190@gmail.com',
-    username: '@Nikits',
-    avatarUrl: '/avatars/default.jpg', // Placeholder
-  };
+  const { data, loading, error } = useQuery<{ getCurrentUser: User }>(GET_CURRENT_USER);
+
+  // Определяем, есть ли ошибка или идет загрузка
+  const isLoadingOrError = loading || !!error;
+  // Получаем пользователя или null, если загрузка/ошибка
+  const user = data?.getCurrentUser;
+
+  // Логируем ошибку в консоль
+  if (error) {
+    console.error("Error loading user data for sidebar:", error);
+  }
 
   // --- Main Menu Items ---
   const mainSettingsItems = [
@@ -50,20 +63,30 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ onNavigateRequest }) 
     // Use flex-col and h-full to ensure proper layout within the fixed container
     <div className="flex flex-col h-full text-textPrimary-light dark:text-textPrimary-dark overflow-hidden">
       {/* User Info Block */}
-      <div className="flex flex-col items-center text-center pt-4 pb-6 px-4"> {/* Added top padding */}
-        <Avatar
-          avatarUrl={user.avatarUrl}
-          name={user.name}
-          seed={user.username} // Use username for consistent color
-          size="medium" // Adjust size if needed
-          className="mb-3" // Keep the bottom margin
-        />
-        <div className="flex-1 min-w-0">
-          <p className="font-medium truncate">{user.name}</p>
-          <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark truncate">{user.email}</p>
-          <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark truncate">{user.username}</p>
+      {/* User Info Block - показываем только если данные загружены */}
+      {!isLoadingOrError && user ? (
+        <div className="flex flex-col items-center text-center pt-4 pb-6 px-4">
+          <Avatar
+            // avatarUrl={user.avatarUrl} // TODO: Добавить когда будет доступно
+            name={user.name}
+            seed={user.email} // Используем email для цвета
+            size="medium"
+            className="mb-3"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="font-medium truncate">{user.name}</p>
+            <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark truncate">{user.email}</p>
+            {/* <p className="text-xs text-textSecondary-light dark:text-textSecondary-dark truncate">{user.username}</p> */} {/* TODO: Добавить username */}
+          </div>
         </div>
-      </div>
+      ) : (
+         // Показываем скелетный загрузчик во время загрузки или при ошибке
+         <div className="flex flex-col items-center text-center pt-4 pb-6 px-4 h-[124px]"> {/* Placeholder с фиксированной высотой */}
+             <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-700 mb-3 animate-pulse"></div>
+             <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-20 mb-1 animate-pulse"></div>
+             <div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-28 animate-pulse"></div>
+         </div>
+      )}
       {/* Divider */}
       <div className="h-px bg-success mb-4 mx-4"></div> {/* Added bottom margin */}
       {/* Main Menu List */}

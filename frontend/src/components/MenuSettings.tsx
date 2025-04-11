@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import Avatar from './ui/Avatar'; // Import the Avatar component
+import { useQuery } from '@apollo/client'; // Импортируем useQuery
+import { GET_CURRENT_USER } from '../../graphql/queries'; // Импортируем запрос
+import MyAccountSettings from './MyAccountSettings'; // Импортируем новый компонент
 
-// TODO: Define UserType based on actual user data structure if needed
+// TODO: Определить или импортировать тип User, если он есть (используем из MyAccountSettings)
 interface User {
-    name: string;
-    email: string;
-    username: string;
-    avatarUrl: string;
+  id: string; // Добавим id, если он есть в запросе
+  name: string;
+  email: string;
+  // Добавить bio, username, status, avatarUrl позже
 }
 
 interface MenuSettingsProps {
-  user: User;
-  // onBack prop might not be needed if back navigation is handled internally
+  // user: User; // Убираем проп user
   onClose: () => void;
-  // Add navigation handler if needed, or handle inside this component
 }
 
-const MenuSettings: React.FC<MenuSettingsProps> = ({ user, onClose }) => {
-
+const MenuSettings: React.FC<MenuSettingsProps> = ({ onClose }) => { // Убираем user из деструктуризации
+  const { data, loading, error } = useQuery<{ getCurrentUser: User }>(GET_CURRENT_USER);
   const [currentSubView, setCurrentSubView] = useState<string | null>(null); // State to track sub-view
 
   // Detailed Settings Menu Items
@@ -154,29 +155,40 @@ const MenuSettings: React.FC<MenuSettingsProps> = ({ user, onClose }) => {
       <div className="flex-1 overflow-y-auto relative pb-8"> {/* Ensure pb-8 is present */}
         {!currentSubView && ( // Only show user info and list on main view
           <>
-            {/* Large Background Avatar using Avatar component */}
-            <Avatar
-              avatarUrl={user.avatarUrl}
-              name={user.name}
-              seed={user.username} // Use username as seed for color
-              size="large" // Adjust size as needed, maybe create a larger size variant
-              className="absolute top-10 left-1/2 -translate-x-1/2 w-32 h-32 opacity-10 -z-10" // Keep positioning and opacity
-            />
-            {/* User Info Block */}
-            <div className="flex items-center pt-4 pb-6 px-4"> {/* Changed layout to flex row, removed text-center */}
-              <Avatar
-                avatarUrl={user.avatarUrl}
-                name={user.name}
-                seed={user.username}
-                size="xlarge" // Use the specific size for this avatar
-                className="mr-4" // Keep the margin
-              />
-              <div className="min-w-0"> {/* Removed flex-1 */}
-                <p className="font-medium text-h1 truncate">{user.name}</p>
-                <p className="text-[16px] text-textSecondary-light dark:text-textSecondary-dark truncate">{user.email}</p>
-                <p className="text-[16px] text-textSecondary-light dark:text-textSecondary-dark truncate">{user.username}</p>
-              </div>
-            </div>
+            {/* Отображаем блок пользователя только если данные загружены успешно */}
+            {loading && (
+              <div className="p-4 text-center">Loading user info...</div> // Или скелетный загрузчик
+            )}
+            {error && (
+              <div className="p-4 text-center text-red-500">Error loading user info.</div>
+            )}
+            {data?.getCurrentUser && (
+              <>
+                {/* Large Background Avatar using Avatar component */}
+                <Avatar
+                  // avatarUrl={data.getCurrentUser.avatarUrl} // TODO: Добавить avatarUrl
+                  name={data.getCurrentUser.name}
+                  seed={data.getCurrentUser.email} // Используем email как seed
+                  size="large"
+                  className="absolute top-10 left-1/2 -translate-x-1/2 w-32 h-32 opacity-10 -z-10"
+                />
+                {/* User Info Block */}
+                <div className="flex items-center pt-4 pb-6 px-4">
+                  <Avatar
+                    // avatarUrl={data.getCurrentUser.avatarUrl} // TODO: Добавить avatarUrl
+                    name={data.getCurrentUser.name}
+                    seed={data.getCurrentUser.email} // Используем email как seed
+                    size="xlarge"
+                    className="mr-4"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-medium text-h1 truncate">{data.getCurrentUser.name}</p>
+                    <p className="text-[16px] text-textSecondary-light dark:text-textSecondary-dark truncate">{data.getCurrentUser.email}</p>
+                    {/* <p className="text-[16px] text-textSecondary-light dark:text-textSecondary-dark truncate">{user.username}</p> */} {/* TODO: Добавить username */}
+                  </div>
+                </div>
+              </>
+            )}
             {/* Divider */}
             <div className="h-px bg-success mb-4"></div>
             {/* Detailed Settings List */}
@@ -194,8 +206,11 @@ const MenuSettings: React.FC<MenuSettingsProps> = ({ user, onClose }) => {
             </ul>
           </>
         )}
-        {currentSubView && (
-          <div className="p-4">Placeholder for {currentSubView} settings</div> // Placeholder for sub-views
+        {/* Условный рендеринг под-компонентов */}
+        {currentSubView === '/settings/account' && <MyAccountSettings />}
+        {/* Добавить другие под-компоненты здесь по аналогии */}
+        {currentSubView && currentSubView !== '/settings/account' && (
+             <div className="p-4">Placeholder for {currentSubView} settings</div> // Плейсхолдер для остальных
         )}
       </div>
     </div>

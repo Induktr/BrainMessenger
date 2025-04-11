@@ -56,21 +56,33 @@ export class AuthService {
       const saltRounds = 10; // Рекомендуемое количество раундов солирования
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Создаем нового пользователя с emailVerified = false
+      // Генерируем код подтверждения
+      const code = this.generateConfirmationCode();
+      // Устанавливаем срок действия кода (например, 10 минут)
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
+      // Создаем нового пользователя с кодом, сроком действия и emailVerified = false
       const newUser = await this.prisma.user.create({
         data: {
           email,
           password: hashedPassword,
           name,
-          emailVerified: false, // Пользователь не подтвержден до ввода кода
+          isVerified: false, // Используем isVerified согласно схеме
+          verificationCode: code,
+          verificationCodeExpiresAt: expiresAt,
         },
       });
 
-      // Генерируем код подтверждения
-      const code = this.generateConfirmationCode();
-      
-      // Отправляем код на email пользователя
-      await this.mailService.sendVerificationCode(email, code, newUser.id);
+      // Отправляем код на email пользователя, используя правильный метод MailService
+      // Запускаем отправку асинхронно, не блокируя ответ регистрации
+      // Отправляем код на email пользователя, используя правильный метод MailService
+      // Запускаем отправку асинхронно, не блокируя ответ регистрации
+      this.mailService.sendVerificationEmail(email, code).catch(err => {
+          // Логируем ошибку отправки, но не прерываем регистрацию
+          this.logger.error(`Failed to send verification email to ${email}: ${err.message}`, err.stack);
+          // Здесь можно добавить логику для повторной отправки или уведомления администратора
+      });
 
       // Возвращаем пользователя без пароля
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -95,65 +107,55 @@ export class AuthService {
         throw new UnauthorizedException('Пользователь не найден');
       }
 
-      // Находим последний действующий код подтверждения для этого пользователя
-      const verificationCode = await this.prisma.verificationCode.findFirst({
-        where: {
-          userId: user.id,
-          type: 'EMAIL_VERIFICATION',
-          expiresAt: { gt: new Date() }, // Код еще не истек
-        },
-        orderBy: { createdAt: 'desc' },
-      });
+      // Проверяем, есть ли у пользователя код и не истек ли он
+      if (!user.verificationCode || !user.verificationCodeExpiresAt) {
+          throw new UnauthorizedException('Код подтверждения не найден для этого пользователя.');
+      }
 
-      // Если код не найден или истек срок его действия
-      if (!verificationCode) {
-        throw new UnauthorizedException('Код подтверждения не найден или истек срок его действия');
+      if (user.verificationCodeExpiresAt < new Date()) {
+          // Очищаем истекший код, чтобы пользователь запросил новый
+          await this.prisma.user.update({
+              where: { id: user.id },
+              data: { verificationCode: null, verificationCodeExpiresAt: null },
+          });
+          throw new UnauthorizedException('Срок действия кода подтверждения истек. Запросите новый код.');
       }
 
       // Проверяем совпадение кода
-      if (verificationCode.code !== code) {
-        // Увеличиваем счетчик попыток
-        await this.prisma.verificationCode.update({
-          where: { id: verificationCode.id },
-          data: { attempts: { increment: 1 } },
-        });
-
-        // Если превышено максимальное количество попыток (например, 5)
-        if (verificationCode.attempts >= 4) { // 5 попыток включая текущую
-          // Удаляем код и требуем запросить новый
-          await this.prisma.verificationCode.delete({
-            where: { id: verificationCode.id },
-          });
-          throw new UnauthorizedException('Превышено количество попыток. Запросите новый код.');
-        }
-
-        throw new UnauthorizedException('Неверный код подтверждения');
+      if (user.verificationCode !== code) {
+          // Здесь можно добавить логику ограничения попыток, если нужно,
+          // например, сохраняя счетчик попыток в самой модели User или используя Redis.
+          // Пока просто возвращаем ошибку.
+          throw new UnauthorizedException('Неверный код подтверждения.');
       }
 
-      // Код верный, отмечаем email как подтвержденный
-      await this.prisma.user.update({
+      // Код верный, отмечаем email как подтвержденный и очищаем код/срок
+      const updatedUser = await this.prisma.user.update({
         where: { id: user.id },
-        data: { emailVerified: true },
+        data: {
+          isVerified: true,
+          verificationCode: null, // Очищаем код после успешной верификации
+          verificationCodeExpiresAt: null, // Очищаем срок действия
+         },
       });
 
-      // Удаляем использованный код
-      await this.prisma.verificationCode.delete({
-        where: { id: verificationCode.id },
-      });
+      // Логика удаления отдельной записи кода больше не нужна
 
       // Создаем JWT токен для пользователя
       const payload = { email: user.email, sub: user.id };
       const token = this.jwtService.sign(payload);
 
       // Возвращаем токен и информацию о пользователе
+      // Ensure the returned user object matches the structure expected by UserDto
+      // We assume UserDto includes id, email, name, isVerified.
+      // It's safer to return the whole updatedUser object (excluding password)
+      // if UserDto is designed to map directly to the Prisma User model fields.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _, verificationCode: __, verificationCodeExpiresAt: ___, ...userResult } = updatedUser;
+
       return {
         access_token: token,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          emailVerified: true
-        }
+        user: userResult // Return the Prisma user object (minus sensitive fields)
       };
     } catch (error) {
       this.logger.error(`Error verifying confirmation code: ${error.message}`, error.stack);
