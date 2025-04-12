@@ -100,19 +100,27 @@ export class AuthService {
   }
 
   async verifyConfirmationCode(email: string, code: string): Promise<any> {
+    this.logger.log(`AuthService: Starting verifyConfirmationCode for email: ${email}`); // <-- Log start
     try {
       // Находим пользователя по email
+      this.logger.log(`AuthService: Finding user by email: ${email}`); // <-- Log find user
       const user = await this.prisma.user.findUnique({ where: { email } });
       if (!user) {
+        this.logger.warn(`AuthService: User not found for email: ${email}`); // <-- Log user not found
         throw new UnauthorizedException('Пользователь не найден');
       }
+      this.logger.log(`AuthService: User found: ${user.id}`); // <-- Log user found
 
       // Проверяем, есть ли у пользователя код и не истек ли он
+      this.logger.log(`AuthService: Checking verification code existence and expiration for user: ${user.id}`); // <-- Log check code/expiry
       if (!user.verificationCode || !user.verificationCodeExpiresAt) {
+          this.logger.warn(`AuthService: Verification code or expiry not found for user: ${user.id}`); // <-- Log code/expiry not found
           throw new UnauthorizedException('Код подтверждения не найден для этого пользователя.');
       }
+      this.logger.log(`AuthService: Code exists, checking expiry time: ${user.verificationCodeExpiresAt}`); // <-- Log expiry check
 
       if (user.verificationCodeExpiresAt < new Date()) {
+          this.logger.warn(`AuthService: Verification code expired for user: ${user.id}. Expiry: ${user.verificationCodeExpiresAt}`); // <-- Log expired
           // Очищаем истекший код, чтобы пользователь запросил новый
           await this.prisma.user.update({
               where: { id: user.id },
@@ -120,16 +128,21 @@ export class AuthService {
           });
           throw new UnauthorizedException('Срок действия кода подтверждения истек. Запросите новый код.');
       }
+      this.logger.log(`AuthService: Code not expired for user: ${user.id}`); // <-- Log not expired
 
       // Проверяем совпадение кода
+      this.logger.log(`AuthService: Comparing provided code "${code}" with stored code "${user.verificationCode}" for user: ${user.id}`); // <-- Log code comparison
       if (user.verificationCode !== code) {
+          this.logger.warn(`AuthService: Invalid verification code provided for user: ${user.id}. Expected: ${user.verificationCode}, Got: ${code}`); // <-- Log invalid code
           // Здесь можно добавить логику ограничения попыток, если нужно,
           // например, сохраняя счетчик попыток в самой модели User или используя Redis.
           // Пока просто возвращаем ошибку.
           throw new UnauthorizedException('Неверный код подтверждения.');
       }
+      this.logger.log(`AuthService: Code matched for user: ${user.id}`); // <-- Log code matched
 
       // Код верный, отмечаем email как подтвержденный и очищаем код/срок
+      this.logger.log(`AuthService: Updating user ${user.id} to verified and clearing code.`); // <-- Log updating user
       const updatedUser = await this.prisma.user.update({
         where: { id: user.id },
         data: {
@@ -138,12 +151,15 @@ export class AuthService {
           verificationCodeExpiresAt: null, // Очищаем срок действия
          },
       });
+      this.logger.log(`AuthService: User ${user.id} updated successfully.`); // <-- Log update success
 
       // Логика удаления отдельной записи кода больше не нужна
 
       // Создаем JWT токен для пользователя
+      this.logger.log(`AuthService: Generating JWT for user: ${user.id}`); // <-- Log generating token
       const payload = { email: user.email, sub: user.id };
       const token = this.jwtService.sign(payload);
+      this.logger.log(`AuthService: JWT generated for user: ${user.id}`); // <-- Log token generated
 
       // Возвращаем токен и информацию о пользователе
       // Ensure the returned user object matches the structure expected by UserDto
@@ -153,13 +169,15 @@ export class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, verificationCode: __, verificationCodeExpiresAt: ___, ...userResult } = updatedUser;
 
+      this.logger.log(`AuthService: Verification successful for email: ${email}. Returning token and user data.`); // <-- Log final success
       return {
         access_token: token,
         user: userResult // Return the Prisma user object (minus sensitive fields)
       };
     } catch (error) {
-      this.logger.error(`Error verifying confirmation code: ${error.message}`, error.stack);
-      throw error;
+      // Логируем ошибку перед тем, как ее перебросить
+      this.logger.error(`AuthService: Error during verifyConfirmationCode for email ${email}: ${error.message}`, error.stack); // <-- Log caught error
+      throw error; // Перебрасываем ошибку, чтобы NestJS мог ее обработать (например, преобразовать в HttpException)
     }
   }
 }

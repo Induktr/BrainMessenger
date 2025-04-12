@@ -54,7 +54,17 @@ export class AuthResolver {
     @Args('email') email: string,
     @Args('code') code: string,
   ): Promise<LoginResponse> {
-    return this.authService.verifyConfirmationCode(email, code);
+    // --- Добавлено логирование ---
+    console.log(`AuthResolver: verifyEmail called with email: ${email}, code: ${code}`);
+    try {
+      const result = await this.authService.verifyConfirmationCode(email, code);
+      console.log(`AuthResolver: verifyEmail successful for email: ${email}`);
+      return result;
+    } catch (error) {
+      console.error(`AuthResolver: Error calling authService.verifyConfirmationCode for email ${email}:`, error);
+      // Перебрасываем ошибку дальше, чтобы NestJS обработал ее стандартно
+      throw error;
+    }
   }
 
   @Mutation(() => Boolean)

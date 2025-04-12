@@ -1,190 +1,193 @@
-## Current Focus
-The current focus is on implementing audio and video call functionality, which is a critical feature for the messenger application. This includes setting up WebRTC for peer-to-peer communication and implementing the necessary UI components for call management.
-  - [ ] Add Arabic language support and RTL support
-  - [ ] Add Arabic language support and RTL support
-- [ ] Implement audio or video calls with another user (FR-16)
-  - [ ] Implement WebRTC signaling
-  - [ ] Implement ICE candidate exchange
-  - [ ] Implement audio and video streams
-  - [ ] Implement call state management
-  - [ ] Implement muting/unmuting audio
-  - [ ] Implement enabling/disabling video
-  - [ ] Implement ending the call
-  - [ ] Implement handling incoming calls
-- [ ] Implement conference calls with multiple participants (FR-17)
-- [ ] Implement call history list (FR-18)
-- [ ] Implement video and audio quality settings (FR-19)
+# Инструкция по Требованиям Проекта BrainMessenger
 
-### Priority 2: Privacy and Security
-- [ ] Implement privacy settings (FR-9)
-  - [ ] Implement settings for managing profile information visibility
-- [ ] Implement advanced security features and encryption options
-  - [ ] Implement data encryption in transit (TLS/SSL) and at rest (AES) (NFR-5)
-  - [ ] Implement password hashing with bcrypt (NFR-6)
-  - [ ] Implement protection against SQL-injections, XSS and DDoS attacks (NFR-7)
-  - [ ] Implement code confirmation with 10 minutes expiration time and 5 attempts limit (NFR-8)
-# BrainMessenger Project Tracking
+## 1. Введение
 
-## Project Overview
-BrainMessenger is a modern messaging application with advanced features for secure and convenient communication. This file tracks the progress of tasks based on the requirements specified in the project documentation.
+**Цель проекта:** Разработать и запустить мессенджер BrainMessenger с уникальными функциями и высоким уровнем пользовательского опыта.
 
-## Current Status
-The project is currently in the development phase. Many UI components and basic functionality have been implemented, but several key features are still pending implementation.
+Этот документ содержит пошаговое описание всех требований проекта, разделенное на категории, а также анализ текущего состояния реализации.
 
-## Completed Tasks
-- [x] Implemented the registration screen with input fields, validation, and error handling
-- [x] Created screen files for all screens listed in the UI documentation
-- [x] Implemented basic navigation between screens
-- [x] Implemented the slider on the Welcome Screen with descriptions of the app's benefits and features
-- [x] Implemented the list of chats on the Main Screen with search functionality
-- [x] Implemented the list of contacts with search functionality
-- [x] Implemented the form for editing profile information (name, photo, email, password) and privacy settings
-- [x] Implemented the settings for managing notifications, themes, and security
-- [x] Implemented the description of subscription benefits, subscription management, and payment history
-- [x] Implemented the call history list and settings for video and audio quality
-- [x] Implemented the file viewing, filtering, and storage management features
-- [x] Implemented access to and restoration of archived chats
-- [x] Implemented the language selection and instant interface update
-- [x] Implemented the settings for disabling animations and adjusting effects
-- [x] Implemented the settings for changing chat themes and fonts
-- [x] Implemented additional localization features and expanded language options
-- [x] Enhanced battery optimization with more granular controls
-- [x] Added more customization options for chat themes
-- [x] Installed all necessary dependencies for the project
-- [x] Created LanguageSelector component for language selection with instant interface updates
-- [x] Implemented AnimationSettings component for managing animations and battery optimization
-- [x] Created ChatThemeSettings component for customizing chat appearance (themes, fonts, bubble styles)
-- [x] Updated respective screen pages to use the new components
-- [x] Added Spanish (es) language support to expand language options
-- [x] Updated i18n configuration to include the new language
-- [x] Updated LanguageSelector component to display the Spanish language option
-- [x] Enhanced ChatThemeSettings with additional theme options (pink, orange, teal, midnight)
-- [x] Added more font choices (elegant, playful, technical, vintage)
-- [x] Added new bubble styles (chat-tail, angular, pill, comic, gradient-border)
-- [x] Added more background options (dots, waves, geometric, abstract, solid color)
-- [x] Enhanced ChatThemeSettings with advanced message layout customization
-- [x] Implemented advanced security features in the SecuritySettings component
-- [x] Fixed issues in the SecuritySettings component
+**Обозначения:**
+*   ✅ - Задача выполнена
+*   [ ] - Задача не выполнена / В процессе
 
-## Upcoming Tasks
+## 2. Требования Проекта по Категориям
 
-### Priority 1: Audio and Video Calls
-- [x] Implement audio or video calls with another user (FR-16)
-  - [x] Implement WebRTC signaling
-  - [x] Implement ICE candidate exchange
-  - [x] Implement audio and video streams
-  - [x] Implement call state management
-  - [x] Implement muting/unmuting audio
-  - [x] Implement enabling/disabling video
-  - [x] Implement ending the call
-  - [x] Implement handling incoming calls
-- [x] Implement conference calls with multiple participants (FR-17)
-- [x] Implement call history list (FR-18)
-- [x] Implement video and audio quality settings (FR-19)
+### Приоритет 1: Аудио и Видео Звонки
+*   ✅ Реализовать аудио или видео звонки с другим пользователем (FR-16)
+    *   ✅ Реализовать сигнализацию WebRTC
+    *   ✅ Реализовать обмен ICE кандидатами
+    *   ✅ Реализовать аудио и видео потоки
+    *   ✅ Реализовать управление состоянием звонка
+    *   ✅ Реализовать включение/выключение звука
+    *   ✅ Реализовать включение/выключение видео
+    *   ✅ Реализовать завершение звонка
+    *   ✅ Реализовать обработку входящих звонков
+*   ✅ Реализовать конференц-звонки с несколькими участниками (FR-17)
+*   ✅ Реализовать список истории звонков (FR-18)
+*   ✅ Реализовать настройки качества видео и аудио (FR-19)
 
-### Priority 2: Privacy and Security
-- [x] Implement privacy settings (FR-9)
-  - [x] Implement settings for managing profile information visibility
-- [x] Implement advanced security features and encryption options
-  - [x] Implement data encryption in transit (TLS/SSL) and at rest (AES) (NFR-5)
-  - [x] Implement password hashing with bcrypt (NFR-6)
-  - [x] Implement protection against SQL-injections, XSS and DDoS attacks (NFR-7)
-  - [x] Implement code confirmation with 10 minutes expiration time and 5 attempts limit (NFR-8)
+### Приоритет 2: Конфиденциальность и Безопасность
+*   ✅ Реализовать настройки конфиденциальности (FR-9)
+    *   ✅ Реализовать настройки управления видимостью информации профиля
+*   ✅ Реализовать расширенные функции безопасности и опции шифрования
+    *   ✅ Реализовать шифрование данных при передаче (TLS/SSL) и в состоянии покоя (AES) (NFR-5)
+    *   ✅ Реализовать хеширование паролей с помощью bcrypt (NFR-6)
+    *   ✅ Реализовать защиту от SQL-инъекций, XSS и DDoS атак (NFR-7)
+    *   ✅ Реализовать подтверждение кодом с 10-минутным сроком действия и лимитом в 5 попыток (NFR-8)
 
-### Priority 3: Channels and File Management
-- [ ] Implement channels (FR-14)
-  - [ ] Implement subscribing to public channels
-  - [ ] Implement reading content from public channels
-- [ ] Implement file sending and receiving (FR-20)
-  - [x] Implement file upload functionality
-  - [ ] Implement file download functionality
+### Приоритет 3: Каналы и Управление Файлами
+*   [ ] Реализовать каналы (FR-14)
+    *   [ ] Реализовать подписку на публичные каналы
+    *   [ ] Реализовать чтение контента из публичных каналов
+*   [ ] Реализовать отправку и получение файлов (FR-20)
+    *   ✅ Реализовать функциональность загрузки файлов
+    *   [ ] Реализовать функциональность скачивания файлов
 
-### Priority 4: Premium Subscription
-- [ ] Implement premium subscription (FR-30, FR-31, FR-32)
-  - [ ] Implement displaying premium subscription benefits (FR-30)
-  - [ ] Implement subscribing to premium subscription through a payment system (FR-31)
-    - [ ] Implement Stripe integration
-    - [ ] Implement Cryptomus integration
-  - [ ] Implement viewing payment history (FR-32)
+### Приоритет 4: Премиум Подписка
+*   [ ] Реализовать премиум подписку (FR-30, FR-31, FR-32)
+    *   [ ] Реализовать отображение преимуществ премиум подписки (FR-30)
+    *   [ ] Реализовать подписку на премиум через платежную систему (FR-31)
+        *   [ ] Реализовать интеграцию со Stripe
+        *   [ ] Реализовать интеграцию с Cryptomus
+    *   [ ] Реализовать просмотр истории платежей (FR-32)
 
-### Priority 5: Multi-language Support
-  - [ ] Add Arabic language support and RTL support
+### Приоритет 5: Многоязычная Поддержка
+*   [ ] Добавить поддержку арабского языка и RTL (Right-to-Left)
 
-### Priority 6: UI Design Implementation
-- [x] Implement color palette for Light and Dark modes (DD-1)
-  - [x] Set primary gradient, accent colors, secondary colors, etc.
-- [x] Implement typography using Roboto font (DD-2)
-  - [x] Set font sizes and styles for headings, body text, captions, and buttons
-- [ ] Implement animations for UI elements (DD-3)
-  - [ ] Implement slide transitions, button presses, message sending, etc.
-- [x] Implement layout and grid system (DD-4)
-  - [ ] Use 8px grid system for spacing and define responsive breakpoints
-- [ ] Implement accessibility guidelines (DD-5)
-  - [ ] Ensure UI adheres to WCAG 2.1 AA guidelines
-  - [ ] Implement sufficient contrast, keyboard navigation, ARIA attributes, and RTL support
+### Приоритет 6: Реализация UI Дизайна
+*   ✅ Реализовать цветовую палитру для Светлого и Темного режимов (DD-1)
+    *   ✅ Установить основной градиент, акцентные цвета, вторичные цвета и т.д.
+*   ✅ Реализовать типографику с использованием шрифта Roboto (DD-2)
+    *   ✅ Установить размеры и стили шрифтов для заголовков, основного текста, подписей и кнопок
+*   [ ] Реализовать анимации для элементов UI (DD-3)
+    *   [ ] Реализовать переходы слайдов, нажатия кнопок, отправку сообщений и т.д.
+*   ✅ Реализовать систему макетов и сеток (DD-4)
+    *   [ ] Использовать 8px сеточную систему для отступов и определить адаптивные точки останова (responsive breakpoints)
+*   [ ] Реализовать гайдлайны доступности (Accessibility) (DD-5)
+    *   [ ] Убедиться, что UI соответствует гайдлайнам WCAG 2.1 AA
+    *   [ ] Реализовать достаточный контраст, навигацию с клавиатуры, ARIA атрибуты и поддержку RTL
 
-### Priority 7: Testing Implementation
-- [ ] Implement unit tests for individual functions and components (TE-1)
-  - [x] Use Jest for unit testing
-- [ ] Implement integration tests for API and service interactions (TE-2)
-  - [ ] Use Cypress and Postman for integration testing
-- [ ] Implement system tests for UI and functionality (TE-3)
-  - [ ] Use Playwright for system testing
-- [ ] Implement load tests to evaluate performance under high load (TE-4)
-  - [ ] Use JMeter or k6 for load testing
-- [ ] Implement security tests to check for vulnerabilities (TE-5)
-  - [ ] Use OWASP ZAP or Burp Suite for security testing
-- [ ] Implement regression tests to re-verify key functions after fixes (TE-6)
-  - [ ] Use Cypress and Playwright for regression testing
-- [ ] Create detailed test scenarios for each feature (TE-7)
-  - [ ] Include registration, authentication, profile management, chats, calls, files, settings, and premium subscription
+### Приоритет 7: Реализация Тестирования
+*   [ ] Реализовать модульные тесты (unit tests) для отдельных функций и компонентов (TE-1)
+    *   ✅ Использовать Jest для модульного тестирования
+*   [ ] Реализовать интеграционные тесты для взаимодействий API и сервисов (TE-2)
+    *   [ ] Использовать Cypress и Postman для интеграционного тестирования
+*   [ ] Реализовать системные тесты для UI и функциональности (TE-3)
+    *   [ ] Использовать Playwright для системного тестирования
+*   [ ] Реализовать нагрузочные тесты для оценки производительности под высокой нагрузкой (TE-4)
+    *   [ ] Использовать JMeter или k6 для нагрузочного тестирования
+*   [ ] Реализовать тесты безопасности для проверки уязвимостей (TE-5)
+    *   [ ] Использовать OWASP ZAP или Burp Suite для тестирования безопасности
+*   [ ] Реализовать регрессионные тесты для повторной проверки ключевых функций после исправлений (TE-6)
+    *   [ ] Использовать Cypress и Playwright для регрессионного тестирования
+*   [ ] Создать детальные тестовые сценарии для каждой функции (TE-7)
+    *   [ ] Включить регистрацию, аутентификацию, управление профилем, чаты, звонки, файлы, настройки и премиум подписку
 
-### Priority 8: Support and Maintenance Implementation
-- [ ] Set up support channels (SU-1)
-  - [x] Set up email support channel
-  - [ ] Set up in-app support form
-  - [ ] Set up internal Slack channel
-- [ ] Define roles and responsibilities (SU-2)
-  - [ ] Define roles for support specialists, DevOps, developers, and tech leads
-- [ ] Implement escalation process (SU-3)
-  - [ ] Implement escalation process for different types of issues
-- [ ] Implement request handling process (SU-4)
-  - [ ] Implement process for receiving, registering, analyzing, resolving, and closing user requests
-- [ ] Implement monitoring (SU-5)
-  - [ ] Implement monitoring using Prometheus, Grafana, and Sentry
-- [ ] Implement backup and recovery (SU-6)
-  - [ ] Implement backup and recovery procedures for Neon (PostgreSQL) and Cloudflare R2
-- [ ] Implement update management (SU-7)
-  - [ ] Implement update management procedures for patches, minor releases, and major releases
-- [ ] Implement incident response (SU-8)
-  - [ ] Implement incident response procedures for server outages, data leaks, and high load
-  - [ ] Add Arabic language support and RTL support
+### Приоритет 8: Реализация Поддержки и Обслуживания
+*   [ ] Настроить каналы поддержки (SU-1)
+    *   ✅ Настроить канал поддержки по email
+    *   [ ] Настроить форму поддержки в приложении
+    *   [ ] Настроить внутренний Slack канал
+*   [ ] Определить роли и обязанности (SU-2)
+    *   [ ] Определить роли для специалистов поддержки, DevOps, разработчиков и технических лидеров
+*   [ ] Реализовать процесс эскалации (SU-3)
+    *   [ ] Реализовать процесс эскалации для различных типов проблем
+*   [ ] Реализовать процесс обработки запросов (SU-4)
+    *   [ ] Реализовать процесс получения, регистрации, анализа, решения и закрытия запросов пользователей
+*   [ ] Реализовать мониторинг (SU-5)
+    *   [ ] Реализовать мониторинг с использованием Prometheus, Grafana и Sentry
+*   [ ] Реализовать резервное копирование и восстановление (SU-6)
+    *   [ ] Реализовать процедуры резервного копирования и восстановления для Neon (PostgreSQL) и Cloudflare R2
+*   [ ] Реализовать управление обновлениями (SU-7)
+    *   [ ] Реализовать процедуры управления обновлениями для патчей, минорных и мажорных релизов
+*   [ ] Реализовать реагирование на инциденты (SU-8)
+    *   [ ] Реализовать процедуры реагирования на инциденты для сбоев серверов, утечек данных и высокой нагрузки
 
-## Notes and Lessons
-- The project uses TypeScript for both frontend and backend
-- PostgreSQL is used for the database with TypeORM for ORM
-- The frontend is built with React and Next.js
-- The backend is built with NestJS
-- GraphQL is used for API communication
-- WebSockets are used for real-time messaging
-- Redis is used for caching
-- Neon (PostgreSQL) and Cloudflare R2 are used for database and storage respectively
-- Firebase is used for notifications
-- Kafka is used for queues
-- Stripe is used for payments
-- Jest, Cypress, and k6 are used for testing
-- Vercel is used for deployment
-- Gmail API is used for sending confirmation codes and supporting two-factor authentication
+## 3. Анализ Текущей Реализации
 
-## Current Focus
-The current focus is on implementing audio and video call functionality, which is a critical feature for the messenger application. This includes setting up WebRTC for peer-to-peer communication and implementing the necessary UI components for call management. The `ChatList.tsx` and `ChatMessageForm.tsx` components related to the chat functionality have been implemented.
+### 3.1. Что Уже Выполнено (✅)
+*   **Базовая функциональность и UI:**
+    *   Реализован экран регистрации с валидацией.
+    *   Созданы файлы экранов согласно UI документации.
+    *   Реализована базовая навигация.
+    *   Реализован слайдер на Welcome Screen.
+    *   Реализован список чатов с поиском.
+    *   Реализован список контактов с поиском.
+    *   Реализована форма редактирования профиля и настроек конфиденциальности.
+    *   Реализованы настройки уведомлений, тем и безопасности.
+    *   Реализовано описание преимуществ подписки, управление и история платежей (базово).
+    *   Реализованы функции просмотра файлов, фильтрации и управления хранилищем.
+    *   Реализован доступ к архивированным чатам.
+    *   Реализован выбор языка с мгновенным обновлением интерфейса (кроме Арабского).
+    *   Реализованы настройки анимаций и эффектов.
+    *   Реализованы настройки тем чатов и шрифтов.
+*   **Компоненты:**
+    *   Созданы и интегрированы компоненты `LanguageSelector`, `AnimationSettings`, `ChatThemeSettings`.
+*   **Локализация:**
+    *   Добавлена поддержка испанского языка (es).
+    *   Обновлена конфигурация i18n.
+*   **Кастомизация:**
+    *   Расширены опции тем, шрифтов, стилей сообщений и фонов в `ChatThemeSettings`.
+*   **Безопасность:**
+    *   Реализованы расширенные функции безопасности в `SecuritySettings`.
+    *   Исправлены проблемы в `SecuritySettings`.
+    *   Реализованы все основные требования безопасности (шифрование, хеширование, защита от атак, подтверждение кодом).
+*   **Звонки:**
+    *   Полностью реализована функциональность аудио/видео звонков 1-на-1 (FR-16).
+    *   Реализованы конференц-звонки (FR-17).
+    *   Реализована история звонков (FR-18).
+    *   Реализованы настройки качества звонков (FR-19).
+*   **Управление файлами:**
+    *   Реализована загрузка файлов.
+*   **Дизайн:**
+    *   Реализованы цветовая палитра (DD-1), типографика (DD-2), система макетов (DD-4).
+*   **Тестирование:**
+    *   Настроен Jest для unit-тестов.
+*   **Поддержка:**
+    *   Настроен email канал поддержки.
+*   **Зависимости:**
+    *   Установлены все необходимые зависимости проекта.
 
-## Current Focus
-The current focus is on implementing audio and video call functionality, which is a critical feature for the messenger application. This includes setting up WebRTC for peer-to-peer communication and implementing the necessary UI components for call management.
+### 3.2. Что Требует Доработки ([ ])
+*   **Каналы:** Полная реализация функциональности каналов (подписка, чтение).
+*   **Управление файлами:** Реализация скачивания файлов.
+*   **Премиум Подписка:** Полная реализация, включая интеграцию с платежными системами (Stripe, Cryptomus) и отображение истории платежей.
+*   **Многоязычная Поддержка:** Добавление поддержки арабского языка и RTL.
+*   **UI Дизайн:** Реализация анимаций (DD-3) и гайдлайнов доступности (DD-5), включая RTL.
+*   **Тестирование:** Реализация интеграционных, системных, нагрузочных, тестов безопасности и регрессионных тестов. Создание детальных тест-сценариев.
+*   **Поддержка и Обслуживание:** Настройка формы поддержки в приложении и Slack-канала, определение ролей, реализация процессов эскалации и обработки запросов, мониторинга, бэкапов, управления обновлениями и реагирования на инциденты.
 
-## Next Steps
-1. Set up WebRTC signaling server
-2. Implement peer connection establishment
-3. Add UI components for call controls
-4. Test call functionality between users
-5. Implement conference call capabilities
+### 3.3. Возникшие Трудности (Потенциальные)
+*   **Реализация WebRTC:** Хотя задачи по звонкам отмечены как выполненные, внедрение WebRTC (сигнализация, ICE, управление состоянием) является сложной задачей и могла потребовать значительных усилий и отладки. Поддержка стабильных конференц-звонков также может представлять сложность.
+*   **Интеграция с Платежными Системами:** Настройка Stripe и Cryptomus требует внимательной работы с API, обработки веб-хуков и обеспечения безопасности транзакций.
+*   **Поддержка RTL:** Корректная реализация поддержки языков с письмом справа налево (арабский) затрагивает весь UI и требует тщательного тестирования.
+*   **Комплексное Тестирование:** Обеспечение полного покрытия тестами (unit, integration, system, load, security, regression) требует времени и ресурсов.
+
+### 3.4. Рекомендации и Качественные Практики
+*   **Следование Технологическому Стеку:** Продолжать использовать выбранные технологии (TypeScript, React/Next.js, NestJS, PostgreSQL/TypeORM, GraphQL, WebSockets, Redis, Kafka и т.д.) для консистентности.
+*   **Модульное Тестирование:** Уделять внимание написанию unit-тестов (Jest) для новых компонентов и функций для раннего обнаружения ошибок.
+*   **Интеграционное и Системное Тестирование:** Планомерно внедрять интеграционные (Cypress, Postman) и системные (Playwright) тесты для проверки взаимодействия компонентов и сквозных сценариев.
+*   **Code Review:** Регулярно проводить ревью кода для обмена знаниями, улучшения качества кода и соответствия стандартам.
+*   **CI/CD:** Настроить или оптимизировать процессы непрерывной интеграции и доставки (например, с использованием Vercel) для автоматизации сборки, тестирования и развертывания.
+*   **Мониторинг и Логирование:** Активно использовать настроенные инструменты мониторинга (Prometheus, Grafana, Sentry) для отслеживания производительности и ошибок в реальном времени.
+*   **Безопасность:** Продолжать следовать лучшим практикам безопасности на всех уровнях (код, инфраструктура, зависимости). Регулярно обновлять зависимости.
+*   **Документация:** Поддерживать актуальность технической документации и комментариев в коде.
+
+## 4. Технологический Стек Проекта
+
+*   **Язык:** TypeScript (Frontend & Backend)
+*   **Frontend:** React, Next.js
+*   **Backend:** NestJS
+*   **База Данных:** PostgreSQL (Neon)
+*   **ORM:** TypeORM
+*   **API:** GraphQL
+*   **Real-time:** WebSockets
+*   **Кэширование:** Redis
+*   **Очереди:** Kafka
+*   **Хранилище Файлов:** Cloudflare R2
+*   **Уведомления:** Firebase
+*   **Платежи:** Stripe, Cryptomus
+*   **Email/2FA:** Gmail API
+*   **Тестирование:** Jest, Cypress, k6, Playwright, (OWASP ZAP/Burp Suite - планируется)
+*   **Развертывание:** Vercel
+*   **Мониторинг:** Prometheus, Grafana, Sentry (планируется)

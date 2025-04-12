@@ -33,7 +33,7 @@ const AuthGuardComponent: React.FC<{ children: React.ReactNode }> = ({ children 
       return;
     }
 
-    const publicPaths = ['/login', '/register']; // Пути, доступные неаутентифицированным пользователям
+    const publicPaths = ['/', '/login', '/register']; // Добавлен корневой путь '/'
     const pathIsProtected = !publicPaths.includes(router.pathname);
 
     // Если пользователь НЕ аутентифицирован и пытается зайти на защищенный роут

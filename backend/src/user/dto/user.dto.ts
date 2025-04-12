@@ -10,10 +10,12 @@ export class UserDto {
 
   @Field()
   name: string;
+@Field(() => Boolean) // Добавляем поле isVerified
+isVerified: boolean;
 
-  // Добавьте другие поля по мере необходимости, например:
-  // @Field()
-  // twoFactorEnabled: boolean;
+// Добавьте другие поля по мере необходимости, например:
+// @Field({ nullable: true }) // Пример необязательного поля
+// avatarUrl?: string;
 
-  // Не включайте пароль в DTO!
+// Не включайте пароль в DTO!
 }

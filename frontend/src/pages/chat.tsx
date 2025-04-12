@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { NextSeo } from 'next-seo';
-import { useQuery, useMutation } from '@apollo/client'; // Import Apollo hooks
+import { useQuery, useMutation, NetworkStatus } from '@apollo/client'; // Import Apollo hooks, NetworkStatus
 import { GET_CHATS, GET_CHAT, GET_MESSAGES } from '../../graphql/queries'; // Import queries
 import { SEND_MESSAGE } from '../../graphql/mutations'; // Import mutations
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 // TODO: Import generated types for queries/mutations if available
 import SettingsSidebar from '../components/SettingsSidebar'; // Main sidebar content
 import MenuSettings from '../components/MenuSettings'; // Detailed settings menu component
@@ -15,6 +16,7 @@ import MenuSettings from '../components/MenuSettings'; // Detailed settings menu
 
 const ChatPage = () => {
   const router = useRouter();
+  const { isAuthenticated, loading: authLoading, user: currentUserAuth } = useAuth(); // Use AuthContext
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,7 +25,10 @@ const ChatPage = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // --- Fetch Chat List ---
-  const { data: chatsData, loading: chatsLoading, error: chatsError } = useQuery(GET_CHATS);
+  const { data: chatsData, loading: chatsLoading, error: chatsError, networkStatus: chatsNetworkStatus } = useQuery(GET_CHATS, {
+      skip: !isAuthenticated, // Skip query if not authenticated
+      notifyOnNetworkStatusChange: true,
+  });
   const chats = chatsData?.getChats || []; // Use fetched data, default to empty array
   console.log('Chats Data:', chatsData); // DEBUG
   console.log('Chats Loading:', chatsLoading); // DEBUG
@@ -32,9 +37,10 @@ const ChatPage = () => {
 
   // --- Fetch Messages for Active Chat (Example using GET_MESSAGES) ---
   // Alternatively, use GET_CHAT which includes messages
-  const { data: messagesData, loading: messagesLoading, error: messagesError } = useQuery(GET_MESSAGES, {
+  const { data: messagesData, loading: messagesLoading, error: messagesError, networkStatus: messagesNetworkStatus } = useQuery(GET_MESSAGES, {
     variables: { chatId: activeChatId, limit: 50 }, // Fetch messages for the active chat, add limit/offset if needed
-    skip: !activeChatId, // Don't run query if no chat is selected
+    skip: !activeChatId || !isAuthenticated, // Skip query if no chat is selected OR not authenticated
+    notifyOnNetworkStatusChange: true,
   });
   const activeMessages = messagesData?.getMessages || [];
   // --- End Fetch Messages ---
@@ -84,8 +90,13 @@ const ChatPage = () => {
   const handleSendMessage = () => {
     if (!message.trim() || !activeChatId) return;
 
-    // TODO: Get current user ID from auth state/context
-    const currentUserId = 'temp-user-id'; // Replace with actual user ID
+    // Get current user ID from auth context
+    const currentUserId = currentUserAuth?.id;
+    if (!currentUserId) {
+        console.error("Cannot send message, user not authenticated.");
+        // Optionally show an error message to the user
+        return;
+    }
 
     sendMessageMutation({
       variables: {
@@ -140,14 +151,41 @@ const ChatPage = () => {
   // Find active chat details from the fetched chats list
   const activeChatDetails = chats.find((c: any) => c.id === activeChatId);
 
- // TODO: Replace with actual user data from context/auth
- const currentUser = {
-    name: 'Nikits',
-    email: 'lvdf190@gmail.com',
-    username: '@Nikits',
-    avatarUrl: '/avatars/default.jpg', // Placeholder
-  };
+ // Use currentUserAuth from useAuth context
+ const currentUser = currentUserAuth; // Can be null if not authenticated yet or error
 
+  // --- Authentication Check and Loading/Redirect Logic ---
+  useEffect(() => {
+    // Redirect to login if auth check is complete and user is not authenticated
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  // Show loading indicator while checking auth or fetching initial data
+  // Check specific network statuses if needed for finer control
+  const isLoadingInitialData = authLoading || (isAuthenticated && (chatsLoading || chatsNetworkStatus === NetworkStatus.loading || chatsNetworkStatus === NetworkStatus.refetch));
+
+  if (isLoadingInitialData) {
+    return (
+        <div className="flex items-center justify-center h-screen bg-background-dark">
+            <p className="text-textPrimary-dark">Loading...</p>
+             {/* Optional: Add a spinner */}
+        </div>
+    );
+  }
+
+  // If not loading and not authenticated, this part might briefly render before redirect effect kicks in,
+  // or render nothing if redirect happens server-side or faster.
+  // A null return or minimal placeholder might be suitable here too depending on desired UX.
+   if (!isAuthenticated) {
+     // Or return a minimal placeholder while redirecting
+     return null; // Or <div className="flex items-center justify-center h-screen">Redirecting...</div>
+   }
+  // --- End Authentication Check ---
+
+
+  // Render chat page only if authenticated
   return (
     <>
       <NextSeo
@@ -458,7 +496,7 @@ const ChatPage = () => {
                  {/* Modal Content */}
                  <div className="bg-surface-light dark:bg-surface-dark rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
                    {/* Pass the correct close handler */}
-                   <MenuSettings user={currentUser} onClose={toggleSettingsModal} />
+                   <MenuSettings onClose={toggleSettingsModal} /> {/* Убрали передачу user */}
                  </div>
                </div>
              </>

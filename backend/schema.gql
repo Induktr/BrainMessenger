@@ -6,6 +6,7 @@ type UserDto {
   id: ID!
   email: String!
   name: String!
+  isVerified: Boolean!
 }
 
 type LoginResponse {

@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, HttpLink, split, ApolloLink, NormalizedCacheObject } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context'; // Import setContext
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
@@ -6,25 +7,37 @@ import { useMemo } from 'react';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-// Use relative path for HTTP requests, which will be handled by Next.js rewrites
-const httpUrl = '/api/graphql';
+// Use the environment variable for the full backend URL
+const httpUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000/graphql/'; // Fallback needed if env var not set
 // WebSocket URL still needs the direct address (rewrites don't work for WS)
 // Ensure NEXT_PUBLIC_WS_URL is set correctly in your .env.local or environment
 const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000/graphql'; // Fallback might need adjustment if NEXT_PUBLIC_WS_URL isn't set
 
-// Temporarily simplified link creation for debugging
-function createHttpLink() {
-  // Always use the relative path for HTTP link
-  return new HttpLink({ uri: httpUrl });
-}
+// Create the HTTP link
+const httpLink = new HttpLink({ uri: httpUrl });
 
-// NOTE: This simplification breaks WebSocket subscriptions.
-// We will restore createIsomorphicLink later if this fixes the HTTP issue.
+// Create the Auth link to add the token to headers
+const authLink = setContext((_, { headers }) => {
+  // Get the authentication token from local storage if it exists
+  // Ensure this runs only on the client side
+  const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+  // Return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "", // Add the Bearer token
+    }
+  }
+});
+
+// NOTE: WebSocket subscriptions might still be broken with this setup.
+// We need to restore the split logic later if subscriptions are needed.
+// For now, we focus on fixing HTTP auth.
 
 function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined', // Enable SSR mode on the server
-    link: createHttpLink(), // Use the simplified HTTP link
+    link: authLink.concat(httpLink), // Chain authLink and httpLink
     cache: new InMemoryCache(),
   });
 }

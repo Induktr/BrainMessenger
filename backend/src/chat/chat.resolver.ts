@@ -20,6 +20,7 @@ const mapMessageToDto = (message: PrismaMessageWithSender | null): MessageDto | 
       id: message.sender.id,
       email: message.sender.email,
       name: message.sender.name,
+      isVerified: message.sender.isVerified, // Добавлено поле isVerified
     } : null, // Return null if sender is null/not included
   };
 };
@@ -34,6 +35,7 @@ const mapChatToDto = (chat: PrismaChatWithIncludes | null): ChatDto | null => {
       id: chat.user.id,
       email: chat.user.email,
       name: chat.user.name,
+      isVerified: chat.user.isVerified, // Добавлено поле isVerified
     } : null, // Return null if user is null/not included
     // Map messages array, handling potential null messages within the array
     messages: chat.messages ? chat.messages.map(mapMessageToDto) : null, // Allow null list or map to MessageDto | null

@@ -21,6 +21,7 @@ const mapFileToDto = (file: any): FileDto | null => {
         id: file.uploader.id,
         name: file.uploader.name,
         email: file.uploader.email,
+        isVerified: file.uploader.isVerified, // Добавлено поле isVerified
     } : null, // Map uploader or provide default/null
   };
 };

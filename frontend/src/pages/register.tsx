@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head'; // Keep Head if needed for SEO/title
 import { NextSeo } from 'next-seo'; // Keep NextSeo
-import { useMutation, gql } from '@apollo/client';
+import { useMutation, gql, useApolloClient } from '@apollo/client'; // Import useApolloClient
 
 // Updated REGISTER mutation to return UserDto fields
 const REGISTER_MUTATION = gql`
@@ -38,7 +38,8 @@ const VERIFY_EMAIL = gql`
 
 const RegistrationPage = () => {
   const router = useRouter();
-  const [step, setStep] = useState(1); // 1: Password, 2: Name, 3: Email, 4: Code
+  const client = useApolloClient(); // Get Apollo Client instance
+  const [step, setStep] = useState(1); // 1: Password, 2: Name, 3: Email, 4: Code // Re-added useState for step
   const [formData, setFormData] = useState({
     password: '',
     name: '',
@@ -109,36 +110,7 @@ const RegistrationPage = () => {
 
   // Removed unused sendVerificationCode hook
 
-  const [verifyEmail, { loading: verifyLoading, error: verifyError }] = useMutation(VERIFY_EMAIL, {
-    onCompleted: (data) => {
-      console.log('Email verified successfully:', data);
-      if (data?.verifyEmail?.access_token) {
-        // Store the token (e.g., in localStorage)
-        localStorage.setItem('authToken', data.verifyEmail.access_token);
-        console.log('Auth token stored.');
-        // Redirect to the main chat page
-        router.push('/chat');
-      } else {
-        // Should not happen if mutation succeeded, but handle defensively
-        console.error('Verification successful but no token received.');
-        setErrors(prev => ({ ...prev, api: 'Verification succeeded but login failed. Please try logging in manually.' }));
-        setIsLoading(false);
-      }
-      // No need to setIsLoading(false) here if redirecting
-    },
-    onError: (error) => {
-      console.error('Email verification mutation error:', error);
-      // Handle specific errors like invalid code or expired code
-      if (error.message.includes('Invalid') || error.message.includes('Неверный')) {
-         setErrors(prev => ({ ...prev, confirmationCode: 'Invalid confirmation code.', api: '' }));
-      } else if (error.message.includes('expired') || error.message.includes('истек')) {
-         setErrors(prev => ({ ...prev, confirmationCode: 'Confirmation code has expired. Please request a new one.', api: '' }));
-      } else {
-         setErrors(prev => ({ ...prev, api: error.message || 'Email verification failed.' }));
-      }
-      setIsLoading(false);
-    }
-  });
+  // Removed useMutation hook for verifyEmail (This section confirms the hook is removed)
 
   const [resendCode, { loading: resendLoading, error: resendError }] = useMutation(RESEND_VERIFICATION_CODE_MUTATION, {
       onCompleted: (data) => {
@@ -268,22 +240,78 @@ const RegistrationPage = () => {
     // Trigger the verifyEmail mutation
     try {
       console.log('Triggering email verification with:', { email: formData.email, code: confirmationCode });
-      // Вызываем мутацию verifyEmail. Успех обрабатывается в onCompleted хуке этой мутации
-      // (он должен сохранять токен в localStorage и делать редирект)
-      await verifyEmail({
-        variables: {
-          email: formData.email.trim(),
-          code: confirmationCode,
-        }
+
+      // --- Новый подход: Явная проверка перед отправкой ---
+      if (typeof confirmationCode !== 'string' || confirmationCode.length !== 6) {
+        console.error('CRITICAL FRONTEND ERROR: confirmationCode is invalid just before sending!', {
+          value: confirmationCode,
+          type: typeof confirmationCode,
+          length: confirmationCode?.length
+        });
+        setErrors(prev => ({ ...prev, confirmationCode: 'Invalid code format. Please re-enter.', api: '' }));
+        setIsLoading(false); // Остановить индикатор загрузки
+        return; // Прервать выполнение
+      }
+      // --- Конец проверки ---
+
+      const variablesToVerify = {
+        email: formData.email.trim(),
+        code: confirmationCode, // Теперь мы уверены, что это 6-значная строка
+      };
+      console.log('Variables being sent to verifyEmail:', variablesToVerify);
+
+      // --- Новый подход: Используем client.mutate напрямую ---
+      const { data, errors: mutationErrors } = await client.mutate({
+          mutation: VERIFY_EMAIL,
+          variables: variablesToVerify,
+          // Важно: Указываем политику обработки ошибок, чтобы catch ниже сработал
+          // для GraphQL ошибок (а не только сетевых)
+          errorPolicy: 'all', // или 'none' если хотим полагаться только на try/catch
       });
-      // Успех теперь обрабатывается в onCompleted хуке мутации verifyEmail
+
+      // Обработка GraphQL ошибок (если errorPolicy: 'all')
+      if (mutationErrors && mutationErrors.length > 0) {
+          console.error('Email verification mutation GraphQL errors:', mutationErrors);
+          const error = mutationErrors[0]; // Берем первую ошибку для отображения
+          if (error.message.includes('Invalid') || error.message.includes('Неверный')) {
+             setErrors(prev => ({ ...prev, confirmationCode: 'Invalid confirmation code.', api: '' }));
+          } else if (error.message.includes('expired') || error.message.includes('истек')) {
+             setErrors(prev => ({ ...prev, confirmationCode: 'Confirmation code has expired. Please request a new one.', api: '' }));
+          } else {
+             // Проверяем специфичную ошибку "Variable "$code" of required type "String!" was not provided."
+             if (error.message.includes('Variable "$code" of required type "String!" was not provided')) {
+                console.error("DETECTED 'Variable code not provided' error despite sending it. Check network payload/Apollo Client config.");
+                setErrors(prev => ({ ...prev, api: 'Internal error: Verification code not sent correctly. Please try again or contact support.' }));
+             } else {
+                setErrors(prev => ({ ...prev, api: error.message || 'Email verification failed.' }));
+             }
+          }
+          setIsLoading(false);
+          return; // Прерываем, так как есть ошибка GraphQL
+      }
+
+      // Обработка успешного ответа (если нет GraphQL ошибок)
+      if (data?.verifyEmail?.access_token) {
+        console.log('Email verified successfully (direct mutate):', data);
+        localStorage.setItem('authToken', data.verifyEmail.access_token);
+        console.log('Auth token stored.');
+        router.push('/chat');
+        // setIsLoading(false) не нужен при редиректе
+      } else {
+        // Эта ветка не должна сработать при успешной мутации, но оставим для защиты
+        console.error('Verification successful but no token received (direct mutate).');
+        setErrors(prev => ({ ...prev, api: 'Verification succeeded but login failed. Please try logging in manually.' }));
+        setIsLoading(false);
+      }
+      // --- Конец использования client.mutate ---
 
     } catch (err: any) {
-      // Ошибка обрабатывается в onError хуке мутации verifyEmail
-      console.error('Code verification error caught in component:', err); // Можно оставить для доп. отладки
-      // setErrors(prev => ({ ...prev, api: err.message || 'Invalid confirmation code.' })); // Ошибки теперь в onError
+      // Обработка сетевых или других непредвиденных ошибок
+      console.error('Code verification network/unexpected error caught in component:', err);
+      setErrors(prev => ({ ...prev, api: err.message || 'An unexpected error occurred during verification.' }));
+      setIsLoading(false); // Убедимся, что загрузка выключена при любой ошибке
     } finally {
-       // setIsLoading(false); // Управляется в onCompleted/onError хуках мутации
+      // setIsLoading(false); // Убрано отсюда, управляется в блоках try/catch
     }
   };
 
@@ -450,11 +478,12 @@ const RegistrationPage = () => {
           {errors.api && <p className="text-red-500 text-xs italic mt-4 text-center">{errors.api}</p>}
           {/* Display GraphQL error if no specific API error is set */}
           {/* Combined loading state check */}
-          {(registerLoading || verifyLoading || resendLoading) && <p className="text-blue-400 text-xs italic mt-4 text-center">Loading...</p>}
+          {/* Используем общее состояние isLoading */}
+          {(isLoading || registerLoading || resendLoading) && <p className="text-blue-400 text-xs italic mt-4 text-center">Loading...</p>}
 
-          {/* Display GraphQL errors if no specific API error is set */}
+          {/* Display GraphQL errors if no specific API error is set (verifyError больше не существует) */}
           {registerError && !errors.api && !errors.email && <p className="text-red-500 text-xs italic mt-4 text-center">{registerError.message || 'An unexpected registration error occurred.'}</p>}
-          {verifyError && !errors.api && !errors.confirmationCode && <p className="text-red-500 text-xs italic mt-4 text-center">{verifyError.message || 'An unexpected verification error occurred.'}</p>}
+          {/* Ошибки верификации теперь обрабатываются и выводятся в errors.api или errors.confirmationCode */}
           {resendError && !errors.api && <p className="text-red-500 text-xs italic mt-4 text-center">{resendError.message || 'An unexpected error occurred while resending the code.'}</p>}
 
 
@@ -462,7 +491,7 @@ const RegistrationPage = () => {
             <button
               type="button"
               onClick={handleNextStep}
-              disabled={registerLoading || verifyLoading || resendLoading || !isStepDataValid()} // Disable if loading or current step data invalid
+              disabled={isLoading || registerLoading || resendLoading || !isStepDataValid()} // Учитываем все состояния загрузки
               className="mt-6 bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to p-2 rounded-full hover:scale-110 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {icons.next} {/* Render SVG component directly */}
@@ -474,15 +503,15 @@ const RegistrationPage = () => {
               <button
                 type="button"
                 onClick={handleConfirmCode}
-                disabled={registerLoading || verifyLoading || resendLoading || !isStepDataValid()} // Disable if loading or code invalid
+                disabled={isLoading || registerLoading || resendLoading || !isStepDataValid()} // Учитываем все состояния загрузки
                 className="mt-6 bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to text-background-dark py-2 px-6 rounded-lg shadow-md hover:scale-105 transition-transform duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {verifyLoading ? 'Confirming...' : 'Confirm'}
+                {isLoading ? 'Confirming...' : 'Confirm'} {/* Используем общее состояние isLoading для кнопки Confirm */}
               </button>
               <button
                 type="button"
                 onClick={handleResendCode}
-                disabled={registerLoading || verifyLoading || resendLoading} // Disable while any mutation is loading
+                disabled={isLoading || registerLoading || resendLoading} // Учитываем все состояния загрузки
                 className="mt-2 text-sm text-secondary hover:underline disabled:opacity-50"
               >
                 Get the code again
