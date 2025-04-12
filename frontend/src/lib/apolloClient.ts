@@ -7,20 +7,43 @@ import { useMemo } from 'react';
 
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
-// Use the environment variable for the full backend URL
-const httpUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000/graphql/'; // Fallback needed if env var not set
+// --- Временная отладка: Обращаемся НАПРЯМУЮ к бэкенду ---
+const httpUrl = "http://localhost:4000/graphql/"; // Указываем порт бэкенда (4000)
+console.log("DEBUG: Using hardcoded httpUrl:", httpUrl);
+// const httpUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+// if (!httpUrl) {
+//   console.error("CRITICAL: NEXT_PUBLIC_BACKEND_URL environment variable is not set!");
+//   // Provide a default fallback, but log an error. Ensure the fallback also has the trailing slash.
+//   // Using the frontend's /api/graphql/ rewrite path might be a safer default if backend isn't running on 4000.
+//   // httpUrl = 'http://localhost:4000/graphql/'; // Or use relative path if Next.js rewrites are configured
+//   // For now, let's assume the rewrite path is intended if the full URL isn't set, but keep the error log.
+//   // Using relative path assumes Next.js rewrites are configured in next.config.js to proxy /api/graphql/ to the backend
+//    // For local development, using the full URL from .env is generally more reliable.
+//    // Let's stick to using the env var primarily.
+// } else {
+//    console.log("Using backend URL from env:", httpUrl); // Log the URL being used
+// }
+// --- Конец временной отладки ---
+
+// Ensure httpLink uses the potentially updated httpUrl
+const httpLink = new HttpLink({ uri: httpUrl || '/api/graphql/' }); // Use fallback if httpUrl is somehow undefined after check
+
 // WebSocket URL still needs the direct address (rewrites don't work for WS)
 // Ensure NEXT_PUBLIC_WS_URL is set correctly in your .env.local or environment
 const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4000/graphql'; // Fallback might need adjustment if NEXT_PUBLIC_WS_URL isn't set
 
-// Create the HTTP link
-const httpLink = new HttpLink({ uri: httpUrl });
+// Remove duplicate httpLink declaration, the one on line 26 is used
 
 // Create the Auth link to add the token to headers
-const authLink = setContext((_, { headers }) => {
+const authLink = setContext((operation, { headers }) => { // Добавим operation для логирования
   // Get the authentication token from local storage if it exists
   // Ensure this runs only on the client side
   const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+
+  // --- Добавлено логирование ---
+  console.log(`[AuthLink] Operation: ${operation.operationName}, Token found: ${!!token}`);
+  // --- Конец логирования ---
+
   // Return the headers to the context so httpLink can read them
   return {
     headers: {

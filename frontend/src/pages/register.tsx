@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head'; // Keep Head if needed for SEO/title
 import { NextSeo } from 'next-seo'; // Keep NextSeo
 import { useMutation, gql, useApolloClient } from '@apollo/client'; // Import useApolloClient
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 // Updated REGISTER mutation to return UserDto fields
 const REGISTER_MUTATION = gql`
@@ -39,6 +40,7 @@ const VERIFY_EMAIL = gql`
 const RegistrationPage = () => {
   const router = useRouter();
   const client = useApolloClient(); // Get Apollo Client instance
+  const { loginUser } = useAuth(); // Get loginUser function from context
   const [step, setStep] = useState(1); // 1: Password, 2: Name, 3: Email, 4: Code // Re-added useState for step
   const [formData, setFormData] = useState({
     password: '',
@@ -293,8 +295,21 @@ const RegistrationPage = () => {
       // Обработка успешного ответа (если нет GraphQL ошибок)
       if (data?.verifyEmail?.access_token) {
         console.log('Email verified successfully (direct mutate):', data);
-        localStorage.setItem('authToken', data.verifyEmail.access_token);
-        console.log('Auth token stored.');
+        const tokenToSave = data.verifyEmail.access_token;
+        const userData = data.verifyEmail.user;
+
+        if (!userData) {
+            // Дополнительная проверка на случай, если user не пришел
+            console.error('Verification successful but user data missing in response.');
+            setErrors(prev => ({ ...prev, api: 'Login failed after verification: User data missing.' }));
+            setIsLoading(false);
+            return;
+        }
+
+        console.log('Attempting to call loginUser context function with:', userData, tokenToSave);
+        // Вызываем функцию контекста для установки состояния и сохранения токена
+        loginUser(userData, tokenToSave);
+        console.log('Auth state updated via context.');
         router.push('/chat');
         // setIsLoading(false) не нужен при редиректе
       } else {

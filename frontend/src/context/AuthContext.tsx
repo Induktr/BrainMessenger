@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean; // Единое состояние загрузки
   logout: () => void;
+  loginUser: (userData: User, token: string) => void; // Добавлена функция для установки состояния после логина/верификации
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +28,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   // Состояние для отслеживания завершения *первоначальной* проверки токена на клиенте
   const [initialAuthCheckComplete, setInitialAuthCheckComplete] = useState(false);
+  // Новое состояние, чтобы предотвратить немедленный запрос getCurrentUser после loginUser
+  const [hasJustLoggedIn, setHasJustLoggedIn] = useState(false);
   const apolloClient = useApolloClient();
 
   // Проверяем наличие токена только на клиенте
@@ -37,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     {
       fetchPolicy: 'network-only',
       // Пропускаем запрос, если мы на сервере ИЛИ если токена на клиенте точно нет
-      skip: typeof window === 'undefined' || !hasToken,
+      skip: typeof window === 'undefined' || !hasToken || hasJustLoggedIn, // Пропускаем, если только что залогинились
       notifyOnNetworkStatusChange: true, // Важно для отслеживания refetch и т.д.
       onCompleted: (data) => {
         // console.log("AuthContext: getCurrentUser completed", data);
@@ -64,8 +67,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (typeof window !== 'undefined' && !localStorage.getItem('authToken')) {
       setInitialAuthCheckComplete(true);
     }
-  }, []);
+  }, []); // Зависимость пуста, выполняется один раз при монтировании
 
+  // Эффект для сброса флага hasJustLoggedIn после того, как пользователь установлен
+  useEffect(() => {
+    if (user && hasJustLoggedIn) {
+      // Если пользователь установлен и флаг был true, сбрасываем флаг
+      setHasJustLoggedIn(false);
+      console.log("AuthContext: Resetting hasJustLoggedIn flag.");
+    }
+  }, [user, hasJustLoggedIn]); // Зависит от user и флага
+
+// Удаляем дублирующийся useEffect
   const logout = async () => {
     setUser(null);
     if (typeof window !== 'undefined') {
@@ -84,6 +97,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  // Функция для установки состояния после успешного логина/верификации
+  const loginUser = (userData: User, token: string) => {
+    console.log("AuthContext: loginUser called", userData);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('authToken', token); // Сохраняем токен
+    }
+    setUser(userData); // Устанавливаем пользователя
+    setInitialAuthCheckComplete(true); // Считаем проверку завершенной
+    setHasJustLoggedIn(true); // Устанавливаем флаг, что только что залогинились
+    // Сброс кеша Apollo Client после логина/верификации, чтобы последующие запросы использовали новый токен
+    apolloClient.resetStore().catch(e => console.error("Error resetting store after loginUser:", e));
+  };
+
   // Определяем общее состояние загрузки:
   // Загрузка идет, если первоначальная проверка еще не завершена
   const loading = !initialAuthCheckComplete;
@@ -92,7 +118,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const isAuthenticated = initialAuthCheckComplete && !queryError && !!user;
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, loading, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, loading, logout, loginUser }}>
       {children}
     </AuthContext.Provider>
   );
