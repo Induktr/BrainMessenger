@@ -513,6 +513,7 @@ const ChatPage = () => {
       setSelectedMessageIds(new Set()); // Clear previous selection
     }
   };
+  
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isSelecting && selectionStartCoords) {
