@@ -1,0 +1,56 @@
+services:
+  # Сервис для бэкенда (NestJS)
+  backend:
+    build:
+      context: ./backend # Путь к директории с Dockerfile бэкенда
+      dockerfile: Dockerfile
+      target: development # Используем этап development для разработки с hot-reload
+    container_name: brainmessenger-backend
+    env_file: # Add this line
+      - ./backend/.env # Point to the backend's .env file
+    # Монтируем исходный код бэкенда в контейнер для hot-reloading
+    # Исключаем node_modules, чтобы использовать установленные в контейнере
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules # Anonymous volume for node_modules
+      - /usr/src/app/dist # Anonymous volume for dist
+    # Запускаем в режиме разработки с watch
+    command: node dist/main
+    ports:
+      - "4000:4000" # Пробрасываем порт 4000 (бэкенд)
+    environment: # Add this section
+      - CHOKIDAR_USEPOLLING=true
+      - APP_URL=http://localhost:3000
+    networks:
+      - brainmessenger-network
+    mem_limit: 2048m # Увеличиваем лимит памяти для бэкенда
+
+
+  # Сервис для базы данных PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: brainmessenger-db
+    environment:
+      POSTGRES_USER: brainmessenger_user
+      POSTGRES_PASSWORD: brainmessenger_password
+      POSTGRES_DB: brainmessenger_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432" # Пробрасываем порт БД (5433 на хосте, 5432 в контейнере)
+    networks:
+      - brainmessenger-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brainmessenger_user -d brainmessenger_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s # Даем БД время на запуск перед началом проверок
+
+# Определяем сеть для взаимодействия контейнеров
+networks:
+  brainmessenger-network:
+    driver: bridge
+
+volumes:
+  postgres-data: # Определяем именованный том для сохранения данных PostgreSQL

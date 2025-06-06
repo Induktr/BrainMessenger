@@ -1,0 +1,762 @@
+/* General styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1A1A1A; /* Dark background */
+  color: #B0B0B0; /* Light grey text */
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+svg {
+  fill: #1A1A1A;
+}
+
+.input-icon img {
+  filter: brightness(0) invert(1); /* Filter to make the green icon white */
+}
+
+.icon {
+  display: inline-block; /* or flex, depending on desired alignment */
+  width: 24px; /* Example size */
+  height: 24px; /* Example size */
+  margin-right: 10px; /* Added margin for spacing */
+  /* Add other base styles like vertical-align if needed */
+}
+ 
+.p {
+  font-size: 16px;
+  color: #B0B0B0;
+}
+
+.h1 {
+  font-size: 24px;
+  color: #FFFFFF;
+}
+
+.step-description {
+  color: #F0F0F0;
+  text-wrap: wrap;
+  width: 515px;
+}
+
+/* Welcome Page Container */
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative; /* Added for positioning the back button */
+}
+
+.burger-menu-container {
+  cursor: pointer;
+  position: absolute; /* Position absolutely within the welcome-container */
+  top: 1rem; /* Adjust as needed for spacing from the top */
+  right: 1rem; /* Adjust as needed for spacing from the right */
+  color: #B0B0B0; /* Color for the burger menu icon */
+}
+
+/* Main Content Area */
+.main-content-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 1rem; /* p-4 */
+  text-align: center;
+  position: relative; /* Added for positioning absolute children */
+}
+
+.slide-title {
+  font-size: 24px; /* text-2xl */
+  font-weight: bold; /* font-bold */
+}
+
+.slide-description {
+  color: #B0B0B0; /* text-textPrimary-dark */
+  margin-bottom: 2rem; /* mb-8 */
+  text-align: center;
+}
+
+/* Slider Navigation */
+.slider-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 456px; /* max-w-md, adjusted based on button width */
+  margin-bottom: 2rem; /* mb-8 */
+}
+
+.slider-button {
+  padding: 0.5rem; /* p-2 */
+  border-radius: 9999px; /* rounded-full */
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.slider-button:disabled {
+  color: #4D4D4D; /* text-gray-600 */
+  cursor: not-allowed;
+}
+
+.slider-button:not(:disabled):hover {
+  background-color: #333333; /* hover:bg-surface-dark */
+}
+
+.prev-button {
+  color: #1ED94F; /* text-primary-DEFAULT */
+}
+
+.next-button {
+   color: #B0B0B0; /* Default color, adjust if needed */
+}
+.logo-container-size-lg {
+  height: 175px;
+  width: 175px;
+}
+
+.icon-container-size-hg {
+  height: 120px;
+  width: 120px;
+}
+
+.icon-container-size-md {
+  height: 64px;
+  width: 64px;
+}
+
+.icon-container-size-lg-next-button {
+  height: 24px;
+  width: 24px;
+}
+
+
+
+.slider-indicators {
+  display: flex;
+}
+
+.slider-indicator.active {
+  background-color: #1ED94F; /* bg-primary-DEFAULT */
+}
+
+
+/* Get Started Button */
+.get-started-button {
+  padding: 12px 32px; /* px-8 py-3 */
+  width: 456px; /* w-[456px] */
+  height: 70px; /* h-[70px] */
+  font-size: 24px; /* text-[24px] */
+  font-weight: 600; /* font-semibold */
+  color: #1A1A1A; /* text-white */
+  border-radius: 10px; /* rounded-[10px] */
+  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.get-started-button:hover {
+  opacity: 0.9;
+}
+
+.icon-container {
+  margin-top: -10px; /* Adjust as needed to move the icon up */
+}
+
+.icon-container-steps {
+  position: absolute;
+  margin-top: -600px;
+}
+
+/* Register Page Progress Indicator */
+.progress-indicator-container {
+  /* Centering the container */
+  display: flex; /* Use flexbox for centering children */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center;
+  justify-content: center;
+  /* Add margin for spacing if needed */
+  margin-bottom: -95px; /* Example margin */
+}
+
+.half-circle-mask {
+  position: absolute;
+  width: 100%; /* Full width of the container */
+  height: 50%; /* Half the height of the container */
+  overflow: hidden; /* Masking the half */
+}
+
+.top-mask {
+  top: 0; /* Position at the top */
+}
+
+.circle-fill {
+  position: absolute;
+  width: 100%; /* Full width of the mask */
+  height: 200%; /* Double the height of the mask */
+  border-radius: 100%;
+  background-color: #96C93D; /* Primary color for filling */
+  /* Framer Motion will handle the transition */
+}
+
+.top-half-fill {
+  top: 0; /* Position at the top edge of the mask */
+  transform-origin: bottom center; /* Rotate around the bottom center */
+}
+
+/* Step-specific rotation is handled by Framer Motion in the component */
+
+.step-text {
+  /* Removed absolute positioning */
+  font-size: 1rem;
+  color: #B0B0B0; /* Light grey text */
+  z-index: 1; /* Ensure text is above the circle */
+}
+
+/* Remove unused SVG styles */
+/*
+.progress-ellipse {
+}
+
+@keyframes ellipse-fill {
+}
+
+.progress-ellipse ellipse:last-child {
+}
+.progress-ellipse ellipse:first-child {
+}
+
+@keyframes gradient-animation {
+}
+
+.progress-ellipse defs linearGradient stop:first-child {
+}
+
+.progress-ellipse defs linearGradient stop:last-child {
+}
+*/
+
+/* Input Component Styles */
+.input-label {
+  display: block; /* block */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #4D4D4D; /* text-textSecondary-dark (assuming dark mode based on previous context) */
+}
+
+.confirmation-code-input-container {
+  display: flex;
+}
+
+.confirmation-code-input {
+  display: flex;
+  background-color: #2E2E2E;
+  width: 50px;
+  height: 70px;
+  border: none;
+  border-radius: 10px;
+  margin: auto;
+  text-align: center;
+  color: #F0F0F0; /* text-textPrimary-dark */
+  font-size: 24px;
+}
+
+.input-container {
+  display: flex; /* Arrange icon and input horizontally */
+  align-items: center; /* Vertically align items */
+  margin-top: 0.25rem; /* mt-1 */
+  width: 350px; /* Match the desired width of the input */
+  height: 70px; /* Match the desired height of the input */
+  background-color: #1A1A1A; /* bg-background-dark */
+  border: 1px solid; /* border */
+  border-color: transparent; /* border-border-dark (default) */
+  border-radius: 0.375rem; /* rounded-md */
+  padding: 0 0.75rem; /* Add horizontal padding to the container */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input-container:focus-within { /* Apply focus styles to the container when input is focused */
+  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5); /* focus:ring-primary-DEFAULT (approximated) */
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem; /* Space between icon and input */
+  color: #B0B0B0; /* Icon color */
+  /* Explicitly set icon size if needed for consistent alignment */
+  width: 24px; /* Example size, adjust as needed */
+  height: 24px; /* Example size, adjust as needed */
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.input-field {
+  flex: 1; /* Take up remaining width */
+  height: 100%; /* Fill container height */
+  font-size: 23px;
+  padding: 0; /* Remove padding from input field */
+  background-color: transparent; /* Make input background transparent */
+  border: none; /* Remove border from input field */
+  color: #B0B0B0; /* text-textPrimary-dark */
+  outline: none; /* focus:outline-none */
+  /* Remove default input field appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Ensure vertical alignment */
+  line-height: normal; /* Reset line-height */
+}
+
+/* Remove focus styles from the input field itself as they are on the container */
+/*
+.input-field:focus {
+  border-color: #1ED94F;
+  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5);
+}
+*/
+
+/* Apply error styles to the container */
+.input-container.input-field-error {
+  border-color: #F44336; /* border-error-text */
+}
+
+.input-error-message {
+  margin-top: 0.25rem; /* mt-1 */
+  font-size: 0.875rem; /* text-sm */
+  color: #F44336; /* text-error-text */
+}
+
+/* Button Component Styles */
+.custom-button {
+  width: 456px;
+  height: 70px;
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  font-size: 24px; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: #1A1A1A; /* text-white */
+  background-image: linear-gradient(to right, #F2F047, #1ED94F); /* bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to */
+  border-radius: 10px; /* rounded-md */
+  transition: opacity 0.2s ease-in-out; /* transition-opacity */
+  cursor: pointer;
+  border: none; /* Remove default button border */
+}
+
+.custom-button:hover {
+  opacity: 0.9; /* hover:opacity-90 */
+}
+
+.custom-button:focus {
+  outline: none; /* focus:outline-none */
+  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5), 0 0 0 4px #333333; /* focus:ring-2 focus:ring-primary-DEFAULT focus:ring-offset-2 focus:ring-offset-surface-dark (approximated) */
+}
+
+/* Icon Component Styles */
+.custom-icon {
+  width: 1.5rem; /* w-6 */
+  height: 1.5rem; /* h-6 */
+  /* Add other default icon styles here if needed, e.g., color */
+}
+
+
+/* List Item Component Styles */
+.list-item {
+  display: flex; /* flex */
+  align-items: center; /* items-center */
+  padding: 0.5rem; /* p-2 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer; /* cursor-pointer */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.list-item.clickable:hover {
+  background-color: #1A1A1A; /* hover:bg-background-dark */
+}
+
+.list-item-icon {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+  margin-right: 0.75rem; /* mr-3 */
+}
+
+/* Modal Component Styles */
+.modal-overlay {
+  position: fixed; /* Stay in place */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: #1A1A1A; /* Black background with opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Sit on top */
+}
+
+
+.modal-content {
+  background-color: #2B2B2B; /* Dark surface color */
+  padding: 1.5rem; /* p-6 */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 4px 6px #1A1A1A; /* shadow-lg */
+  max-width: 90%; /* max-w-sm */
+  width: auto; /* Adjust width based on content */
+  text-align: center;
+}
+
+.modal-header {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600; /* font-semibold */
+  color: #B0B0B0; /* text-textPrimary-dark */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.modal-body {
+  color: #2B2B2B; /* text-textPrimary-dark */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.modal-footer {
+  display: flex; /* flex */
+  justify-content: flex-end; /* justify-end */
+  gap: 0.75rem; /* space-x-3 */
+}
+
+.modal-button {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-weight: 500; /* font-medium */
+  transition: opacity 0.2s ease-in-out;
+  cursor: pointer;
+  border: none; /* Remove default button border */
+}
+
+.modal-button.primary {
+  background-color: #1ED94F; /* bg-primary-DEFAULT */
+  color: white; /* text-white */
+}
+
+.modal-button.secondary {
+  background-color: #4D4D4D; /* bg-gray-600 */
+  color: #B0B0B0; /* text-textPrimary-dark */
+}
+
+.modal-button:hover {
+  opacity: 0.9; /* hover:opacity-90 */
+}
+
+/* Input Cell Component Styles */
+.input-cell-container {
+  display: flex; /* flex */
+  justify-content: center; /* justify-center */
+  align-items: center; /* items-center */
+  width: 40px; /* w-10 */
+  height: 40px; /* h-10 */
+  border: 1px solid; /* border border-border-dark */
+  border-color: #B0B0B0; /* border-border-dark */
+  border-radius: 0.375rem; /* rounded-md */
+  background-color: #1A1A1A; /* bg-background-dark */
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.input-cell-container:focus-within { /* Apply focus styles to the container when input is focused */
+  border-color: #1ED94F; /* focus:border-primary-DEFAULT */
+  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5); /* focus:ring-primary-DEFAULT (approximated) */
+}
+
+.input-cell-field {
+  width: 100%; /* w-full */
+  height: 100%; /* h-full */
+  text-align: center; /* text-center */
+  font-size: 1.125rem; /* text-lg */
+  color: #B0B0B0; /* text-textPrimary-dark */
+  background-color: transparent; /* bg-transparent */
+  border: none; /* border-none */
+  outline: none; /* focus:outline-none */
+  /* Remove default input field appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* Ensure vertical alignment */
+  line-height: normal; /* Reset line-height */
+}
+
+/* Hide the number input arrows */
+.input-cell-field::-webkit-outer-spin-button,
+.input-cell-field::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-cell-field[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* Confirmation Code Input Container */
+.confirmation-code-input-container {
+  display: flex; /* flex */
+  gap: 0.5rem; /* space-x-2 */
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+.confirmation-send-code-button-container {
+  display: flex;
+  margin: auto;
+  color: #B0B0B0;
+  font-size: 20px;
+  cursor: pointer;
+  margin-top: 20px;
+  padding: 5px;
+  background: none;
+  border: none;
+}
+
+/* Back Button Styles */
+.back-button-top-left {
+  margin-right: 1840px;
+  position: absolute; /* Position absolutely within the welcome-container */
+  top: 1rem; /* Adjust as needed for spacing from the top */
+  border: none;
+  cursor: pointer;
+  background: transparent;
+}
+
+.svg-icon {
+  transform: rotate(180deg);
+}
+
+/* Next Button Step Styles */
+.next-button-step {
+  padding: 0.5rem; /* p-2 */
+  border-radius: 9999px; /* rounded-full */
+  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease-in-out;
+  color: #1A1A1A; /* text-white */
+  width: 70px; /* w-[70px] */
+  height: 70px; /* h-[70px] */
+  display: flex; /* flex */
+  justify-content: center; /* justify-center */
+  align-items: center; /* items-center */
+}
+
+.next-button-step:hover {
+  opacity: 0.9; /* hover:opacity-90 */
+}
+
+/* Input and Button Container */
+.input-button-container {
+  display: flex; /* flex */
+  align-items: center; /* items-center */
+  gap: 1rem; /* space-x-4 */
+}
+
+/* Step Heading Styles */
+.step-heading {
+  font-size: 20px; /* text-2xl */
+  margin-bottom: 100px;
+  position: absolute;
+  z-index: -11;
+  color: #B0B0B0; /* text-white */
+}
+
+/* Text Secondary Dark Color */
+.text-textSecondary-dark {
+  color: #4D4D4D;
+}
+
+/* Primary Default Color */
+.text-primary-DEFAULT {
+  color: #1ED94F;
+}
+
+/* Chat Page Styles */
+.chat-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #1A1A1A; /* Dark background */
+}
+
+.chat-sidebar {
+  width: 350px; /* Adjust width as needed */
+  background-color: #2E2E2E; /* Slightly lighter dark for sidebar */
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  margin-bottom: 1rem;
+  padding: 0 30px; /* Add padding to the header */
+}
+
+.burger-icon {
+  background: transparent;
+  border: none;
+  /* Removed margin-left: 30px; padding is on the parent */
+  cursor: pointer;
+  margin-right: 15px; /* Add space to the right of the icon */
+}
+
+.search-input {
+  border: none;
+  height: 20px;
+  background-color: transparent;
+  color: #B0B0B0; /* Light grey text */
+  font-size: 24px;
+  outline: none;
+  /* Removed padding-left */
+}
+
+.search-input-container {
+  background: #404040;
+  border-radius: 0px 0px 0px 10px;
+  height: 80px;
+  padding: 0 15px; /* Add padding inside the container */
+  display: flex; /* Use flexbox to align input and potential icon */
+  align-items: center; /* Vertically center items */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  flex-grow: 1; /* Allow it to grow and fill the available space */
+}
+
+.search-input::placeholder {
+  color: #B0B0B0; /* Light grey placeholder text */
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-list-item {
+  padding: 1rem;
+  color: #B0B0B0; /* Light grey text */
+  cursor: pointer;
+  border-bottom: 1px solid transparent; /* Default transparent border */
+  transition: border-bottom-color 0.2s ease-in-out;
+}
+
+.chat-list-item.active {
+  color: #F0F0F0; /* Primary green color */
+  border-bottom-color: #96C93D; /* Green underline */
+  border-width: 5px;
+  width: 65px;
+}
+
+.chat-main-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #B0B0B0; /* Light grey text */
+  font-size: 24px; /* text-lg */
+}
+
+.chat-welcome-message {
+  text-align: center;
+  color: #F0F0F0;
+  font-size: 20px;
+}
+
+
+
+/* Sidebar Menu Styles */
+.sidebar-menu {
+  position: fixed; /* Position fixed to overlay content */
+  top: 0;
+  left: 0; /* Position from the left */
+  width: 350px; /* Specific width as per mockup */
+  height: 100vh; /* Full viewport height */
+  background-color: #2E2E2E; /* Dark background for the sidebar */
+  color: #B0B0B0; /* Light grey text */
+  display: flex;
+  flex-direction: column;
+  z-index: 50; /* Ensure it's above other content but below the overlay */
+}
+
+.sidebar-menu-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Allow content to take available space */
+}
+
+.sidebar-user-profile {
+  display: flex;
+  align-items: center;
+  padding: 1rem; /* p-4 */
+  border-bottom: 1px solid #4D4D4D; /* border-b border-border-dark */
+}
+
+.sidebar-avatar-placeholder {
+  width: 3rem; /* w-12 */
+  height: 3rem; /* h-12 */
+  background-color: #4D4D4D; /* bg-gray-600 */
+  border-radius: 9999px; /* rounded-full */
+  margin-right: 1rem; /* mr-4 */
+}
+
+.sidebar-username {
+  font-size: 0.875rem; /* text-sm */
+  color: #4D4D4D; /* text-textSecondary-dark */
+}
+
+.sidebar-options-list {
+  flex: 1; /* overflow-y-auto */
+  overflow-y: auto;
+  padding: 1rem; /* p-4 */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* space-y-2 */
+}
+
+.sidebar-menu-item {
+  padding: 0.5rem; /* p-2 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer; /* cursor-pointer */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar-menu-item:hover {
+  background-color: #1A1A1A; /* hover:bg-background-dark */
+}
+
+/* Ensure ListItem styles are applied correctly within the sidebar */
+.sidebar-options-list .list-item {
+  padding: 0.5rem; /* p-2 */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer; /* cursor-pointer */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar-options-list .list-item.clickable:hover {
+  background-color: #1A1A1A; /* hover:bg-background-dark */
+}
+
+.sidebar-options-list .list-item-icon {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+  margin-right: 0.75rem; /* mr-3 */
+}
+
+/* Sidebar Overlay Styles */
+.sidebar-overlay {
+  position: fixed; /* Position fixed to cover the viewport */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  height: 100vh; /* Full viewport height */
+  background-color: #1A1A1A;
+  z-index: 40; /* Ensure it's below the sidebar but above other content */
+}

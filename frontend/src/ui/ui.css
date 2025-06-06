@@ -1,0 +1,1941 @@
+/* Styles for Settings Component */
+.settings-modal-content {
+    padding: 0; /* Remove padding from the modal content wrapper */
+    color: #f0f0f0; /* Light text color */
+    width: 456px; /* Adjusted width based on Figma */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow */
+}
+
+.settings-section {
+    margin-bottom: 0;
+    padding: 15px 20px;
+    border-bottom: 3px solid #96C93D; /* Darker separator line */
+}
+
+.settings-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.settings-option:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+.settings-option-icon {
+    margin-right: 15px; /* Space between icon and text based on Figma */
+    display: flex;
+    align-items: center;
+    width: 20px; /* Fixed width for icons */
+    justify-content: center;
+    flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.settings-option-icon svg {
+    fill: #f0f0f0;
+}
+
+.settings-option-text {
+    font-size: 20px; /* Font size based on Figma */
+    color: #f0f0f0;
+    text-align: start;
+    flex-grow: 1; /* Allow text to take available space */
+}
+
+/* Ensure input takes full width in forms */
+.create-channel-form input[type="text"],
+.create-group-form input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+}
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #f0f0f0;
+}
+
+.settings-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.settings-user-email {
+    font-size: 16px;
+    color: #F0F0F0;
+    margin: 5px 0;
+}
+
+.settings-user-profile {
+    display: flex; /* Arrange avatar and info side-by-side */
+    align-items: center; /* Vertically center avatar and info */
+}
+
+.settings-user-profile .settings-avatar {
+    width: 100px; /* Adjusted avatar size for settings modal */
+    height: 100px; /* Adjusted avatar size for settings modal */
+    margin-bottom: 0; /* Remove bottom margin */
+    margin-right: 30px; /* Add margin to the right of the avatar */
+    background-color: #F0F0F0;
+    border-radius: 50%;
+}
+ 
+.settings-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    border-radius: 50%; /* Make the image round */
+}
+ 
+.settings-user-profile .settings-user-info {
+    display: flex;
+    flex-direction: column; /* Stack name, email, and username vertically */
+    align-items: flex-start; /* Align text items to the left */
+    color: #F0F0F0;
+}
+
+.settings-user-profile .settings-user-info h2 {
+    font-size: 24px; /* Adjusted font size for name in settings */
+    font-weight: 500;
+    margin-bottom: 2px; /* Reduced margin */
+}
+/* Styles for SidebarMenu Component */
+.sidebar-menu-container {
+    width: 350px; /* Adjusted width based on common sidebar designs */
+    background-color: #2B2B2B; /* Dark background color from Figma */
+    color: #f0f0f0; /* Light text color */
+    padding: 15px; /* Adjusted padding */
+    height: 100%;
+    box-sizing: border-box;
+    border-right: none;
+}
+
+.sidebar-menu-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar-user-profile-section {
+    display: flex;
+    flex-direction: column; /* Stack avatar and text vertically */
+    align-items: center; /* Align items to the center */
+    margin-bottom: 20px; /* Adjusted margin */
+    padding-bottom: 20px; /* Add padding at the bottom */
+    border-bottom: 3px solid #96C93D; /* Separator line */
+}
+
+.sidebar-avatar {
+    width: 60px; /* Slightly larger size */
+    height: 60px; /* Slightly larger size */
+    background-color: #F0F0F0; /* Darker placeholder color */
+    border-radius: 50%;
+    margin-bottom: 10px; /* Space between avatar and name */
+    margin-right: 0; /* Remove right margin */
+}
+ 
+.sidebar-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    border-radius: 50%; /* Make the image round */
+}
+ 
+.sidebar-user-info h2 {
+    font-size: 16px; /* Adjusted font size */
+    font-weight: 500; /* Adjusted font weight */
+    color: #f0f0f0; /* Ensure text color is light */
+    margin-bottom: 10px;
+}
+
+.sidebar-username-text {
+    font-size: 16px; /* Adjusted font size */
+    color: #B0B0B0; /* Slightly darker text color for username */
+    margin-top: 15px;
+}
+
+.sidebar-options-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Reduced space between buttons */
+}
+
+.sidebar-option-button {
+    background: none;
+    border: none;
+    color: #f0f0f0; /* Light text color */
+    padding: 10px 15px; /* Adjusted padding */
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    transition: background-color 0.2s ease; /* Smooth transition for hover */
+}
+
+.sidebar-option-button:hover {
+    background-color: #333; /* Darker background on hover */
+}
+
+.sidebar-option-button svg {
+    margin-right: 10px; /* Space between icon and text */
+    fill: #f0f0f0; /* Ensure icons are light */
+}
+/* Styles for Channel Component */
+.channel-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #36393f; /* Example background color */
+    color: #f0f0f0; /* Example text color */
+}
+
+.channel-header {
+    padding: 15px;
+    border-bottom: 1px solid #4f545c; /* Example border */
+}
+
+.channel-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.channel-content {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto; /* Enable scrolling for content */
+}
+/* Styles for Group Component */
+.group-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #36393f; /* Example background color */
+    color: #f0f0f0; /* Example text color */
+}
+
+.group-header {
+    padding: 15px;
+    border-bottom: 1px solid #4f545c; /* Example border */
+}
+
+.group-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.group-content {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto; /* Enable scrolling for content */
+}
+
+/* Styles for MyAccount Component */
+.myaccount-modal-content {
+    padding: 0;
+    color: #f0f0f0;
+    width: 456px; /* Match Settings modal width */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.myaccount-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.myaccount-back-button,
+.myaccount-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myaccount-header-title {
+    margin: 0;
+    font-size: 24px; /* Based on Language header size */
+    color: #f0f0f0;
+}
+
+.myaccount-user-info-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.myaccount-avatar {
+    width: 120px; /* Match Settings avatar size */
+    height: 120px; /* Match Settings avatar size */
+    background-color: #F0F0F0;
+    border-radius: 50%;
+    margin-bottom: -3px;
+}
+ 
+.myaccount-avatar {
+    /* Existing styles */
+    position: relative; /* Ensure overlay is positioned relative to the avatar */
+    overflow: hidden; /* Hide anything outside the avatar circle */
+}
+ 
+.myaccount-avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.3s ease; /* Smooth transition */
+    pointer-events: none; /* Allow clicks to pass through to the avatar div */
+}
+ 
+.myaccount-avatar:hover .myaccount-avatar-overlay {
+    opacity: 1; /* Show on hover */
+}
+ 
+.myaccount-avatar-upload-text {
+    color: #f0f0f0; /* Light text color */
+    font-size: 14px; /* Adjust font size as needed */
+    text-align: center;
+}
+ 
+.myaccount-avatar-letter {
+    /* Existing styles */
+    position: relative; /* Ensure letter is above the overlay */
+    z-index: 1; /* Bring letter to front */
+    color: #1a1a1a; /* Dark color for the letter for contrast */
+    font-size: 48px; /* Adjust size as needed */
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+ 
+.myaccount-avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the area without distortion */
+    border-radius: 50%; /* Make the image round */
+    position: relative; /* Add position relative to ensure z-index works */
+    z-index: 2; /* Ensure image is above the overlay */
+}
+ 
+.myaccount-upload-status {
+    font-size: 14px;
+    color: #96C93D; /* Green color for success/loading */
+    margin-top: 10px;
+}
+ 
+.myaccount-upload-error {
+    font-size: 14px;
+    color: #FF5722; /* Red color for errors */
+    margin-top: 10px;
+}
+ 
+.myaccount-user-name {
+    font-size: 24px; /* Match Settings name size */
+    font-weight: 500;
+    color: #f0f0f0;
+    margin-bottom: -12px; /* Keep some space below the main name */
+}
+
+.myaccount-user-status {
+    font-size: 16px;
+    color: #96C93D; /* Online status color */
+}
+
+.myaccount-user-status.offline {
+    color: #B0B0B0; /* Grey color for offline status */
+}
+
+.myaccount-name-status {
+    text-align: start;
+    padding-right: 60px;
+}
+
+.myaccount-status-username-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 5px; /* Space above the status/username line */
+}
+
+.myaccount-user-description {
+    font-size: 16px;
+    color: #f0f0f0;
+    text-align: center;
+    margin-bottom: 5px; /* Reduced space between biography and separator */
+}
+
+.myaccount-separator {
+    border-bottom: 3px solid #96C93D;
+    width: 100%; /* Full width separator */
+    
+}
+
+.myaccount-detailed-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the detailed info block */
+    gap: 20px; /* Space between the name/username group and email */
+.myaccount-name-username-group {
+    display: flex;
+    flex-direction: row;
+    gap: 40px; /* Space between Name and Username */
+    justify-content: center; /* Center the group within the parent */
+    width: 100%; /* Allow the group to take full width for centering */
+}
+}
+ 
+/* Styles for Avatar Dropdown */
+.myaccount-avatar-dropdown {
+    position: absolute;
+    top: 100%; /* Position below the avatar */
+    left: 0;
+    z-index: 10;
+    background-color: #2B2B2B; /* Dark background color */
+    border: 1px solid #4f545c; /* Subtle border */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Darker shadow */
+    border-radius: 8px; /* Rounded corners */
+    min-width: 150px; /* Minimum width */
+    overflow: hidden; /* Hide overflow for rounded corners */
+    margin-top: 5px; /* Small space between avatar and dropdown */
+}
+
+.myaccount-dropdown-item {
+    padding: 10px 15px; /* Padding inside dropdown items */
+    cursor: pointer;
+    color: #f0f0f0; /* Light text color */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+
+.myaccount-dropdown-item:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+.myaccount-dropdown-icon {
+    width: 32px;
+    height: 32px;
+    filter: brightness(0) invert(1); /* Make SVG white */
+    margin-right: 10px; /* Add some space between icon and text */
+}
+
+/* Styles for Chat List Items */
+.chat-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px; /* Adjusted padding based on screenshot */
+    cursor: pointer;
+    background-color: #2B2B2B; /* Dark background */
+    border-bottom: 1px solid #3a3a3a; /* Separator line */
+    transition: background-color 0.2s ease;
+}
+
+.chat-list-item:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+.chat-list-item.active {
+    background-color: #96C93D; /* Green background for active item */
+    color: #1a1a1a; /* Dark text for active item */
+}
+
+.chat-list-item-avatar {
+    width: 40px; /* Avatar size */
+    height: 40px; /* Avatar size */
+    background-color: #555; /* Placeholder background */
+    border-radius: 50%; /* Rounded avatar */
+    margin-right: 15px; /* Space between avatar and content */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.chat-list-item-content {
+    flex-grow: 1; /* Allow content to take available space */
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Allow content to take available space */
+}
+
+.chat-list-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px; /* Adjusted space below header */
+}
+
+.chat-list-item-name {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+    color: inherit; /* Inherit color from parent (.chat-list-item) */
+}
+
+.chat-list-item-timestamp {
+    font-size: 12px;
+    color: #B0B0B0; /* Lighter color for timestamp */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.chat-list-item.active .chat-list-item-timestamp {
+    color: #1a1a1a; /* Dark text for active item timestamp */
+}
+
+.chat-list-item-snippet {
+    font-size: 14px;
+    color: #B0B0B0; /* Lighter color for snippet */
+    margin-top: 2px; /* Space above snippet */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+    color: inherit; /* Inherit color from parent */
+}
+
+.chat-list-item.active .chat-list-item-snippet {
+    color: #1a1a1a; /* Dark text for active item snippet */
+}
+
+/* Styles for Chat Messages */
+.chat-messages {
+    flex-grow: 1; /* Allow messages area to take available space */
+    overflow-y: auto; /* Enable scrolling for messages */
+    padding: 15px; /* Add padding */
+    display: flex;
+    flex-direction: column; /* Stack messages vertically */
+}
+
+.chat-message {
+    display: flex;
+    margin-bottom: 10px; /* Space between messages */
+}
+
+.chat-message.current-user {
+    justify-content: flex-end; /* Align current user messages to the right */
+}
+
+.chat-message-bubble { /* Renamed class for clarity */
+    padding: 10px 15px; /* Adjusted padding inside message bubble */
+    border-radius: 15px; /* Adjusted rounded corners */
+    max-width: calc(100% - 100px); /* Make messages responsive, allowing for padding/margins */
+    word-break: break-word; /* Ensure long words break and wrap */
+}
+
+.chat-message.current-user .chat-message-content {
+    background-color: #96C93D; /* Green background for current user messages */
+    color: #1a1a1a; /* Dark text for current user messages */
+}
+
+.chat-message:not(.current-user) .chat-message-content {
+    background-color: #4f545c; /* Darker background for other user messages */
+    color: #f0f0f0; /* Light text for other user messages */
+}
+
+.chat-message-sender {
+    font-size: 12px;
+    color: #B0B0B0; /* Lighter color for sender name */
+    margin-bottom: 2px; /* Space below sender name */
+}
+
+.chat-message.current-user .chat-message-sender {
+    display: none; /* Hide sender name for current user messages */
+}
+
+/* Styles for Chat Input */
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    background-color: #2B2B2B;
+    flex-shrink: 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    width: 100%; /* Ensure it takes full width */
+    max-width: 800px; /* Limit max width for better aesthetics on large screens */
+    box-sizing: border-box; /* Include padding in width */
+    margin: 0 auto; /* Center the input container */
+}
+
+.folder-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; /* Match send button size */
+    height: 44px; /* Match send button size */
+    flex-shrink: 0;
+}
+
+.folder-button img {
+    filter: brightness(0) invert(1); /* Make the icon white */
+}
+
+/* Adjusting the Input component's container within ChatInput */
+.chat-input-container .input-container {
+    flex-grow: 1; /* Allow input to take available space */
+    /* Removed margin-right: 10px; as gap handles spacing */
+    height: 44px; /* Match button height for alignment */
+}
+
+.chat-input-container .input-field {
+    font-size: 16px; /* Adjust font size for consistency */
+}
+
+.chat-input-container .input-field::placeholder {
+    color: #B0B0B0; /* Lighter placeholder text */
+}
+
+.send-button {
+    background: #96C93D;
+    border: none;
+    border-radius: 10px 0px 10px 0px; /* Rounded button */
+    width: 44px; /* Adjusted button size */
+    height: 44px; /* Adjusted button size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent shrinking */
+    /* Removed color, font-weight, font-size as it's now an icon */
+}
+
+.send-button:hover {
+    opacity: 0.9; /* Slightly dim on hover */
+}
+
+.send-button img {
+    filter: brightness(0) invert(1); /* Make the icon white */
+}
+
+/* Styles for Chat Welcome Message */
+.chat-welcome-message {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #B0B0B0; /* Lighter color */
+    text-align: center;
+}
+
+/* Styles for Chat Header */
+.chat-header {
+    padding: 12px 20px; /* Re-introduced horizontal padding */
+    border-bottom: 1px solid #3a3a3a; /* Darker separator line */
+    background-color: #2B2B2B; /* Dark background */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px; /* Slightly increased fixed height for better spacing */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    z-index: 1; /* Ensure it's above chat messages */
+}
+
+.chat-header-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Allow content to take available space */
+}
+
+.chat-header-avatar {
+    width: 40px; /* Avatar size */
+    height: 40px; /* Avatar size */
+    background-color: #555; /* Placeholder background */
+    border-radius: 50%; /* Rounded avatar */
+    margin-right: 15px; /* Space between avatar and info */
+    flex-shrink: 0; /* Prevent shrinking */
+    overflow: hidden; /* Hide overflow for rounded corners */
+}
+
+.chat-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure image covers the area */
+}
+
+.chat-header-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header-name {
+    font-size: 18px; /* Font size for name */
+    font-weight: 500;
+    color: #f0f0f0; /* Light text color */
+    margin: 0; /* Remove default margin */
+}
+
+.chat-header-status {
+    font-size: 14px; /* Font size for status */
+    color: #96C93D; /* Green color for online status */
+    margin-top: 2px; /* Space above status */
+}
+
+.chat-header-options {
+    /* Placeholder styles for the options icon */
+    width: 24px; /* Icon size */
+    height: 24px; /* Icon size */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.chat-header-options img {
+    filter: brightness(0) invert(1); /* Make the icon white */
+}
+
+/* Styles for the main chat container layout */
+.chat-container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Hide overflow */
+}
+
+.chat-sidebar {
+    width: 350px; /* Fixed width for the sidebar */
+    background-color: #2B2B2B; /* Dark background */
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #4f545c; /* Separator line */
+    padding: 0; /* Remove padding from sidebar container */
+}
+
+.chat-list {
+    flex-grow: 1; /* Allow chat list to take available space */
+    overflow-y: auto; /* Enable scrolling for chat list */
+    padding: 0; /* Remove padding from chat list container */
+}
+
+.chat-main-content {
+    flex-grow: 1; /* Allow main content to take available space */
+    display: flex;
+    flex-direction: column;
+    background-color: #1a1a1a; /* Dark background for main content */
+    padding: 0; /* Remove padding from main content container */
+}
+
+.search-input-container {
+    padding: 10px 15px; /* Padding around the search input */
+    border-bottom: 1px solid #4f545c; /* Separator line */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #4f545c;
+    border-radius: 20px;
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box; /* Include padding and border in element's total width */
+}
+
+.search-input::placeholder {
+    color: #B0B0B0;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #4f545c;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.burger-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.burger-icon img {
+    filter: brightness(0) invert(1); /* Make the icon white */
+}
+
+/* Overlay for sidebar menu */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+    z-index: 100; /* Ensure it's above other content */
+}
+
+/* Styles for the SidebarMenu component when it's inside the overlay */
+.sidebar-overlay .sidebar-menu-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 101; /* Ensure it's above the overlay */
+}
+.chat-list-item-snippet p {
+    font-size: 14px;
+    margin: 0;
+    color: #B0B0B0; /* Lighter color for snippet */
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis if text overflows */
+}
+
+.chat-list-item.active .chat-list-item-snippet p {
+    color: #1a1a1a; /* Darker color for snippet in active item */
+}
+
+.chat-list-item-unread-count {
+    /* Styles for unread count badge if needed */
+}
+
+/* Styles for Chat Messages */
+.chat-messages {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto; /* Enable scrolling */
+    display: flex;
+    flex-direction: column; /* Stack messages vertically */
+}
+
+.chat-message-container {
+    display: flex;
+    margin-bottom: 10px; /* Space between messages */
+}
+
+.chat-message-container.current-user {
+    justify-content: flex-end; /* Align current user messages to the right */
+}
+
+.chat-message-container.other-user {
+    justify-content: flex-start; /* Align other user messages to the left */
+}
+ 
+.chat-message-container.selected-message {
+    background-color: rgba(150, 201, 61, 0.4); /* Green with 40% opacity */
+    border-radius: 15px; /* Match bubble border-radius */
+}
+ 
+.chat-message-bubble {
+    padding: 10px 15px;
+    border-radius: 15px; /* Rounded corners for bubbles */
+    max-width: calc(100% - 100px); /* Make messages responsive, allowing for padding/margins */
+    word-break: break-word; /* Ensure long words break and wrap */
+    display: flex; /* Enable flexbox */
+    flex-direction: column; /* Stack children vertically */
+}
+ 
+.chat-message-bubble.current-user {
+    background-color: #96C93D; /* Green background for current user messages */
+    color: #1a1a1a; /* Dark text for current user messages */
+}
+ 
+.chat-message-bubble.other-user {
+    background-color: #3a3a3a; /* Darker background for other user messages */
+    color: #f0f0f0; /* Light text for other user messages */
+}
+ 
+.chat-message-bubble.selected-bubble {
+    background-color: rgba(150, 201, 61, 0.4); /* Green with 40% opacity */
+}
+
+.chat-message-sender-name {
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 5px; /* Space below sender name */
+    color: #B0B0B0; /* Lighter color for sender name */
+}
+
+.chat-message-content {
+    font-size: 16px;
+    margin: 0;
+    margin-top: 8px; /* Add space above the content/caption */
+}
+
+.chat-attachments-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Space between multiple attachments */
+}
+
+.chat-attachment-item-display {
+    /* Styles for individual attachment display within the bubble */
+}
+
+.chat-attachment-file-display {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and filename */
+    color: #f0f0f0; /* Light text color */
+}
+
+.chat-attachment-pdf-link {
+    text-decoration: none; /* Remove underline from link */
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.chat-attachment-pdf-link:hover {
+    opacity: 0.8; /* Slightly dim on hover */
+}
+
+.chat-message-timestamp {
+    font-size: 10px;
+    margin-top: 5px; /* Space above timestamp */
+    text-align: right; /* Align timestamp to the right */
+    color: #B0B0B0; /* Lighter color for timestamp */
+}
+
+.chat-message-bubble.current-user .chat-message-timestamp {
+    color: #1a1a1a; /* Darker color for timestamp in current user messages */
+}
+
+.myaccount-bio-textarea {
+    background-color: #1A1A1A; /* Darker background */
+    border: none;
+    border-radius: 8px; /* Slightly less rounded than channel textarea */
+    padding: 10px;
+    color: #f0f0f0;
+    font-size: 16px;
+    resize: vertical; /* Allow vertical resizing */
+    width: 100%; /* Take full width of container */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    min-height: 100px; /* Minimum height for the bio field */
+    margin-top: 10px; /* Space above the textarea */
+    margin-bottom: 10px; /* Space below the textarea */
+}
+
+.myaccount-info-item {
+    display: flex;
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: center; /* Center icon and text horizontally */
+    margin-bottom: 15px; /* Space between info items */
+    width: 100%; /* Take full width */
+}
+
+.myaccount-info-item-centered {
+    /* Specific styling for the centered email item if needed,
+       but justify-content: center on .myaccount-info-item might be enough */
+}
+
+
+.myaccount-info-icon {
+    margin-right: 0; /* Remove right margin */
+    margin-bottom: 5px; /* Space between icon and text */
+    display: flex;
+    align-items: center;
+    width: 24px; /* Adjust icon size if needed to match screenshot */
+    height: 24px; /* Adjust icon size if needed to match screenshot */
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.myaccount-info-icon svg {
+    fill: #f0f0f0;
+}
+
+.myaccount-info-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center text below icon */
+}
+
+.myaccount-info-label {
+    font-size: 16px;
+    color: #F0F0F0; /* Label color */
+    margin-bottom: 2px;
+}
+
+.myaccount-info-value {
+    font-size: 16px;
+    color: #96C93D; /* Value color */
+}
+
+.myaccount-info-value-green {
+    color: #96C93D; /* Green color for specific values */
+}
+
+
+/* Styles for Language Component */
+.language-modal-content {
+    padding: 0;
+    color: #f0f0f0;
+    width: 456px; /* Match Settings modal width */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.language-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 3px solid #96C93D;
+}
+
+.language-back-button,
+.language-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.language-header-title {
+    margin: 0;
+    font-size: 24px; /* Specified font size */
+    color: #f0f0f0;
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+.language-separator {
+    border-bottom: 1px solid #96C93D;
+    width: 100%; /* Full width separator */
+}
+
+.language-interface-label {
+    font-size: 16px; /* Specified font size */
+    color: #96C93D; /* Specified color */
+    text-align: start;
+    padding: 15px 20px 5px 20px; /* Add padding, less at bottom */
+    margin: 0;
+}
+
+/* Ensure input takes full width in forms */
+.create-group-form input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.create-channel-form .input-container {
+    width: auto;
+    height: 48px;
+    font-size: 16px;
+}
+
+.language-options-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 20px; /* Padding for options */
+    transition: background-color 0.2s ease;
+}
+
+.language-option:hover {
+    background-color: #3a3a3a;
+}
+
+.language-option-icon {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    width: 20px;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.language-option-icon svg {
+    fill: #f0f0f0;
+}
+
+.language-option-text {
+    font-size: 16px; /* Specified font size */
+    color: #f0f0f0; /* Specified color */
+    text-align: start;
+    flex-grow: 1;
+}
+
+
+/* Styles for Premium Component */
+.premium-modal-content {
+    padding: 0;
+    color: #f0f0f0;
+    width: 456px; /* Match Settings modal width */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.premium-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #96C93D;
+}
+
+.premium-back-button,
+.premium-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.premium-header-title {
+    margin: 0;
+    font-size: 24px; /* Based on other header sizes */
+    color: #f0f0f0;
+    flex-grow: 1; /* Allow title to take available space */
+}
+
+.premium-separator {
+    border-bottom: 1px solid #96C93D;
+    width: 100%; /* Full width separator */
+}
+
+.premium-content {
+    padding: 20px; /* Add some padding to the content area */
+    font-size: 16px;
+    color: #f0f0f0;
+}
+
+/* Styles for CreateChannelModal Component */
+.create-channel-modal-content {
+    padding: 0;
+    color: #f0f0f0;
+    width: 456px; /* Match other modals */
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #2B2B2B; /* Dark background */
+}
+
+.create-channel-header {
+    display: flex;
+    justify-content: space-between; /* Changed from center */
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.create-channel-header-title {
+    margin: 0;
+    font-size: 24px;
+    color: #f0f0f0;
+}
+
+.create-channel-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-channel-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between input groups */
+}
+
+.create-channel-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.create-channel-label {
+    font-size: 16px;
+    color: #b0b0b0; /* Lighter color for labels */
+    margin-bottom: 5px;
+}
+
+.create-channel-textarea {
+    background-color: #1A1A1A; /* Darker background for textarea */
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    color: #f0f0f0;
+    font-size: 16px;
+    resize: vertical; /* Allow vertical resizing */
+    min-height: 131px; /* Minimum height */
+}
+
+.create-channel-button {
+    border: none;
+    color: #F0F0F0;
+    font-size: 16px;
+    width: 390px;
+    height: 50px;
+    border-radius: 10px 0 10px 0;
+    background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+}
+
+.create-channel-button-state-disabled {
+    border: none;
+    color: #F0F0F0;
+    font-size: 16px;
+    background: none;
+}
+
+.create-channel-button-container {
+    padding: 0 20px 20px 20px; /* Padding around the button */
+    text-align: center; /* Align button to the right */
+}
+
+/* Styles for CreateGroupModal Component */
+.create-group-modal-content {
+    padding: 0;
+    color: #f0f0f0;
+    width: 456px; /* Match other modals */
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #2b2b2b; /* Dark background */
+}
+
+.create-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #96C93D;
+}
+
+.create-group-header-title {
+    margin: 0;
+    font-size: 24px;
+    color: #f0f0f0;
+}
+
+.create-group-close-button {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-group-button {
+    border: none;
+    color: #F0F0F0;
+    font-size: 16px;
+    width: 390px;
+    height: 50px;
+    border-radius: 10px 0 10px 0;
+    background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+}
+
+.create-group-button-state-disabled {
+    border: none;
+    color: #F0F0F0;
+    font-size: 16px;
+    background: none;
+}
+
+.create-group-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between input groups */
+}
+
+.create-group-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.create-group-label {
+    font-size: 14px;
+    color: #b0b0b0; /* Lighter color for labels */
+    margin-bottom: 5px;
+}
+
+.create-group-form .input-field {
+    height: 48px;
+}
+
+.create-group-participant-input {
+    display: flex;
+    align-items: center;
+    background-color: #1A1A1A; /* Darker background */
+    border-radius: 4px;
+    padding: 5px 10px; /* Adjusted padding */
+}
+
+.create-group-participant-input svg {
+    margin-right: 10px;
+    fill: #b0b0b0; /* Icon color */
+}
+
+.create-group-participant-input input {
+    background: none;
+    border: none;
+    color: #f0f0f0;
+    font-size: 16px;
+    flex-grow: 1; /* Allow input to take available space */
+    outline: none; /* Remove outline */
+}
+
+.create-group-participants-display {
+    background-color: #4D4D4D;
+}
+
+.create-group-participants-list {
+    margin-top: 10px;
+    /* Add styling for the list of added participants if needed */
+}
+
+.create-group-participant-item {
+    background-color: #555; /* Example background for participant item */
+    color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: inline-block; /* Display items inline */
+    margin-right: 5px; /* Space between items */
+}
+
+
+.create-group-button-container {
+    padding: 0 20px 20px 20px; /* Padding around the button */
+    text-align: center; /* Align button to the right */
+}
+
+/* --- Chat Page Styles --- */
+
+.chat-container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent scrolling on the main container */
+    background-color: #1a1a1a; /* Dark background for the whole page */
+}
+
+.chat-sidebar {
+    width: 350px; /* Fixed width for the sidebar */
+    background-color: #2b2b2b; /* Darker background for the sidebar */
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #3a3a3a; /* Separator line */
+}
+
+.chat-main-content {
+    flex-grow: 1; /* Take up remaining space */
+    display: flex;
+    flex-direction: column;
+    background-color: #1a1a1a; /* Main content background */
+}
+
+.chat-list {
+    flex-grow: 1; /* Allow chat list to take available space */
+    overflow-y: auto; /* Enable scrolling for the chat list */
+    padding-top: 10px; /* Add some padding at the top */
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #3a3a3a; /* Separator below header */
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.search-input-container {
+    padding: 10px 15px;
+    border-bottom: 1px solid #3a3a3a; /* Separator below search */
+    flex-shrink: 0; /* Prevent search from shrinking */
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    font-size: 14px;
+}
+
+.search-input::placeholder {
+    color: #b0b0b0;
+}
+
+.burger-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.burger-icon .icon {
+    filter: brightness(0) invert(1); /* Make icon white */
+}
+
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #2b2b2b; /* Header background */
+    border-bottom: 1px solid #3a3a3a; /* Separator below header */
+    flex-shrink: 0; /* Prevent header from shrinking */
+    color: #f0f0f0; /* Header text color */
+    width: 100%; /* Ensure it takes full width of its parent */
+    box-sizing: border-box; /* Include padding in the width calculation */
+}
+
+.chat-header-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.chat-header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #555; /* Placeholder */
+    margin-right: 15px;
+    overflow: hidden; /* Ensure image stays within bounds */
+}
+
+.chat-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.default-avatar {
+    width: 100%;
+    height: 100%;
+    background-color: #555; /* Placeholder color */
+    border-radius: 50%;
+}
+
+
+.chat-header-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.chat-header-name {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+    color: #f0f0f0;
+}
+
+.chat-header-status {
+    font-size: 12px;
+    color: #96C93D; /* Online status color */
+    margin: 0;
+}
+
+.chat-header-options {
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.chat-header-options .icon {
+     /* Change filter to achieve #96C93D color */
+     filter: invert(60%) sepia(80%) saturate(300%) hue-rotate(70deg) brightness(90%) contrast(80%);
+}
+
+
+.chat-messages {
+    flex-grow: 1; /* Allow messages area to take available space */
+    overflow-y: auto; /* Enable scrolling for messages */
+    padding: 20px;
+    display: flex; /* Use flexbox for messages */
+    flex-direction: column-reverse; /* Stack messages from bottom */
+}
+ 
+.global-audio-options-panel {
+    background-color: #2B2B2B; /* Dark background, similar to chat header */
+    padding: 10px 20px;
+    border-bottom: 1px solid #3a3a3a; /* Separator */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent shrinking */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    z-index: 5; /* Ensure it's above messages but below main header */
+}
+ 
+.global-audio-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between controls */
+    width: 100%; /* Take full width of the panel */
+    max-width: 600px; /* Limit width for better aesthetics */
+}
+
+.chat-welcome-message {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #b0b0b0; /* Lighter color for welcome message */
+}
+
+/* Overlay for SidebarMenu */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+    z-index: 1000; /* Ensure it's above other content */
+    display: flex;
+}
+
+.sidebar-overlay > div {
+    /* This div wraps the SidebarMenu to prevent clicks on the menu itself from closing the overlay */
+    height: 100%;
+}
+
+/* Styles for Generic Edit Modal */
+.edit-modal-content,
+.verification-modal-content {
+    padding: 20px;
+    color: #f0f0f0;
+    width: 400px; /* Adjusted width for edit modals */
+    border-radius: 8px;
+    background-color: #2B2B2B; /* Dark background */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between elements */
+}
+
+.edit-modal-content h3,
+.verification-modal-content h3 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #f0f0f0;
+    text-align: center;
+}
+
+.edit-modal-input,
+.verification-modal-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background-color: #1A1A1A; /* Darker input background */
+    color: #f0f0f0;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.edit-modal-input::placeholder,
+.verification-modal-input::placeholder {
+    color: #B0B0B0;
+}
+
+.edit-modal-content button,
+.verification-modal-content button {
+    border: none;
+    color: #F0F0F0;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.edit-modal-content button:first-of-type, /* Save button */
+.verification-modal-content button:first-of-type /* Verify button */ {
+    background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient */
+}
+
+.edit-modal-content button:last-of-type, /* Cancel button */
+.verification-modal-content button:last-of-type /* Resend button */ {
+    background-color: #4f545c; /* Darker grey for secondary actions */
+}
+
+.edit-modal-content button:hover:first-of-type,
+.verification-modal-content button:hover:first-of-type {
+    opacity: 0.9; /* Slightly dim on hover */
+}
+
+.edit-modal-content button:hover:last-of-type,
+.verification-modal-content button:hover:last-of-type {
+    background-color: #6a707a; /* Lighter grey on hover */
+}
+
+.edit-modal-content button:disabled,
+.verification-modal-content button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Email Verification Specific Styles */
+.email-verification-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #3a3a3a; /* Separator */
+}
+
+.email-verification-section p {
+    margin: 0;
+    font-size: 14px;
+    color: #b0b0b0;
+}
+
+.success-message {
+    color: #96C93D; /* Green for success */
+    font-size: 14px;
+    text-align: center;
+}
+
+.error-message {
+    color: #FF5722; /* Red for error */
+    font-size: 14px;
+    text-align: center;
+}
+
+.chat-attachment-image {
+    max-width: 100%;
+    max-height: 256px; /* Approximately h-64 in Tailwind */
+    object-fit: contain;
+    border-radius: 0.5rem; /* Approximately rounded-lg in Tailwind */
+}
+
+.audio-player-container {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* space-x-2 */
+    padding: 8px; /* p-2 */
+    background-color: #2B2B2B; /* bg-gray-800 */
+    border-radius: 8px; /* rounded-lg */
+    position: relative; /* For dropdown positioning */
+}
+ 
+.audio-player-play-pause-button {
+    padding: 4px; /* p-1 */
+    border-radius: 9999px; /* rounded-full */
+    background-color: #3B82F6; /* bg-blue-500 */
+    color: #FFFFFF; /* text-white */
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+ 
+.audio-player-progress-slider {
+    width: 100%; /* w-full */
+    height: 8px; /* h-2 */
+    background-color: #4B5563; /* bg-gray-600 */
+    border-radius: 8px; /* rounded-lg */
+    -webkit-appearance: none; /* appearance-none */
+    cursor: pointer;
+}
+ 
+/* Custom thumb style for Webkit (Chrome, Safari) */
+.audio-player-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; /* Adjust as needed */
+    height: 16px; /* Adjust as needed */
+    border-radius: 50%;
+    background: #3B82F6; /* Match the gradient start color */
+    cursor: pointer;
+    margin-top: -4px; /* Center the thumb vertically */
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+ 
+/* Custom thumb style for Firefox */
+.audio-player-progress-slider::-moz-range-thumb {
+    width: 16px; /* Adjust as needed */
+    height: 16px; /* Adjust as needed */
+    border-radius: 50%;
+    background: #3B82F6; /* Match the gradient start color */
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+ 
+.audio-player-time-display {
+    font-size: 0.875rem; /* text-sm */
+    color: #D1D5DB; /* text-gray-300 */
+    min-width: 70px; /* Ensure enough space for time display */
+    text-align: right;
+}
+ 
+.audio-player-options-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; /* Icon size */
+    height: 24px; /* Icon size */
+    margin-left: 8px; /* Space from time display */
+}
+ 
+.audio-player-dropdown {
+    position: absolute;
+    bottom: 100%; /* Position above the player */
+    left: 0;
+    right: 0;
+    background-color: #2B2B2B; /* Dark background */
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    margin-bottom: 8px; /* Space between player and dropdown */
+}
+ 
+.audio-player-dropdown-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+ 
+.audio-player-play-pause-button-dropdown {
+    padding: 4px;
+    border-radius: 9999px;
+    background-color: #3B82F6;
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+ 
+.audio-player-progress-slider-dropdown {
+    flex-grow: 1; /* Take available space */
+    height: 8px;
+    background-color: #4B5563;
+    border-radius: 8px;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+ 
+.audio-player-progress-slider-dropdown::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3B82F6;
+    cursor: pointer;
+    margin-top: -4px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+ 
+.audio-player-progress-slider-dropdown::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #3B82F6;
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+ 
+.audio-player-loop-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    opacity: 0.5; /* Dim when inactive */
+    transition: opacity 0.2s ease;
+}
+ 
+.audio-player-loop-button.active {
+    opacity: 1; /* Full opacity when active */
+    filter: invert(60%) sepia(80%) saturate(300%) hue-rotate(70deg) brightness(90%) contrast(80%); /* Green tint when active */
+}
+ 
+.attachment-preview-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* gap-2 */
+    padding: 8px; /* p-2 */
+    border-bottom: 1px solid #4B5563; /* border-b border-gray-600 */
+}
+ 
+.attachment-preview-item {
+    position: relative;
+}
+ 
+.attachment-preview-image {
+    height: 64px; /* h-16 */
+    width: 64px; /* w-16 */
+    object-fit: cover;
+    border-radius: 0.25rem; /* rounded */
+}
+ 
+.attachment-preview-placeholder {
+    height: 64px; /* h-16 */
+    width: 64px; /* w-16 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4B5563; /* bg-gray-700 */
+    border-radius: 0.25rem; /* rounded */
+}
+ 
+.attachment-preview-remove-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #EF4444; /* bg-red-500 */
+    color: #FFFFFF; /* text-white */
+    border-radius: 9999px; /* rounded-full */
+    width: 20px; /* w-5 */
+    height: 20px; /* h-5 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem; /* text-xs */
+    border: none;
+    cursor: pointer;
+}
+ 
+.audio-player-icon {
+    filter: brightness(0) invert(1); /* Ensure icon is white */
+}
+/* Notification Dropdown Styles */
+.notification-dropdown {
+  position: fixed;
+  top: -100px; /* Start off-screen */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 15px 20px;
+  z-index: 1000;
+  transition: top 0.5s ease-out; /* Animation for sliding down */
+  opacity: 0; /* Start invisible */
+  animation: slideInFromTop 0.5s ease-out forwards; /* Animation for sliding in */
+}
+
+.notification-dropdown.show {
+  top: 20px; /* End position on-screen */
+  opacity: 1;
+}
+
+@keyframes slideInFromTop {
+  from {
+    top: -100px;
+    opacity: 0;
+  }
+  to {
+    top: 20px;
+    opacity: 1;
+  }
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notification-sender-info {
+  display: flex;
+  align-items: center;
+}
+
+.notification-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.default-avatar {
+  background-color: #ccc; /* Placeholder for default avatar */
+}
+
+.notification-sender-name {
+  font-weight: bold;
+  color: #333;
+}
+
+.notification-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-close-button img {
+  filter: invert(50%); /* Adjust icon color if needed */
+}
+
+.notification-message-content {
+  font-size: 0.95em;
+  color: #555;
+  word-wrap: break-word;
+}
