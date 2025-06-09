@@ -1,5 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int, ID, ObjectType, Context, ResolveField, Parent } from '@nestjs/graphql';
-import { UseGuards, UnauthorizedException } from '@nestjs/common';
+import { UseGuards, UnauthorizedException, UseInterceptors } from '@nestjs/common'; // Import UseInterceptors
+import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'; // Import CacheInterceptor, CacheKey, CacheTTL
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 import { InputType, Field } from '@nestjs/graphql';
@@ -60,6 +61,9 @@ export class UserResolver {
  
   @Query(() => UserDto, { name: 'getCurrentUser', nullable: true })
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(CacheInterceptor) // Apply CacheInterceptor
+  @CacheKey('currentUser') // Define cache key
+  @CacheTTL(60) // Set TTL to 60 seconds
   async getCurrentUser(@Context() context): Promise<UserDto | null> {
     // console.log('UserResolver - getCurrentUser: Resolver entered.'); // Removed excessive log
     const userId = context.req.user?.id; // Изменено на 'id'

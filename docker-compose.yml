@@ -13,7 +13,6 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules # Anonymous volume for node_modules
-      - /usr/src/app/dist # Anonymous volume for dist
     # Запускаем в режиме разработки с watch
     command: node dist/main
     ports:
@@ -24,6 +23,7 @@ services:
     networks:
       - brainmessenger-network
     mem_limit: 2048m # Увеличиваем лимит памяти для бэкенда
+
 
 
   # Сервис для базы данных PostgreSQL
@@ -47,6 +47,60 @@ services:
       retries: 5
       start_period: 10s # Даем БД время на запуск перед началом проверок
 
+  # Сервис для Redis
+  redis:
+    image: redis:7-alpine # Используем официальный образ Redis
+    container_name: brainmessenger-redis
+    ports:
+      - "6379:6379" # Пробрасываем стандартный порт Redis
+    networks:
+      - brainmessenger-network
+    volumes:
+      - redis-data:/data # Определяем именованный том для сохранения данных Redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # Сервис для Zookeeper (необходим для Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: brainmessenger-zookeeper
+    ports:
+      - "2181:2181" # Пробрасываем стандартный порт Zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - brainmessenger-network
+
+  # Сервис для Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: brainmessenger-kafka
+    ports:
+      - "9092:9092" # Пробрасываем стандартный порт Kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 # Указываем адрес Zookeeper
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092 # Внутренний адрес для других контейнеров
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka-data:/var/lib/kafka/data # Определяем именованный том для сохранения данных Kafka
+    depends_on:
+      - zookeeper # Kafka зависит от Zookeeper
+    networks:
+      - brainmessenger-network
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 # Определяем сеть для взаимодействия контейнеров
 networks:
   brainmessenger-network:
@@ -54,3 +108,5 @@ networks:
 
 volumes:
   postgres-data: # Определяем именованный том для сохранения данных PostgreSQL
+  redis-data: # Определяем именованный том для сохранения данных Redis
+  kafka-data: # Определяем именованный том для сохранения данных Kafka

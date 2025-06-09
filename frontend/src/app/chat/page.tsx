@@ -1,5 +1,7 @@
 'use client';
 
+import LazyLoading from '@/components/LazyLoading';
+
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useLazyQuery, useSubscription, useMutation, useApolloClient } from '@apollo/client';
@@ -21,6 +23,7 @@ import ContextMenu from '@/components/ContextMenu'; // Import ContextMenu
 import NetworkStatusDropdown from '@/components/NetworkStatusDropdown'; // Import NetworkStatusDropdown
 import NotificationDropdown from '@/components/NotificationDropdown'; // Import NotificationDropdown
 import { useNetworkStatus } from '@/context/NetworkStatusContext'; // Import useNetworkStatus
+import { useChatId } from '@/context/ChatIdContext'; // Import useChatId
 
 interface Message {
   id: string;
@@ -73,6 +76,7 @@ const ChatPage = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const selectedChatIdRef = useRef<string | null>(null); // Ref to hold the latest selectedChatId
   const [selectedChatMessages, setSelectedChatMessages] = useState<Message[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<UserDto[]>([]);
@@ -100,56 +104,48 @@ const ChatPage = () => {
   const [showDeleteChatHistoryConfirmModal, setShowDeleteChatHistoryConfirmModal] = useState(false); // State for delete chat history confirmation
   const [showDeleteUserConfirmModal, setShowDeleteUserConfirmModal] = useState(false); // State for delete user confirmation
   const { isOnline, isPoorConnection } = useNetworkStatus(); // Use network status hook
-  const [notificationMessage, setNotificationMessage] = useState<Message | null>(null); // State for notification message
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false); // State for notification dropdown visibility
-  const audioRef = useRef<HTMLAudioElement | null>(null); // Ref for audio element
+  const { setChatId: setGlobalChatId } = useChatId(); // Use useChatId hook to set global chatId
 
   const client = useApolloClient(); // Get Apollo Client instance
 
   const { loading: loadingChats, error: errorChats, data: dataChats, refetch: refetchChats } = useQuery(GET_CHATS); // Added refetch
-  const [getMessages, { loading: loadingMessages, error: errorMessages, data: dataMessages }] = useLazyQuery(GET_MESSAGES);
+  const [getMessages, { loading: loadingMessages, error: errorMessages, data: dataMessages }] = useLazyQuery(GET_MESSAGES, {
+    fetchPolicy: 'cache-first', // Prioritize cache, then network
+  });
   const [searchUsers, { loading: loadingSearch, error: errorSearch, data: dataSearch }] = useLazyQuery(SEARCH_USERS_BY_USERNAME);
   const [findOrCreatePrivateChat, { loading: creatingChat, error: createChatError }] = useMutation(FIND_OR_CREATE_PRIVATE_CHAT);
   const [sendMessage, { loading: sendingMessage, error: sendMessageError }] = useMutation(SEND_MESSAGE, {
-    update(cache, { data }) {
-      const newMessage = data?.sendMessage;
-      if (newMessage) {
-        // Update GET_MESSAGES cache for the specific chat
-        cache.updateQuery({
-          query: GET_MESSAGES,
-          variables: { chatId: newMessage.chatId },
-        }, (existingMessages) => {
-          if (existingMessages && existingMessages.getMessages) {
-            const messageExists = existingMessages.getMessages.some((msg: Message) => msg.id === newMessage.id);
-            if (!messageExists) {
-              // Also update the local state directly for immediate UI reflection
-              setSelectedChatMessages(prevMessages => [...prevMessages, newMessage]);
-              return {
-                getMessages: [...existingMessages.getMessages, newMessage],
-              };
-            }
+    onCompleted: (data) => {
+      if (data && data.sendMessage && selectedChatId) {
+        const newMessage = data.sendMessage;
+
+        // Update the local state for immediate UI update (sender's view)
+        setSelectedChatMessages(prevMessages => {
+          const messageExists = prevMessages.some(msg => msg.id === newMessage.id);
+          if (!messageExists) {
+            return [...prevMessages, newMessage];
           }
-          return existingMessages;
+          return prevMessages;
         });
 
-        // Update GET_CHATS cache for the last message snippet and timestamp for the sender's view
-        cache.updateQuery({ query: GET_CHATS }, (existingChats) => {
-          if (existingChats && existingChats.getChats) {
-            return {
-              getChats: existingChats.getChats.map((chat: Chat) =>
-                chat.id === newMessage.chatId
-                  ? {
-                      ...chat,
-                      lastMessageSnippet: newMessage.content,
-                      lastMessageTimestamp: newMessage.createdAt,
-                      // For the sender, unreadCount remains 0.
-                    }
-                  : chat
-              ),
-            };
+        // Update the Apollo cache for GET_MESSAGES query
+        client.cache.updateQuery(
+          { query: GET_MESSAGES, variables: { chatId: selectedChatId } },
+          (existingMessages) => {
+            if (existingMessages && existingMessages.getMessages) {
+              const messageExists = existingMessages.getMessages.some((msg: Message) => msg.id === newMessage.id);
+              if (!messageExists) {
+                return {
+                  getMessages: [...existingMessages.getMessages, newMessage],
+                };
+              }
+            }
+            return existingMessages;
           }
-          return existingChats;
-        });
+        );
+
+        // Refetch chats to update last message snippet and unread count in the sidebar
+        refetchChats();
       }
     },
   });
@@ -171,12 +167,14 @@ const ChatPage = () => {
   }, [authLoading, currentUser, isInitializing, router]);
 
   useEffect(() => {
+    selectedChatIdRef.current = selectedChatId; // Keep the ref updated with the latest selectedChatId
+    setGlobalChatId(selectedChatId); // Update global chatId
     if (selectedChatId) {
       getMessages({ variables: { chatId: selectedChatId } });
     } else {
       setSelectedChatMessages([]);
     }
-  }, [selectedChatId, getMessages]);
+  }, [selectedChatId, getMessages, setGlobalChatId]);
 
   useEffect(() => {
     if (dataMessages && dataMessages.getMessages) {
@@ -190,38 +188,70 @@ const ChatPage = () => {
     }
   }, [dataSearch]);
 
+  useEffect(() => {
+    console.log('[ChatPage] selectedChatMessages updated:', selectedChatMessages);
+    // Count total audio files whenever selectedChatMessages changes
+    let count = 0;
+    selectedChatMessages.forEach(message => {
+      message.attachments?.forEach(attachment => {
+        if (attachment.mimetype.startsWith('audio/')) {
+          count++;
+        }
+      });
+    });
+    setTotalAudioFiles(count);
+  }, [selectedChatMessages]);
+
+
   useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
-    variables: { chatId: selectedChatId }, // Subscribe to messages for the currently selected chat
-    skip: !selectedChatId, // Skip if no chat is selected
+    variables: { chatId: selectedChatIdRef.current }, // Pass the current selectedChatId from ref
+    skip: !selectedChatIdRef.current, // Skip subscription if no chat is selected
     onData: ({ data }) => {
       console.log('[ChatPage - Subscription onData] Received data:', data); // Log incoming subscription data
       if (data && data.data && data.data.newMessage) {
         const incomingMessage = data.data.newMessage;
         console.log('[ChatPage - Subscription onData] Incoming message:', incomingMessage); // Log incoming message details
 
-        // Update GET_MESSAGES cache for the specific chat if it's the currently selected one
-        if (incomingMessage.chatId === selectedChatId) {
+        // Update GET_MESSAGES cache for the specific chat
+        client.cache.updateQuery({
+          query: GET_MESSAGES,
+          variables: { chatId: incomingMessage.chatId }
+        }, (existingMessages) => {
+          if (existingMessages && existingMessages.getMessages) {
+            const messageExists = existingMessages.getMessages.some((msg: Message) => msg.id === incomingMessage.id);
+            if (!messageExists) {
+              return {
+                getMessages: [...existingMessages.getMessages, incomingMessage],
+              };
+            }
+          }
+          return existingMessages;
+        });
+
+        // If the message is for the currently selected chat, update the state and scroll
+        if (incomingMessage.chatId === selectedChatIdRef.current) { // Use the ref here
           console.log('[ChatPage - Subscription onData] Message for current chat. Updating state.');
           setSelectedChatMessages(prevMessages => {
             const messageExists = prevMessages.some(msg => msg.id === incomingMessage.id);
             if (!messageExists) {
-              return [...prevMessages, incomingMessage];
+              console.log('[ChatPage - Subscription onData] Adding new message to state:', incomingMessage.id);
+              const updatedMessages = [...prevMessages, incomingMessage];
+              messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+              return updatedMessages;
             }
+            console.log('[ChatPage - Subscription onData] Message already exists in state:', incomingMessage.id);
             return prevMessages;
           });
         } else {
-          console.log('[ChatPage - Subscription onData] Message for a different chat. Not updating current chat messages.');
+          console.log('[ChatPage - Subscription onData] Message for a different chat. Updating cache only.');
         }
-
+      
         // Update GET_CHATS cache for the last message snippet, timestamp, and unread count
-        // This applies to all chats, regardless of whether they are selected or not.
         client.cache.updateQuery({ query: GET_CHATS }, (existingChats) => {
           if (existingChats && existingChats.getChats) {
             return {
               getChats: existingChats.getChats.map((chat: Chat) => {
                 if (chat.id === incomingMessage.chatId) {
-                  // Increment unreadCount only if the message is not from the current user
-                  // and the chat is not currently selected
                   const incrementUnread = incomingMessage.sender.id !== currentUser?.id && chat.id !== selectedChatId;
                   return {
                     ...chat,
@@ -236,17 +266,6 @@ const ChatPage = () => {
           }
           return existingChats;
         });
-
-        // Play sound and show notification if the message is NOT for the currently selected chat
-        // and it's not from the current user
-        if (incomingMessage.chatId !== selectedChatId && incomingMessage.sender.id !== currentUser?.id) {
-          setNotificationMessage(incomingMessage);
-          setShowNotificationDropdown(true); // Show the notification dropdown
-          if (audioRef.current) {
-            audioRef.current.play().catch(e => console.error("Error playing notification sound:", e));
-          }
-          // refetchChats(); // No longer need to refetch chats explicitly due to cache update
-        }
       }
     },
   });
@@ -421,16 +440,6 @@ const ChatPage = () => {
     }
   }, [handleGlobalAudioTimeUpdate, handleGlobalAudioLoadedMetadata, handleGlobalAudioEnded, globalAudioIsLooping]);
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (showNotificationDropdown) {
-      timer = setTimeout(() => {
-        setShowNotificationDropdown(false);
-        setNotificationMessage(null);
-      }, 5000); // Hide after 5 seconds
-    }
-    return () => clearTimeout(timer);
-  }, [showNotificationDropdown]);
 
   useEffect(() => {
     // This effect will listen for changes that indicate a message has been deleted.
@@ -640,7 +649,11 @@ const ChatPage = () => {
             </div>
             {searchQuery.length > 0 ? (
               loadingSearch ? (
-                <p>Searching users...</p>
+                <>
+                  <LazyLoading className="chat-list-item" />
+                  <LazyLoading className="chat-list-item" />
+                  <LazyLoading className="chat-list-item" />
+                </>
               ) : errorSearch ? (
                 <p>Error searching users: {errorSearch.message}</p>
               ) : searchResults.length > 0 ? (
@@ -666,12 +679,16 @@ const ChatPage = () => {
               )
             ) : (
               !isOnline ? (
-                <div className="">
-                  <div className=""></div> {/* Placeholder for chat list */}
+                <div className="chat-welcome-message">
+                  <p>You are offline. Please check your connection.</p>
                 </div>
               ) : (
                 loadingChats ? (
-                  <p>Loading chats...</p>
+                  <>
+                    <LazyLoading className="chat-list-item" />
+                    <LazyLoading className="chat-list-item" />
+                    <LazyLoading className="chat-list-item" />
+                  </>
                 ) : errorChats ? (
                   <p>Error loading chats: {errorChats.message}</p>
                 ) : dataChats && dataChats.getChats.length > 0 ? (
@@ -776,7 +793,14 @@ const ChatPage = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
               >
-                {loadingMessages && <p>Loading messages...</p>}
+                {loadingMessages && (
+                  <>
+                    <LazyLoading className="chat-message-bubble other-user" />
+                    <LazyLoading className="chat-message-bubble other-user" />
+                    <LazyLoading className="chat-message-bubble other-user" />
+                    <LazyLoading className="chat-message-bubble other-user" />
+                  </>
+                )}
                 {errorMessages && <p>Error loading messages: {errorMessages.message}</p>}
                 {selectedChatMessages.map((message, index) => {
                   const isRecentMessage = index >= selectedChatMessages.length - 10;
@@ -862,8 +886,6 @@ const ChatPage = () => {
           />
         )}
 
-        {/* Audio element for notification sound */}
-        <audio ref={audioRef} src="/sound/send-message.mp3" preload="auto" />
       </div>
     );
  };

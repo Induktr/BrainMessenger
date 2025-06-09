@@ -5,6 +5,7 @@ import { UserDto } from '../../user/dto/user.dto';
 
 @ObjectType()
 export class AttachmentDto {
+
   @Field(() => ID)
   id: string;
 
@@ -26,6 +27,7 @@ export class AttachmentDto {
 
 @ObjectType()
 export class MessageDto {
+
   @Field(() => ID)
   id: string;
 

@@ -26,11 +26,14 @@ RUN rm -f schema.gql
 # Generate Prisma client (still needed for type generation, etc.)
 RUN npx prisma generate
 
+# Ensure dist directory is clean before building
+RUN rm -rf dist
 # Create the dist directory and set its ownership before building
 RUN mkdir -p dist && chown appuser:appgroup dist
 
 # Build the application (compile TypeScript in JavaScript)
 RUN npm run build
+CMD ["bash"]
 
 # --- Production Stage (no changes needed here for now) ---
 FROM node:20-alpine AS production
@@ -52,4 +55,4 @@ COPY --from=development /usr/src/app/dist/schema.gql ./dist/schema.gql
 
 EXPOSE 4000
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main.js"]

@@ -100,20 +100,20 @@ export class ChatService {
        //      isVerified: msg.sender.isVerified, // Assuming isVerified is needed/available
        //    }
        // })),
-      messages: [], // Include empty messages array for ChatDto compatibility
-      participants: chat.participants.map(p => ({ // Include participants
-        id: p.user.id,
-        email: p.user.email,
-        name: p.user.name,
-        username: p.user.username,
-        isVerified: p.user.isVerified,
-        avatarUrl: p.user.avatarUrl,
-        bio: p.user.bio,
-        status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-      })),
-      };
-    });
-  }
+       messages: [], // Include empty messages array for ChatDto compatibility
+       participants: chat.participants.map(p => ({ // Include participants
+         id: p.user.id,
+         email: p.user.email,
+         name: p.user.name,
+         username: p.user.username,
+         isVerified: p.user.isVerified,
+         avatarUrl: p.user.avatarUrl,
+         bio: p.user.bio,
+         status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
+       })),
+       };
+     });
+   }
 
   async create(type: string, name?: string, participantIds: string[] = []) {
     const newChat = await this.prisma.chat.create({

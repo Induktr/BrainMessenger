@@ -19,29 +19,31 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     // For WebSocket connections (subscriptions), the user payload is directly attached to connection.context by onConnect
-    if (connection && connection.context) {
-      // If the user is already authenticated via the WebSocket connection, allow activation
-      return true;
+    // For WebSocket connections (subscriptions), ensure Passport.js flow is triggered
+    // The token is already validated in onConnect, and user is attached to connection.context.user
+    // We need to ensure this user is available via the standard req.user for guards/decorators
+    if (connection) {
+      // Attach the user from connection.context to the request object for Passport to pick up
+      // This mimics the behavior for HTTP requests where Passport populates req.user
+      // We create a dummy request object for Passport to process
+      const dummyRequest = {
+        ...request, // Preserve any existing request properties if available
+        user: connection.context.user, // Attach the authenticated user
+        // Add other properties if needed by Passport or subsequent guards
+      };
+      // Override the context's request with our dummy request
+      Object.defineProperty(ctx.getContext(), 'req', { value: dummyRequest, writable: true });
+      return super.canActivate(context);
     }
-    // If neither an HTTP request nor an authenticated WebSocket connection, deny activation
+    // If neither an HTTP request nor a WebSocket connection with context, deny activation
     return false;
   }
 
-  getRequest(context: ExecutionContext) {
-    const ctx = GqlExecutionContext.create(context);
-    // For HTTP requests, return the standard request object
-    // For WebSocket connections, return a request-like object with the user attached
-    // For WebSocket connections, return the connection.context which now contains the user
-    if (ctx.getContext().connection) {
-      const connectionContext = ctx.getContext().connection.context;
-      console.log('[JwtAuthGuard] getRequest returning for WebSocket (connection.context):', connectionContext ? 'exists' : 'null');
-      // Return a request-like object with the user attached to the 'user' property
-      return { user: connectionContext.user };
-    }
-    const requestObject = ctx.getContext().request;
-    console.log('[JwtAuthGuard] getRequest returning for HTTP:', requestObject ? 'exists' : 'null');
-    return requestObject;
-  }
+  // getRequest is no longer explicitly overridden for WebSocket as super.canActivate will handle it
+  // by using the modified context.req.
+  // We can remove this override if the base AuthGuard's getRequest correctly handles the modified context.
+  // If issues persist, we might need to re-evaluate this.
+  // For now, let's rely on the modification in canActivate.
 
   handleRequest(err, user, info, context, status) {
     if (err || !user) {

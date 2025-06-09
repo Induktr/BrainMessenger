@@ -7,13 +7,15 @@ import { UserDto } from '../user/dto/user.dto';
 import { MessageService } from '../message/message.service';
 import { PubSub, withFilter } from 'graphql-subscriptions'; // Import PubSub and withFilter
 import { CreateChatInput } from './dto/create-chat.input'; // Assuming a new input type for createChat
-import { UseGuards } from '@nestjs/common'; // Import UseGuards
+import { UseGuards, UseInterceptors } from '@nestjs/common'; // Import UseGuards, UseInterceptors
+import { CacheTTL } from '@nestjs/cache-manager'; // Import CacheTTL
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Import your JWT auth guard
 import { RolesGuard } from '../auth/roles.guard'; // Import RolesGuard
 import { Roles } from '../auth/roles.decorator'; // Import Roles decorator
 import { CurrentUser } from '../auth/current-user.decorator'; // Import your CurrentUser decorator
 import { User } from '../auth/interfaces/user.interface'; // Import custom User interface
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts'; // Import GraphQLUpload and FileUpload
+import { UserCacheInterceptor } from '../common/interceptors/user-cache.interceptor'; // Import UserCacheInterceptor
 
 import { Inject } from '@nestjs/common'; // Import Inject
 
@@ -87,6 +89,9 @@ export class ChatResolver {
   }
 
   @Query(() => [ChatDto])
+  @UseGuards(JwtAuthGuard) // Ensure user is authenticated
+  @UseInterceptors(UserCacheInterceptor) // Apply UserCacheInterceptor
+  @CacheTTL(60) // Cache for 60 seconds
   async getChats(@CurrentUser() user: User): Promise<ChatDto[]> {
     console.log('[ChatResolver] getChats called by user:', user ? user.id : 'undefined user');
     // Service now returns data in a shape closer to ChatDto
@@ -298,11 +303,11 @@ export class ChatResolver {
        sender: {
          id: user.id, // Use authenticated user's ID
          name: user.name, // Use authenticated user's name
-         username: user.username, // Include username field
+         username: user.username || null, // Ensure username is null if undefined
          email: user.email,
          isVerified: user.isVerified,
-         avatarUrl: user.avatarUrl, // Include avatarUrl
-         bio: user.bio, // Include bio field
+         avatarUrl: user.avatarUrl || null, // Ensure avatarUrl is null if undefined
+         bio: user.bio || null, // Ensure bio is null if undefined
          status: user.lastActiveAt && !isNaN(new Date(user.lastActiveAt).getTime()) ? (new Date(user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline', // Ensure lastActiveAt is a valid date
          roles: user.roles || [], // Include roles, default to empty array if null/undefined
        } as UserDto,
@@ -313,7 +318,7 @@ export class ChatResolver {
          mimetype: att.mimetype,
          size: att.size,
          createdAt: att.createdAt,
-       })),
+       })) || [], // Ensure attachments is an empty array if undefined
        deletedForUserIds: (newMessage as any).deletedForUserIds || [], // Explicitly cast to any
      };
 
@@ -321,7 +326,7 @@ export class ChatResolver {
 
     // Publish the new message to the subscription topic for the specific chat
     if (newMessage) {
-      this.pubSub.publish(`newMessageForChat_${chatId}`, { newMessage: messageDto });
+      this.pubSub.publish('newMessage', { newMessage: messageDto });
     }
 
     return messageDto;
@@ -336,24 +341,18 @@ export class ChatResolver {
         console.warn('[ChatResolver] Subscription denied: No authenticated user for newMessage.');
         return false;
       }
-      // Ensure chatId is provided and matches the incoming message's chatId
-      if (!variables.chatId || payload.newMessage.chatId !== variables.chatId) {
-        console.warn(`[ChatResolver] Subscription filter: Mismatch chatId. Expected ${variables.chatId}, got ${payload.newMessage.chatId}`);
-        return false;
-      }
-      // Only send the message if it's not from the current user (to avoid self-notifications if desired)
-      // Or, if the goal is to show all messages in the chat, remove this line.
+      // No longer filtering by chatId at the subscription level, frontend will handle
+      return true;
+      // The frontend will handle filtering messages based on the active chat.
       // For real-time chat, typically all messages in the chat are sent to all subscribers of that chat.
       // The frontend can then filter if it needs to.
-      return true; // Send all messages for the subscribed chat
     },
     resolve: (payload) => payload.newMessage,
   })
   newMessage(
-    @Args('chatId', { type: () => ID }) chatId: string, // Accept chatId as an argument
     @CurrentUser() user: User, // Inject current user for logging/context if needed
   ): AsyncIterator<MessageDto> { // Return AsyncIterator
     // This method is required by @Subscription but the actual logic is in the filter and resolve options
-    return (this.pubSub as any).asyncIterator(`newMessageForChat_${chatId}`);
+    return (this.pubSub as any).asyncIterator('newMessage');
   }
 }

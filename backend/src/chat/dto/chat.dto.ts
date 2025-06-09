@@ -4,6 +4,7 @@ import { MessageDto } from '../../message/dto/message.dto';
 
 @ObjectType()
 export class ChatDto {
+
   @Field(() => ID)
   id: string;
 

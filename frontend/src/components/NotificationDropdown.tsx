@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { icons } from '@/app/lib/constants';
 
@@ -36,8 +36,33 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, is
     return null;
   }
 
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isVisible && message) {
+      // Play sound
+      if (audioRef.current) {
+        audioRef.current.play().catch(error => console.error("Error playing sound:", error));
+      }
+
+      // Auto-dismiss after 5 seconds
+      timer = setTimeout(() => {
+        onClose();
+      }, 5000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isVisible, message, onClose]);
+
+  if (!isVisible || !message) {
+    return null;
+  }
+
   return (
-    <div className={`notification-dropdown ${isVisible ? 'show' : ''}`}>
+    <div className="notification-dropdown show">
       <div className="notification-content">
         <div className="notification-header">
           <div className="notification-sender-info">
@@ -54,6 +79,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, is
         </div>
         <p className="notification-message-content">{message.content}</p>
       </div>
+      <audio ref={audioRef} src="/sound/notification.mp3" preload="auto" />
     </div>
   );
 };

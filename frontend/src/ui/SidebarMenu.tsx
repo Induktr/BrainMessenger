@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import Button from '@/components/Button';
 import CreateChannelModal from '@/components/CreateChannelModal';
 import CreateGroupModal from '@/components/CreateGroupModal';
+import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { icons, detailedUserInfo } from '../app/lib/constants'; // Keep import for now, might remove later
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext'; // Import useAuth hook
@@ -27,7 +28,24 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ onOpenSettings, onToggleTheme
  
   // Optional: Show loading state or placeholder if user data is queryLoading
   if (queryLoading) {
-    return <div>Loading user data...</div>; // Or a loading spinner
+    return (
+      <div className="sidebar-menu sidebar-menu-container">
+        <div className="sidebar-menu-content sidebar-menu-content-wrapper">
+          <div className="sidebar-user-profile sidebar-user-profile-section">
+            <LazyLoading className="sidebar-avatar" />
+            <div className="sidebar-user-info">
+              <LazyLoading className="lazy-loading-text-line sidebar-loading-name" /> {/* Placeholder for name */}
+              <LazyLoading className="lazy-loading-text-line sidebar-loading-email" /> {/* Placeholder for email */}
+            </div>
+          </div>
+          <div className="sidebar-options-list sidebar-options-list-wrapper">
+            <LazyLoading className="lazy-loading-block sidebar-option-loading" />
+            <LazyLoading className="lazy-loading-block sidebar-option-loading" />
+            <LazyLoading className="lazy-loading-block sidebar-option-loading" />
+          </div>
+        </div>
+      </div>
+    );
   }
  
   // Optional: Handle case where user is not logged in (e.g., redirect to login)

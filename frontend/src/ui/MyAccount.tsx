@@ -6,6 +6,7 @@ import { icons, userInfo, detailedUserInfo } from '../app/lib/constants';
 import Button from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { generateAvatarData } from '@/utils/avatarUtils';
+import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation, useApolloClient } from '@apollo/client';
 import { UPLOAD_AVATAR, UPDATE_USER_PROFILE, GET_CURRENT_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/graphql/queries';
 
@@ -87,7 +88,46 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
  
   // Optional: Show loading state or placeholder if user data is loading
   if (queryLoading) {
-    return <div>Loading user data...</div>; // Or a loading spinner
+    return (
+      <Modal onClose={onClose} isOpen={isOpen}>
+        <div className="myaccount-modal-content">
+          <div className="myaccount-header">
+            <Button className="myaccount-back-button" onClick={onBack}>
+              <img src={icons.arrowLeft} alt="Back" className="icon" />
+            </Button>
+            <h2 className="myaccount-header-title">Info</h2>
+            <Button className="myaccount-close-button" onClick={onClose}>
+              <img src={icons.closeModal} alt="Close" className="icon" />
+            </Button>
+          </div>
+          <div className="myaccount-user-info-section">
+            <LazyLoading className="myaccount-avatar" /> {/* Avatar loading */}
+            <div className="myaccount-name-status">
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-name" /> {/* Name loading */}
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-status" /> {/* Status loading */}
+            </div>
+            <LazyLoading className="lazy-loading-block myaccount-loading-bio" /> {/* Biography loading */}
+          </div>
+          <div className="myaccount-separator"></div>
+          <div className="myaccount-detailed-info">
+            <div className="myaccount-name-username-group">
+              <div className="myaccount-info-item">
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Name label loading */}
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Name value loading */}
+              </div>
+              <div className="myaccount-info-item">
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Username label loading */}
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Username value loading */}
+              </div>
+            </div>
+            <div className="myaccount-info-item myaccount-info-item-centered">
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Email label loading */}
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-email-value" /> {/* Email value loading */}
+            </div>
+          </div>
+        </div>
+      </Modal>
+    );
   }
  
   // Optional: Handle case where user is not logged in

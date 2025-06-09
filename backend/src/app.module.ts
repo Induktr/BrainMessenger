@@ -20,12 +20,15 @@ import { CacheModule } from '@nestjs/cache-manager'; // Import CacheModule
 import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
 import { PubSub } from 'graphql-subscriptions'; // Import PubSub
+import * as redisStore from 'cache-manager-redis-store'; // Import redisStore
+import { KafkaModule } from './kafka/kafka.module'; // Import KafkaModule
 
 @Module({
   imports: [
     PrismaModule, // Add PrismaModule here
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: './backend/.env', // Specify the path to your .env file
     }),
     HttpModule.register({
       global: true,
@@ -81,20 +84,28 @@ import { PubSub } from 'graphql-subscriptions'; // Import PubSub
           }
           // For WebSocket connections (subscriptions)
           if (connection) {
-            // For WebSocket connections (subscriptions)
-            // The user payload is attached to `extra.user` in onConnect, which becomes `connection.context.user`
-            // We need to ensure it's available at `connection.context.req.user` for guards
-            connection.context.req = connection.context.req || {};
-            connection.context.req.headers = connection.context.req.headers || {};
-            connection.context.req.user = connection.context.user; // Map the user from onConnect to req.user
-            return { request: connection.context.req };
+            // The user payload is attached to `extra.user` in onConnect, which becomes `connection.context.user`.
+            // We need to ensure the user is directly available on `connection.user` for Passport/Guards.
+            // Also, ensure `connection.context.req` is set up if guards expect a `req` object.
+            connection.user = connection.context.user; // Attach user directly to connection for guards
+            connection.context.req = connection.context.req || {}; // Ensure req object exists in context
+            connection.context.req.user = connection.context.user; // Also map to req.user for consistency
+            return { req, connection }; // Return both req and connection
           }
           return {};
         },
       }),
     }),
-    CacheModule.register({
-      ttl: 30 * 1000, // default time-to-live for cache entries (30 seconds)
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get<string>('REDIS_HOST') || 'localhost',
+        port: configService.get<number>('REDIS_PORT') || 6379,
+        ttl: configService.get<number>('CACHE_TTL') || 300, // seconds
+      }),
+      isGlobal: true, // Make CacheModule global
     }),
     UserModule,
     AuthModule,
@@ -103,6 +114,7 @@ import { PubSub } from 'graphql-subscriptions'; // Import PubSub
     MailModule,
     FileModule, // Add FileModule here
     CloudflareModule, // Add CloudflareModule here
+    KafkaModule, // Add KafkaModule here
   ],
   controllers: [AppController],
   providers: [

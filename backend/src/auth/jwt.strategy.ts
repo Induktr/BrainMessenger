@@ -29,11 +29,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException('Invalid token payload: Missing subject (sub).');
     }
     const userId = payload.sub;
+    console.log(`[JwtStrategy] Attempting to find user with ID: "${userId}" (Type: ${typeof userId})`); // More detailed logging
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });
 
-    console.log('[JwtStrategy] User lookup result for userId', userId, ':', user ? 'Found' : 'Not Found'); // Added logging
+    if (!user) {
+      console.error(`[JwtStrategy] User with ID "${userId}" not found in database.`); // Log specific ID not found
+    }
+    console.log('[JwtStrategy] User lookup result for userId', userId, ':', user ? 'Found' : 'Not Found'); // Existing logging
 
     if (!user) {
       // Если пользователь с таким ID не найден в базе, токен недействителен

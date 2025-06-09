@@ -63,6 +63,7 @@ model Message {
   readByParticipants ChatParticipant[] @relation("LastReadMessage") // Added opposite relation
   attachments        Attachment[]
   deletedForUserIds  String[] @default([]) // New field to mark messages as deleted for specific users
+  isViewed           Boolean  @default(false) // Added isViewed field
 }
 
 model Attachment {

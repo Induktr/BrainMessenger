@@ -6,7 +6,9 @@ import '../ui/ui.css';
 import ApolloWrapper from '@/components/ApolloWrapper'; // Import ApolloWrapper
 import { AuthProvider } from '@/context/AuthContext'; // Import AuthProvider
 import { NetworkStatusProvider } from '@/context/NetworkStatusContext'; // Import NetworkStatusProvider
- 
+import { ChatIdProvider } from '@/context/ChatIdContext'; // Import ChatIdProvider
+import GlobalNotificationHandler from '@/components/GlobalNotificationHandler'; // Import GlobalNotificationHandler
+
 // Import Roboto font
 import { Roboto } from 'next/font/google';
 
@@ -29,7 +31,6 @@ const roboto = Roboto({
   display: 'swap', // Optimize font loading
 });
 
-
 export const metadata: Metadata = {
   title: "BrainMessenger", // Updated title
   description: "BrainMessenger MVP", // Updated description
@@ -48,7 +49,10 @@ export default function RootLayout({
         <ApolloWrapper> {/* ApolloWrapper (containing ApolloProvider) must wrap AuthProvider */}
           <NetworkStatusProvider>
             <AuthProvider>
+              <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
                 {children}
+                <GlobalNotificationHandler />
+              </ChatIdProvider>
             </AuthProvider>
           </NetworkStatusProvider>
         </ApolloWrapper>

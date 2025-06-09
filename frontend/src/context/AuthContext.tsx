@@ -1,10 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useQuery, useApolloClient, useMutation, gql } from '@apollo/client';
-import { GET_CURRENT_USER, UPDATE_LAST_ACTIVE, REFRESH_TOKEN_MUTATION } from '@/graphql/queries';
+import { useQuery, useApolloClient, useMutation, gql, useSubscription } from '@apollo/client'; // Added useSubscription
+import { GET_CURRENT_USER, UPDATE_LAST_ACTIVE, REFRESH_TOKEN_MUTATION, NEW_MESSAGE_SUBSCRIPTION } from '@/graphql/queries'; // Added NEW_MESSAGE_SUBSCRIPTION
 import { useRouter, usePathname } from 'next/navigation';
 import { setAccessTokenForApollo } from '@/apollo-client'; // Import setAccessTokenForApollo
+import NotificationDropdown from '@/components/NotificationDropdown'; // Import NotificationDropdown
+import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
+import Image from 'next/image'; // Import Image component
 
 // Define the type for the user data
 interface User {
@@ -30,6 +33,30 @@ interface AuthContextType {
   isInitializing: boolean;
   showEmailVerificationModal: boolean;
   setShowEmailVerificationModal: (show: boolean) => void;
+  showNotification: boolean;
+  notificationMessage: Message | null;
+  closeNotification: () => void;
+}
+
+interface Message { // Define Message interface here for NotificationDropdown
+  id: string;
+  chatId: string;
+  sender: {
+    id: string;
+    name: string;
+    avatarUrl?: string | null;
+    username?: string | null;
+    status?: string;
+    bio?: string | null;
+  };
+  content: string;
+  createdAt: string;
+  attachments?: {
+    id: string;
+    url: string;
+    filename: string;
+    mimetype: string;
+  }[];
 }
 
 // Create the context with default values
@@ -47,6 +74,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [offlineTimer, setOfflineTimer] = useState<NodeJS.Timeout | null>(null);
   const [isOnline, setIsOnline] = useState(true);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState<Message | null>(null);
 
   const [updateLastActive] = useMutation(UPDATE_LAST_ACTIVE, {
     update(cache, { data }) {
@@ -139,7 +168,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Effect to handle online/offline status
   useEffect(() => {
-    if (typeof window === 'undefined' || !user) return;
+    if (typeof window === 'undefined' || !user || isInitializing) return; // Добавлена проверка isInitializing
 
     let activityInterval: NodeJS.Timeout;
 
@@ -255,21 +284,61 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     router.replace('/login');
   };
 
+
+  // Placeholder for currentChatId - in a real app, this would come from router params or another context
+  const currentChatId = pathname.startsWith('/chat/') ? pathname.split('/')[2] : null;
+
+  useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
+    variables: { chatId: currentChatId || '' }, // Pass currentChatId to subscription
+    skip: !currentChatId, // Skip subscription if no chat is active
+    onData: ({ data }) => {
+      const newMessage = data.data?.newMessage;
+      if (newMessage && newMessage.sender.id !== user?.id && newMessage.chatId !== currentChatId) {
+        setNotificationMessage(newMessage);
+        setShowNotification(true);
+      }
+    },
+    onError: (err) => {
+      console.error("Error in NEW_MESSAGE_SUBSCRIPTION:", err);
+    }
+  });
+
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage(null);
+  };
+
   const contextValue: AuthContextType = {
     user,
-    queryLoading: loading, // Use 'loading' from useQuery as 'queryLoading'
+    queryLoading: loading,
     error,
     refetchUser: refetch,
     setUserState: setUser,
-    logout,
     isInitializing,
+    logout,
     showEmailVerificationModal,
     setShowEmailVerificationModal,
+    showNotification,
+    notificationMessage,
+    closeNotification,
   };
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {children}
+      {isInitializing ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
+          <LazyLoading className="lazy-loading-logo-container">
+            <Image src="/images/logo.png" alt="BrainMessenger Logo" width={120} height={120} />
+          </LazyLoading>
+        </div>
+      ) : (
+        children
+      )}
+      <NotificationDropdown
+        message={notificationMessage}
+        isVisible={showNotification}
+        onClose={closeNotification}
+      />
     </AuthContext.Provider>
   );
 };

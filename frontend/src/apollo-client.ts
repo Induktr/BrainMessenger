@@ -11,7 +11,6 @@ import Observable from 'zen-observable';
 import { execute, Operation } from '@apollo/client/link/core';
 import { REFRESH_TOKEN_MUTATION } from '@/graphql/queries';
 
-
 // Configure the HTTP link for queries and mutations
 // Determine the backend URL dynamically based on the frontend's location
 const isBrowser = typeof window !== 'undefined';
@@ -38,7 +37,6 @@ const getBackendUrl = (protocol: string) => {
     return `http://backend:${backendPort}/graphql`;
   } else {
     // Default for local development outside Docker (e.g., direct npm run dev)
-    // Default for local development outside Docker (e.g., direct npm run dev)
     // Explicitly use localhost and backendPort
     if (protocol === 'http') {
       return `http://localhost:${backendPort}/graphql`;
@@ -56,14 +54,28 @@ const tokenRef = {
 // A mutable object to hold the WebSocket client instance
 let wsClientRef: any = null;
 
-// Function to update the access token
-export const setAccessTokenForApollo = (token: string | null) => {
-  tokenRef.currentAccessToken = token;
-  // If the WebSocket client exists, restart it to re-authenticate with the new token
-  if (wsClientRef) {
-    wsClientRef.dispose();
-  }
+// Function to create and return a new WebSocket client
+const createNewWsClient = () => {
+  const client = createClient({
+    url: getBackendUrl('ws'),
+    connectionParams: () => {
+      const currentToken = tokenRef.currentAccessToken;
+      console.log('[ApolloClient] WebSocket connectionParams: Token', currentToken ? 'Present' : 'Missing');
+      return {
+        Authorization: currentToken ? `Bearer ${currentToken}` : '',
+      };
+    },
+  });
+  client.on('connected', () => console.log('[ApolloClient] WebSocket connected!'));
+  client.on('closed', (event: any) => console.log('[ApolloClient] WebSocket closed:', event));
+  client.on('error', (error: any) => console.error('[ApolloClient] WebSocket error:', error));
+  return client;
 };
+
+// Initial creation of wsClientRef (only if in browser)
+if (isBrowser) {
+  wsClientRef = createNewWsClient();
+}
 
 // Configure the HTTP link for standard queries and mutations
 const httpLink = new HttpLink({
@@ -78,27 +90,14 @@ const uploadLink = createUploadLink({
   },
 });
 
-// Configure the WebSocket link for subscriptions
-const wsClient = isBrowser ? createClient({
-  url: getBackendUrl('ws'), // Use the unified getBackendUrl
-  connectionParams: () => {
-    // Use the current access token from tokenRef
-    return {
-      Authorization: tokenRef.currentAccessToken ? `Bearer ${tokenRef.currentAccessToken}` : '',
-    };
-  },
-}) : null;
-
-if (isBrowser) {
-  wsClientRef = wsClient; // Assign the client instance to wsClientRef
-}
-
-const wsLink = isBrowser && wsClient ? new GraphQLWsLink(wsClient) : (null as any);
-
 // Configure the authentication link
 const authLink = setContext(async (operation, { headers }) => {
-  // Use the current access token from tokenRef
-  const currentAccessToken = tokenRef.currentAccessToken;
+  // Читаем токен доступа непосредственно из localStorage для каждого запроса
+  const currentAccessToken = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  console.log('[ApolloClient] AuthLink - Current Access Token:', currentAccessToken ? 'Present' : 'Missing');
+  if (currentAccessToken) {
+    console.log('[ApolloClient] AuthLink - Access Token (first 10 chars):', currentAccessToken.substring(0, 10) + '...');
+  }
 
   return {
     headers: {
@@ -135,15 +134,16 @@ const processQueue = (error: any, access_token: string | null = null) => {
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
     for (let err of graphQLErrors) {
-      console.error('ErrorLink - GraphQL Error:', err); // Log the full GraphQL error
+      console.error('ErrorLink - GraphQL Error:', JSON.stringify(err, null, 2)); // Log the full GraphQL error with more detail
       // Handle authentication errors
       if (err.extensions?.code === 'UNAUTHENTICATED') {
+        console.warn('ErrorLink - UNAUTHENTICATED error detected. Attempting token refresh.');
 
         // Get the refresh token from local storage
         const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refresh_token') : null;
 
           if (!refreshToken) {
-            console.error('ErrorLink - No refresh token available. Clearing tokens.');
+            console.error('ErrorLink - No refresh token available. Clearing tokens and redirecting.');
             if (typeof window !== 'undefined') {
               localStorage.removeItem('access_token');
               localStorage.removeItem('refresh_token');
@@ -153,6 +153,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
               observer.error(err);
             });
           }
+          console.log('ErrorLink - Refresh token found. Attempting refresh...');
 
           if (!isRefreshing) {
             isRefreshing = true;
@@ -181,9 +182,10 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                     isRefreshing = false;
                     // Update the tokenRef with the new token after successful refresh
                     setAccessTokenForApollo(newAccessToken);
+                    console.log('ErrorLink - Token refresh successful. New access token set.');
                     processQueue(null, newAccessToken);
                   } else {
-                    console.error('ErrorLink - Refresh token mutation failed or returned invalid data. Clearing tokens.');
+                    console.error('ErrorLink - Refresh token mutation failed or returned invalid data. Clearing tokens and processing queue with error.');
                     isRefreshing = false;
                     if (typeof window !== 'undefined') {
                       localStorage.removeItem('access_token');
@@ -193,7 +195,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                   }
                 },
                 error: (refreshError: any) => {
-                  console.error('ErrorLink - Error during token refresh:', refreshError);
+                  console.error('ErrorLink - Error during token refresh:', JSON.stringify(refreshError, null, 2));
                   isRefreshing = false;
                   if (typeof window !== 'undefined') {
                     localStorage.removeItem('access_token');
@@ -203,7 +205,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                 },
               });
             } catch (syncError) {
-              console.error('ErrorLink - Synchronous error during refresh token execution:', syncError);
+              console.error('ErrorLink - Synchronous error during refresh token execution:', JSON.stringify(syncError, null, 2));
               isRefreshing = false;
               if (typeof window !== 'undefined') {
                 localStorage.removeItem('access_token');
@@ -212,6 +214,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
               processQueue(syncError);
             }
           }
+          console.log('ErrorLink - Adding operation to failed queue.');
 
           return new Observable(observer => {
             failedQueue.push({ operation, forward, observer });
@@ -221,29 +224,34 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
   }
 
   if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
+    console.error(`[Network error]: ${JSON.stringify(networkError, null, 2)}`);
     // Handle network errors if needed
   }
 });
 
-
 // Use split to route requests to the appropriate link
 // Conditionally include wsLink only if it's defined (client-side)
-const splitLink = isBrowser && wsLink ? split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
-  },
-  wsLink,
-  // Route file upload mutations (UploadAvatar and SendMessage) to uploadLink, others to httpLink
-  split(({ operationName }) => operationName === 'UploadAvatar' || operationName === 'SendMessage', uploadLink, httpLink),
-) : httpLink; // Use only httpLink on the server or if wsLink is not defined
+let currentWsLink: GraphQLWsLink | null = isBrowser && wsClientRef ? new GraphQLWsLink(wsClientRef) : null;
+
+const createSplitLink = (wsLink: GraphQLWsLink | null) => {
+  return isBrowser && wsLink ? split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      return (
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription'
+      );
+    },
+    wsLink,
+    // Route file upload mutations (UploadAvatar and SendMessage) to uploadLink, others to httpLink
+    split(({ operationName }) => operationName === 'UploadAvatar' || operationName === 'SendMessage', uploadLink, httpLink),
+  ) : httpLink; // Use only httpLink on the server or if wsLink is not defined
+};
+
+let splitLink = createSplitLink(currentWsLink);
 
 // Chain the links: errorLink -> authLink -> splitLink
-const link = from(
+let link = from(
   [
     errorLink, // Handle errors first
     authLink, // Add auth headers
@@ -251,12 +259,38 @@ const link = from(
   ]
 );
 
-
 // Create the Apollo Client instance
 const client = new ApolloClient({
   link: link, // Use the chained link
   cache: new InMemoryCache(),
 });
 
+// Function to update the access token and re-initialize WebSocket connection
+export const setAccessTokenForApollo = (token: string | null) => {
+  console.log('[ApolloClient] setAccessTokenForApollo called. New token:', token ? 'Present' : 'Missing');
+  tokenRef.currentAccessToken = token;
+
+  if (isBrowser) {
+    // Dispose of the old WebSocket client if it exists
+    if (wsClientRef) {
+      console.log('[ApolloClient] Disposing existing WebSocket client.');
+      wsClientRef.dispose();
+    }
+
+    // Create a new WebSocket client with the updated token
+    wsClientRef = createNewWsClient();
+    currentWsLink = new GraphQLWsLink(wsClientRef);
+
+    // Update the Apollo Client's link with the new WebSocket link
+    splitLink = createSplitLink(currentWsLink);
+    link = from([
+      errorLink,
+      authLink,
+      splitLink,
+    ]);
+    client.setLink(link); // Update the client's link
+    console.log('[ApolloClient] Apollo Client link updated with new WebSocket client.');
+  }
+};
 
 export default client;

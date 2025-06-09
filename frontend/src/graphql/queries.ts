@@ -89,7 +89,7 @@ export const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription NewMessage($chatId: ID!) {
     newMessage(chatId: $chatId) {
       id
-      chatId # Include chatId in the subscription payload
+      chatId
       content
       createdAt
       sender {

@@ -6,6 +6,7 @@ import UserProfileModal from '@/components/UserProfileModal';
 import ContextMenu from '@/components/ContextMenu';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import AudioPlayer from './AudioPlayer'; // Import AudioPlayer
+import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation } from '@apollo/client';
 import { DELETE_MESSAGE } from '@/graphql/queries';
 
@@ -192,9 +193,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
               {message.content && message.content.trim() !== '' && <p className="chat-message-content">{message.content}</p>}
             </>
           ) : (
-            <div className="chat-message-placeholder animated-gradient">
-              {/* Gradient animation will be applied via CSS */}
-            </div>
+            <LazyLoading className={`chat-message-bubble ${isCurrentUser ? 'current-user' : 'other-user'}`} />
           )}
           <div className={`chat-message-timestamp ${isCurrentUser ? 'current-user' : 'other-user'}`}>
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

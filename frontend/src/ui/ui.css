@@ -569,13 +569,8 @@
     display: flex;
     align-items: center;
     background-color: #2B2B2B;
-    flex-shrink: 0;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1;
-    width: 100%; /* Ensure it takes full width */
-    max-width: 800px; /* Limit max width for better aesthetics on large screens */
-    box-sizing: border-box; /* Include padding in width */
-    margin: 0 auto; /* Center the input container */
 }
 
 .folder-button {
@@ -599,11 +594,13 @@
 .chat-input-container .input-container {
     flex-grow: 1; /* Allow input to take available space */
     /* Removed margin-right: 10px; as gap handles spacing */
-    height: 44px; /* Match button height for alignment */
+    height: 100px; /* Match button height for alignment */
+    background: none;
+    border-radius: 0;
 }
 
 .chat-input-container .input-field {
-    font-size: 16px; /* Adjust font size for consistency */
+    font-size: 24px; /* Adjust font size for consistency */
 }
 
 .chat-input-container .input-field::placeholder {
@@ -1860,14 +1857,13 @@
   transform: translateX(-50%);
   width: 90%;
   max-width: 400px;
-  background-color: #fff;
+  background-color: #2B2B2B; /* Dark background */
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow */
   padding: 15px 20px;
   z-index: 1000;
-  transition: top 0.5s ease-out; /* Animation for sliding down */
   opacity: 0; /* Start invisible */
-  animation: slideInFromTop 0.5s ease-out forwards; /* Animation for sliding in */
+  transition: top 0.5s ease-out, opacity 0.5s ease-out; /* Animation for sliding down and fading in */
 }
 
 .notification-dropdown.show {
@@ -1875,16 +1871,7 @@
   opacity: 1;
 }
 
-@keyframes slideInFromTop {
-  from {
-    top: -100px;
-    opacity: 0;
-  }
-  to {
-    top: 20px;
-    opacity: 1;
-  }
-}
+/* No need for @keyframes slideInFromTop as transition handles it */
 
 .notification-content {
   display: flex;
@@ -1912,12 +1899,12 @@
 }
 
 .default-avatar {
-  background-color: #ccc; /* Placeholder for default avatar */
+  background-color: #555; /* Darker placeholder for default avatar */
 }
 
 .notification-sender-name {
   font-weight: bold;
-  color: #333;
+  color: #f0f0f0; /* Light text color */
 }
 
 .notification-close-button {
@@ -1931,11 +1918,131 @@
 }
 
 .notification-close-button img {
-  filter: invert(50%); /* Adjust icon color if needed */
+  filter: brightness(0) invert(1); /* Make icon white */
 }
 
 .notification-message-content {
   font-size: 0.95em;
-  color: #555;
+  color: #b0b0b0; /* Lighter text color */
   word-wrap: break-word;
+}
+/* Lazy Loading Animation */
+.lazy-loading-bubble {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--chat-bubble-background); /* Or a neutral background color */
+  border-radius: 18px; /* Adjust to match your message bubble border-radius */
+  padding: 10px 15px; /* Adjust to match your message bubble padding */
+  min-width: 100px; /* Minimum width for the loading bubble */
+  min-height: 40px; /* Minimum height for the loading bubble */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lazy-loading-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+/* Lazy Loading Logo Specific Styles */
+.lazy-loading-logo-container {
+  width: 120px; /* Adjust size as needed for the logo */
+  height: 120px; /* Adjust size as needed for the logo */
+  border-radius: 50%; /* Make it circular */
+  overflow: hidden; /* Hide overflow for the circular shape */
+  background-color: #3a3a3a; /* A darker background for the silhouette */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Needed for shimmer positioning */
+}
+
+.lazy-loading-logo-container img {
+  width: 80%; /* Adjust logo size within the circle */
+  height: 80%; /* Adjust logo size within the circle */
+  object-fit: contain; /* Ensure the logo fits without cropping */
+  filter: grayscale(100%) brightness(0) invert(1); /* Make it a white silhouette */
+  opacity: 0.2; /* Subtle opacity for the silhouette */
+}
+/* Lazy Loading Placeholder Styles for text and blocks */
+.lazy-loading-text-line {
+  height: 1em; /* Approximate line height */
+  background-color: #4f545c; /* Darker background for text placeholder */
+  border-radius: 4px;
+  margin-bottom: 0.5em; /* Space between lines */
+  overflow: hidden; /* For shimmer effect */
+  position: relative; /* For shimmer effect */
+}
+
+.lazy-loading-block {
+  background-color: #4f545c; /* Darker background for block placeholder */
+  border-radius: 8px;
+  overflow: hidden; /* For shimmer effect */
+  position: relative; /* For shimmer effect */
+}
+
+/* Specific dimensions for sidebar placeholders */
+.sidebar-loading-name {
+  width: 128px; /* w-32 */
+  height: 24px; /* h-6 */
+  margin-bottom: 8px; /* mb-2 */
+}
+
+.sidebar-loading-email {
+  width: 96px; /* w-24 */
+  height: 16px; /* h-4 */
+}
+
+/* Specific dimensions for myaccount placeholders */
+.myaccount-loading-name {
+  width: 192px; /* w-48 */
+  height: 32px; /* h-8 */
+  margin-bottom: 8px; /* mb-2 */
+}
+
+.myaccount-loading-status {
+  width: 96px; /* w-24 */
+  height: 24px; /* h-6 */
+}
+
+.myaccount-loading-bio {
+  width: 100%; /* w-full */
+  height: 96px; /* h-24 */
+  margin-top: 16px; /* mt-4 */
+}
+
+.myaccount-loading-info-label {
+  width: 64px; /* w-16 */
+  height: 24px; /* h-6 */
+  margin-bottom: 8px; /* mb-2 */
+}
+
+.myaccount-loading-info-value {
+  width: 96px; /* w-24 */
+  height: 24px; /* h-6 */
+}
+
+.myaccount-loading-email-value {
+  width: 128px; /* w-32 */
+  height: 24px; /* h-6 */
 }
