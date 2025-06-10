@@ -9,6 +9,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { RegisterInput } from '../auth/dto/register-input'; // Import RegisterInput
 import { LoginInput } from '../auth/dto/login-input'; // Import LoginInput
+import { CurrentUser } from '../auth/current-user.decorator'; // Import CurrentUser decorator
+import { User } from '@prisma/client'; // Import Prisma User type
 
 @InputType()
 class UpdateUserInput {
@@ -61,24 +63,18 @@ export class UserResolver {
  
   @Query(() => UserDto, { name: 'getCurrentUser', nullable: true })
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(CacheInterceptor) // Apply CacheInterceptor
-  @CacheKey('currentUser') // Define cache key
-  @CacheTTL(60) // Set TTL to 60 seconds
-  async getCurrentUser(@Context() context): Promise<UserDto | null> {
-    // console.log('UserResolver - getCurrentUser: Resolver entered.'); // Removed excessive log
-    const userId = context.req.user?.id; // Изменено на 'id'
-
-    if (!userId) {
-      // console.error('User ID not found in context after JwtAuthGuard. Check JwtStrategy payload.'); // Removed excessive log
-      throw new UnauthorizedException('Authentication required: User ID not found in token payload.');
+  async getCurrentUser(@CurrentUser() user: User): Promise<UserDto | null> {
+    // The CurrentUser decorator ensures 'user' is available and authenticated.
+    // If the guard passes, 'user' will contain the authenticated user object.
+    if (!user || !user.id) {
+      throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-
-    const user = await this.userService.findOne(userId);
-    if (!user) {
-        // console.error(`User with ID ${userId} not found in database.`); // Removed excessive log
+    // console.log('UserResolver - getCurrentUser: User ID from decorator:', user.id); // Added log
+    const foundUser = await this.userService.findOne(user.id);
+    if (!foundUser) {
         return null;
     }
-    return user;
+    return foundUser;
   }
 
   @ResolveField(() => String)
@@ -124,12 +120,11 @@ export class UserResolver {
 
   @Mutation(() => UserDto)
   @UseGuards(JwtAuthGuard)
-  async updateLastActive(@Context() context: any): Promise<UserDto> {
-    const userId = context.req.user?.id;
-    if (!userId) {
+  async updateLastActive(@CurrentUser() user: User): Promise<UserDto> {
+    if (!user || !user.id) {
       throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-    return this.userService.updateLastActive(userId);
+    return this.userService.updateLastActive(user.id);
   }
 
   @Mutation(() => [String])
@@ -169,46 +164,37 @@ export class UserResolver {
   @UseGuards(JwtAuthGuard)
   async uploadAvatar(
     @Args('file', { type: () => GraphQLUpload }) file: FileUpload,
-    @Context() context,
+    @CurrentUser() user: User,
   ): Promise<UserDto> {
-    const userId = context.req.user?.id;
-
-    if (!userId) {
-       // console.error('User ID not found in context after JwtAuthGuard. Check JwtStrategy payload.'); // Removed excessive log
+    if (!user || !user.id) {
        throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-
-    // console.log(`Received file upload request for user ${userId}:`, file); // Removed excessive log
-
     try {
-      const updatedUser = await this.userService.uploadAvatar(userId, file);
+      const updatedUser = await this.userService.uploadAvatar(user.id, file);
       return updatedUser;
     } catch (error) {
-      // console.error(`Error in uploadAvatar mutation for user ${userId}:`, error); // Removed excessive log
       throw error;
     }
   }
 
   @Mutation(() => Boolean)
   @UseGuards(JwtAuthGuard)
-  async sendVerificationEmail(@Context() context: any): Promise<boolean> {
-    const userId = context.req.user?.id;
-    if (!userId) {
+  async sendVerificationEmail(@CurrentUser() user: User): Promise<boolean> {
+    if (!user || !user.id) {
       throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-    return this.userService.sendVerificationEmail(userId);
+    return this.userService.sendVerificationEmail(user.id);
   }
 
   @Mutation(() => UserDto)
   @UseGuards(JwtAuthGuard)
   async verifyEmail(
     @Args('code') code: string,
-    @Context() context: any,
+    @CurrentUser() user: User,
   ): Promise<UserDto> {
-    const userId = context.req.user?.id;
-    if (!userId) {
+    if (!user || !user.id) {
       throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-    return this.userService.verifyEmail(userId, code);
+    return this.userService.verifyEmail(user.id, code);
   }
 }

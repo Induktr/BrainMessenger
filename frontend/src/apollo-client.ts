@@ -52,7 +52,7 @@ const tokenRef = {
 };
 
 // A mutable object to hold the WebSocket client instance
-let wsClientRef: any = null;
+let wsClientRef: any | null = null; // Initialize as null
 
 // Function to create and return a new WebSocket client
 const createNewWsClient = () => {
@@ -72,10 +72,6 @@ const createNewWsClient = () => {
   return client;
 };
 
-// Initial creation of wsClientRef (only if in browser)
-if (isBrowser) {
-  wsClientRef = createNewWsClient();
-}
 
 // Configure the HTTP link for standard queries and mutations
 const httpLink = new HttpLink({
@@ -231,7 +227,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
 // Use split to route requests to the appropriate link
 // Conditionally include wsLink only if it's defined (client-side)
-let currentWsLink: GraphQLWsLink | null = isBrowser && wsClientRef ? new GraphQLWsLink(wsClientRef) : null;
+let currentWsLink: GraphQLWsLink | null = null; // Initialize as null, will be set by setAccessTokenForApollo
 
 const createSplitLink = (wsLink: GraphQLWsLink | null) => {
   return isBrowser && wsLink ? split(
@@ -277,9 +273,14 @@ export const setAccessTokenForApollo = (token: string | null) => {
       wsClientRef.dispose();
     }
 
-    // Create a new WebSocket client with the updated token
-    wsClientRef = createNewWsClient();
-    currentWsLink = new GraphQLWsLink(wsClientRef);
+    // Create a new WebSocket client with the updated token, only if token is present
+    if (token) {
+      wsClientRef = createNewWsClient();
+      currentWsLink = new GraphQLWsLink(wsClientRef);
+    } else {
+      wsClientRef = null;
+      currentWsLink = null;
+    }
 
     // Update the Apollo Client's link with the new WebSocket link
     splitLink = createSplitLink(currentWsLink);

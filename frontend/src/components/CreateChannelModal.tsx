@@ -36,7 +36,7 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
         <div className="create-channel-header">
           <h2 className="create-channel-header-title">Create New Channel</h2>
           <Button className="create-channel-close-button" onClick={handleCloseClick}>
-            <Image src={icons.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
+            <Image src={icons.closeModal} alt="Close" className="icon" width={24} height={24} /> {/* Use img tag */}
           </Button>
         </div>
 

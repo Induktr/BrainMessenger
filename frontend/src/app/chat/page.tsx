@@ -21,9 +21,10 @@ import UserProfileModal from '@/components/UserProfileModal';
 import ConfirmationModal from '@/components/ConfirmationModal'; // Import ConfirmationModal
 import ContextMenu from '@/components/ContextMenu'; // Import ContextMenu
 import NetworkStatusDropdown from '@/components/NetworkStatusDropdown'; // Import NetworkStatusDropdown
-import NotificationDropdown from '@/components/NotificationDropdown'; // Import NotificationDropdown
 import { useNetworkStatus } from '@/context/NetworkStatusContext'; // Import useNetworkStatus
 import { useChatId } from '@/context/ChatIdContext'; // Import useChatId
+import { useNotification } from '@/context/NotificationContext'; // Import useNotification
+import { playNotificationSound } from '@/utils/audioUtils'; // Import audio utility
 
 interface Message {
   id: string;
@@ -105,6 +106,7 @@ const ChatPage = () => {
   const [showDeleteUserConfirmModal, setShowDeleteUserConfirmModal] = useState(false); // State for delete user confirmation
   const { isOnline, isPoorConnection } = useNetworkStatus(); // Use network status hook
   const { setChatId: setGlobalChatId } = useChatId(); // Use useChatId hook to set global chatId
+  const { showNotification } = useNotification(); // Use useNotification hook
 
   const client = useApolloClient(); // Get Apollo Client instance
 
@@ -244,6 +246,11 @@ const ChatPage = () => {
           });
         } else {
           console.log('[ChatPage - Subscription onData] Message for a different chat. Updating cache only.');
+          // Trigger notification and sound for messages not in the currently selected chat
+          if (incomingMessage.sender.id !== currentUser?.id) {
+            showNotification(incomingMessage.sender.name, incomingMessage.content, incomingMessage.sender.avatarUrl);
+            playNotificationSound();
+          }
         }
       
         // Update GET_CHATS cache for the last message snippet, timestamp, and unread count

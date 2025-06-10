@@ -1,3 +1,5 @@
+'use client';
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -7,7 +9,8 @@ import ApolloWrapper from '@/components/ApolloWrapper'; // Import ApolloWrapper
 import { AuthProvider } from '@/context/AuthContext'; // Import AuthProvider
 import { NetworkStatusProvider } from '@/context/NetworkStatusContext'; // Import NetworkStatusProvider
 import { ChatIdProvider } from '@/context/ChatIdContext'; // Import ChatIdProvider
-import GlobalNotificationHandler from '@/components/GlobalNotificationHandler'; // Import GlobalNotificationHandler
+import { NotificationProvider, useNotification } from '@/context/NotificationContext';
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 // Import Roboto font
 import { Roboto } from 'next/font/google';
@@ -31,10 +34,6 @@ const roboto = Roboto({
   display: 'swap', // Optimize font loading
 });
 
-export const metadata: Metadata = {
-  title: "BrainMessenger", // Updated title
-  description: "BrainMessenger MVP", // Updated description
-};
 
 export default function RootLayout({
   children,
@@ -50,13 +49,26 @@ export default function RootLayout({
           <NetworkStatusProvider>
             <AuthProvider>
               <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
-                {children}
-                <GlobalNotificationHandler />
+                <NotificationProvider>
+                  <NotificationWrapper>
+                    {children}
+                  </NotificationWrapper>
+                </NotificationProvider>
               </ChatIdProvider>
             </AuthProvider>
           </NetworkStatusProvider>
         </ApolloWrapper>
       </body>
     </html>
+  );
+}
+
+function NotificationWrapper({ children }: { children: React.ReactNode }) {
+  const { notification, clearNotification } = useNotification();
+  return (
+    <>
+      <NotificationDropdown notification={notification} onClose={clearNotification} />
+      {children}
+    </>
   );
 }

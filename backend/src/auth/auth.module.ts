@@ -11,7 +11,7 @@ import { MailModule } from '../mail/mail.module';
 @Module({
  imports: [
    forwardRef(() => UserModule), // Use forwardRef to break circular dependency
-   PassportModule,
+   PassportModule.register({ defaultStrategy: 'jwt', session: false }), // Configure PassportModule to be stateless
    MailModule,
    JwtModule.registerAsync({
      imports: [ConfigModule],

@@ -341,15 +341,13 @@ export class ChatResolver {
         console.warn('[ChatResolver] Subscription denied: No authenticated user for newMessage.');
         return false;
       }
-      // No longer filtering by chatId at the subscription level, frontend will handle
-      return true;
-      // The frontend will handle filtering messages based on the active chat.
-      // For real-time chat, typically all messages in the chat are sent to all subscribers of that chat.
-      // The frontend can then filter if it needs to.
+      // Filter messages by chatId to ensure only relevant messages are sent to the subscriber
+      return payload.newMessage.chatId === variables.chatId;
     },
     resolve: (payload) => payload.newMessage,
   })
   newMessage(
+    @Args('chatId', { type: () => ID }) chatId: string, // Add chatId argument
     @CurrentUser() user: User, // Inject current user for logging/context if needed
   ): AsyncIterator<MessageDto> { // Return AsyncIterator
     // This method is required by @Subscription but the actual logic is in the filter and resolve options

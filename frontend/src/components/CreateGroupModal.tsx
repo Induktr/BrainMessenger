@@ -71,7 +71,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
         <div className="create-group-header">
           <h2 className="create-group-header-title">Create New Group</h2>
           <Button className="create-group-close-button" onClick={handleCloseClick}>
-            <Image src={icons.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
+            <Image src={icons.closeModal} alt="Close" className="icon" width={24} height={24} /> {/* Use img tag */}
           </Button>
         </div>
 
@@ -80,7 +80,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
           <div className="create-group-input-group">
             <label className="create-group-label">Add participants</label>
             <div className="create-group-participant-input">
-              <Image src={icons.search} alt="Search" className="icon" /> {/* Use img tag */}
+              <Image src={icons.search} alt="Search" className="icon" width={24} height={24} /> {/* Use img tag */}
               <Input
                 placeholder="Find users..."
                 value={participantInput}

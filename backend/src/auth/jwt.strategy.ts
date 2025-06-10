@@ -58,15 +58,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       email: user.email,
       name: user.name,
-      username: user.username, // Include username field
+      username: user.username, // Ensure username is included as it's used for login/identification
+      login: user.username, // Add 'login' alias for 'username' to satisfy Passport.js internal checks
       isVerified: user.isVerified,
       avatarUrl: user.avatarUrl,
-      bio: user.bio, // Include bio field
-      twoFactorEnabled: user.twoFactorEnabled, // Include other relevant fields
+      bio: user.bio,
+      twoFactorEnabled: user.twoFactorEnabled,
       twoFactorMethod: user.twoFactorMethod,
       recoveryEmail: user.recoveryEmail,
-      roles: user.roles, // Include roles from Prisma
-      // Add other non-sensitive fields as needed
+      roles: user.roles,
+      // Note: The 'login' field is added here to satisfy potential internal Passport.js
+      // requirements that might be looking for a 'login' property on the user object.
+      // This ensures compatibility without altering the core UserDto/User interface.
     };
   }
 }

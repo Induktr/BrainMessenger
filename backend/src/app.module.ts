@@ -21,7 +21,6 @@ import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
 import { PubSub } from 'graphql-subscriptions'; // Import PubSub
 import * as redisStore from 'cache-manager-redis-store'; // Import redisStore
-import { KafkaModule } from './kafka/kafka.module'; // Import KafkaModule
 
 @Module({
   imports: [
@@ -62,8 +61,9 @@ import { KafkaModule } from './kafka/kafka.module'; // Import KafkaModule
                     secret: configService.get<string>('JWT_SECRET'),
                   });
                   console.log('[GraphQLModule - onConnect] Token verified. Payload:', payload);
-                  // Attach the user payload to the extra object, which will be available in context
+                  // Attach the user payload and the raw token to the extra object, which will be available in context
                   extra.user = payload;
+                  extra.token = token; // Attach the raw token
                   return extra; // Return the extra object as the context
                 } catch (e) {
                   console.error('[GraphQLModule - onConnect] WebSocket authentication error:', e.message);
@@ -76,23 +76,10 @@ import { KafkaModule } from './kafka/kafka.module'; // Import KafkaModule
           },
         },
         context: ({ req, connection }) => {
-          // For HTTP requests (queries/mutations)
-          if (req) {
-            // Ensure req.headers exists, even if empty
-            req.headers = req.headers || {};
-            return { request: req };
-          }
-          // For WebSocket connections (subscriptions)
-          if (connection) {
-            // The user payload is attached to `extra.user` in onConnect, which becomes `connection.context.user`.
-            // We need to ensure the user is directly available on `connection.user` for Passport/Guards.
-            // Also, ensure `connection.context.req` is set up if guards expect a `req` object.
-            connection.user = connection.context.user; // Attach user directly to connection for guards
-            connection.context.req = connection.context.req || {}; // Ensure req object exists in context
-            connection.context.req.user = connection.context.user; // Also map to req.user for consistency
-            return { req, connection }; // Return both req and connection
-          }
-          return {};
+          // For HTTP requests, req.user will be populated by Passport.js after JwtAuthGuard.
+          // For WebSocket connections, connection.context.user is populated by onConnect.
+          // We ensure both are available in the context.
+          return { req, connection };
         },
       }),
     }),
@@ -114,7 +101,6 @@ import { KafkaModule } from './kafka/kafka.module'; // Import KafkaModule
     MailModule,
     FileModule, // Add FileModule here
     CloudflareModule, // Add CloudflareModule here
-    KafkaModule, // Add KafkaModule here
   ],
   controllers: [AppController],
   providers: [
