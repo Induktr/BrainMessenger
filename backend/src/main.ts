@@ -4,11 +4,23 @@ dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { graphqlUploadExpress } from 'graphql-upload-ts'; // Import middleware
+import * as Sentry from '@sentry/node';
+// import { SentryInterceptor } from '@sentry/nestjs'; // Temporarily commented out
+// import { GraphQLErrorFilter } from './common/filters/graphql-error.filter'; // Assuming this path - Temporarily commented out
 
-    async function bootstrap() {
-      const app = await NestFactory.create(AppModule, {
-        logger: ['error', 'warn'], // Only log errors and warnings
-      });
+async function bootstrap() {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    debug: false,
+  });
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'], // Only log errors and warnings
+  });
+
+  // app.useGlobalInterceptors(new SentryInterceptor()); // Temporarily commented out
+  // app.useGlobalFilters(new GraphQLErrorFilter()); // Temporarily commented out
 
 
       // Enable CORS with the specific frontend origin
@@ -41,4 +53,4 @@ import { graphqlUploadExpress } from 'graphql-upload-ts'; // Import middleware
       await app.listen(port, '0.0.0.0'); // Listen on all interfaces
       // console.log(`Nest application is listening on port ${port}`); // Removed console.log
     }
-    bootstrap();
+  bootstrap();

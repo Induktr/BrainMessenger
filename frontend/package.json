@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
+    "@sentry/nextjs": "^9.28.1",
+    "@sentry/react": "^9.28.1",
     "@tanstack/react-query": "^5.74.4",
     "apollo-upload-client": "^18.0.1",
     "framer-motion": "^12.9.2",

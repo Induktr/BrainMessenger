@@ -64,11 +64,6 @@ export default function RootLayout({
 }
 
 function NotificationWrapper({ children }: { children: React.ReactNode }) {
-  const { notification, clearNotification } = useNotification();
-  return (
-    <>
-      <NotificationDropdown notification={notification} onClose={clearNotification} />
-      {children}
-    </>
-  );
+  // NotificationDropdown is now rendered directly within AuthProvider
+  return <>{children}</>;
 }

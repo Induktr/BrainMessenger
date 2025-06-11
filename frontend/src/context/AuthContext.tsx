@@ -38,7 +38,7 @@ interface AuthContextType {
   closeNotification: () => void;
 }
 
-interface Message { // Define Message interface here for NotificationDropdown
+export interface Message { // Define Message interface here for NotificationDropdown
   id: string;
   chatId: string;
   sender: {
@@ -115,9 +115,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     },
     onError: (err) => {
       setUser(null);
-      if (err.graphQLErrors && err.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')) {
-        logout();
-      }
+      // Rely on Apollo Client's errorLink to handle token refresh and logout
+      // if (err.graphQLErrors && err.graphQLErrors.some(e => e.extensions?.code === 'UNAUTHENTICATED')) {
+      //   logout();
+      // }
       setIsInitializing(false); // Set to false after query errors
     },
   });

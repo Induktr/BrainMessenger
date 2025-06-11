@@ -2,14 +2,14 @@
 
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
-interface Notification {
+export interface Notification {
   id: string;
   senderName: string;
   messageSnippet: string;
   avatarUrl?: string | null;
 }
 
-interface NotificationContextType {
+export interface NotificationContextType {
   notification: Notification | null;
   showNotification: (senderName: string, messageSnippet: string, avatarUrl?: string | null) => void;
   clearNotification: () => void;

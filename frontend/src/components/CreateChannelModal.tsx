@@ -2,25 +2,46 @@
 
 import React, { useState } from 'react';
 import Modal from '@/components/Modal';
-import Input from '@/components/Input'; // Assuming an Input component exists
-import Button from '@/components/Button'; // Assuming a Button component exists
+import Input from '@/components/Input';
+import Button from '@/components/Button';
 import { icons } from '../app/lib/constants';
 import Image from 'next/image';
+import { useMutation } from '@apollo/client'; // Import useMutation
+import { CREATE_CHANNEL } from '@/graphql/queries'; // Import CREATE_CHANNEL mutation
 
 interface CreateChannelModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreate: (channelName: string, channelDescription: string) => void;
 }
 
-const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose, onCreate }) => {
+const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose }) => {
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
 
-  const handleCreateClick = () => {
-    onCreate(channelName, channelDescription);
-    setChannelName('');
-    setChannelDescription('');
+  const [createChannel, { loading, error }] = useMutation(CREATE_CHANNEL, {
+    onCompleted: (data) => {
+      console.log('Channel created:', data.createChannel);
+      setChannelName('');
+      setChannelDescription('');
+      onClose();
+    },
+    onError: (err) => {
+      console.error('Error creating channel:', err);
+      // Optionally, show an error message to the user
+    },
+  });
+
+  const handleCreateClick = async () => {
+    try {
+      await createChannel({
+        variables: {
+          name: channelName,
+          description: channelDescription || null, // Send null if description is empty
+        },
+      });
+    } catch (e) {
+      // Error handled by onError in useMutation
+    }
   };
 
   const handleCloseClick = () => {
@@ -64,7 +85,14 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
 
         {/* Create Button */}
         <div className="create-channel-button-container">
-           <Button className="create-channel-button-state-disabled" onClick={handleCreateClick}>Create Channel</Button>
+           <Button
+             className="create-channel-button-state-disabled"
+             onClick={handleCreateClick}
+             disabled={loading || !channelName.trim()} // Disable if loading or name is empty
+           >
+             {loading ? 'Creating...' : 'Create Channel'}
+           </Button>
+           {error && <p className="error-message">Error: {error.message}</p>}
         </div>
       </div>
     </Modal>

@@ -19,8 +19,10 @@ import { UpdateLastActiveGuard } from './common/guards/update-last-active.guard'
 import { CacheModule } from '@nestjs/cache-manager'; // Import CacheModule
 import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
-import { PubSub } from 'graphql-subscriptions'; // Import PubSub
-import * as redisStore from 'cache-manager-redis-store'; // Import redisStore
+import { PubSub } from 'graphql-subscriptions'; // Keep PubSub for type
+import { RedisPubSub } from 'graphql-redis-subscriptions'; // Import RedisPubSub
+import Redis from 'ioredis'; // Import Redis constructor directly
+import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
 
 @Module({
   imports: [
@@ -38,12 +40,19 @@ import * as redisStore from 'cache-manager-redis-store'; // Import redisStore
       inject: [JwtService, ConfigService], // Inject JwtService and ConfigService
       useFactory: async (jwtService: JwtService, configService: ConfigService) => ({
         autoSchemaFile: 'dist/schema.gql',
-        formatError: (error) => {
-          console.error('[GraphQL Error Formatter] Original error:', error);
-          // Return the original error to the client for full details during development
-          // In production, you might want to mask sensitive details
-          return error;
-        },
+        // formatError: (error) => {
+        //   // Safely log GraphQL errors, checking for 'locations' property
+        //   const errorDetails = {
+        //     message: error.message,
+        //     path: error.path,
+        //     extensions: error.extensions,
+        //     locations: (error as any).locations ? (error as any).locations : 'N/A' // Safely access locations
+        //   };
+        //   console.error('[GraphQL Error Formatter] Formatted error:', JSON.stringify(errorDetails, null, 2));
+        //   // Return the original error to the client for full details during development
+        //   // In production, you might want to mask sensitive details
+        //   return error;
+        // },
         subscriptions: {
           'graphql-ws': {
             path: '/graphql', // Specify the WebSocket path
@@ -108,7 +117,22 @@ import * as redisStore from 'cache-manager-redis-store'; // Import redisStore
     WebrtcSignalingGateway,
     {
       provide: PubSub,
-      useValue: new PubSub(),
+      useFactory: (configService: ConfigService) => {
+        const redisOptions = {
+          host: configService.get<string>('REDIS_HOST') || 'localhost',
+          port: configService.get<number>('REDIS_PORT') || 6379,
+          retryStrategy: (times: number) => {
+            // reconnect after
+            return Math.min(times * 50, 2000);
+          },
+        };
+        console.log('[AppModule] Initializing RedisPubSub with options:', redisOptions);
+        return new RedisPubSub({
+          publisher: new Redis(redisOptions),
+          subscriber: new Redis(redisOptions),
+        });
+      },
+      inject: [ConfigService], // Inject ConfigService to get Redis config
     },
     // { // Temporarily disabled for debugging 'Forbidden resource'
     //   provide: APP_GUARD,

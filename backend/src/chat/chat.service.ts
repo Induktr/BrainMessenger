@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client'; // Import Prisma namespace
+import { Prisma, ChatType, ChatParticipantRole } from '@prisma/client'; // Explicitly import enums
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { MessageService } from '../message/message.service';
 import { CloudflareR2Service } from '../cloudflare/cloudflare-r2.service'; // Import CloudflareR2Service
@@ -33,6 +33,12 @@ export class ChatService {
             createdAt: 'asc', // Order messages chronologically
           },
         },
+        channel: { // Explicitly include nested relations for channel
+          include: {
+            chat: true,
+            owner: true,
+          },
+        },
       },
     });
   }
@@ -60,6 +66,12 @@ export class ChatService {
                 user: true,
               },
             },
+            channel: { // Explicitly include nested relations for channel
+              include: {
+                chat: true,
+                owner: true,
+              },
+            },
           },
         },
         lastReadMessage: true, // Include the last read message for unread count calculation
@@ -73,11 +85,13 @@ export class ChatService {
       const unreadCount = lastMessage ?
         chat.messages.filter(msg => msg.createdAt > (cp.lastReadMessage?.createdAt || new Date(0))).length : 0; // Basic unread count
 
-      // Determine chat name for private chats
-      const chatName = chat.type === 'PRIVATE'
-        ? chat.participants.find(p => p.userId !== userId)?.user.name || 'Private Chat'
-        : chat.name;
-
+      // Determine chat name for private chats or channels
+      let chatName: string | null = chat.name;
+      if (chat.type === ChatType.PRIVATE) {
+        chatName = chat.participants.find(p => p.userId !== userId)?.user.name || 'Private Chat';
+      } else if (chat.type === ChatType.CHANNEL && chat.channel) {
+        chatName = chat.channel.chat.name; // Use channel's name
+      }
 
       return {
         id: chat.id,
@@ -86,20 +100,6 @@ export class ChatService {
         lastMessageSnippet: lastMessage?.content || null,
         lastMessageTimestamp: lastMessage?.createdAt.toISOString() || null, // Convert Date to string
         unreadCount: unreadCount,
-       // messages: chat.messages.map(msg => ({ // Removed messages array from ChatDto for chat list
-       //    id: msg.id,
-       //    chatId: msg.chatId, // Include chatId
-       //    content: msg.content,
-       //    senderId: msg.senderId, // Include senderId
-       //    createdAt: msg.createdAt, // Keep as Date for MessageDto
-       //    timestamp: msg.createdAt.toISOString(), // Include timestamp as string for frontend
-       //    sender: {
-       //      id: msg.sender.id,
-       //      name: msg.sender.name,
-       //      email: msg.sender.email, // Assuming email is needed/available
-       //      isVerified: msg.sender.isVerified, // Assuming isVerified is needed/available
-       //    }
-       // })),
        messages: [], // Include empty messages array for ChatDto compatibility
        participants: chat.participants.map(p => { // Include participants
          return {
@@ -114,11 +114,40 @@ export class ChatService {
            roles: p.user.roles || [], // Ensure roles are included
          };
        }),
-       };
-     });
-   }
+       channel: chat.channel ? { // Include channel data if it exists
+         id: chat.channel.id,
+         chatId: chat.channel.chatId,
+         chat: {
+           id: chat.channel.chat.id,
+           name: chat.channel.chat.name,
+           type: chat.channel.chat.type,
+           lastMessageSnippet: null,
+           lastMessageTimestamp: null,
+           unreadCount: 0,
+           messages: [],
+           participants: [],
+         },
+         ownerId: chat.channel.ownerId,
+         owner: {
+           id: chat.channel.owner.id,
+           email: chat.channel.owner.email,
+           name: chat.channel.owner.name,
+           username: chat.channel.owner.username,
+           isVerified: chat.channel.owner.isVerified,
+           avatarUrl: chat.channel.owner.avatarUrl,
+           bio: chat.channel.owner.bio,
+           status: chat.channel.owner.lastActiveAt ? (new Date(chat.channel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
+           roles: chat.channel.owner.roles || [],
+         },
+         description: chat.channel.description,
+         subscribersCount: chat.channel.subscribersCount,
+         isPublic: chat.channel.isPublic,
+       } : undefined,
+      };
+    });
+  }
 
-  async create(type: string, name?: string, participantIds: string[] = []) {
+  async create(type: ChatType, name?: string, participantIds: string[] = []) { // Use ChatType enum
     const newChat = await this.prisma.chat.create({
       data: {
         name: name,
@@ -126,6 +155,7 @@ export class ChatService {
         participants: {
           create: participantIds.map(userId => ({
             userId: userId,
+            role: ChatParticipantRole.MEMBER, // Default role for new chat participants
           })),
         },
       },
@@ -172,7 +202,7 @@ export class ChatService {
       // 1. Try to find an existing private chat between the two users
       const existingChat = await prisma.chat.findFirst({
         where: {
-          type: 'PRIVATE',
+          type: ChatType.PRIVATE,
           participants: {
             every: {
               userId: {
@@ -251,7 +281,7 @@ export class ChatService {
         // If not found, create a new private chat within the transaction
         const newChat = await prisma.chat.create({
           data: {
-            type: 'PRIVATE',
+            type: ChatType.PRIVATE,
             participants: {
               create: [{ userId: user1Id }, { userId: user2Id }],
             },
@@ -299,7 +329,7 @@ export class ChatService {
     // where those participants are user1Id and user2Id.
     const chat = await this.prisma.chat.findFirst({
       where: {
-        type: 'PRIVATE',
+        type: ChatType.PRIVATE,
         participants: {
           every: { // Ensure all participants match the criteria
             userId: {
@@ -428,16 +458,19 @@ export class ChatService {
 
         try {
           const uploadResult = await this.cloudflareR2Service.uploadFile(buffer, key, mimetype, buffer.length);
-          attachmentsData.push({
-            url: uploadResult.Location,
-            filename: filename,
-            mimetype: mimetype,
-            size: buffer.length,
-          });
+          if (uploadResult && uploadResult.Location) { // Ensure Location is present
+            attachmentsData.push({
+              url: uploadResult.Location,
+              filename: filename,
+              mimetype: mimetype,
+              size: buffer.length,
+            });
+          } else {
+            console.warn(`[ChatService] Uploaded file ${filename} to R2, but no Location URL was returned.`);
+          }
         } catch (uploadError) {
-          console.error(`Failed to upload file ${filename} to R2:`, uploadError);
-          // Decide how to handle failed uploads: skip, throw, or log and continue
-          // For now, we'll log and continue, meaning the message might be sent without this attachment
+          console.error(`[ChatService] Failed to upload file ${filename} to R2:`, uploadError);
+          // Log and continue, meaning the message might be sent without this attachment
         }
       }
     }
@@ -513,5 +546,234 @@ export class ChatService {
       }
       throw error; // Re-throw other errors
     }
+  }
+  async createChannel(ownerId: string, name: string, description?: string) {
+    // Margulan Seysembay's System First: Create chat and channel in a transaction for atomicity.
+    // Coin22's Risk Awareness: Ensure data consistency.
+    return this.prisma.$transaction(async (prisma) => {
+      const newChat = await prisma.chat.create({
+        data: {
+          name: name,
+          type: ChatType.CHANNEL,
+          participants: {
+            create: {
+              userId: ownerId,
+              role: ChatParticipantRole.OWNER, // Owner of the channel
+            },
+          },
+        },
+        include: {
+          participants: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      const newChannel = await prisma.channel.create({
+        data: {
+          chatId: newChat.id,
+          ownerId: ownerId,
+          description: description,
+          subscribersCount: 0, // Initial subscriber count
+        },
+        include: {
+          chat: true,
+          owner: true,
+        },
+      });
+
+      // Map the created channel to ChatDto structure
+      return {
+        id: newChat.id,
+        name: newChat.name,
+        type: newChat.type,
+        lastMessageSnippet: null,
+        lastMessageTimestamp: null,
+        unreadCount: 0,
+        messages: [],
+        participants: newChat.participants.map(p => ({
+          id: p.user.id,
+          email: p.user.email,
+          name: p.user.name,
+          username: p.user.username,
+          isVerified: p.user.isVerified,
+          avatarUrl: p.user.avatarUrl,
+          bio: p.user.bio,
+          status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
+          roles: p.user.roles || [],
+        })),
+        channel: {
+          id: newChannel.id,
+          chatId: newChannel.chatId,
+          chat: {
+            id: newChannel.chat.id,
+            name: newChannel.chat.name,
+            type: newChannel.chat.type,
+            lastMessageSnippet: null,
+            lastMessageTimestamp: null,
+            unreadCount: 0,
+            messages: [],
+            participants: [], // Participants will be fetched with the main chat query
+          },
+          ownerId: newChannel.ownerId,
+          owner: {
+            id: newChannel.owner.id,
+            email: newChannel.owner.email,
+            name: newChannel.owner.name,
+            username: newChannel.owner.username,
+            isVerified: newChannel.owner.isVerified,
+            avatarUrl: newChannel.owner.avatarUrl,
+            bio: newChannel.owner.bio,
+            status: newChannel.owner.lastActiveAt ? (new Date(newChannel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
+            roles: newChannel.owner.roles || [],
+          },
+          description: newChannel.description,
+          subscribersCount: newChannel.subscribersCount,
+          isPublic: newChannel.isPublic,
+        },
+      };
+    });
+  }
+
+  async subscribeToChannel(channelId: string, userId: string) {
+    // Margulan Seysembay's Pragmatic Action: Check if already subscribed to avoid redundant operations.
+    const existingParticipant = await this.prisma.chatParticipant.findUnique({
+      where: {
+        userId_chatId: {
+          userId: userId,
+          chatId: channelId,
+        },
+      },
+    });
+
+    if (existingParticipant) {
+      // Already subscribed, return existing chat participant
+      return this.prisma.chatParticipant.findUnique({
+        where: { id: existingParticipant.id },
+        include: { chat: true, user: true },
+      });
+    }
+
+    // Coin22's Risk Awareness: Use a transaction to ensure both participant creation and subscriber count update are atomic.
+    return this.prisma.$transaction(async (prisma) => {
+      const chatParticipant = await prisma.chatParticipant.create({
+        data: {
+          userId: userId,
+          chatId: channelId,
+          role: ChatParticipantRole.SUBSCRIBER,
+        },
+        include: {
+          chat: {
+            include: {
+              channel: true,
+            },
+          },
+          user: true,
+        },
+      });
+
+      // Increment subscriber count for the channel
+      await prisma.channel.update({
+        where: { chatId: channelId },
+        data: {
+          subscribersCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      return chatParticipant;
+    });
+  }
+
+  async unsubscribeFromChannel(channelId: string, userId: string) {
+    // Margulan Seysembay's Pragmatic Action: Check if subscribed before attempting to unsubscribe.
+    const existingParticipant = await this.prisma.chatParticipant.findUnique({
+      where: {
+        userId_chatId: {
+          userId: userId,
+          chatId: channelId,
+        },
+      },
+    });
+
+    if (!existingParticipant) {
+      // Not subscribed, nothing to do
+      return;
+    }
+
+    // Coin22's Risk Awareness: Use a transaction for atomic deletion and count decrement.
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.chatParticipant.delete({
+        where: {
+          userId_chatId: {
+            userId: userId,
+            chatId: channelId,
+          },
+        },
+      });
+
+      // Decrement subscriber count for the channel
+      await prisma.channel.update({
+        where: { chatId: channelId },
+        data: {
+          subscribersCount: {
+            decrement: 1,
+          },
+        },
+      });
+    });
+  }
+
+  async deleteChannel(channelId: string, ownerId: string): Promise<boolean> {
+    // Margulan Seysembay's Responsibility & Proactivity: Ensure only the owner can delete.
+    const channel = await this.prisma.channel.findUnique({
+      where: { chatId: channelId },
+    });
+
+    if (!channel || channel.ownerId !== ownerId) {
+      // Dr. Eric Berg's Clarity over Complexity: Provide clear feedback if not authorized or channel not found.
+      throw new Error('Channel not found or you are not the owner.');
+    }
+
+    // Coin22's Protection of Capital: Use a transaction to ensure complete deletion of related data.
+    return this.prisma.$transaction(async (prisma) => {
+      // Delete the channel record
+      await prisma.channel.delete({
+        where: { chatId: channelId },
+      });
+
+      // Leverage the existing deleteChatAndRemoveUser to clean up the associated chat, messages, and participants
+      await this.deleteChatAndRemoveUser(channelId, ownerId); // userId here is just for context, deleteChatAndRemoveUser deletes all participants
+
+      return true;
+    });
+  }
+  async searchChannelsByName(name: string) {
+    return this.prisma.chat.findMany({
+      where: {
+        type: ChatType.CHANNEL,
+        name: {
+          contains: name,
+          mode: 'insensitive', // Case-insensitive search
+        },
+      },
+      include: {
+        channel: {
+          include: {
+            owner: true,
+            chat: true, // Include the chat relation within the channel
+          },
+        },
+        participants: {
+          include: {
+            user: true,
+          },
+        },
+      },
+      take: 10, // Limit search results for performance
+    });
   }
 }

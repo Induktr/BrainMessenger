@@ -10,6 +10,7 @@ import { ApolloLink, FetchResult } from '@apollo/client';
 import Observable from 'zen-observable';
 import { execute, Operation } from '@apollo/client/link/core';
 import { REFRESH_TOKEN_MUTATION } from '@/graphql/queries';
+import * as Sentry from "@sentry/nextjs"; // Import Sentry
 
 // Configure the HTTP link for queries and mutations
 // Determine the backend URL dynamically based on the frontend's location
@@ -51,9 +52,6 @@ const tokenRef = {
   currentAccessToken: typeof window !== 'undefined' ? localStorage.getItem('access_token') : null,
 };
 
-// A mutable object to hold the WebSocket client instance
-let wsClientRef: any | null = null; // Initialize as null
-
 // Function to create and return a new WebSocket client
 const createNewWsClient = () => {
   const client = createClient({
@@ -67,10 +65,16 @@ const createNewWsClient = () => {
     },
   });
   client.on('connected', () => console.log('[ApolloClient] WebSocket connected!'));
-  client.on('closed', (event: any) => console.log('[ApolloClient] WebSocket closed:', event));
+  client.on('closed', (event: any) => { // Revert to 'any' type for compatibility
+    const closeEvent = event as CloseEvent; // Explicitly cast to CloseEvent for properties
+    console.log(`[ApolloClient] WebSocket closed: Code=${closeEvent.code}, Reason=${closeEvent.reason}, WasClean=${closeEvent.wasClean}`);
+  });
   client.on('error', (error: any) => console.error('[ApolloClient] WebSocket error:', error));
   return client;
 };
+
+// A mutable object to hold the WebSocket client instance
+let wsClientRef: any | null = typeof window !== 'undefined' && tokenRef.currentAccessToken ? createNewWsClient() : null;
 
 
 // Configure the HTTP link for standard queries and mutations
@@ -130,7 +134,15 @@ const processQueue = (error: any, access_token: string | null = null) => {
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
     for (let err of graphQLErrors) {
-      console.error('ErrorLink - GraphQL Error:', JSON.stringify(err, null, 2)); // Log the full GraphQL error with more detail
+      // Safely log GraphQL errors, checking for 'locations' property
+      const errorDetails = {
+        message: err.message,
+        path: err.path,
+        extensions: err.extensions,
+        locations: err.locations ? err.locations : 'N/A' // Safely access locations
+      };
+      console.error('ErrorLink - GraphQL Error:', JSON.stringify(errorDetails, null, 2)); // Log the full GraphQL error with more detail
+      Sentry.captureException(err); // Capture GraphQL error in Sentry
       // Handle authentication errors
       if (err.extensions?.code === 'UNAUTHENTICATED') {
         console.warn('ErrorLink - UNAUTHENTICATED error detected. Attempting token refresh.');
@@ -221,13 +233,14 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 
   if (networkError) {
     console.error(`[Network error]: ${JSON.stringify(networkError, null, 2)}`);
+    Sentry.captureException(networkError); // Capture network error in Sentry
     // Handle network errors if needed
   }
 });
 
 // Use split to route requests to the appropriate link
 // Conditionally include wsLink only if it's defined (client-side)
-let currentWsLink: GraphQLWsLink | null = null; // Initialize as null, will be set by setAccessTokenForApollo
+let currentWsLink: GraphQLWsLink | null = wsClientRef ? new GraphQLWsLink(wsClientRef) : null;
 
 const createSplitLink = (wsLink: GraphQLWsLink | null) => {
   return isBrowser && wsLink ? split(
@@ -250,7 +263,15 @@ let splitLink = createSplitLink(currentWsLink);
 let link = from(
   [
     errorLink, // Handle errors first
-    authLink, // Add auth headers
+    new ApolloLink((operation, forward) => {
+      // If the operation is 'verifyEmail', bypass the authLink
+      if (operation.operationName === 'verifyEmail') {
+        console.log('[ApolloClient] Bypassing AuthLink for verifyEmail operation.');
+        return forward(operation);
+      }
+      // Otherwise, proceed to the next link (authLink)
+      return authLink.request(operation, forward);
+    }),
     splitLink, // Route to HTTP/WS
   ]
 );

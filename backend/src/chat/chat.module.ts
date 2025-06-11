@@ -11,6 +11,7 @@ import { AppModule } from '../app.module'; // Import AppModule
   providers: [
     ChatService,
     ChatResolver,
+    PubSub, // Provide PubSub here
   ],
   exports: [ChatService],
 })

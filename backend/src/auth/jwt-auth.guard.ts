@@ -9,39 +9,41 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
     getRequest(context: ExecutionContext) {
         const ctx = GqlExecutionContext.create(context);
-        let { req, connection } = ctx.getContext();
+        const { req, connection } = ctx.getContext();
 
-        if (req && req.headers) {
-            console.log('[JwtAuthGuard] Incoming Authorization header:', req.headers.authorization ? req.headers.authorization.substring(0, 20) + '...' : 'No Authorization header');
+        // For HTTP requests, req will be present
+        if (req) {
+            if (req.headers) {
+                console.log('[JwtAuthGuard] Incoming HTTP Authorization header:', req.headers.authorization ? req.headers.authorization.substring(0, 20) + '...' : 'No Authorization header');
+            }
+            return req;
         }
 
-        // For WebSocket connections (subscriptions), the token is in connection.context.Authorization
+        // For WebSocket connections (subscriptions), connection will be present
         if (connection) {
-            // Ensure req object exists and has a headers property for Passport-JWT
-            if (!req) {
-                req = { headers: {} };
-            } else if (!req.headers) {
-                req.headers = {};
-            }
+            // Create a dummy request object for Passport-JWT
+            const dummyReq = {
+                headers: {},
+                user: connection.context.user, // User already authenticated and attached by onConnect
+            };
 
-            // The token is attached to connection.context.token by the onConnect function in GraphQLModule
+            // Passport-JWT's ExtractJwt.fromAuthHeaderAsBearerToken() expects 'authorization' in headers.
+            // The token is attached to connection.context.token by the onConnect function in GraphQLModule.
             const tokenFromContext = connection.context.token;
             if (tokenFromContext) {
-                req.headers.authorization = `Bearer ${tokenFromContext}`;
+                dummyReq.headers['authorization'] = `Bearer ${tokenFromContext}`;
                 console.log('[JwtAuthGuard] WebSocket Authorization header set from context.token:', tokenFromContext.substring(0, 20) + '...');
             } else {
-                console.warn('[JwtAuthGuard] WebSocket connection.context.token is missing.');
+                console.warn('[JwtAuthGuard] WebSocket connection.context.token is missing. This might indicate an unauthenticated WebSocket connection.');
             }
-
-            // Attach the user from WebSocket context if available (e.g., from onConnect)
-            if (connection.context.user) {
-                req.user = connection.context.user;
-                console.log('[JwtAuthGuard] WebSocket user attached from context:', connection.context.user.id);
-            }
+            
+            console.log('[JwtAuthGuard] WebSocket user attached from context:', connection.context.user ? connection.context.user.id : 'No user');
+            return dummyReq;
         }
-        
-        // Return the request object. Passport.js will attach the user to this.
-        return req;
+
+        // Fallback if neither req nor connection is present (should not happen in GraphQL context)
+        console.error('[JwtAuthGuard] Neither HTTP request nor WebSocket connection context found.');
+        return {}; // Return an empty object to prevent further errors, though this indicates a problem
     }
 
     handleRequest(err, user, info, context, status) {

@@ -35,6 +35,20 @@ export const GET_CHATS = gql`
         isVerified # Include isVerified
         bio
       }
+      channel { # Include channel details if it's a channel
+        id
+        description
+        subscribersCount
+        isPublic
+        owner {
+          id
+          name
+          username
+          avatarUrl
+          isVerified
+          bio
+        }
+      }
     }
   }
 `;
@@ -160,6 +174,59 @@ export const CREATE_CHAT = gql`
   }
 `;
 
+export const CREATE_CHANNEL = gql`
+  mutation CreateChannel($name: String!, $description: String) {
+    createChannel(createChannelInput: { name: $name, description: $description }) {
+      id
+      name
+      type
+      lastMessageSnippet
+      lastMessageTimestamp
+      unreadCount
+      participants {
+        id
+        name
+        username
+        avatarUrl
+        isVerified
+        bio
+      }
+      channel {
+        id
+        description
+        subscribersCount
+        isPublic
+        owner {
+          id
+          name
+          username
+          avatarUrl
+          isVerified
+          bio
+        }
+      }
+    }
+  }
+`;
+
+export const SUBSCRIBE_TO_CHANNEL = gql`
+  mutation SubscribeToChannel($channelId: ID!) {
+    subscribeToChannel(channelId: $channelId)
+  }
+`;
+
+export const UNSUBSCRIBE_FROM_CHANNEL = gql`
+  mutation UnsubscribeFromChannel($channelId: ID!) {
+    unsubscribeFromChannel(channelId: $channelId)
+  }
+`;
+
+export const DELETE_CHANNEL = gql`
+  mutation DeleteChannel($channelId: ID!) {
+    deleteChannel(channelId: $channelId)
+  }
+`;
+
  
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
@@ -263,6 +330,41 @@ export const FIND_OR_CREATE_PRIVATE_CHAT = gql`
 export const DELETE_MESSAGE = gql`
   mutation DeleteMessage($messageId: ID!) {
     deleteMessage(messageId: $messageId)
+  }
+`;
+
+export const SEARCH_CHANNELS = gql`
+  query SearchChannels($name: String!) {
+    searchChannels(name: $name) {
+      id
+      name
+      type
+      lastMessageSnippet
+      lastMessageTimestamp
+      unreadCount
+      participants {
+        id
+        name
+        username
+        avatarUrl
+        isVerified
+        bio
+      }
+      channel {
+        id
+        description
+        subscribersCount
+        isPublic
+        owner {
+          id
+          name
+          username
+          avatarUrl
+          isVerified
+          bio
+        }
+      }
+    }
   }
 `;
  

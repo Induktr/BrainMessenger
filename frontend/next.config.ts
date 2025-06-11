@@ -1,3 +1,5 @@
+const { withSentryConfig } = require('@sentry/nextjs');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone', // Add this line for standalone build
@@ -70,4 +72,43 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withSentryConfig(
+  nextConfig,
+  {
+    // For all available options, see:
+    // https://github.com/getsentry/sentry-webpack-plugin#options
+
+    // Suppresses source map uploading logs during build
+    silent: true,
+    org: "brainmessenger",
+    project: "brainmessenger-frontend",
+  },
+  {
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+    // Upload a larger set of source maps for prettier stack traces (increases build time)
+    widenClientFileUpload: true,
+
+    // Transpiles SDK to be able to use it in older browsers
+    transpileClientSDK: true,
+
+    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+    // This can't be configured when a custom transport is used in the client.
+    tunnelRoute: "/monitoring-tunnel",
+
+    // Hides source maps from browser devtools
+    hideSourceMaps: true,
+
+    // Starts Sentry in debug mode
+    debug: false,
+
+    // For all available options, see:
+    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+    // Disable server/edge source map uploads in production.
+    // This will reduce build time and prevent sensitive information from being uploaded.
+    disableServerWebpackPlugin: process.env.NODE_ENV === "production",
+    disableClientWebpackPlugin: process.env.NODE_ENV === "production",
+  }
+);

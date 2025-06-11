@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { UserDto } from '../../user/dto/user.dto';
 import { MessageDto } from '../../message/dto/message.dto';
+import { ChannelDto } from './channel.dto';
 
 @ObjectType()
 export class ChatDto {
@@ -34,4 +35,6 @@ export class ChatDto {
   // Add calls field later if needed
   // @Field(() => [CallDto])
   // calls: CallDto[];
+  @Field(() => ChannelDto, { nullable: true })
+  channel?: ChannelDto;
 }

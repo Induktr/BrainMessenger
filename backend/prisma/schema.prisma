@@ -29,6 +29,7 @@ model User {
   callsAsCaller    Call[]    @relation("CallsAsCaller")
   callsAsCallee    Call[]    @relation("CallsAsCallee")
   uploadedFiles    File[]    // Added relation for uploaded files
+  ownedChannels    Channel[] // Add relation for channels owned by the user
   verificationCode            String?   // 6-digit verification code
   verificationCodeExpiresAt   DateTime? // Code expiration time
   verificationAttempts       Int       @default(0) // Failed attempt count
@@ -46,10 +47,28 @@ model User {
 model Chat {
   id               String            @id @default(uuid())
   name             String? // Name is optional for private chats
-  type             String // Consider using an Enum if types are fixed (e.g., PRIVATE, GROUP, CHANNEL)
+  type             ChatType // Use ChatType enum
   messages         Message[]
   calls            Call[] // Added relation
   participants     ChatParticipant[]
+  channel          Channel? // Optional one-to-one relation to Channel
+}
+
+model Channel {
+  id               String    @id @default(uuid())
+  chatId           String    @unique
+  chat             Chat      @relation(fields: [chatId], references: [id])
+  ownerId          String
+  owner            User      @relation(fields: [ownerId], references: [id])
+  description      String?
+  subscribersCount Int       @default(0)
+  isPublic         Boolean   @default(true) // Channels are generally public
+}
+
+enum ChatType {
+  PRIVATE
+  GROUP
+  CHANNEL
 }
 
 model Message {
@@ -73,7 +92,7 @@ model Attachment {
   mimetype  String
   size      Int
   createdAt DateTime @default(now())
-  message   Message  @relation(fields: [messageId], references: [id])
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
   messageId String
 }
 
@@ -131,6 +150,13 @@ model ChatParticipant {
   chatId            String
   lastReadMessage   Message?  @relation("LastReadMessage", fields: [lastReadMessageId], references: [id])
   lastReadMessageId String?
+  role              ChatParticipantRole @default(MEMBER) // Role within the chat (e.g., OWNER, SUBSCRIBER, MEMBER)
 
   @@unique([userId, chatId]) // Ensures a user can only be a participant once per chat
+}
+
+enum ChatParticipantRole {
+  OWNER
+  MEMBER
+  SUBSCRIBER
 }

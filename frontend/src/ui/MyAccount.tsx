@@ -139,7 +139,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   // Handle file selection
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
+    if (file instanceof File) {
       try {
         // Call the uploadAvatar mutation
         const response = await uploadAvatarMutation({

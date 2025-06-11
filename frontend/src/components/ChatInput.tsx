@@ -14,9 +14,24 @@ interface ChatInputProps {
   editingMessage: { id: string; content: string } | null;
   setEditingMessage: (message: { id: string; content: string } | null) => void;
   onSendMessageOrUpdate: (content: string, files: File[]) => Promise<void>;
+  isChannel: boolean; // New prop: true if the current chat is a channel
+  isChannelOwner: boolean; // New prop: true if the current user is the channel owner
+  isSubscribedToChannel: boolean; // New prop: true if the current user is subscribed to the channel
+  onSubscribe: () => Promise<void>; // New prop: function to handle subscription
+  onUnsubscribe: () => Promise<void>; // New prop: function to handle unsubscription
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ chatId, editingMessage, setEditingMessage, onSendMessageOrUpdate }) => {
+const ChatInput: React.FC<ChatInputProps> = ({
+  chatId,
+  editingMessage,
+  setEditingMessage,
+  onSendMessageOrUpdate,
+  isChannel,
+  isChannelOwner,
+  isSubscribedToChannel,
+  onSubscribe,
+  onUnsubscribe,
+}) => {
   const [messageContent, setMessageContent] = useState('');
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -70,35 +85,52 @@ const ChatInput: React.FC<ChatInputProps> = ({ chatId, editingMessage, setEditin
     }
   };
 
+  const isInputDisabled = isChannel && !isChannelOwner;
+
   return (
     <div className="chat-input-wrapper">
       {attachedFiles.length > 0 && (
         <AttachmentPreview files={attachedFiles} onRemoveFile={handleRemoveFile} />
       )}
       <div className="chat-input-container">
-        <Button className="folder-button" onClick={handleFolderClick}>
-          <Image src={icons.folder} alt="Folder" width={24} height={24} />
-        </Button>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          multiple
-          accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml, image/x-icon, audio/*, video/mp4, application/pdf, application/zip"
-          onChange={handleFileChange}
-        />
-        <Input
-          type="text"
-          placeholder="Type your message..."
-          value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-          onKeyPress={handleKeyPress}
-          onPaste={handlePaste} // Add onPaste handler
-          disabled={loading} // Disable input while sending
-        />
-        <Button onClick={handleSendOrUpdate} disabled={loading} className="send-button">
-          <Image src={editingMessage ? icons.checkmark : icons.sendButton} alt={editingMessage ? "Confirm Edit" : "Send"} width={24} height={24} />
-        </Button>
+        {isChannel && !isChannelOwner ? (
+          isSubscribedToChannel ? (
+            <Button className="unsubscribe-button" onClick={onUnsubscribe}>
+              UnSubscribe
+            </Button>
+          ) : (
+            <Button className="subscribe-button" onClick={onSubscribe}>
+              Subscribe
+            </Button>
+          )
+        ) : (
+          <>
+            <Button className="folder-button" onClick={handleFolderClick} disabled={isInputDisabled}>
+              <Image src={icons.folder} alt="Folder" width={24} height={24} />
+            </Button>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              multiple
+              accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml, image/x-icon, audio/*, video/mp4, application/pdf, application/zip"
+              onChange={handleFileChange}
+              disabled={isInputDisabled}
+            />
+            <Input
+              type="text"
+              placeholder="Type your message..."
+              value={messageContent}
+              onChange={(e) => setMessageContent(e.target.value)}
+              onKeyPress={handleKeyPress}
+              onPaste={handlePaste}
+              disabled={loading || isInputDisabled}
+            />
+            <Button onClick={handleSendOrUpdate} disabled={loading || isInputDisabled} className="send-button">
+              <Image src={editingMessage ? icons.checkmark : icons.sendButton} alt={editingMessage ? "Confirm Edit" : "Send"} width={24} height={24} />
+            </Button>
+          </>
+        )}
         {error && <p>Error sending message: {error.message}</p>}
       </div>
     </div>
