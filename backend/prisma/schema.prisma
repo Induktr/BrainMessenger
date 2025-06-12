@@ -57,7 +57,7 @@ model Chat {
 model Channel {
   id               String    @id @default(uuid())
   chatId           String    @unique
-  chat             Chat      @relation(fields: [chatId], references: [id])
+  chat             Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
   ownerId          String
   owner            User      @relation(fields: [ownerId], references: [id])
   description      String?

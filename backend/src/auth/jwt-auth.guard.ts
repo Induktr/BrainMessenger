@@ -34,7 +34,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
                 dummyReq.headers['authorization'] = `Bearer ${tokenFromContext}`;
                 console.log('[JwtAuthGuard] WebSocket Authorization header set from context.token:', tokenFromContext.substring(0, 20) + '...');
             } else {
-                console.warn('[JwtAuthGuard] WebSocket connection.context.token is missing. This might indicate an unauthenticated WebSocket connection.');
+                console.warn('[JwtAuthGuard] WebSocket connection.context.token is missing. Throwing UnauthorizedException.');
+                throw new UnauthorizedException('Authentication token missing for WebSocket connection.');
             }
             
             console.log('[JwtAuthGuard] WebSocket user attached from context:', connection.context.user ? connection.context.user.id : 'No user');

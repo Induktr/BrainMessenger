@@ -730,7 +730,7 @@ export class ChatService {
   async deleteChannel(channelId: string, ownerId: string): Promise<boolean> {
     // Margulan Seysembay's Responsibility & Proactivity: Ensure only the owner can delete.
     const channel = await this.prisma.channel.findUnique({
-      where: { chatId: channelId },
+      where: { id: channelId },
     });
 
     if (!channel || channel.ownerId !== ownerId) {
@@ -742,11 +742,11 @@ export class ChatService {
     return this.prisma.$transaction(async (prisma) => {
       // Delete the channel record
       await prisma.channel.delete({
-        where: { chatId: channelId },
+        where: { id: channelId },
       });
 
       // Leverage the existing deleteChatAndRemoveUser to clean up the associated chat, messages, and participants
-      await this.deleteChatAndRemoveUser(channelId, ownerId); // userId here is just for context, deleteChatAndRemoveUser deletes all participants
+      await this.deleteChatAndRemoveUser(channel.chatId, ownerId); // Pass the associated chatId
 
       return true;
     });
@@ -775,5 +775,58 @@ export class ChatService {
       },
       take: 10, // Limit search results for performance
     });
+  }
+
+  async updateChannelPrivacy(channelId: string, ownerId: string, isPublic: boolean) {
+    // Margulan Seysembay's Responsibility & Proactivity: Ensure only the owner can update.
+    const channel = await this.prisma.channel.findUnique({
+      where: { id: channelId }, // Use 'id' instead of 'chatId'
+    });
+
+    if (!channel || channel.ownerId !== ownerId) {
+      // Dr. Eric Berg's Clarity over Complexity: Provide clear feedback if not authorized or channel not found.
+      throw new Error('Channel not found or you are not the owner.');
+    }
+
+    // Update the isPublic status of the channel
+    const updatedChannel = await this.prisma.channel.update({
+      where: { id: channelId },
+      data: { isPublic: isPublic },
+      include: { // Include necessary relations for the ChannelDto return type
+        chat: true,
+        owner: true,
+      },
+    });
+
+    // Return the updated channel in a format consistent with ChannelDto
+    return {
+      id: updatedChannel.id,
+      chatId: updatedChannel.chatId,
+      ownerId: updatedChannel.ownerId, // Add ownerId here
+      description: updatedChannel.description,
+      subscribersCount: updatedChannel.subscribersCount,
+      isPublic: updatedChannel.isPublic,
+      owner: {
+        id: updatedChannel.owner.id,
+        email: updatedChannel.owner.email,
+        name: updatedChannel.owner.name,
+        username: updatedChannel.owner.username,
+        isVerified: updatedChannel.owner.isVerified,
+        avatarUrl: updatedChannel.owner.avatarUrl,
+        bio: updatedChannel.owner.bio,
+        status: updatedChannel.owner.lastActiveAt ? (new Date(updatedChannel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
+        roles: updatedChannel.owner.roles || [],
+      },
+      chat: {
+        id: updatedChannel.chat.id,
+        name: updatedChannel.chat.name,
+        type: updatedChannel.chat.type,
+        lastMessageSnippet: null,
+        lastMessageTimestamp: null,
+        unreadCount: 0,
+        messages: [],
+        participants: [],
+      },
+    };
   }
 }

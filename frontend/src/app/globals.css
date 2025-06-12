@@ -414,10 +414,138 @@ svg {
 }
 
 .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 1.125rem; /* text-lg */
   font-weight: 600; /* font-semibold */
   color: #B0B0B0; /* text-textPrimary-dark */
   margin-bottom: 1rem; /* mb-4 */
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button img {
+  filter: brightness(0) invert(1); /* Make the close icon white */
+}
+
+/* Channel Details Modal Specific Styles */
+.channel-details-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; /* space-y-6 */
+  padding: 1rem;
+}
+
+.channel-avatar-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  border-radius: 50%;
+  background-color: #4D4D4D; /* Placeholder background */
+  overflow: hidden;
+}
+
+.channel-avatar-section img {
+  width: 80px;
+  height: 80px;
+  filter: brightness(0) invert(1); /* Make the channel icon white */
+}
+
+.channel-info-section {
+  text-align: center;
+  color: #F0F0F0;
+}
+
+.channel-info-section h3 {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 0.5rem;
+  color: #F0F0F0;
+}
+
+.channel-info-section p {
+  font-size: 1rem; /* text-base */
+  color: #B0B0B0;
+  margin-bottom: 0.25rem;
+}
+
+.channel-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+  width: 100%;
+  max-width: 300px; /* Adjust as needed */
+}
+
+.toggle-switch-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #B0B0B0;
+  font-size: 1rem;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  background-color: #4D4D4D; /* Off state color */
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  -webkit-appearance: none; /* Remove default browser styling */
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.toggle-switch:checked {
+  background-color: #1ED94F; /* On state color (primary green) */
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #FFFFFF; /* Handle color */
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.toggle-switch:checked::before {
+  transform: translateX(16px);
+}
+
+.delete-channel-button {
+  background-color: #F44336; /* Error/Danger color */
+  color: #FFFFFF;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+  width: 100%; /* Full width within its container */
+}
+
+.delete-channel-button:hover {
+  opacity: 0.9;
 }
 
 .modal-body {
@@ -590,7 +718,7 @@ svg {
 
 .chat-sidebar {
   width: 350px; /* Adjust width as needed */
-  background-color: #2E2E2E; /* Slightly lighter dark for sidebar */
+  background-color: none; /* Slightly lighter dark for sidebar */
   display: flex;
   flex-direction: column;
 }
@@ -610,29 +738,34 @@ svg {
   margin-right: 15px; /* Add space to the right of the icon */
 }
 
-.search-input {
-  border: none;
-  height: 20px;
-  background-color: transparent;
-  color: #B0B0B0; /* Light grey text */
-  font-size: 24px;
-  outline: none;
-  /* Removed padding-left */
+/* InputPanel Component Styles */
+.input-panel {
+  flex: 1; /* Allows the input to grow and take available space */
+  height: 100px; /* Specific height for the input field */
+  width: 372px;
+  padding: 0 15px; /* Padding inside the input field */
+  background-color: #404040; /* Darker background for the input field */
+  border: none; /* No border */
+  border-radius: 0px 0px 0px 10px; /* Rounded corners */
+  color: #F0F0F0; /* Light text color */
+  font-size: 24px; /* Font size for the input text */
+  outline: none; /* Remove outline on focus */
+  box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
-.search-input-container {
-  background: #404040;
-  border-radius: 0px 0px 0px 10px;
-  height: 80px;
-  padding: 0 15px; /* Add padding inside the container */
-  display: flex; /* Use flexbox to align input and potential icon */
-  align-items: center; /* Vertically center items */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  flex-grow: 1; /* Allow it to grow and fill the available space */
-}
-
-.search-input::placeholder {
+.input-panel::placeholder {
   color: #B0B0B0; /* Light grey placeholder text */
+}
+
+/* Adjustments for the search input container */
+.search-input-container {
+  display: flex;
+  align-items: center;
+  padding: 15px 30px; /* Top/bottom padding, and left/right padding */
+  background-color: #1A1A1A; /* Background color of the top panel */
+  border-bottom: 1px solid #4D4D4D; /* Separator line */
+  height: 80px; /* Fixed height for the container */
+  box-sizing: border-box;
 }
 
 .chat-list {
@@ -669,8 +802,6 @@ svg {
   color: #F0F0F0;
   font-size: 20px;
 }
-
-
 
 /* Sidebar Menu Styles */
 .sidebar-menu {
@@ -759,4 +890,158 @@ svg {
   height: 100vh; /* Full viewport height */
   background-color: #1A1A1A;
   z-index: 40; /* Ensure it's below the sidebar but above other content */
+}
+
+/* Subscribe/Unsubscribe Buttons in ChatInput */
+.subscribe-button,
+.unsubscribe-button {
+  width: 100%; /* Take full width of the container */
+  height: 50px; /* Consistent height */
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem; /* Rounded corners */
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+  font-size: 1rem; /* Adjust font size for better fit */
+}
+
+.subscribe-button {
+  background-image: linear-gradient(to right, #F2F047, #1ED94F); /* Primary gradient */
+  color: #1A1A1A; /* Dark text on light background */
+}
+
+.unsubscribe-button {
+  background-color: #4D4D4D; /* Gray background */
+  color: #B0B0B0; /* Light text */
+}
+
+.subscribe-button:hover,
+.unsubscribe-button:hover {
+  opacity: 0.9;
+}
+
+.modal-close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-button img {
+  filter: brightness(0) invert(1); /* Make the close icon white */
+}
+
+/* Channel Details Modal Specific Styles */
+.channel-details-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem; /* space-y-6 */
+  padding: 1rem;
+}
+
+.channel-avatar-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  border-radius: 50%;
+  background-color: #4D4D4D; /* Placeholder background */
+  overflow: hidden;
+}
+
+.channel-avatar-section img {
+  width: 80px;
+  height: 80px;
+  filter: brightness(0) invert(1); /* Make the channel icon white */
+}
+
+.channel-info-section {
+  text-align: center;
+  color: #F0F0F0;
+}
+
+.channel-info-section h3 {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 0.5rem;
+  color: #F0F0F0;
+}
+
+.channel-info-section p {
+  font-size: 1rem; /* text-base */
+  color: #B0B0B0;
+  margin-bottom: 0.25rem;
+}
+
+.channel-settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+  width: 100%;
+  max-width: 300px; /* Adjust as needed */
+}
+
+.toggle-switch-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #B0B0B0;
+  font-size: 1rem;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  background-color: #4D4D4D; /* Off state color */
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  -webkit-appearance: none; /* Remove default browser styling */
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.toggle-switch:checked {
+  background-color: #1ED94F; /* On state color (primary green) */
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #FFFFFF; /* Handle color */
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.toggle-switch:checked::before {
+  transform: translateX(16px);
+}
+
+.delete-channel-button {
+  background-color: #F44336; /* Error/Danger color */
+  color: #FFFFFF;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+  width: 100%; /* Full width within its container */
+}
+
+.delete-channel-button:hover {
+  opacity: 0.9;
 }

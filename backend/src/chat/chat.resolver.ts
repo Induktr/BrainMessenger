@@ -245,6 +245,18 @@ export class ChatResolver {
     return this.chatService.deleteChannel(channelId, user.id);
   }
 
+  @Mutation(() => ChannelDto) // Return the updated channel details
+  async updateChannelPrivacy(
+    @Args('channelId', { type: () => ID }) channelId: string,
+    @Args('isPublic', { type: () => Boolean }) isPublic: boolean,
+    @CurrentUser() user: User,
+  ): Promise<ChannelDto> {
+    if (!user) {
+      throw new Error('Authentication required to update channel privacy.');
+    }
+    return this.chatService.updateChannelPrivacy(channelId, user.id, isPublic);
+  }
+
   @Mutation(() => ChatDto)
   async findOrCreatePrivateChat(
     @Args('otherUserId', { type: () => ID }) otherUserId: string,

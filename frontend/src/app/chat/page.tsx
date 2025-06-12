@@ -13,7 +13,7 @@ import Settings from '@/ui/Settings';
 import ChatListItem from '@/components/ChatListItem';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
-import Input from '@/components/Input';
+import InputPanel from '@/components/InputPanel';
 import { icons } from '@/app/lib/constants';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +26,7 @@ import { useChatId } from '@/context/ChatIdContext';
 import { useNotification } from '@/context/NotificationContext';
 import { playNotificationSound } from '@/utils/audioUtils';
 import CreateChannelModal from '@/components/CreateChannelModal';
+import ChannelDetailsModal from '@/components/ChannelDetailsModal';
 
 interface Message {
   id: string;
@@ -117,6 +118,7 @@ const ChatPage = () => {
   const [showDeleteUserConfirmModal, setShowDeleteUserConfirmModal] = useState(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [showDeleteChannelConfirmModal, setShowDeleteChannelConfirmModal] = useState(false); // New state for channel deletion confirmation
+  const [showChannelDetailsModal, setShowChannelDetailsModal] = useState(false); // New state for channel details modal
   const [channelSearchResults, setChannelSearchResults] = useState<Chat[]>([]); // New state for channel search results
 
   const { isOnline, isPoorConnection } = useNetworkStatus();
@@ -170,7 +172,9 @@ const ChatPage = () => {
   const [createChannelMutation] = useMutation(CREATE_CHANNEL);
   const [subscribeToChannelMutation] = useMutation(SUBSCRIBE_TO_CHANNEL);
   const [unsubscribeFromChannelMutation] = useMutation(UNSUBSCRIBE_FROM_CHANNEL);
-  const [deleteChannelMutation] = useMutation(DELETE_CHANNEL);
+  const [deleteChannelMutation] = useMutation(DELETE_CHANNEL, {
+    refetchQueries: [{ query: GET_CHATS }],
+  });
 
   const { user: currentUser, queryLoading: authLoading, isInitializing } = useAuth();
   const router = useRouter();
@@ -260,7 +264,6 @@ const ChatPage = () => {
             return [...prevMessages, incomingMessage];
           });
           refetchMessages();
-          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         } else {
           console.log('[ChatPage - Subscription onData] Message for a different chat. Updating cache and triggering notification.');
           if (incomingMessage.sender.id !== currentUser?.id) {
@@ -721,21 +724,17 @@ const ChatPage = () => {
           <div className="chat-sidebar">
             <div className="chat-list relative">
               <NetworkStatusDropdown />
-              <div className="search-input-container">
-                <Input
+              <div className="search-input-panel-container">
+                <InputPanel
                   type="text"
                   placeholder="Search"
-                  className="search-input"
+                  className="search-input-panel"
                   value={searchQuery}
                   onChange={handleSearchInputChange}
                 />
               </div>
               <div className="sidebar-header">
                 <Button className="burger-icon" onClick={handleOpenMenu}>{icons.burgerMenu && <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" width={24} height={24} />}</Button>
-                <Button className="create-channel-button" onClick={handleCreateChannelClick}>
-                  <Image src={icons.channel} alt="Create Channel" className="icon" width={24} height={24} />
-                  Create Channel
-                </Button>
               </div>
               {searchQuery.length > 0 ? (
                 loadingSearch || loadingChannelSearch ? (
@@ -874,11 +873,11 @@ const ChatPage = () => {
                       <div
                         className="chat-header-avatar"
                         onClick={() => {
-                          if (currentUser?.id === selectedChat.channel?.owner.id) {
-                            handleDeleteChannel();
+                          if (selectedChat.channel) {
+                            setShowChannelDetailsModal(true);
                           }
                         }}
-                        style={{ cursor: currentUser?.id === selectedChat.channel?.owner.id ? 'pointer' : 'default' }}
+                        style={{ cursor: 'pointer' }}
                       >
                         <Image src={icons.channel} alt="Channel Avatar" width={40} height={40} className="rounded-full" />
                       </div>
@@ -1044,6 +1043,21 @@ const ChatPage = () => {
               message={`Are you sure you want to delete the channel "${selectedChat.name}"? This action cannot be undone.`}
               confirmText="Delete Channel"
               cancelText="Cancel"
+            />
+          )}
+
+          {showChannelDetailsModal && selectedChat?.channel && (
+            <ChannelDetailsModal
+              isOpen={showChannelDetailsModal}
+              onClose={() => setShowChannelDetailsModal(false)}
+              channel={selectedChat.channel}
+              isOwner={currentUser?.id === selectedChat.channel.owner.id}
+              onChannelDeleted={() => {
+                setSelectedChatId(null);
+                setSelectedChatMessages([]);
+                refetchChats();
+                router.push('/chat');
+              }}
             />
           )}
         </>

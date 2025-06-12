@@ -96,7 +96,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
         {isChannel && !isChannelOwner ? (
           isSubscribedToChannel ? (
             <Button className="unsubscribe-button" onClick={onUnsubscribe}>
-              UnSubscribe
+              Unsubscribe
             </Button>
           ) : (
             <Button className="subscribe-button" onClick={onSubscribe}>
@@ -119,7 +119,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             />
             <Input
               type="text"
-              placeholder="Type your message..."
+              placeholder="Enter message..."
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}
               onKeyPress={handleKeyPress}

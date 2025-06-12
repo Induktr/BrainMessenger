@@ -662,7 +662,7 @@
 .chat-header-avatar {
     width: 40px; /* Avatar size */
     height: 40px; /* Avatar size */
-    background-color: #555; /* Placeholder background */
+    background-color: #F0F0F0; /* Placeholder background */
     border-radius: 50%; /* Rounded avatar */
     margin-right: 15px; /* Space between avatar and info */
     flex-shrink: 0; /* Prevent shrinking */
@@ -720,7 +720,6 @@
     background-color: #2B2B2B; /* Dark background */
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #4f545c; /* Separator line */
     padding: 0; /* Remove padding from sidebar container */
 }
 

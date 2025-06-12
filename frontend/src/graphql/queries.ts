@@ -227,6 +227,15 @@ export const DELETE_CHANNEL = gql`
   }
 `;
 
+export const UPDATE_CHANNEL_PRIVACY = gql`
+  mutation UpdateChannelPrivacy($channelId: ID!, $isPublic: Boolean!) {
+    updateChannelPrivacy(channelId: $channelId, isPublic: $isPublic) {
+      id
+      isPublic
+    }
+  }
+`;
+
  
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
