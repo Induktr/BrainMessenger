@@ -49,8 +49,8 @@ RUN npm install --only=production
 COPY --from=development /usr/src/app/dist ./dist
 COPY --from=development /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=development /usr/src/app/prisma/schema.prisma ./prisma/schema.prisma
-# COPY --from=development /usr/src/app/schema.gql ./schema.gql
-COPY --from=development /usr/src/app/dist/schema.gql ./dist/schema.gql
+COPY --from=development /usr/src/app/schema.gql ./schema.gql
+# COPY --from=development /usr/src/app/dist/schema.gql ./dist/schema.gql
 
 EXPOSE 4000
 
