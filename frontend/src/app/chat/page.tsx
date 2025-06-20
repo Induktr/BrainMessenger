@@ -179,13 +179,29 @@ const ChatPage = () => {
   const { user: currentUser, queryLoading: authLoading, isInitializing } = useAuth();
   const router = useRouter();
 
+  const handleCreateChannel = async (channelName: string, channelDescription: string) => {
+    try {
+      await createChannelMutation({
+        variables: {
+          name: channelName,
+          description: channelDescription || null,
+        },
+      });
+      // Optionally, refetch chats or update cache after successful creation
+      refetchChats();
+    } catch (error) {
+      console.error('Error creating channel:', error);
+      // Handle error, maybe show a notification
+    }
+  };
+
   const handleCreateChannelClick = () => {
     setShowCreateChannelModal(true);
   };
-
+ 
   const handleCloseCreateChannelModal = () => {
     setShowCreateChannelModal(false);
-    refetchChats();
+    // refetchChats is now called in handleCreateChannel
   };
   
   useEffect(() => {
@@ -1021,6 +1037,7 @@ const ChatPage = () => {
             <CreateChannelModal
               isOpen={showCreateChannelModal}
               onClose={handleCloseCreateChannelModal}
+              onCreate={handleCreateChannel} // Pass the new handler
             />
           )}
 
