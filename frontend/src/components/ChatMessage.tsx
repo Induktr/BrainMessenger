@@ -77,12 +77,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
    }
 
    return () => {
-     const currentMessageRef = messageRef.current; // Capture the current value
-     if (currentMessageRef) {
-       observer.unobserve(currentMessageRef); // Use the captured value
+     const currentRef = messageRef.current; // Capture the current value of the ref
+     if (currentRef) {
+       observer.unobserve(currentRef); // Use the captured value in cleanup
      }
    };
- }, []); // messageRef is stable and doesn't need to be in dependencies
+ }, []); // Empty dependency array because messageRef is a ref and its .current property is not a dependency
 
  const handleAvatarClick = () => {
     setSelectedProfileUserId(message.sender.id);

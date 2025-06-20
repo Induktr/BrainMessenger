@@ -97,7 +97,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   const [refreshTokenMutation] = useMutation(REFRESH_TOKEN_MUTATION); // Initialize refreshToken mutation
-const logout = () => {
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const client = useApolloClient();
+
+const logout = React.useCallback(() => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
@@ -107,12 +112,7 @@ const logout = () => {
     setAccessTokenForApollo(null); // Clear Apollo Client's token on logout
     client.clearStore();
     router.replace('/login');
-  };
-
-  const router = useRouter();
-  const pathname = usePathname();
-  const client = useApolloClient();
-
+  }, [client, router]); // Add client and router as dependencies for useCallback
   const { data, loading, error, refetch } = useQuery<{ getCurrentUser: User }>(GET_CURRENT_USER, {
     fetchPolicy: 'cache-and-network',
     skip: !accessToken, // Only skip if no accessToken is present

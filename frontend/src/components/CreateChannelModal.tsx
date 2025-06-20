@@ -12,6 +12,7 @@ import { CREATE_CHANNEL } from '@/graphql/queries'; // Import CREATE_CHANNEL mut
 interface CreateChannelModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onCreate: (channelName: string, channelDescription: string) => void; // Added onCreate prop
 }
 
 const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose }) => {
