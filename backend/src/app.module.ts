@@ -120,7 +120,7 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     {
       provide: PubSub,
       useFactory: (configService: ConfigService) => {
-        const redisUrl = configService.get<string>('REDIS_URL') || 'redis-19864.c300.eu-central-1-1.ec2.redns.redis-cloud.com:19864'; // Default to localhost URL
+        const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
         const redisOptions = {
            retryStrategy: (times: number) => {
              // reconnect after
