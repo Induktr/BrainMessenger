@@ -21,7 +21,7 @@ RUN npm install --only=development
 COPY --chown=appuser:appgroup . .
 
 # Удаляем старый schema.gql из корневой директории, чтобы избежать конфликтов с разрешениями
-RUN rm -f schema.gql
+# RUN rm -f schema.gql
 
 # Generate Prisma client (still needed for type generation, etc.)
 RUN npx prisma generate
