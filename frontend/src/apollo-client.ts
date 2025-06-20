@@ -18,12 +18,17 @@ const isBrowser = typeof window !== 'undefined';
 const backendPort = 4000; // Your backend port
 
 const getBackendUrl = (protocol: string) => {
-  // Prioritize Vercel/production environment variables
-  if (protocol === 'http' && process.env.NEXT_PUBLIC_GRAPHQL_HTTP_URI) {
-    return process.env.NEXT_PUBLIC_GRAPHQL_HTTP_URI;
-  }
-  if (protocol === 'ws' && process.env.NEXT_PUBLIC_BACKEND_WS_URL) {
-    return process.env.NEXT_PUBLIC_BACKEND_WS_URL;
+  // Prioritize NEXT_PUBLIC_API_URL for Vercel/production
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (protocol === 'http') {
+      return `${baseUrl}/graphql`; // Assuming GraphQL endpoint is /graphql
+    } else if (protocol === 'ws') {
+      // Assuming WebSocket endpoint is also /graphql, adjust if needed
+      // Replace http:// or https:// with ws:// or wss://
+      const wsBaseUrl = baseUrl.replace(/^http/, 'ws');
+      return `${wsBaseUrl}/graphql`; // Assuming WebSocket endpoint is /graphql
+    }
   }
 
   // Fallback for specific local development/testing scenarios
@@ -55,6 +60,8 @@ const getBackendUrl = (protocol: string) => {
       return `ws://localhost:${backendPort}/graphql`;
     }
   }
+  // Fallback for cases where no URL can be determined (should ideally not happen in production)
+  return protocol === 'http' ? '/graphql' : '/graphql'; // Fallback to relative paths
 };
 
 // A mutable object to hold the current access token
