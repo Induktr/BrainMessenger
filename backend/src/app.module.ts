@@ -95,12 +95,14 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get<string>('REDIS_HOST') || 'localhost',
-        port: configService.get<number>('REDIS_PORT') || 6379,
-        ttl: configService.get<number>('CACHE_TTL') || 300, // seconds
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
+        return {
+          store: redisStore,
+          url: redisUrl, // Use the URL for cache-manager-redis-store
+          ttl: configService.get<number>('CACHE_TTL') || 300, // seconds
+        };
+      },
       isGlobal: true, // Make CacheModule global
     }),
     UserModule,
@@ -118,18 +120,17 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     {
       provide: PubSub,
       useFactory: (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL') || 'redis-19864.c300.eu-central-1-1.ec2.redns.redis-cloud.com:19864'; // Default to localhost URL
         const redisOptions = {
-          host: configService.get<string>('REDIS_HOST') || 'localhost',
-          port: configService.get<number>('REDIS_PORT') || 6379,
-          retryStrategy: (times: number) => {
-            // reconnect after
-            return Math.min(times * 50, 2000);
-          },
-        };
-        console.log('[AppModule] Initializing RedisPubSub with options:', redisOptions);
+           retryStrategy: (times: number) => {
+             // reconnect after
+             return Math.min(times * 50, 2000);
+           },
+         };
+        console.log('[AppModule] Initializing RedisPubSub with URL:', redisUrl);
         return new RedisPubSub({
-          publisher: new Redis(redisOptions),
-          subscriber: new Redis(redisOptions),
+          publisher: new Redis(redisUrl, redisOptions), // Pass URL and options
+          subscriber: new Redis(redisUrl, redisOptions), // Pass URL and options
         });
       },
       inject: [ConfigService], // Inject ConfigService to get Redis config
