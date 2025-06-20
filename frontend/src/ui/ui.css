@@ -2,7 +2,8 @@
 .settings-modal-content {
     padding: 0; /* Remove padding from the modal content wrapper */
     color: #f0f0f0; /* Light text color */
-    width: 456px; /* Adjusted width based on Figma */
+    max-width: 456px; /* Adjusted width based on Figma */
+    width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px; /* Rounded corners */
     overflow: hidden; /* Hide overflow */
 }
@@ -25,7 +26,7 @@
 }
 
 .settings-option-icon {
-    margin-right: 15px; /* Space between icon and text based on Figma */
+    margin-right: clamp(5px, 1.5vw, 15px); /* Space between icon and text based on Figma */
     display: flex;
     align-items: center;
     width: 20px; /* Fixed width for icons */
@@ -38,7 +39,7 @@
 }
 
 .settings-option-text {
-    font-size: 20px; /* Font size based on Figma */
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     color: #f0f0f0;
     text-align: start;
     flex-grow: 1; /* Allow text to take available space */
@@ -58,7 +59,7 @@
 
 .settings-header h2 {
     margin: 0;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
 }
 
@@ -67,11 +68,11 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
 }
 
 .settings-user-email {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #F0F0F0;
     margin: 5px 0;
 }
@@ -89,14 +90,14 @@
     background-color: #F0F0F0;
     border-radius: 50%;
 }
- 
+
 .settings-avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Ensure the image covers the area without distortion */
     border-radius: 50%; /* Make the image round */
 }
- 
+
 .settings-user-profile .settings-user-info {
     display: flex;
     flex-direction: column; /* Stack name, email, and username vertically */
@@ -105,7 +106,7 @@
 }
 
 .settings-user-profile .settings-user-info h2 {
-    font-size: 24px; /* Adjusted font size for name in settings */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     font-weight: 500;
     margin-bottom: 2px; /* Reduced margin */
 }
@@ -143,23 +144,23 @@
     margin-bottom: 10px; /* Space between avatar and name */
     margin-right: 0; /* Remove right margin */
 }
- 
+
 .sidebar-avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover; /* Ensure the image covers the area without distortion */
     border-radius: 50%; /* Make the image round */
 }
- 
+
 .sidebar-user-info h2 {
-    font-size: 16px; /* Adjusted font size */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     font-weight: 500; /* Adjusted font weight */
     color: #f0f0f0; /* Ensure text color is light */
     margin-bottom: 10px;
 }
 
 .sidebar-username-text {
-    font-size: 16px; /* Adjusted font size */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #B0B0B0; /* Slightly darker text color for username */
     margin-top: 15px;
 }
@@ -174,7 +175,7 @@
     background: none;
     border: none;
     color: #f0f0f0; /* Light text color */
-    padding: 10px 15px; /* Adjusted padding */
+    padding: clamp(8px, 2vw, 10px) clamp(10px, 3vw, 15px); /* Fluid padding */
     text-align: left;
     cursor: pointer;
     display: flex;
@@ -188,7 +189,7 @@
 }
 
 .sidebar-option-button svg {
-    margin-right: 10px; /* Space between icon and text */
+    margin-right: clamp(5px, 1.5vw, 10px); /* Fluid margin */
     fill: #f0f0f0; /* Ensure icons are light */
 }
 /* Styles for Channel Component */
@@ -207,7 +208,7 @@
 
 .channel-header h2 {
     margin: 0;
-    font-size: 18px;
+    font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
 }
 
 .channel-content {
@@ -231,7 +232,7 @@
 
 .group-header h2 {
     margin: 0;
-    font-size: 18px;
+    font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
 }
 
 .group-content {
@@ -262,7 +263,7 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -270,7 +271,7 @@
 
 .myaccount-header-title {
     margin: 0;
-    font-size: 24px; /* Based on Language header size */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
 }
 
@@ -288,13 +289,13 @@
     border-radius: 50%;
     margin-bottom: -3px;
 }
- 
+
 .myaccount-avatar {
     /* Existing styles */
     position: relative; /* Ensure overlay is positioned relative to the avatar */
     overflow: hidden; /* Hide anything outside the avatar circle */
 }
- 
+
 .myaccount-avatar-overlay {
     position: absolute;
     top: 0;
@@ -309,17 +310,17 @@
     transition: opacity 0.3s ease; /* Smooth transition */
     pointer-events: none; /* Allow clicks to pass through to the avatar div */
 }
- 
+
 .myaccount-avatar:hover .myaccount-avatar-overlay {
     opacity: 1; /* Show on hover */
 }
- 
+
 .myaccount-avatar-upload-text {
     color: #f0f0f0; /* Light text color */
-    font-size: 14px; /* Adjust font size as needed */
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     text-align: center;
 }
- 
+
 .myaccount-avatar-letter {
     /* Existing styles */
     position: relative; /* Ensure letter is above the overlay */
@@ -333,7 +334,7 @@
     width: 100%;
     height: 100%;
 }
- 
+
 .myaccount-avatar-image {
     width: 100%;
     height: 100%;
@@ -342,28 +343,28 @@
     position: relative; /* Add position relative to ensure z-index works */
     z-index: 2; /* Ensure image is above the overlay */
 }
- 
+
 .myaccount-upload-status {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #96C93D; /* Green color for success/loading */
     margin-top: 10px;
 }
  
 .myaccount-upload-error {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #FF5722; /* Red color for errors */
     margin-top: 10px;
 }
  
 .myaccount-user-name {
-    font-size: 24px; /* Match Settings name size */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     font-weight: 500;
     color: #f0f0f0;
     margin-bottom: -12px; /* Keep some space below the main name */
 }
 
 .myaccount-user-status {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #96C93D; /* Online status color */
 }
 
@@ -384,7 +385,7 @@
 }
 
 .myaccount-user-description {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #f0f0f0;
     text-align: center;
     margin-bottom: 5px; /* Reduced space between biography and separator */
@@ -430,7 +431,7 @@
     padding: 10px 15px; /* Padding inside dropdown items */
     cursor: pointer;
     color: #f0f0f0; /* Light text color */
-    font-size: 16px; /* Font size */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     transition: background-color 0.2s ease; /* Smooth hover effect */
 }
 
@@ -489,14 +490,14 @@
 }
 
 .chat-list-item-name {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     font-weight: 500;
     margin: 0;
     color: inherit; /* Inherit color from parent (.chat-list-item) */
 }
 
 .chat-list-item-timestamp {
-    font-size: 12px;
+    font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
     color: #B0B0B0; /* Lighter color for timestamp */
     flex-shrink: 0; /* Prevent shrinking */
 }
@@ -506,7 +507,7 @@
 }
 
 .chat-list-item-snippet {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #B0B0B0; /* Lighter color for snippet */
     margin-top: 2px; /* Space above snippet */
     white-space: nowrap; /* Prevent text wrapping */
@@ -555,7 +556,7 @@
 }
 
 .chat-message-sender {
-    font-size: 12px;
+    font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
     color: #B0B0B0; /* Lighter color for sender name */
     margin-bottom: 2px; /* Space below sender name */
 }
@@ -567,10 +568,14 @@
 /* Styles for Chat Input */
 .chat-input-container {
     display: flex;
-    align-items: center;
+    align-items: flex-end; /* Align items to the bottom */
     background-color: #2B2B2B;
+    width: 100%;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1;
+    padding: 10px 20px; /* Add horizontal padding to match header */
+    gap: 10px; /* Add space between items */
+    box-sizing: border-box; /* Include padding in the element's total width */
 }
 
 .folder-button {
@@ -593,18 +598,20 @@
 /* Adjusting the Input component's container within ChatInput */
 .chat-input-container .input-container {
     flex-grow: 1; /* Allow input to take available space */
-    /* Removed margin-right: 10px; as gap handles spacing */
-    height: 100px; /* Match button height for alignment */
+    height: 44px; /* Match button height for alignment */
     background: none;
     border-radius: 0;
+    transition: none;
 }
 
 .chat-input-container .input-field {
-    font-size: 24px; /* Adjust font size for consistency */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+    width: auto; /* Allow width to be determined by flex-grow */
 }
 
 .chat-input-container .input-field::placeholder {
     color: #B0B0B0; /* Lighter placeholder text */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
 }
 
 .send-button {
@@ -618,7 +625,6 @@
     align-items: center;
     cursor: pointer;
     flex-shrink: 0; /* Prevent shrinking */
-    /* Removed color, font-weight, font-size as it's now an icon */
 }
 
 .send-button:hover {
@@ -635,7 +641,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #B0B0B0; /* Lighter color */
     text-align: center;
 }
@@ -681,14 +687,14 @@
 }
 
 .chat-header-name {
-    font-size: 18px; /* Font size for name */
+    font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
     font-weight: 500;
     color: #f0f0f0; /* Light text color */
     margin: 0; /* Remove default margin */
 }
 
 .chat-header-status {
-    font-size: 14px; /* Font size for status */
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #96C93D; /* Green color for online status */
     margin-top: 2px; /* Space above status */
 }
@@ -706,6 +712,21 @@
 
 .chat-header-options img {
     filter: brightness(0) invert(1); /* Make the icon white */
+}
+
+.back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px; /* Space between back button and avatar/info */
+}
+
+.back-button .icon {
+    filter: brightness(0) invert(1); /* Make icon white */
 }
 
 /* Styles for the main chat container layout */
@@ -734,27 +755,31 @@
     display: flex;
     flex-direction: column;
     background-color: #1a1a1a; /* Dark background for main content */
-    padding: 0; /* Remove padding from main content container */
 }
 
-.search-input-container {
-    padding: 10px 15px; /* Padding around the search input */
-    border-bottom: 1px solid #4f545c; /* Separator line */
-    flex-shrink: 0; /* Prevent shrinking */
-}
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .chat-container:not(.chat-selected) .chat-main-content {
+        display: none; /* Hide main content when no chat is selected */
+    }
 
-.search-input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #4f545c;
-    border-radius: 20px;
-    background-color: #3a3a3a;
-    color: #f0f0f0;
-    font-size: 16px;
-    outline: none;
-    box-sizing: border-box; /* Include padding and border in element's total width */
-}
+    .chat-container:not(.chat-selected) .chat-sidebar {
+        width: 100%; /* Sidebar takes full width when no chat is selected */
+        border-right: none; /* Remove sidebar border on full width */
+    }
 
+    .chat-container.chat-selected .chat-sidebar {
+        display: none; /* Hide sidebar when a chat is selected */
+    }
+
+    .chat-container.chat-selected .chat-main-content {
+        width: 100%; /* Main content takes full width when a chat is selected */
+    }
+
+    .chat-container.chat-selected .back-button {
+        display: flex; /* Show back button when chat is selected on small screens */
+    }
+}
 .search-input::placeholder {
     color: #B0B0B0;
 }
@@ -801,7 +826,7 @@
     z-index: 101; /* Ensure it's above the overlay */
 }
 .chat-list-item-snippet p {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     margin: 0;
     color: #B0B0B0; /* Lighter color for snippet */
     white-space: nowrap; /* Prevent wrapping */
@@ -816,7 +841,6 @@
 .chat-list-item-unread-count {
     /* Styles for unread count badge if needed */
 }
-
 /* Styles for Chat Messages */
 .chat-messages {
     flex-grow: 1;
@@ -849,8 +873,8 @@
     border-radius: 15px; /* Rounded corners for bubbles */
     max-width: calc(100% - 100px); /* Make messages responsive, allowing for padding/margins */
     word-break: break-word; /* Ensure long words break and wrap */
-    display: flex; /* Enable flexbox */
-    flex-direction: column; /* Stack children vertically */
+    position: relative; /* Added for absolute positioning of timestamp */
+    padding-right: 90px; /* Add padding to make space for timestamp */
 }
  
 .chat-message-bubble.current-user {
@@ -868,16 +892,10 @@
 }
 
 .chat-message-sender-name {
-    font-size: 12px;
+    font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
     font-weight: 500;
     margin-bottom: 5px; /* Space below sender name */
     color: #B0B0B0; /* Lighter color for sender name */
-}
-
-.chat-message-content {
-    font-size: 16px;
-    margin: 0;
-    margin-top: 8px; /* Add space above the content/caption */
 }
 
 .chat-attachments-wrapper {
@@ -908,10 +926,13 @@
 }
 
 .chat-message-timestamp {
-    font-size: 10px;
-    margin-top: 5px; /* Space above timestamp */
+    font-size: clamp(8px, 1.5vw, 10px); /* Fluid font size */
     text-align: right; /* Align timestamp to the right */
     color: #B0B0B0; /* Lighter color for timestamp */
+    position: absolute; /* Position absolutely */
+    bottom: 5px; /* Position from the bottom */
+    right: 5px; /* Position from the right */
+    white-space: nowrap; /* Prevent timestamp from wrapping */
 }
 
 .chat-message-bubble.current-user .chat-message-timestamp {
@@ -924,7 +945,7 @@
     border-radius: 8px; /* Slightly less rounded than channel textarea */
     padding: 10px;
     color: #f0f0f0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     resize: vertical; /* Allow vertical resizing */
     width: 100%; /* Take full width of container */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
@@ -969,13 +990,13 @@
 }
 
 .myaccount-info-label {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #F0F0F0; /* Label color */
     margin-bottom: 2px;
 }
 
 .myaccount-info-value {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #96C93D; /* Value color */
 }
 
@@ -988,7 +1009,8 @@
 .language-modal-content {
     padding: 0;
     color: #f0f0f0;
-    width: 456px; /* Match Settings modal width */
+    max-width: 456px; /* Match Settings modal width */
+    width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px;
     overflow: hidden;
 }
@@ -1007,7 +1029,7 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1015,7 +1037,7 @@
 
 .language-header-title {
     margin: 0;
-    font-size: 24px; /* Specified font size */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
     flex-grow: 1; /* Allow title to take available space */
 }
@@ -1026,7 +1048,7 @@
 }
 
 .language-interface-label {
-    font-size: 16px; /* Specified font size */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #96C93D; /* Specified color */
     text-align: start;
     padding: 15px 20px 5px 20px; /* Add padding, less at bottom */
@@ -1042,7 +1064,7 @@
 .create-channel-form .input-container {
     width: auto;
     height: 48px;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
 }
 
 .language-options-list {
@@ -1076,7 +1098,7 @@
 }
 
 .language-option-text {
-    font-size: 16px; /* Specified font size */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #f0f0f0; /* Specified color */
     text-align: start;
     flex-grow: 1;
@@ -1087,7 +1109,8 @@
 .premium-modal-content {
     padding: 0;
     color: #f0f0f0;
-    width: 456px; /* Match Settings modal width */
+    max-width: 456px; /* Match Settings modal width */
+    width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px;
     overflow: hidden;
 }
@@ -1106,7 +1129,7 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1114,7 +1137,7 @@
 
 .premium-header-title {
     margin: 0;
-    font-size: 24px; /* Based on other header sizes */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
     flex-grow: 1; /* Allow title to take available space */
 }
@@ -1126,7 +1149,7 @@
 
 .premium-content {
     padding: 20px; /* Add some padding to the content area */
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #f0f0f0;
 }
 
@@ -1134,7 +1157,8 @@
 .create-channel-modal-content {
     padding: 0;
     color: #f0f0f0;
-    width: 456px; /* Match other modals */
+    max-width: 456px; /* Match other modals */
+    width: 90%; /* Make it flexible on smaller screens */
     border-radius: 10px;
     overflow: hidden;
     background-color: #2B2B2B; /* Dark background */
@@ -1149,7 +1173,7 @@
 
 .create-channel-header-title {
     margin: 0;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
 }
 
@@ -1158,7 +1182,7 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1177,7 +1201,7 @@
 }
 
 .create-channel-label {
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #b0b0b0; /* Lighter color for labels */
     margin-bottom: 5px;
 }
@@ -1188,7 +1212,7 @@
     border-radius: 10px;
     padding: 10px;
     color: #f0f0f0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     resize: vertical; /* Allow vertical resizing */
     min-height: 131px; /* Minimum height */
 }
@@ -1196,7 +1220,7 @@
 .create-channel-button {
     border: none;
     color: #F0F0F0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     width: 390px;
     height: 50px;
     border-radius: 10px 0 10px 0;
@@ -1206,7 +1230,7 @@
 .create-channel-button-state-disabled {
     border: none;
     color: #F0F0F0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     background: none;
 }
 
@@ -1219,7 +1243,8 @@
 .create-group-modal-content {
     padding: 0;
     color: #f0f0f0;
-    width: 456px; /* Match other modals */
+    max-width: 456px; /* Match other modals */
+    width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px;
     overflow: hidden;
     background-color: #2b2b2b; /* Dark background */
@@ -1235,7 +1260,7 @@
 
 .create-group-header-title {
     margin: 0;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
 }
 
@@ -1244,7 +1269,7 @@
     border: none;
     color: #f0f0f0;
     cursor: pointer;
-    font-size: 20px;
+    font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1253,7 +1278,7 @@
 .create-group-button {
     border: none;
     color: #F0F0F0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     width: 390px;
     height: 50px;
     border-radius: 10px 0 10px 0;
@@ -1263,7 +1288,7 @@
 .create-group-button-state-disabled {
     border: none;
     color: #F0F0F0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     background: none;
 }
 
@@ -1280,7 +1305,7 @@
 }
 
 .create-group-label {
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #b0b0b0; /* Lighter color for labels */
     margin-bottom: 5px;
 }
@@ -1306,7 +1331,7 @@
     background: none;
     border: none;
     color: #f0f0f0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     flex-grow: 1; /* Allow input to take available space */
     outline: none; /* Remove outline */
 }
@@ -1339,10 +1364,6 @@
 /* --- Chat Page Styles --- */
 
 .chat-container {
-    display: flex;
-    height: 100vh; /* Full viewport height */
-    overflow: hidden; /* Prevent scrolling on the main container */
-    background-color: #1a1a1a; /* Dark background for the whole page */
 }
 
 .chat-sidebar {
@@ -1378,6 +1399,8 @@
     padding: 10px 15px;
     border-bottom: 1px solid #3a3a3a; /* Separator below search */
     flex-shrink: 0; /* Prevent search from shrinking */
+    width: 100%; /* Ensure container takes full width */
+    box-sizing: border-box; /* Include padding in width */
 }
 
 .search-input {
@@ -1387,7 +1410,7 @@
     border-radius: 4px;
     background-color: #3a3a3a;
     color: #f0f0f0;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
 }
 
 .search-input::placeholder {
@@ -1422,9 +1445,6 @@
 }
 
 .chat-header-content {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
 }
 
 .chat-header-avatar {
@@ -1457,14 +1477,14 @@
 }
 
 .chat-header-name {
-    font-size: 18px;
+    font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
     font-weight: 500;
     margin: 0;
     color: #f0f0f0;
 }
 
 .chat-header-status {
-    font-size: 12px;
+    font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
     color: #96C93D; /* Online status color */
     margin: 0;
 }
@@ -1513,7 +1533,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #b0b0b0; /* Lighter color for welcome message */
 }
 
@@ -1539,7 +1559,7 @@
 .verification-modal-content {
     padding: 20px;
     color: #f0f0f0;
-    width: 400px; /* Adjusted width for edit modals */
+    width: 400px;
     border-radius: 8px;
     background-color: #2B2B2B; /* Dark background */
     display: flex;
@@ -1550,7 +1570,7 @@
 .edit-modal-content h3,
 .verification-modal-content h3 {
     margin-top: 0;
-    font-size: 24px;
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
     text-align: center;
 }
@@ -1563,7 +1583,7 @@
     border-radius: 8px;
     background-color: #1A1A1A; /* Darker input background */
     color: #f0f0f0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     outline: none;
     box-sizing: border-box;
 }
@@ -1577,7 +1597,7 @@
 .verification-modal-content button {
     border: none;
     color: #F0F0F0;
-    font-size: 16px;
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     padding: 12px 20px;
     border-radius: 8px;
     cursor: pointer;
@@ -1622,19 +1642,19 @@
 
 .email-verification-section p {
     margin: 0;
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     color: #b0b0b0;
 }
 
 .success-message {
     color: #96C93D; /* Green for success */
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     text-align: center;
 }
 
 .error-message {
     color: #FF5722; /* Red for error */
-    font-size: 14px;
+    font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     text-align: center;
 }
 
@@ -1699,7 +1719,7 @@
 }
  
 .audio-player-time-display {
-    font-size: 0.875rem; /* text-sm */
+    font-size: clamp(0.75rem, 2vw, 0.875rem); /* Fluid font size */
     color: #D1D5DB; /* text-gray-300 */
     min-width: 70px; /* Ensure enough space for time display */
     text-align: right;
@@ -1840,7 +1860,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem; /* text-xs */
+    font-size: clamp(0.6rem, 1.5vw, 0.75rem); /* Fluid font size */
     border: none;
     cursor: pointer;
 }
@@ -1903,6 +1923,8 @@
 
 .notification-sender-name {
   font-weight: bold;
+  font-size: clamp(14px, 3vw, 16px); /* Fluid font size */
+  font-size: clamp(14px, 3vw, 16px); /* Fluid font size */
   color: #f0f0f0; /* Light text color */
 }
 
@@ -1921,7 +1943,7 @@
 }
 
 .notification-message-content {
-  font-size: 0.95em;
+  font-size: clamp(0.8em, 2.5vw, 0.95em); /* Fluid font size */
   color: #b0b0b0; /* Lighter text color */
   word-wrap: break-word;
 }
@@ -2044,4 +2066,112 @@
 .myaccount-loading-email-value {
   width: 128px; /* w-32 */
   height: 24px; /* h-6 */
+}
+/* Styles for Context Menu */
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    background-color: #2B2B2B; /* Dark background */
+    border: 1px solid #3a3a3a; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
+    padding: 5px 0; /* Padding top and bottom */
+}
+
+.context-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.context-menu-item {
+    padding: 8px 15px; /* Padding inside menu items */
+    cursor: pointer;
+    color: #f0f0f0; /* Light text color */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+    transition: background-color 0.2s ease; /* Smooth hover effect */
+}
+
+.context-menu-item:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+.context-menu-item.disabled {
+    color: #555; /* Dim color for disabled items */
+    cursor: not-allowed;
+}
+/* Styles for Confirmation Modal */
+.confirmation-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px; /* Space above buttons */
+}
+
+.confirmation-modal-button {
+    padding: 10px 20px; /* Adjusted padding */
+    border-radius: 8px; /* Rounded corners */
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s ease;
+}
+
+.confirmation-modal-button.cancel {
+    background-color: #4f545c; /* Darker grey for cancel */
+    color: #f0f0f0; /* Light text */
+}
+
+.confirmation-modal-button.confirm {
+    background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient for confirm */
+    color: #1a1a1a; /* Dark text */
+}
+
+.confirmation-modal-button:hover {
+    opacity: 0.9;
+}
+
+/* Styles for modal title and message within the generic modal content */
+.modal-content h2 {
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
+    color: #f0f0f0; /* Light text color */
+    margin-top: 0;
+    margin-bottom: 10px; /* Space below title */
+    text-align: center;
+}
+
+.modal-content p {
+    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+    color: #b0b0b0; /* Lighter text color */
+    margin-bottom: 20px; /* Space below message */
+    text-align: center;
+}
+/* Responsive adjustments for modal widths */
+@media (max-width: 1000px) {
+    .settings-modal-content,
+    .myaccount-modal-content,
+    .language-modal-content,
+    .premium-modal-content,
+    .create-channel-modal-content,
+    .create-group-modal-content,
+    .edit-modal-content,
+    .verification-modal-content {
+        width: 350px; /* Increased width for larger screens */
+    }
+}
+
+/* Responsive adjustments for modal widths */
+@media (max-width: 400px) {
+    .settings-modal-content,
+    .myaccount-modal-content,
+    .language-modal-content,
+    .premium-modal-content,
+    .create-channel-modal-content,
+    .create-group-modal-content,
+    .edit-modal-content,
+    .verification-modal-content {
+        width: 150px; /* Increased width for larger screens */
+        height: 800px;
+    }
 }

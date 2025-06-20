@@ -25,11 +25,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2>{title}</h2>
       <p>{message}</p>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-        <Button onClick={onClose} className="cancel-button">
+      <div className="confirmation-modal-buttons">
+        <Button onClick={onClose} className="confirmation-modal-button cancel">
           {cancelText}
         </Button>
-        <Button onClick={onConfirm} className="confirm-button">
+        <Button onClick={onConfirm} className="confirmation-modal-button confirm">
           {confirmText}
         </Button>
       </div>

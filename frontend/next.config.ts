@@ -61,15 +61,6 @@ const nextConfig = {
   experimental: {
   },
   // Add rewrites to proxy GraphQL requests
-  async rewrites() {
-    return [
-      {
-        source: '/api/graphql/:path*', // Match requests starting with /api/graphql
-        // Destination URL should use localhost as Next.js server talks to NestJS server internally
-        destination: `http://backend:4000/graphql/:path*`,
-      },
-    ]
-  },
 };
 
 module.exports = withSentryConfig(

@@ -699,7 +699,7 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="chat-container">
+    <div className={`chat-container ${selectedChatId ? 'chat-selected' : ''}`}>
       {openMenu && (
         <div
           className="sidebar-overlay"
@@ -824,6 +824,12 @@ const ChatPage = () => {
             {selectedChatId && selectedChat ? (
               <>
                 <div className="chat-header">
+                  {/* Back button for mobile */}
+                  {selectedChatId && (
+                    <button className="back-button" onClick={() => setSelectedChatId(null)}>
+                      {icons.arrowBack && <Image src={icons.arrowBack} alt="Back" className="icon" width={24} height={24} />}
+                    </button>
+                  )}
                   {selectedChat.type === 'PRIVATE' && otherParticipant ? (
                     <div className="chat-header-content">
                       <div
@@ -847,8 +853,28 @@ const ChatPage = () => {
                       <div className="chat-header-options">
                         <div
                           onClick={(e) => {
-                            setContextMenuX(e.clientX);
-                            setContextMenuY(e.clientY);
+                            const clickX = e.clientX;
+                            const clickY = e.clientY;
+                            const menuWidth = 200; // Estimated menu width
+                            const menuHeight = 100; // Estimated menu height
+                            const viewportWidth = window.innerWidth;
+                            const viewportHeight = window.innerHeight;
+
+                            let finalX = clickX;
+                            let finalY = clickY;
+
+                            // Adjust X if menu goes off the right edge
+                            if (clickX + menuWidth > viewportWidth) {
+                              finalX = clickX - menuWidth;
+                            }
+
+                            // Adjust Y if menu goes off the bottom edge
+                            if (clickY + menuHeight > viewportHeight) {
+                              finalY = clickY - menuHeight;
+                            }
+
+                            setContextMenuX(finalX);
+                            setContextMenuY(finalY);
                             setShowChatOptionsContextMenu(prev => !prev);
                           }}
                           style={{ cursor: 'pointer' }}

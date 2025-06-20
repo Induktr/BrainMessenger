@@ -21,26 +21,27 @@ svg {
 
 .icon {
   display: inline-block; /* or flex, depending on desired alignment */
-  width: 24px; /* Example size */
-  height: 24px; /* Example size */
-  margin-right: 10px; /* Added margin for spacing */
+  width: 1.5rem; /* Use rem (24px = 1.5rem) */
+  height: 1.5rem; /* Use rem */
+  margin-right: 0.625rem; /* Use rem (10px = 0.625rem) */
   /* Add other base styles like vertical-align if needed */
 }
  
 .p {
-  font-size: 16px;
+  font-size: 1rem; /* Use rem (16px = 1rem) */
   color: #B0B0B0;
 }
 
 .h1 {
-  font-size: 24px;
+  font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
   color: #FFFFFF;
 }
 
 .step-description {
   color: #F0F0F0;
   text-wrap: wrap;
-  width: 515px;
+  max-width: 515px; /* Use max-width */
+  width: 95%; /* Add percentage width for flexibility */
 }
 
 /* Welcome Page Container */
@@ -74,7 +75,7 @@ svg {
 }
 
 .slide-title {
-  font-size: 24px; /* text-2xl */
+  font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
   font-weight: bold; /* font-bold */
 }
 
@@ -120,23 +121,23 @@ svg {
    color: #B0B0B0; /* Default color, adjust if needed */
 }
 .logo-container-size-lg {
-  height: 175px;
-  width: 175px;
+  height: 11rem; /* Use rem (175px approx 11rem) */
+  width: 11rem; /* Use rem */
 }
 
 .icon-container-size-hg {
-  height: 120px;
-  width: 120px;
+  height: 7.5rem; /* Use rem (120px = 7.5rem) */
+  width: 7.5rem; /* Use rem */
 }
 
 .icon-container-size-md {
-  height: 64px;
-  width: 64px;
+  height: 4rem; /* Use rem (64px = 4rem) */
+  width: 4rem; /* Use rem */
 }
 
 .icon-container-size-lg-next-button {
-  height: 24px;
-  width: 24px;
+  height: 1.5rem; /* Use rem (24px = 1.5rem) */
+  width: 1.5rem; /* Use rem */
 }
 
 
@@ -152,10 +153,11 @@ svg {
 
 /* Get Started Button */
 .get-started-button {
-  padding: 12px 32px; /* px-8 py-3 */
-  width: 456px; /* w-[456px] */
-  height: 70px; /* h-[70px] */
-  font-size: 24px; /* text-[24px] */
+  padding: 0.75rem 2rem; /* Use rem for padding */
+  max-width: 456px; /* Use max-width */
+  width: 95%; /* Add percentage width for flexibility */
+  min-height: 70px; /* Use min-height */
+  font-size: 1.5rem; /* Use rem for font size (24px = 1.5rem assuming base 16px) */
   font-weight: 600; /* font-semibold */
   color: #1A1A1A; /* text-white */
   border-radius: 10px; /* rounded-[10px] */
@@ -261,22 +263,23 @@ svg {
 .confirmation-code-input {
   display: flex;
   background-color: #2E2E2E;
-  width: 50px;
-  height: 70px;
+  width: 3rem; /* Use rem for width (50px approx 3rem) */
+  height: 4rem; /* Use rem for height (70px approx 4rem) */
   border: none;
   border-radius: 10px;
   margin: auto;
   text-align: center;
   color: #F0F0F0; /* text-textPrimary-dark */
-  font-size: 24px;
+  font-size: 1.5rem; /* Use rem for font size */
 }
 
 .input-container {
   display: flex; /* Arrange icon and input horizontally */
   align-items: center; /* Vertically align items */
   margin-top: 0.25rem; /* mt-1 */
-  width: 350px; /* Match the desired width of the input */
-  height: 70px; /* Match the desired height of the input */
+  max-width: 350px; /* Use max-width */
+  width: 95%; /* Add percentage width for flexibility */
+  min-height: 70px; /* Use min-height */
   background-color: #1A1A1A; /* bg-background-dark */
   border: 1px solid; /* border */
   border-color: transparent; /* border-border-dark (default) */
@@ -295,15 +298,15 @@ svg {
   margin-right: 0.5rem; /* Space between icon and input */
   color: #B0B0B0; /* Icon color */
   /* Explicitly set icon size if needed for consistent alignment */
-  width: 24px; /* Example size, adjust as needed */
-  height: 24px; /* Example size, adjust as needed */
+  width: 1.5rem; /* Use rem (24px = 1.5rem) */
+  height: 1.5rem; /* Use rem */
   flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .input-field {
   flex: 1; /* Take up remaining width */
   height: 100%; /* Fill container height */
-  font-size: 23px;
+  font-size: 1.4375rem; /* Use rem (23px approx 1.4375rem) */
   padding: 0; /* Remove padding from input field */
   background-color: transparent; /* Make input background transparent */
   border: none; /* Remove border from input field */
@@ -338,10 +341,11 @@ svg {
 
 /* Button Component Styles */
 .custom-button {
-  width: 456px;
-  height: 70px;
-  padding: 0.5rem 1rem; /* px-4 py-2 */
-  font-size: 24px; /* text-lg */
+  max-width: 456px; /* Use max-width */
+  width: 95%; /* Add percentage width for flexibility */
+  min-height: 70px; /* Use min-height */
+  padding: 0.75rem 2rem; /* Use rem for padding */
+  font-size: 1.5rem; /* Use rem for font size */
   font-weight: 600; /* font-semibold */
   color: #1A1A1A; /* text-white */
   background-image: linear-gradient(to right, #F2F047, #1ED94F); /* bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to */
@@ -450,8 +454,8 @@ svg {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px; /* Adjust size as needed */
-  height: 100px; /* Adjust size as needed */
+  width: 6rem; /* Use rem for width (100px approx 6rem) */
+  height: 6rem; /* Use rem for height */
   border-radius: 50%;
   background-color: #4D4D4D; /* Placeholder background */
   overflow: hidden;
@@ -605,7 +609,7 @@ svg {
   width: 100%; /* w-full */
   height: 100%; /* h-full */
   text-align: center; /* text-center */
-  font-size: 1.125rem; /* text-lg */
+  font-size: 1.125rem; /* text-lg (already rem, good) */
   color: #B0B0B0; /* text-textPrimary-dark */
   background-color: transparent; /* bg-transparent */
   border: none; /* border-none */
@@ -640,17 +644,17 @@ svg {
   display: flex;
   margin: auto;
   color: #B0B0B0;
-  font-size: 20px;
+  font-size: 1.25rem; /* Use rem (20px = 1.25rem) */
   cursor: pointer;
-  margin-top: 20px;
-  padding: 5px;
+  margin-top: 1.25rem; /* Use rem (20px = 1.25rem) */
+  padding: 0.3125rem; /* Use rem (5px = 0.3125rem) */
   background: none;
   border: none;
 }
 
 /* Back Button Styles */
 .back-button-top-left {
-  margin-right: 1840px;
+  margin-right: auto; /* Use auto margin to push to the left */
   position: absolute; /* Position absolutely within the welcome-container */
   top: 1rem; /* Adjust as needed for spacing from the top */
   border: none;
@@ -671,8 +675,8 @@ svg {
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
   color: #1A1A1A; /* text-white */
-  width: 70px; /* w-[70px] */
-  height: 70px; /* h-[70px] */
+  width: 4.375rem; /* Use rem (70px = 4.375rem) */
+  height: 4.375rem; /* Use rem */
   display: flex; /* flex */
   justify-content: center; /* justify-center */
   align-items: center; /* items-center */
@@ -691,8 +695,8 @@ svg {
 
 /* Step Heading Styles */
 .step-heading {
-  font-size: 20px; /* text-2xl */
-  margin-bottom: 100px;
+  font-size: 1.25rem; /* Use rem (20px = 1.25rem) */
+  margin-bottom: 6.25rem; /* Use rem (100px = 6.25rem) */
   position: absolute;
   z-index: -11;
   color: #B0B0B0; /* text-white */
@@ -717,7 +721,7 @@ svg {
 }
 
 .chat-sidebar {
-  width: 350px; /* Adjust width as needed */
+  width: 22rem; /* Use rem (350px approx 22rem) */
   background-color: none; /* Slightly lighter dark for sidebar */
   display: flex;
   flex-direction: column;
@@ -735,20 +739,20 @@ svg {
   border: none;
   /* Removed margin-left: 30px; padding is on the parent */
   cursor: pointer;
-  margin-right: 15px; /* Add space to the right of the icon */
+  margin-right: 0.9375rem; /* Use rem (15px = 0.9375rem) */
 }
 
 /* InputPanel Component Styles */
 .input-panel {
   flex: 1; /* Allows the input to grow and take available space */
-  height: 100px; /* Specific height for the input field */
-  width: 372px;
-  padding: 0 15px; /* Padding inside the input field */
+  min-height: 6.25rem; /* Use min-height and rem (100px = 6.25rem) */
+  width: 100%;
+  padding: 0 0.9375rem; /* Use rem (15px = 0.9375rem) */
   background-color: #404040; /* Darker background for the input field */
   border: none; /* No border */
   border-radius: 0px 0px 0px 10px; /* Rounded corners */
   color: #F0F0F0; /* Light text color */
-  font-size: 24px; /* Font size for the input text */
+  font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
   outline: none; /* Remove outline on focus */
   box-sizing: border-box; /* Include padding in the element's total width and height */
 }
@@ -756,18 +760,6 @@ svg {
 .input-panel::placeholder {
   color: #B0B0B0; /* Light grey placeholder text */
 }
-
-/* Adjustments for the search input container */
-.search-input-container {
-  display: flex;
-  align-items: center;
-  padding: 15px 30px; /* Top/bottom padding, and left/right padding */
-  background-color: #1A1A1A; /* Background color of the top panel */
-  border-bottom: 1px solid #4D4D4D; /* Separator line */
-  height: 80px; /* Fixed height for the container */
-  box-sizing: border-box;
-}
-
 .chat-list {
   display: flex;
   flex-direction: column;
@@ -784,23 +776,21 @@ svg {
 .chat-list-item.active {
   color: #F0F0F0; /* Primary green color */
   border-bottom-color: #96C93D; /* Green underline */
-  border-width: 5px;
-  width: 65px;
+  border-width: 0.3125rem; /* Use rem (5px = 0.3125rem) */
+  width: 4.0625rem; /* Use rem (65px = 4.0625rem) */
 }
 
 .chat-main-content {
   flex-grow: 1;
   display: flex;
-  justify-content: center;
-  align-items: center;
   color: #B0B0B0; /* Light grey text */
-  font-size: 24px; /* text-lg */
+  font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
 }
 
 .chat-welcome-message {
   text-align: center;
   color: #F0F0F0;
-  font-size: 20px;
+  font-size: 1.25rem; /* Use rem (20px = 1.25rem) */
 }
 
 /* Sidebar Menu Styles */
@@ -808,7 +798,8 @@ svg {
   position: fixed; /* Position fixed to overlay content */
   top: 0;
   left: 0; /* Position from the left */
-  width: 350px; /* Specific width as per mockup */
+  max-width: 350px; /* Use max-width */
+  width: 90%; /* Add percentage width for flexibility */
   height: 100vh; /* Full viewport height */
   background-color: #2E2E2E; /* Dark background for the sidebar */
   color: #B0B0B0; /* Light grey text */
@@ -896,7 +887,7 @@ svg {
 .subscribe-button,
 .unsubscribe-button {
   width: 100%; /* Take full width of the container */
-  height: 50px; /* Consistent height */
+  min-height: 3.125rem; /* Use min-height and rem (50px = 3.125rem) */
   padding: 0.75rem 1.5rem;
   border-radius: 0.375rem; /* Rounded corners */
   font-weight: 600;
@@ -948,16 +939,16 @@ svg {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100px; /* Adjust size as needed */
-  height: 100px; /* Adjust size as needed */
+  width: 6.25rem; /* Use rem (100px = 6.25rem) */
+  height: 6.25rem; /* Use rem */
   border-radius: 50%;
   background-color: #4D4D4D; /* Placeholder background */
   overflow: hidden;
 }
 
 .channel-avatar-section img {
-  width: 80px;
-  height: 80px;
+  width: 5rem; /* Use rem (80px = 5rem) */
+  height: 5rem; /* Use rem */
   filter: brightness(0) invert(1); /* Make the channel icon white */
 }
 
@@ -998,8 +989,8 @@ svg {
 .toggle-switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 24px;
+  width: 2.5rem; /* Use rem (40px = 2.5rem) */
+  height: 1.5rem; /* Use rem (24px = 1.5rem) */
   background-color: #4D4D4D; /* Off state color */
   border-radius: 12px;
   cursor: pointer;
@@ -1017,17 +1008,17 @@ svg {
 .toggle-switch::before {
   content: '';
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 1.25rem; /* Use rem (20px = 1.25rem) */
+  height: 1.25rem; /* Use rem */
   border-radius: 50%;
   background-color: #FFFFFF; /* Handle color */
-  top: 2px;
-  left: 2px;
+  top: 0.125rem; /* Use rem (2px = 0.125rem) */
+  left: 0.125rem; /* Use rem */
   transition: transform 0.3s;
 }
 
 .toggle-switch:checked::before {
-  transform: translateX(16px);
+  transform: translateX(1rem); /* Use rem (16px = 1rem) */
 }
 
 .delete-channel-button {
@@ -1044,4 +1035,127 @@ svg {
 
 .delete-channel-button:hover {
   opacity: 0.9;
+}
+
+/* Add responsive styles */
+/* Base font size for responsive text scaling */
+html {
+  font-size: 16px; /* Default base size */
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px; /* Smaller base size on mobile */
+  }
+
+  .chat-container {
+    flex-direction: column; /* Stack elements vertically */
+  }
+
+  .chat-sidebar {
+    width: 100%; /* Full width on mobile */
+    /* Initially visible when no chat is selected */
+    display: flex;
+    flex-direction: column; /* Ensure sidebar content stacks */
+  }
+
+  .chat-main-content {
+    width: 100%; /* Full width on mobile */
+    /* Initially hidden when no chat is selected */
+    display: none;
+  }
+
+  /* When a chat is selected on mobile */
+  .chat-container.chat-selected .chat-sidebar {
+    display: none; /* Hide sidebar */
+  }
+
+  .chat-container.chat-selected .chat-main-content {
+    display: flex; /* Show main content */
+    flex-direction: column; /* Ensure content stacks */
+    flex-grow: 1; /* Allow main content to grow */
+  }
+
+  /* Adjust chat header for mobile */
+  .chat-main-content .chat-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem; /* Add some padding */
+    background-color: #2B2B2B; /* Example background */
+    border-bottom: 1px solid #4D4D4D; /* Example border */
+  }
+
+  .chat-main-content .chat-header .back-button {
+    display: block; /* Show back button on mobile when chat is selected */
+    margin-right: 1rem; /* Space between back button and avatar */
+  }
+
+  /* Adjust other components for mobile within the chat context */
+
+  /* Chat List Item adjustments */
+  .chat-list {
+    padding-top: 60px; /* Add padding to account for header/search */
+    flex-grow: 1; /* Allow chat list to take available space */
+    overflow-y: auto; /* Enable scrolling for chat list */
+  }
+
+  .chat-list {
+    padding-top: 60px; /* Add padding to account for header/search */
+    flex-grow: 1; /* Allow chat list to take available space */
+    overflow-y: auto; /* Enable scrolling for chat list */
+  }
+
+  .chat-list-item {
+    padding: 0.75rem; /* Slightly less padding */
+  }
+
+  /* Input Panel adjustments */
+  .input-panel {
+    height: auto; /* Allow height to adjust based on content */
+    min-height: 50px; /* Minimum height */
+    font-size: 16px; /* Smaller font size */
+    padding: 10px 15px; /* Adjust padding */
+  }
+
+  /* Chat Message adjustments */
+  .chat-messages {
+    flex-grow: 1; /* Allow messages to take available space */
+    overflow-y: auto; /* Enable scrolling for messages */
+    padding: 1rem 0.5rem; /* Adjust padding top/bottom and left/right */
+  }
+
+  /* Modal adjustments */
+  .modal-content {
+    max-width: 95%; /* Increase max-width on smaller screens */
+    padding: 1rem; /* Adjust padding */
+  }
+
+  /* Sidebar Menu adjustments (already fixed position, just ensure width is appropriate) */
+  .sidebar-menu {
+    width: 80%; /* Adjust sidebar width on mobile */
+    max-width: 300px; /* Max width for sidebar */
+  }
+
+  /* Search input panel adjustments */
+  .search-input-panel-container {
+    padding: 1rem; /* Add padding */
+  }
+
+  .search-input-panel {
+    width: 100%; /* Full width */
+    height: 50px; /* Adjust height */
+    font-size: 16px; /* Adjust font size */
+  }
+
+  /* Adjustments for the welcome message when no chat is selected */
+  .chat-main-content .chat-welcome-message {
+    font-size: 16px; /* Smaller font size */
+    padding: 1rem; /* Add padding */
+  }
+
+}
+
+/* Ensure back button is hidden by default on larger screens */
+.chat-header .back-button {
+  display: none;
 }

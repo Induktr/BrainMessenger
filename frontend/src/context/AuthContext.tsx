@@ -97,6 +97,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   });
 
   const [refreshTokenMutation] = useMutation(REFRESH_TOKEN_MUTATION); // Initialize refreshToken mutation
+const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    }
+    setUser(null);
+    setAccessToken(null);
+    setAccessTokenForApollo(null); // Clear Apollo Client's token on logout
+    client.clearStore();
+    router.replace('/login');
+  };
 
   const router = useRouter();
   const pathname = usePathname();
@@ -165,7 +176,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // For SSR or environments without window, set to false
       setIsInitializing(false);
     }
-  }, []); // Empty dependency array to run only once on mount
+  }, [logout, refreshTokenMutation]); // Add logout and refreshTokenMutation as dependencies
 
   // Effect to handle online/offline status
   useEffect(() => {
@@ -234,7 +245,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       stopActivityTracking();
     };
-  }, [user, offlineTimer, updateLastActive, refetch]);
+  }, [user, offlineTimer, updateLastActive, refetch, isInitializing]); // Add isInitializing dependency
 
   // Effect to handle redirection based on authentication state
   useEffect(() => {
@@ -273,17 +284,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [user, loading, isInitializing, pathname, router, setShowEmailVerificationModal]);
 
-  const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-    }
-    setUser(null);
-    setAccessToken(null);
-    setAccessTokenForApollo(null); // Clear Apollo Client's token on logout
-    client.clearStore();
-    router.replace('/login');
-  };
 
 
   // Placeholder for currentChatId - in a real app, this would come from router params or another context

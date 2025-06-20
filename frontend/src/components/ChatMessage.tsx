@@ -38,7 +38,7 @@ interface ChatMessageProps {
   isSelected: boolean; // New prop for selection state
   isSelecting: boolean; // New prop to indicate if selection is active
   onOpenOptions: (messageId: string, src: string, currentTime: number, duration: number, isPlaying: boolean, isLooping: boolean) => void; // Updated prop signature
- isPoorConnection: boolean; // New prop for network status
+  isPoorConnection: boolean; // New prop for network status
   isRecentMessage: boolean; // New prop to indicate if it's one of the last 10 messages
 }
 
@@ -77,11 +77,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
    }
 
    return () => {
-     if (messageRef.current) {
-       observer.unobserve(messageRef.current);
+     const currentMessageRef = messageRef.current; // Capture the current value
+     if (currentMessageRef) {
+       observer.unobserve(currentMessageRef); // Use the captured value
      }
    };
- }, []);
+ }, []); // messageRef is stable and doesn't need to be in dependencies
 
  const handleAvatarClick = () => {
     setSelectedProfileUserId(message.sender.id);

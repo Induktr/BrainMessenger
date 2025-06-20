@@ -36,6 +36,13 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const [isResendingCode, setIsResendingCode] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
+// Effect to potentially show email verification modal
+  useEffect(() => {
+    if (user && !user.isVerified && isOpen) {
+      // Only show if the main MyAccount modal is open and user is not verified
+      // setEmailVerificationModalOpen(true); // Enable this when ready to force verification
+    }
+  }, [user, isOpen]);
   // Effect to initialize biography state when user data is loaded or changes
   useEffect(() => {
     if (user) {
@@ -131,13 +138,10 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   }
  
   // Optional: Handle case where user is not logged in
-  if (!user) {
-    // Depending on app flow, maybe redirect or show a message
-    return null; // Or render a different component/message
-  }
  
   // Handle file selection
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!user) return; // Add null check for user
     const file = event.target.files?.[0];
     if (file instanceof File) {
       try {
@@ -161,6 +165,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   };
  
   const handleEditClick = (field: 'name' | 'username' | 'email') => {
+    if (!user) return; // Add null check for user
     setEditingField(field);
     if (field === 'name') {
       setEditValue(user.name || '');
@@ -188,7 +193,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   };
  
   const handleSaveEdit = async () => {
-    if (!user || !editingField) return;
+    if (!user || !editingField) return; // Ensure user is not null
  
     const trimmedEditValue = editValue.trim();
  
@@ -260,7 +265,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   };
  
   const handleResendVerificationEmail = async () => {
-    if (!user || isResendingCode) return;
+    if (!user || isResendingCode) return; // Ensure user is not null
     setIsResendingCode(true);
     setResendSuccess(false);
     setVerificationError('');
@@ -277,7 +282,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   };
  
   const handleVerifyEmail = async () => {
-    if (!user) return;
+    if (!user) return; // Ensure user is not null
     setVerificationError('');
     try {
       const response = await verifyEmailMutation({
@@ -294,19 +299,14 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     }
   };
  
-  useEffect(() => {
-    if (user && !user.isVerified && isOpen) {
-      // Only show if the main MyAccount modal is open and user is not verified
-      // setEmailVerificationModalOpen(true); // Enable this when ready to force verification
-    }
-  }, [user, isOpen]);
- 
   if (queryLoading) {
     return <div>Loading user data...</div>;
   }
  
+  // Optional: Handle case where user is not logged in after hooks are called
   if (!user) {
-    return null;
+    // Depending on app flow, maybe redirect or show a message
+    return null; // Or render a different component/message
   }
  
   return (

@@ -27,11 +27,15 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, options, onClose }) => 
     <div
       ref={menuRef}
       className="context-menu"
-      style={{ top: y, left: x, position: 'absolute', zIndex: 1000, background: 'white', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}
+      style={{ top: y, left: x }} // Keep position and coordinates as inline styles
     >
-      <ul style={{ listStyle: 'none', padding: '0', margin: '0' }}>
+      <ul className="context-menu-list">
         {options.map((option, index) => (
-          <li key={index} style={{ padding: '8px 12px', cursor: option.disabled ? 'not-allowed' : 'pointer', color: option.disabled ? '#aaa' : 'black' }} onClick={!option.disabled ? option.onClick : undefined}>
+          <li
+            key={index}
+            className={`context-menu-item ${option.disabled ? 'disabled' : ''}`}
+            onClick={!option.disabled ? option.onClick : undefined}
+          >
             {option.label}
           </li>
         ))}

@@ -18,12 +18,22 @@ const isBrowser = typeof window !== 'undefined';
 const backendPort = 4000; // Your backend port
 
 const getBackendUrl = (protocol: string) => {
+  // Prioritize Vercel/production environment variables
+  if (protocol === 'http' && process.env.NEXT_PUBLIC_GRAPHQL_HTTP_URI) {
+    return process.env.NEXT_PUBLIC_GRAPHQL_HTTP_URI;
+  }
+  if (protocol === 'ws' && process.env.NEXT_PUBLIC_BACKEND_WS_URL) {
+    return process.env.NEXT_PUBLIC_BACKEND_WS_URL;
+  }
+
+  // Fallback for specific local development/testing scenarios
+  const backendPort = 4000; // Your backend port
   if (process.env.NEXT_PUBLIC_RUNNING_IN_DOCKER === 'true') {
     // When running in Docker and accessed from host browser
     if (protocol === 'http') {
-      return process.env.NEXT_PUBLIC_GRAPHQL_HTTP_URI || `http://localhost:${backendPort}/graphql`;
+      return `http://localhost:${backendPort}/graphql`; // Still use localhost for host access to docker
     } else {
-      return process.env.NEXT_PUBLIC_BACKEND_WS_URL || `ws://localhost:${backendPort}/graphql`;
+      return `ws://localhost:${backendPort}/graphql`; // Still use localhost for host access to docker
     }
   } else if (process.env.PLAYWRIGHT_TEST) {
     // Use direct backend URL in Playwright test environment
@@ -35,10 +45,10 @@ const getBackendUrl = (protocol: string) => {
     }
   } else if (!isBrowser) {
     // Fallback for server-side rendering (SSR) within Docker network
+    // This might still be needed if SSR happens within a Docker context
     return `http://backend:${backendPort}/graphql`;
   } else {
     // Default for local development outside Docker (e.g., direct npm run dev)
-    // Explicitly use localhost and backendPort
     if (protocol === 'http') {
       return `http://localhost:${backendPort}/graphql`;
     } else {
