@@ -25,14 +25,12 @@ async function bootstrap() {
 
       // Enable CORS with the specific frontend origin
       // Get frontend URL from environment variable
-      const frontendUrl = process.env.APP_URL;
-      // if (!frontendUrl) {
-      //   console.warn('WARN: APP_URL environment variable not set. CORS might not work correctly.'); // Removed console.warn
-      // }
+      // Get frontend URL(s) from environment variable, split by comma
+      const frontendUrls = process.env.APP_URL ? process.env.APP_URL.split(',').map(url => url.trim()).filter(Boolean) : [];
 
       const allowedOrigins = [
         'http://localhost:3000', // Allow local frontend development server
-        frontendUrl, // Allow the configured APP_URL
+        ...frontendUrls, // Spread the parsed frontend URLs
         // Add other allowed origins as needed, e.g., preview URLs
         /https:\/\/[a-zA-Z0-9-]+\.cloudworkstations\.dev$/, // Allow preview URLs from cloud workstations
       ].filter(Boolean); // Filter out any undefined or null values
