@@ -3,7 +3,6 @@ body {
   margin: 0;
   padding: 0;
   background-color: #1A1A1A; /* Dark background */
-  color: #B0B0B0; /* Light grey text */
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
   display: flex;
@@ -1158,4 +1157,12 @@ html {
 /* Ensure back button is hidden by default on larger screens */
 .chat-header .back-button {
   display: none;
+}
+
+@media (max-width: 350px) {
+  .icon {
+    width: 16px; /* Use rem (24px = 1.5rem) */
+    height: 16px; /* Use rem */
+    /* Add other base styles like vertical-align if needed */
+  }
 }

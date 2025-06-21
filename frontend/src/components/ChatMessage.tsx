@@ -85,10 +85,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
  }, []); // Empty dependency array because messageRef is a ref and its .current property is not a dependency
 
  const handleAvatarClick = () => {
-    setSelectedProfileUserId(message.sender.id);
-    setShowUserProfileModal(true);
+    // Only open UserProfileModal for other users, not the current user
+    if (!isCurrentUser) {
+      setSelectedProfileUserId(message.sender.id);
+      setShowUserProfileModal(true);
+    }
   };
-
+ 
   const handleCloseUserProfileModal = () => {
     setShowUserProfileModal(false);
     setSelectedProfileUserId(null);

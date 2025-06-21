@@ -89,15 +89,15 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
           {/* Settings Options List */}
           <div className="settings-options-list">
             <div className="settings-option" onClick={handleMyAccountClick}>
-              <div className="settings-option-icon"><Image src={icons.account} alt="My account" className="icon" width={24} height={24} /></div> {/* Use img tag */}
+              <div className="settings-option-icon"><Image src={icons.account} alt="My account" className="icon" width={20} height={20} /></div> {/* Use img tag */}
               <p className="settings-option-text">My account</p>
             </div>
             <div className="settings-option" onClick={handleLanguageClick}>
-              <div className="settings-option-icon"><Image src={icons.language} alt="Language" className="icon" width={24} height={24} /></div> {/* Use img tag */}
+              <div className="settings-option-icon"><Image src={icons.language} alt="Language" className="icon" width={20} height={20} /></div> {/* Use img tag */}
               <p className="settings-option-text">Language</p>
             </div>
             <div className="settings-option" onClick={handlePremiumClick}>
-              <div className="settings-option-icon"><Image src={icons.premium} alt="Premium" className="icon" width={24} height={24} /></div> {/* Use img tag */}
+              <div className="settings-option-icon"><Image src={icons.premium} alt="Premium" className="icon" width={20} height={20} /></div> {/* Use img tag */}
               <p className="settings-option-text">Premium BrainMessenger</p>
             </div>
           </div>

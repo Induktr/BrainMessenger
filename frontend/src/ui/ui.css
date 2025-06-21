@@ -2,8 +2,7 @@
 .settings-modal-content {
     padding: 0; /* Remove padding from the modal content wrapper */
     color: #f0f0f0; /* Light text color */
-    max-width: 456px; /* Adjusted width based on Figma */
-    width: 90%; /* Make it flexible on smaller screens */
+    width: 456px; /* Adjusted width based on Figma */
     border-radius: 8px; /* Rounded corners */
     overflow: hidden; /* Hide overflow */
 }
@@ -2135,17 +2134,15 @@
 /* Styles for modal title and message within the generic modal content */
 .modal-content h2 {
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0; /* Light text color */
     margin-top: 0;
     margin-bottom: 10px; /* Space below title */
-    text-align: center;
+    text-align: end;
 }
 
 .modal-content p {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #b0b0b0; /* Lighter text color */
     margin-bottom: 20px; /* Space below message */
-    text-align: center;
+    text-align: start;
 }
 /* Responsive adjustments for modal widths */
 @media (max-width: 1000px) {
@@ -2174,4 +2171,126 @@
         width: 150px; /* Increased width for larger screens */
         height: 800px;
     }
+}
+
+/* Avatar Crop Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.modal-content {
+  background-color: #333; /* Dark background */
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+}
+
+.image-container {
+  position: relative;
+  width: 300px; /* Adjust as needed */
+  height: 300px; /* Adjust as needed */
+  overflow: hidden; /* Hide parts of the image outside the container */
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-preview-image {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  /* The image itself will be moved/scaled within this container */
+}
+
+.circular-mask {
+  box-sizing: border-box; /* Include border in element's total width and height */
+}
+
+/* Styles for Image Cropping Modal */
+.crop-modal-content {
+  padding: 20px;
+  color: #f0f0f0;
+  width: 90%; /* Make it flexible */
+  max-width: 500px; /* Max width for larger screens */
+  border-radius: 8px;
+  background-color: #2B2B2B; /* Dark background */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* Space between elements */
+}
+
+.crop-modal-content h3 {
+  margin-top: 0;
+  font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
+  color: #f0f0f0;
+  text-align: center;
+}
+
+.ReactCrop {
+  max-width: 100%; /* Ensure crop container is responsive */
+  max-height: 400px; /* Limit height */
+  background-color: #1a1a1a; /* Dark background for the crop area */
+}
+
+.ReactCrop img {
+  display: block;
+  max-width: 100%;
+  max-height: 400px; /* Match container height */
+  object-fit: contain; /* Ensure the image fits */
+}
+
+.crop-controls {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.crop-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px; /* Space between buttons */
+  width: 100%;
+}
+
+.crop-buttons button {
+  border: none;
+  color: #F0F0F0;
+  font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-grow: 1; /* Allow buttons to grow */
+  max-width: 150px; /* Max width for buttons */
+}
+
+.crop-buttons button:first-of-type { /* Save button */
+  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient */
+  color: #1a1a1a; /* Dark text for contrast */
+}
+
+.crop-buttons button:last-of-type { /* Cancel button */
+  background-color: #4f545c; /* Darker grey for secondary actions */
+}
+
+.crop-buttons button:hover:first-of-type {
+  opacity: 0.9; /* Slightly dim on hover */
+}
+
+.crop-buttons button:hover:last-of-type {
+  background-color: #6a707a; /* Lighter grey on hover */
 }
