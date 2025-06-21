@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // Corrected import
 import Modal from '@/components/Modal';
-import { icons, userInfo, detailedUserInfo } from '../app/lib/constants';
+import { icons } from '../app/lib/constants'; // Adjusted import based on usage
 import Button from '@/components/Button';
 import { useAuth } from '@/context/AuthContext';
 import { generateAvatarData } from '@/utils/avatarUtils';
 import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation, useApolloClient } from '@apollo/client';
-import Image from 'next/image';
+import Image from 'next/image'; // Corrected import
 import { UPLOAD_AVATAR, UPDATE_USER_PROFILE, GET_CURRENT_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/graphql/queries';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -18,7 +18,7 @@ interface MyAccountProps {
   onClose: () => void;
   onBack: () => void;
 }
- 
+
 const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const { user, queryLoading, refetchUser, setUserState, logout } = useAuth();
   const [uploadAvatarMutation, { loading: uploading, error: uploadError }] = useMutation(UPLOAD_AVATAR);
@@ -42,7 +42,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null); // State for image source
   const [crop, setCrop] = useState<Crop>(); // State for the crop object
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>(); // State for the completed crop
-  const imgRef = React.useRef<HTMLImageElement>(null); // Ref for the image element
+  const imgRef = useRef<HTMLImageElement>(null); // Ref for the image element
 
 // Effect to potentially show email verification modal
   useEffect(() => {
@@ -70,7 +70,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     if (!user || (biography === user?.bio) || (biography === '' && (user?.bio === null || user?.bio === undefined))) {
       return;
     }
- 
+
     const handler = setTimeout(() => {
       updateUserProfileMutation({
         variables: {
@@ -93,14 +93,14 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
         console.error('MyAccount - Error saving biography:', error);
       });
     }, 500);
- 
+
     return () => {
       clearTimeout(handler);
     };
   }, [biography, user, updateUserProfileMutation, client, setUserState]);
   // Generate avatar data
   const avatarData = generateAvatarData(user?.name);
- 
+
   // Optional: Show loading state or placeholder if user data is loading
   if (queryLoading) {
     return (
@@ -144,9 +144,13 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       </Modal>
     );
   }
- 
+
   // Optional: Handle case where user is not logged in
- 
+  if (!user) {
+    // Depending on app flow, maybe redirect or show a message
+    return null; // Or render a different component/message
+  }
+
   // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!user) return;
@@ -162,7 +166,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     // Clear the input value so the same file can be selected again
     event.target.value = '';
   };
- 
+
   const handleEditClick = (field: 'name' | 'username' | 'email') => {
     if (!user) return; // Add null check for user
     setEditingField(field);
@@ -176,13 +180,13 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     setEditError(''); // Clear previous errors when opening the modal
     setEditModalOpen(true);
   };
- 
+
   const handleEditModalClose = () => {
     setEditModalOpen(false);
     setEditingField(null);
     setEditValue('');
   };
- 
+
   const handleEmailVerificationModalClose = () => {
     setEmailVerificationModalOpen(false);
     setVerificationCode('');
@@ -190,24 +194,24 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     setResendSuccess(false);
     setIsResendingCode(false);
   };
- 
+
   const handleSaveEdit = async () => {
     if (!user || !editingField) return; // Ensure user is not null
- 
+
     const trimmedEditValue = editValue.trim();
- 
+
     // Validation for empty fields
     if (trimmedEditValue === '') {
       setEditError(`${editingField.charAt(0).toUpperCase() + editingField.slice(1)} cannot be empty.`);
       return;
     }
- 
+
     // Specific validation for email format
     if (editingField === 'email' && trimmedEditValue !== '' && !/\S+@\S+\.\S+/.test(trimmedEditValue)) {
       setEditError('Please enter a valid email address.');
       return;
     }
- 
+
     // If the value hasn't changed, just close the modal without saving
     if (
       (editingField === 'name' && trimmedEditValue === user.name) ||
@@ -217,10 +221,10 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       handleEditModalClose();
       return;
     }
- 
+
     const input: { name?: string; username?: string; email?: string } = {};
     let shouldRefetch = true; // Flag to control refetching
- 
+
     if (editingField === 'name') {
       input.name = trimmedEditValue;
     } else if (editingField === 'username') {
@@ -230,7 +234,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       // If email is changed, set isVerified to false on the client side immediately
       // The backend will handle sending a new verification email and updating isVerified status
     }
- 
+
     try {
       const response = await updateUserProfileMutation({
         variables: {
@@ -238,7 +242,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
           input: input,
         },
       });
- 
+
       if (response.data && response.data.updateUser) {
         // Update Apollo Client cache
         client.writeQuery({
@@ -250,7 +254,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
         setUserState(response.data.updateUser); // Always update AuthContext state with backend's response
         handleEditModalClose();
         refetchUser(); // Always refetch to ensure all components get the latest data, including isVerified
- 
+
         // If email was changed and the backend indicates it's no longer verified, open the verification modal
         if (editingField === 'email' && !response.data.updateUser.isVerified) {
           setEmailVerificationModalOpen(true);
@@ -262,7 +266,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       setEditError(error.message || `Failed to update ${editingField}.`); // Use setEditError for edit modal
     }
   };
- 
+
   const handleResendVerificationEmail = async () => {
     if (!user || isResendingCode) return; // Ensure user is not null
     setIsResendingCode(true);
@@ -279,7 +283,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       setIsResendingCode(false);
     }
   };
- 
+
   const handleVerifyEmail = async () => {
     if (!user) return; // Ensure user is not null
     setVerificationError('');
@@ -297,22 +301,11 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       setVerificationError(error.message || 'Invalid verification code or email.');
     }
   };
- 
+
   if (queryLoading) {
-    return <div>Loading user data...</div>;
-  }
- 
-  // Optional: Handle case where user is not logged in after hooks are called
-  if (!user) {
-    // Depending on app flow, maybe redirect or show a message
-    return null; // Or render a different component/message
-  }
- 
-  return (
-    <>
+    return (
       <Modal onClose={onClose} isOpen={isOpen}>
         <div className="myaccount-modal-content">
-          {/* Header */}
           <div className="myaccount-header">
             <Button className="myaccount-back-button" onClick={onBack}>
               <Image width={24} height={24} src={icons.arrowLeft} alt="Back" className="icon" />
@@ -322,174 +315,39 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
               <Image width={24} height={24} src={icons.closeModal} alt="Close" className="icon" />
             </Button>
           </div>
- 
-          {/* User Info Section */}
           <div className="myaccount-user-info-section">
-            {/* Avatar and Dropdown Container */}
-            <div className="myaccount-avatar-container" style={{ position: 'relative' }}>
-              <div
-                className="myaccount-avatar"
-                style={{ backgroundColor: avatarData.color, cursor: 'pointer' }}
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-              >
-                {user.avatarUrl ? (
-                  <img key={user.avatarUrl} src={user.avatarUrl} alt="User Avatar" className="myaccount-avatar-image" />
-                ) : (
-                  <>
-                    <span className="myaccount-avatar-letter">{avatarData.letter}</span>
-                    <div className="myaccount-avatar-overlay">
-                      <span className="myaccount-avatar-upload-text">Upload a fresh photo</span>
-                    </div>
-                  </>
-                )}
-              </div>
- 
-              {/* Dropdown Menu */}
-              {dropdownOpen && (
-                <div className="myaccount-avatar-dropdown">
-                  {/* Upload Avatar Option */}
-                  <div
-                    className="myaccount-dropdown-item"
-                    onClick={() => {
-                      document.getElementById('avatarUploadInput')?.click();
-                      setDropdownOpen(false);
-                    }}
-                    style={{ padding: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                  >
-                    <Image width={24} height={24} className="myaccount-dropdown-icon" alt="Upload Avatar" src={icons.uploadImage}></Image>
-                    Upload Avatar
-                  </div>
-                  {/* Logout Option */}
-                  <div
-                    className="myaccount-dropdown-item"
-                    onClick={() => {
-                      logout();
-                      setDropdownOpen(false);
-                    }}
-                    style={{ padding: '10px', cursor: 'pointer' }}
-                  >
-                    <Image width={24} height={24} className="myaccount-dropdown-icon" alt="Logout Account" src={icons.logout}></Image>
-                    Logout
-                  </div>
-                </div>
-              )}
-            </div>
-            {/* Hidden file input */}
-            <input
-              id="avatarUploadInput"
-              type="file"
-              accept=".png,.jpeg,.jpg,.webp,.ico"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-            {/* Upload status indicators */}
-            {uploading && <p className="myaccount-upload-status">Uploading...</p>}
-            {uploadError && (
-              <p className="myaccount-upload-error">
-                Upload failed: {uploadError.message}
-              </p>
-            )}
+            <LazyLoading className="myaccount-avatar" /> {/* Avatar loading */}
             <div className="myaccount-name-status">
-                <h2 className="myaccount-user-name">{user.name || 'Guest'}</h2>
-                <p className={`myaccount-user-status ${user.status === 'Offline' ? 'offline' : ''}`}>
-                  {user.status || 'Offline'}
-                </p>
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-name" /> {/* Name loading */}
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-status" /> {/* Status loading */}
             </div>
-            {/* Replace placeholder p with textarea for biography */}
-            <textarea
-              className="myaccount-bio-textarea"
-              value={biography}
-              onChange={(e) => setBiography(e.target.value)}
-              placeholder="Enter your biography here..."
-              rows={4}
-            />
+            <LazyLoading className="lazy-loading-block myaccount-loading-bio" /> {/* Biography loading */}
           </div>
- 
-          {/* Separator */}
           <div className="myaccount-separator"></div>
- 
-          {/* Detailed User Info */}
           <div className="myaccount-detailed-info">
             <div className="myaccount-name-username-group">
-              <div className="myaccount-info-item" onClick={() => handleEditClick('name')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={icons.account} alt="Account" /></div>
-                <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">Name</p>
-                  <p className="myaccount-info-value">{user.name || 'N/A'}</p>
-                </div>
+              <div className="myaccount-info-item">
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Name label loading */}
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Name value loading */}
               </div>
-              <div className="myaccount-info-item" onClick={() => handleEditClick('username')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={icons.usernameDog} alt="Username" /></div>
-                <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">Username</p>
-                  <p className="myaccount-info-value myaccount-info-value-green">@{user.username || 'N/A'}</p>
-                </div>
+              <div className="myaccount-info-item">
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Username label loading */}
+                <LazyLoading className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Username value loading */}
               </div>
             </div>
-            <div className="myaccount-info-item myaccount-info-item-centered" onClick={() => handleEditClick('email')} style={{ cursor: 'pointer' }}>
-              <div className="myaccount-info-icon"><Image width={24} height={24} src={icons.mail} alt="Email" /></div>
-              <div className="myaccount-info-text">
-                <p className="myaccount-info-label">Email</p>
-                <p className="myaccount-info-value">{user.email || 'N/A'}</p>
-              </div>
+            <div className="myaccount-info-item myaccount-info-item-centered">
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Email label loading */}
+              <LazyLoading className="lazy-loading-text-line myaccount-loading-email-value" /> {/* Email value loading */}
             </div>
           </div>
         </div>
       </Modal>
- 
-      {/* Generic Edit Modal */}
-      {editModalOpen && (
-        <Modal onClose={handleEditModalClose} isOpen={editModalOpen}>
-          <div className="edit-modal-content">
-            <h3>Edit {editingField}</h3>
-            <input
-              type={editingField === 'email' ? 'email' : 'text'}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="edit-modal-input"
-            />
-            {editingField === 'email' && (
-              <div className="email-verification-section">
-                <p>Status: {user.isVerified ? 'Verified' : 'Not Verified'}</p>
-                {!user.isVerified && (
-                  <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-                    {isResendingCode ? 'Sending...' : 'Resend Verification Email'}
-                  </Button>
-                )}
-                {resendSuccess && <p className="success-message">Verification email sent!</p>}
- 
- 
-                {editError && <p className="error-message">{editError}</p>} {/* Display editError here */}
-              </div>
-            )}
-            <Button onClick={handleSaveEdit}>Save</Button>
-            <Button onClick={handleEditModalClose}>Cancel</Button>
-          </div>
-        </Modal>
-      )}
- 
-      {/* Email Verification Modal (for unverified users on login) */}
-      {emailVerificationModalOpen && (
-        <Modal onClose={handleEmailVerificationModalClose} isOpen={emailVerificationModalOpen}>
-          <div className="verification-modal-content">
-            <h3>Verify Your Email</h3>
-            <p>Please enter the verification code sent to {user.email}.</p>
-            <input
-              type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="Enter code"
-              className="verification-modal-input"
-            />
-            {verificationError && <p className="error-message">{verificationError}</p>}
-            <Button onClick={handleVerifyEmail}>Verify</Button>
-            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-              {isResendingCode ? 'Sending...' : 'Resend Code'}
-            </Button>
-            {resendSuccess && <p className="success-message">Verification email sent!</p>}
-          </div>
-        </Modal>
-      )}
+    );
+  }
+
+
+  return (
+    <>
       <Modal onClose={onClose} isOpen={isOpen}>
         <div className="myaccount-modal-content">
           {/* Header */}
@@ -689,7 +547,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   alt="Crop me"
                   src={imageSrc}
                   onLoad={(e) => {
-                    const { naturalWidth: width, naturalHeight: height } = e.currentTarget;
+                    const { width, height } = e.currentTarget; // Use displayed dimensions
                     // Set initial crop to a square in the center
                     const size = Math.min(width, height);
                     setCrop({
@@ -706,12 +564,13 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                     e.preventDefault(); // Prevent default scroll behavior
 
                     const img = imgRef.current;
-                    const { naturalWidth, naturalHeight } = img;
+                    const { width, height } = img; // Use displayed dimensions
                     const currentCrop = crop;
 
-                    // Calculate the current crop size in pixels
-                    const currentCropWidthPx = (currentCrop.width / 100) * naturalWidth;
-                    const currentCropHeightPx = (currentCrop.height / 100) * naturalHeight;
+                    // Calculate the current crop size in pixels based on displayed dimensions
+                    const currentCropWidthPx = (currentCrop.unit === 'px' ? currentCrop.width : (currentCrop.width / 100) * width);
+                    const currentCropHeightPx = (currentCrop.unit === 'px' ? currentCrop.height : (currentCrop.height / 100) * height);
+
 
                     // Determine zoom direction and factor
                     const zoomFactor = e.deltaY < 0 ? 1.05 : 0.95; // Zoom in or out
@@ -724,20 +583,20 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                     const minSizePx = 50; // Minimum crop size in pixels
                     newCropWidthPx = Math.max(minSizePx, newCropWidthPx);
                     newCropHeightPx = Math.max(minSizePx, newCropHeightPx);
-                    newCropWidthPx = Math.min(naturalWidth, newCropWidthPx);
-                    newCropHeightPx = Math.min(naturalHeight, newCropHeightPx);
+                    newCropWidthPx = Math.min(width, newCropWidthPx); // Use displayed width for max size
+                    newCropHeightPx = Math.min(height, newCropHeightPx); // Use displayed height for max size
+
 
                     // Calculate the new crop position to keep it centered
                     const newCropX = currentCrop.x + (currentCropWidthPx - newCropWidthPx) / 2;
                     const newCropY = currentCrop.y + (currentCropHeightPx - newCropHeightPx) / 2;
 
-                    // Ensure the new crop stays within the image boundaries
-                    const boundedNewCropX = Math.max(0, Math.min(naturalWidth - newCropWidthPx, newCropX));
-                    const boundedNewCropY = Math.max(0, Math.min(naturalHeight - newCropHeightPx, newCropY));
+                    // Ensure the new crop stays within the image boundaries based on displayed dimensions
+                    const boundedNewCropX = Math.max(0, Math.min(width - newCropWidthPx, newCropX));
+                    const boundedNewCropY = Math.max(0, Math.min(height - newCropHeightPx, newCropY));
 
 
-                    // Update the crop state (convert back to percentage if needed by react-image-crop, or use pixel unit consistently)
-                    // Assuming react-image-crop works with pixel units if specified:
+                    // Update the crop state using pixel units
                      setCrop({
                        unit: 'px',
                        x: boundedNewCropX,
@@ -833,5 +692,5 @@ const getCroppedImg = (image: HTMLImageElement, crop: PixelCrop): Promise<Blob> 
     }, 'image/png'); // You can adjust the image format here
   });
 };
- 
+
 export default MyAccount;
