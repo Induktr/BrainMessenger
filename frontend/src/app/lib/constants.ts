@@ -50,7 +50,7 @@ export const icons = {
 };
 
 export const SMILES = {
-  THUMBS_UP: icons.thinking,
+  THUMBS_UP: '👍',
   HEART: '❤️',
   LAUGHING: '😂',
   CRYING: '😢',
