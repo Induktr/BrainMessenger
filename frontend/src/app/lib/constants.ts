@@ -46,10 +46,11 @@ export const icons = {
     audio: '/icons/audio.svg',
     pdf: '/icons/pdf.svg',
     image: '/icons/image.svg',
+    thinking: '/icons/thinking.svg',
 };
 
 export const SMILES = {
-  THUMBS_UP: '👍',
+  THUMBS_UP: icons.thinking,
   HEART: '❤️',
   LAUGHING: '😂',
   CRYING: '😢',

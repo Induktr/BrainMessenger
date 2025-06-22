@@ -6,7 +6,7 @@ import Button from '@/components/Button';
 import CreateChannelModal from '@/components/CreateChannelModal';
 import CreateGroupModal from '@/components/CreateGroupModal';
 import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
-import { icons, detailedUserInfo } from '../app/lib/constants'; // Keep import for now, might remove later
+import { icons } from '../app/lib/constants'; // Keep import for now, might remove later
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext'; // Import useAuth hook
 import { generateAvatarData } from '@/utils/avatarUtils'; // Import avatar utility
