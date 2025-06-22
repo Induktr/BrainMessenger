@@ -6,7 +6,7 @@ import Modal from '@/components/Modal';
 import MyAccount from './MyAccount';
 import Language from './Language';
 import Premium from './Premium';
-import { icons, detailedUserInfo } from '../app/lib/constants'; // Keep import for now
+import { icons } from '../app/lib/constants'; // Keep import for now
 import Button from '@/components/Button';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext'; // Import useAuth hook
