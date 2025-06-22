@@ -37,12 +37,12 @@ interface ChatMessageProps {
   setCurrentlyPlayingAudio: React.Dispatch<React.SetStateAction<{ messageId: string; attachmentIndex: number } | null>>;
   isSelected: boolean; // New prop for selection state
   isSelecting: boolean; // New prop to indicate if selection is active
-  onOpenOptions: (messageId: string, src: string, currentTime: number, duration: number, isPlaying: boolean, isLooping: boolean) => void; // Updated prop signature
+  onShowGlobalAudioControls: (messageId: string, src: string) => void; // Renamed prop for clarity
   isPoorConnection: boolean; // New prop for network status
   isRecentMessage: boolean; // New prop to indicate if it's one of the last 10 messages
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onOpenOptions, isPoorConnection, isRecentMessage }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [selectedProfileUserId, setSelectedProfileUserId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string } | null>(null);
@@ -165,9 +165,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                       {attachment.mimetype.startsWith('audio/') && (
                         <AudioPlayer
                           src={attachment.url}
-                          onEndedCallback={() => onAudioEnded(message.id, attachmentIndex)}
-                          shouldPlay={currentlyPlayingAudio?.messageId === message.id && currentlyPlayingAudio?.attachmentIndex === attachmentIndex}
-                          onOpenOptions={onOpenOptions} // Pass the actual handler from ChatPage
+                          onShowGlobalControls={() => onShowGlobalAudioControls(message.id, attachment.url)} // Pass the new prop
                           messageId={message.id} // Pass messageId
                         />
                       )}

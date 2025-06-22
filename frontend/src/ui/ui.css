@@ -1677,7 +1677,7 @@
 .audio-player-play-pause-button {
     padding: 4px; /* p-1 */
     border-radius: 9999px; /* rounded-full */
-    background-color: #3B82F6; /* bg-blue-500 */
+    background-color: #96C93D; /* bg-blue-500 */
     color: #FFFFFF; /* text-white */
     border: none;
     cursor: pointer;
@@ -1689,7 +1689,7 @@
 .audio-player-progress-slider {
     width: 100%; /* w-full */
     height: 8px; /* h-2 */
-    background-color: #4B5563; /* bg-gray-600 */
+    background-color: #333333; /* bg-gray-600 */
     border-radius: 8px; /* rounded-lg */
     -webkit-appearance: none; /* appearance-none */
     cursor: pointer;
@@ -1701,7 +1701,7 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #3B82F6; /* Match the gradient start color */
+    background: #96C93D; /* Match the gradient start color */
     cursor: pointer;
     margin-top: -4px; /* Center the thumb vertically */
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
@@ -1712,14 +1712,14 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #3B82F6; /* Match the gradient start color */
+    background: #96C93D; /* Match the gradient start color */
     cursor: pointer;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
  
 .audio-player-time-display {
     font-size: clamp(0.75rem, 2vw, 0.875rem); /* Fluid font size */
-    color: #D1D5DB; /* text-gray-300 */
+    color: #B0B0B0; /* text-gray-300 */
     min-width: 70px; /* Ensure enough space for time display */
     text-align: right;
 }
@@ -1759,8 +1759,7 @@
 .audio-player-play-pause-button-dropdown {
     padding: 4px;
     border-radius: 9999px;
-    background-color: #3B82F6;
-    color: #FFFFFF;
+    background-color: #96C93D;
     border: none;
     cursor: pointer;
     display: flex;
@@ -1772,7 +1771,7 @@
 .audio-player-progress-slider-dropdown {
     flex-grow: 1; /* Take available space */
     height: 8px;
-    background-color: #4B5563;
+    background-color: #333333;
     border-radius: 8px;
     -webkit-appearance: none;
     cursor: pointer;
@@ -1783,7 +1782,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #3B82F6;
+    background: #96C93D;
     cursor: pointer;
     margin-top: -4px;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
@@ -1793,7 +1792,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #3B82F6;
+    background: #96C93D;
     cursor: pointer;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
@@ -1804,6 +1803,7 @@
     cursor: pointer;
     padding: 0;
     display: flex;
+    filter: brightness(0) invert(1); /* Ensure icon is white */
     align-items: center;
     justify-content: center;
     width: 24px;
@@ -1815,7 +1815,7 @@
  
 .audio-player-loop-button.active {
     opacity: 1; /* Full opacity when active */
-    filter: invert(60%) sepia(80%) saturate(300%) hue-rotate(70deg) brightness(90%) contrast(80%); /* Green tint when active */
+    filter: brightness(0) invert(1); /* Ensure icon is white */ /* Green tint when active */
 }
  
 .attachment-preview-container {
@@ -1823,7 +1823,7 @@
     flex-wrap: wrap;
     gap: 8px; /* gap-2 */
     padding: 8px; /* p-2 */
-    border-bottom: 1px solid #4B5563; /* border-b border-gray-600 */
+    border-bottom: 1px solid #333333; /* border-b border-gray-600 */
 }
  
 .attachment-preview-item {
@@ -1865,8 +1865,70 @@
 }
  
 .audio-player-icon {
+    filter: brightness(0) invert(0); /* Ensure icon is black */
+}
+
+.audio-player-icon-volume {
+    filter: brightness(0) contrast(0.2) invert(1); /* Ensure icon is gray */
+}
+
+.audio-player-icon-volume :hover {
     filter: brightness(0) invert(1); /* Ensure icon is white */
 }
+
+.audio-player-icon-loop {
+    filter: brightness(0) invert(1); /* Ensure icon is white */
+}
+
+.audio-player-volume-control {
+    position: relative; /* To position the slider relative to this container */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.audio-player-volume-slider {
+    position: absolute;
+    top: 400%; /* Position above the icon */
+    left: 60%;
+    transform: translateX(-50%) rotate(-90deg); /* Center horizontally and rotate */
+    transform-origin: bottom center; /* Adjust transform origin for rotation */
+    width: 100px; /* Adjust length as needed */
+    height: 8px; /* Adjust thickness as needed */
+    margin-bottom: 30px; /* Space between icon and slider */
+    background-color: #4D4D4D; /* bg-gray-600 */
+    border-radius: 8px; /* rounded-lg */
+    -webkit-appearance: none;
+    cursor: pointer;
+    /* Initially hidden, controlled by JS/React state */
+    /* opacity: 0; */
+    /* transition: opacity 0.3s ease; */
+}
+
+/* Custom thumb style for Webkit (Chrome, Safari) */
+.audio-player-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; /* Adjust as needed */
+    height: 16px; /* Adjust as needed */
+    border-radius: 50%;
+    background: #96C93D; /* Match the gradient start color */
+    cursor: pointer;
+    /* margin-top: -4px; */ /* Not needed for vertical slider */
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Custom thumb style for Firefox */
+.audio-player-volume-slider::-moz-range-thumb {
+    width: 16px; /* Adjust as needed */
+    height: 16px; /* Adjust as needed */
+    border-radius: 50%;
+    background: #96C93D; /* Match the gradient start color */
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+
 /* Notification Dropdown Styles */
 .notification-dropdown {
   position: fixed;
@@ -2069,7 +2131,7 @@
 /* Styles for Context Menu */
 .context-menu {
     position: absolute;
-    z-index: 1000;
+    z-index: 100000;
     background-color: #2B2B2B; /* Dark background */
     border: 1px solid #3a3a3a; /* Subtle border */
     border-radius: 8px; /* Rounded corners */

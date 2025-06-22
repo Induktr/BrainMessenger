@@ -14,6 +14,7 @@ import ChatListItem from '@/components/ChatListItem';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
 import InputPanel from '@/components/InputPanel';
+import GlobalAudioControls from '@/components/GlobalAudioControls'; // Import GlobalAudioControls
 import { icons } from '@/app/lib/constants';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
@@ -27,6 +28,7 @@ import { useNotification } from '@/context/NotificationContext';
 import { playNotificationSound } from '@/utils/audioUtils';
 import CreateChannelModal from '@/components/CreateChannelModal';
 import ChannelDetailsModal from '@/components/ChannelDetailsModal';
+import { GlobalAudioProvider, useGlobalAudio } from '@/context/GlobalAudioContext';
 
 interface Message {
   id: string;
@@ -106,11 +108,6 @@ const ChatPage = () => {
   const [showMultiDeleteConfirmModal, setShowMultiDeleteConfirmModal] = useState(false);
   const [showGlobalAudioOptions, setShowGlobalAudioOptions] = useState(false);
   const [activeAudioMessageId, setActiveAudioMessageId] = useState<string | null>(null);
-  const [globalAudioIsPlaying, setGlobalAudioIsPlaying] = useState(false);
-  const [globalAudioIsLooping, setGlobalAudioIsLooping] = useState(false);
-  const [globalAudioCurrentTime, setGlobalAudioCurrentTime] = useState(0);
-  const [globalAudioDuration, setGlobalAudioDuration] = useState(0);
-  const globalAudioRef = useRef<HTMLAudioElement | null>(null);
   const [showChatOptionsContextMenu, setShowChatOptionsContextMenu] = useState(false);
   const [contextMenuX, setContextMenuX] = useState(0);
   const [contextMenuY, setContextMenuY] = useState(0);
@@ -391,92 +388,14 @@ const ChatPage = () => {
     setCurrentlyPlayingAudio(null);
   };
 
-  const handleOpenGlobalAudioOptions = (messageId: string, src: string, currentTime: number, duration: number, isPlaying: boolean, isLooping: boolean) => {
+  const { playAudio } = useGlobalAudio();
+
+  const handleOpenGlobalAudioOptions = (messageId: string, src: string) => {
     setActiveAudioMessageId(messageId);
     setShowGlobalAudioOptions(true);
-    setCurrentlyPlayingAudio(null);
-    
-    if (globalAudioRef.current) {
-      globalAudioRef.current.src = src;
-      globalAudioRef.current.load();
-      globalAudioRef.current.currentTime = currentTime;
-      globalAudioRef.current.loop = isLooping;
-      
-      if (isPlaying) {
-        globalAudioRef.current.play().catch(e => console.error("Error playing global audio:", e));
-      } else {
-        globalAudioRef.current.pause();
-      }
-      setGlobalAudioIsPlaying(isPlaying);
-      setGlobalAudioIsLooping(isLooping);
-      setGlobalAudioCurrentTime(currentTime);
-      setGlobalAudioDuration(duration);
-    }
+    // Removed redundant playAudio(src) call - playback is initiated in AudioPlayer.tsx
+    // setCurrentlyPlayingAudio(null); // This might not be needed if local playback is fully removed
   };
-
-  const handleGlobalAudioTogglePlayPause = () => {
-    if (globalAudioRef.current) {
-      if (globalAudioIsPlaying) {
-        globalAudioRef.current.pause();
-      } else {
-        globalAudioRef.current.play().catch(e => console.error("Error playing global audio:", e));
-      }
-      setGlobalAudioIsPlaying(prev => !prev);
-    }
-  };
-
-  const handleGlobalAudioToggleLoop = () => {
-    setGlobalAudioIsLooping(prev => !prev);
-    if (globalAudioRef.current) {
-      globalAudioRef.current.loop = !globalAudioIsLooping;
-    }
-  };
-
-  const handleGlobalAudioSeek = (time: number) => {
-    if (globalAudioRef.current) {
-      globalAudioRef.current.currentTime = time;
-    }
-    setGlobalAudioCurrentTime(time);
-  };
-
-  const handleGlobalAudioTimeUpdate = useCallback(() => {
-    if (globalAudioRef.current) {
-      setGlobalAudioCurrentTime(globalAudioRef.current.currentTime);
-    }
-  }, []);
-
-  const handleGlobalAudioLoadedMetadata = useCallback(() => {
-    if (globalAudioRef.current) {
-      setGlobalAudioDuration(globalAudioRef.current.duration);
-      setGlobalAudioCurrentTime(0);
-    }
-  }, []);
-
-  const handleGlobalAudioEnded = useCallback(() => {
-    setGlobalAudioIsPlaying(false);
-    setGlobalAudioCurrentTime(0);
-    if (!globalAudioIsLooping) {
-      setShowGlobalAudioOptions(false);
-      setActiveAudioMessageId(null);
-    }
-  }, [globalAudioIsLooping]);
-
-  useEffect(() => {
-    const audio = globalAudioRef.current;
-    if (audio) {
-      audio.addEventListener('timeupdate', handleGlobalAudioTimeUpdate);
-      audio.addEventListener('loadedmetadata', handleGlobalAudioLoadedMetadata);
-      audio.addEventListener('ended', handleGlobalAudioEnded);
-      audio.loop = globalAudioIsLooping;
-
-      return () => {
-        audio.removeEventListener('timeupdate', handleGlobalAudioTimeUpdate);
-        audio.removeEventListener('loadedmetadata', handleGlobalAudioLoadedMetadata);
-        audio.removeEventListener('ended', handleGlobalAudioEnded);
-      };
-    }
-  }, [handleGlobalAudioTimeUpdate, handleGlobalAudioLoadedMetadata, handleGlobalAudioEnded, globalAudioIsLooping]);
-
 
   useEffect(() => {
   }, [selectedChatMessages]);
@@ -715,8 +634,9 @@ const ChatPage = () => {
   };
 
   return (
-    <div className={`chat-container ${selectedChatId ? 'chat-selected' : ''}`}>
-      {openMenu && (
+    <GlobalAudioProvider>
+      <div className={`chat-container ${selectedChatId ? 'chat-selected' : ''}`}>
+        {openMenu && (
         <div
           className="sidebar-overlay"
           onClick={() => setOpenMenu(false)}
@@ -940,30 +860,8 @@ const ChatPage = () => {
                   )}
                 </div>
 
-                {showGlobalAudioOptions && activeAudioMessageId && (
-                  <div className="global-audio-options-panel">
-                    <audio ref={globalAudioRef} src={selectedChatMessages.find(msg => msg.id === activeAudioMessageId)?.attachments?.find(att => att.mimetype.startsWith('audio/'))?.url} preload="metadata" />
-                    <div className="global-audio-controls">
-                      <button onClick={handleGlobalAudioTogglePlayPause} className="audio-player-play-pause-button-dropdown">
-                        <Image src={globalAudioIsPlaying ? icons.pause : icons.play} alt={globalAudioIsPlaying ? "Pause" : "Play"} width={20} height={20} className="audio-player-icon" />
-                      </button>
-                      <input
-                        type="range"
-                        min="0"
-                        max={globalAudioDuration}
-                        value={globalAudioCurrentTime}
-                        onChange={(e) => handleGlobalAudioSeek(parseFloat(e.target.value))}
-                        className="audio-player-progress-slider-dropdown"
-                        style={{
-                          background: `linear-gradient(to right, #3B82F6 0%, #3B82F6 ${(globalAudioCurrentTime / globalAudioDuration) * 100}%, #4B5563 ${(globalAudioCurrentTime / globalAudioDuration) * 100}%, #4B5563 100%)`
-                        }}
-                      />
-                      <button onClick={handleGlobalAudioToggleLoop} className={`audio-player-loop-button ${globalAudioIsLooping ? 'active' : ''}`}>
-                        <Image src={icons.loop} alt="Loop" width={20} height={20} className="audio-player-icon" />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Global audio options panel */}
+                {showGlobalAudioOptions && <GlobalAudioControls />}
 
                 <div
                   className="chat-messages"
@@ -993,7 +891,7 @@ const ChatPage = () => {
                         setCurrentlyPlayingAudio={setCurrentlyPlayingAudio}
                         isSelected={selectedMessageIds.has(message.id)}
                         isSelecting={isSelecting}
-                        onOpenOptions={handleOpenGlobalAudioOptions}
+                        onShowGlobalAudioControls={handleOpenGlobalAudioOptions} // Use the new prop name
                         isPoorConnection={isPoorConnection}
                         isRecentMessage={isRecentMessage}
                       />
@@ -1105,7 +1003,8 @@ const ChatPage = () => {
           )}
         </>
       )}
-    </div>
+      </div>
+    </GlobalAudioProvider>
   );
 };
 

@@ -10,6 +10,7 @@ import { AuthProvider } from '@/context/AuthContext'; // Import AuthProvider
 import { NetworkStatusProvider } from '@/context/NetworkStatusContext'; // Import NetworkStatusProvider
 import { ChatIdProvider } from '@/context/ChatIdContext'; // Import ChatIdProvider
 import { NotificationProvider, useNotification } from '@/context/NotificationContext';
+import { GlobalAudioProvider } from '@/context/GlobalAudioContext'; // Import GlobalAudioProvider
 import NotificationDropdown from '@/components/NotificationDropdown';
 
 // Import Roboto font
@@ -46,17 +47,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable} antialiased bg-background-dark text-textPrimary-dark font-roboto`}
       >
         <ApolloWrapper> {/* ApolloWrapper (containing ApolloProvider) must wrap AuthProvider */}
-          <NetworkStatusProvider>
-            <AuthProvider>
-              <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
-                <NotificationProvider>
-                  <NotificationWrapper>
-                    {children}
-                  </NotificationWrapper>
-                </NotificationProvider>
-              </ChatIdProvider>
-            </AuthProvider>
-          </NetworkStatusProvider>
+          <GlobalAudioProvider> {/* Wrap the entire application with GlobalAudioProvider */}
+            <NetworkStatusProvider>
+              <AuthProvider>
+                <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
+                  <NotificationProvider>
+                    <NotificationWrapper>
+                      {children}
+                    </NotificationWrapper>
+                  </NotificationProvider>
+                </ChatIdProvider>
+              </AuthProvider>
+            </NetworkStatusProvider>
+          </GlobalAudioProvider>
         </ApolloWrapper>
       </body>
     </html>
