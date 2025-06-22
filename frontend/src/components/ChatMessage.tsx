@@ -8,7 +8,8 @@ import ConfirmationModal from '@/components/ConfirmationModal';
 import AudioPlayer from './AudioPlayer'; // Import AudioPlayer
 import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation } from '@apollo/client';
-import { DELETE_MESSAGE } from '@/graphql/queries';
+import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/graphql/mutations'; // Import mutations
+import { icons, SMILES } from '@/app/lib/constants'; // Import SMILES
 
 interface ChatMessageProps {
   message: {
@@ -29,6 +30,11 @@ interface ChatMessageProps {
       filename: string;
       mimetype: string;
     }[];
+    reactions?: { // Add reactions field
+      id: string;
+      userId: string;
+      emoji: string;
+    }[];
   };
   isCurrentUser: boolean;
   onEditMessage: (message: { id: string; content: string }) => void; // New prop for editing
@@ -40,12 +46,13 @@ interface ChatMessageProps {
   onShowGlobalAudioControls: (messageId: string, src: string) => void; // Renamed prop for clarity
   isPoorConnection: boolean; // New prop for network status
   isRecentMessage: boolean; // New prop to indicate if it's one of the last 10 messages
+  currentUserId?: string | null; // Add currentUserId prop
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage, currentUserId }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [selectedProfileUserId, setSelectedProfileUserId] = useState<string | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string; showEmojis?: boolean } | null>(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [isVisible, setIsVisible] = useState(false); // State to track visibility for lazy loading
   const messageRef = useRef<HTMLDivElement>(null); // Ref for the message container
@@ -58,6 +65,26 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
     },
     onError: (error) => {
       console.error('Error deleting message:', error);
+    },
+  });
+
+  const [removeMessageReaction] = useMutation(REMOVE_MESSAGE_REACTION, {
+    onCompleted: (data) => {
+      console.log('Reaction added successfully:', data);
+      // The UI will be updated by the subscription
+    },
+    onError: (error) => {
+      console.error('Error adding reaction:', error);
+    },
+  });
+
+  const [addMessageReaction] = useMutation(ADD_MESSAGE_REACTION, {
+    onCompleted: (data) => {
+      console.log('Reaction added successfully:', data);
+      // The UI will be updated by the subscription
+    },
+    onError: (error) => {
+      console.error('Error adding reaction:', error);
     },
   });
 
@@ -91,7 +118,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
       setShowUserProfileModal(true);
     }
   };
- 
+
   const handleCloseUserProfileModal = () => {
     setShowUserProfileModal(false);
     setSelectedProfileUserId(null);
@@ -124,6 +151,27 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
     onEditMessage({ id: message.id, content: message.content });
     handleCloseContextMenu();
   };
+
+  // New handler for selecting an emoji
+  const handleSelectEmoji = (emoji: string) => {
+    console.log(`Selected emoji: ${emoji} for message ${message.id}`);
+    addMessageReaction({ variables: { messageId: message.id, emoji } }); // Call the mutation
+    handleCloseContextMenu();
+  };
+
+  // Options for the main context menu
+  const mainContextMenuOptions = [
+    { label: 'React', onClick: () => setContextMenu({ x: contextMenu!.x, y: contextMenu!.y, messageId: message.id, showEmojis: true }) }, // Option to show emojis
+    { label: 'Delete', onClick: handleDeleteClick, disabled: !isCurrentUser },
+    { label: 'Edit', onClick: handleEditClick, disabled: !isCurrentUser },
+  ];
+
+  // Options for the emoji context menu
+  const emojiContextMenuOptions = Object.values(SMILES).map(emoji => ({
+    label: emoji,
+    onClick: () => handleSelectEmoji(emoji),
+  }));
+
 
   return (
     <>
@@ -167,24 +215,25 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                           src={attachment.url}
                           onShowGlobalControls={() => onShowGlobalAudioControls(message.id, attachment.url)} // Pass the new prop
                           messageId={message.id} // Pass messageId
-                        />
+                        >
+                        </AudioPlayer>
                       )}
                       {attachment.mimetype === 'application/pdf' && (
                         <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="chat-attachment-file-display chat-attachment-pdf-link">
-                          <Image src="/icons/file.svg" alt="PDF File" width={20} height={20} />
+                          <Image src={icons.pdf} alt="PDF File" width={45} height={45} className="chat-attachment-image-pdf" />
                           <span>{attachment.filename}</span>
                         </a>
                       )}
                       {attachment.mimetype === 'application/zip' && (
                         <a href={attachment.url} download={attachment.filename} className="chat-attachment-file-display chat-attachment-zip-link">
-                          <Image src="/icons/file.svg" alt="ZIP File" width={20} height={20} />
+                          <Image src={icons.file} alt="ZIP File" width={45} height={45} className="chat-attachment-image-zip" />
                           <span>{attachment.filename}</span>
                         </a>
                       )}
                       {/* Add more attachment types here if needed, e.g., video/mp4 */}
                       {!attachment.mimetype.startsWith('image/') && !attachment.mimetype.startsWith('audio/') && attachment.mimetype !== 'application/pdf' && attachment.mimetype !== 'application/zip' && (
                         <div className="chat-attachment-file-display">
-                          <Image src="/icons/file.svg" alt="File" width={20} height={20} />
+                          <Image src={icons.image} alt="File" width={20} height={20} />
                           <span>{attachment.filename}</span>
                         </div>
                       )}
@@ -200,6 +249,35 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
           <div className={`chat-message-timestamp ${isCurrentUser ? 'current-user' : 'other-user'}`}>
             {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
+          {/* Display reactions here */}
+          {message.reactions && message.reactions.length > 0 && (
+            <div className="message-reactions">
+              {/* Group and display reactions */}
+              {Object.entries(message.reactions.reduce((acc, reaction) => {
+                if (!acc[reaction.emoji]) {
+                  acc[reaction.emoji] = { count: 0, userIds: new Set() };
+                }
+                acc[reaction.emoji].count++;
+                acc[reaction.emoji].userIds.add(reaction.userId);
+                return acc;
+              }, {} as Record<string, { count: number; userIds: Set<string> }>)).map(([emoji, reactionData]) => {
+                const isCurrentUserReaction = currentUserId && reactionData.userIds.has(currentUserId);
+                return (
+                  <span
+                    key={emoji}
+                    className={`message-reaction-item ${isCurrentUserReaction ? 'current-user-reacted' : ''}`} // Add conditional class
+                    onClick={() => {
+                      if (isCurrentUserReaction) {
+                        removeMessageReaction({ variables: { messageId: message.id, emoji } }); // Call remove reaction mutation
+                      }
+                    }}
+                  >
+                    {emoji} {reactionData.count > 1 && <span className="reaction-count">{reactionData.count}</span>}
+                  </span>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
@@ -207,11 +285,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          options={[
-            { label: 'Delete', onClick: handleDeleteClick, disabled: !isCurrentUser },
-            { label: 'Edit', onClick: handleEditClick, disabled: !isCurrentUser },
-          ]}
+          options={contextMenu.showEmojis ? emojiContextMenuOptions : mainContextMenuOptions} // Show emoji options if showEmojis is true
           onClose={handleCloseContextMenu}
+          isEmojiMenu={contextMenu.showEmojis} // Pass a prop to indicate if it's the emoji menu
         />
       )}
 
@@ -237,5 +313,5 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
     </>
   );
 };
- 
+
 export default ChatMessage;

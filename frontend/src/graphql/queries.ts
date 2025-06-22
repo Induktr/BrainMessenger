@@ -72,6 +72,11 @@ export const GET_MESSAGES = gql`
         filename
         mimetype
       }
+      reactions { # Include reactions
+        id
+        userId
+        emoji
+      }
     }
   }
 `;

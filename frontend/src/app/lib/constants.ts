@@ -42,25 +42,25 @@ export const icons = {
     pause: '/icons/pause.svg', // New icon for pause button
     loop: '/icons/loop.svg', // New icon for loop button
     onSound: '/icons/onSound.svg',
-    offSound: '/icons/offSound.svg'
+    offSound: '/icons/offSound.svg',
+    audio: '/icons/audio.svg',
+    pdf: '/icons/pdf.svg',
+    image: '/icons/image.svg',
 };
+
+export const SMILES = {
+  THUMBS_UP: '👍',
+  HEART: '❤️',
+  LAUGHING: '😂',
+  CRYING: '😢',
+  ANGRY: '😠',
+  THUMBS_DOWN: '👎',
+  STAR: '⭐',
+  PARTY: '🎉',
+  ROCKET: '🚀',
+  FIRE: '🔥',
+}
 
 export const images = {
     logoBrainMessenger: '/images/logo.png',
 }
-
-export const userInfo = [
-    {
-      name: 'Nikits',
-      status: 'Online',
-      bio: 'I\'m a designer. Details here https://t.me/Gloot4',
-    },
-];
-
-export const detailedUserInfo = [
-    {
-      name: 'Nikits',
-      username: '@Nikits',
-      email: 'example@gmail.com',
-    },
-];

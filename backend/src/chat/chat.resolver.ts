@@ -9,7 +9,7 @@ import { MessageService } from '../message/message.service';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { CreateChatInput } from './dto/create-chat.input';
 import { CreateChannelInput } from './dto/create-channel.input'; // Import CreateChannelInput
-import { UseGuards, UseInterceptors } from '@nestjs/common';
+import { UseGuards, UseInterceptors, UnauthorizedException } from '@nestjs/common';
 import { CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -405,6 +405,13 @@ export class ChatResolver {
           createdAt: att.createdAt,
         })) : [],
         deletedForUserIds: (msg as any).deletedForUserIds || [],
+        reactions: msg.reactions ? msg.reactions.map(reaction => ({
+          id: reaction.id,
+          messageId: reaction.messageId,
+          userId: reaction.userId,
+          emoji: reaction.emoji,
+          createdAt: reaction.createdAt,
+        })) : [],
       }));
   }
 
@@ -446,6 +453,7 @@ export class ChatResolver {
          createdAt: att.createdAt,
        })) || [],
        deletedForUserIds: (newMessage as any).deletedForUserIds || [],
+       reactions: [], // Initialize with empty reactions
      };
 
     console.log('[ChatResolver] Message DTO mapped:', messageDto.id);
@@ -460,6 +468,110 @@ export class ChatResolver {
 
     return messageDto;
   }
+
+  @Mutation(() => MessageDto) // Return the updated message with reactions
+  @UseGuards(JwtAuthGuard)
+  async addMessageReaction(
+    @Args('messageId', { type: () => ID }) messageId: string,
+    @Args('emoji') emoji: string,
+    @CurrentUser() user: User,
+  ): Promise<MessageDto> {
+    if (!user || !user.id) {
+      throw new UnauthorizedException('Authentication required.');
+    }
+    await this.messageService.addReaction(messageId, user.id, emoji);
+    // Fetch the updated message with reactions to return
+    const updatedMessage = await this.messageService.findOne(messageId);
+     if (!updatedMessage) {
+       throw new Error('Message not found after adding reaction.');
+     }
+
+     // Map updatedMessage to MessageDto including reactions
+     const messageDto: MessageDto = {
+        id: updatedMessage.id,
+        chatId: updatedMessage.chatId,
+        content: updatedMessage.content,
+        senderId: updatedMessage.senderId,
+        createdAt: updatedMessage.createdAt,
+        sender: { // Placeholder sender data - ideally fetch full sender
+          id: user.id, name: user.name, username: user.username || null, email: user.email, isVerified: user.isVerified, avatarUrl: user.avatarUrl || null, bio: user.bio || null, status: 'Online', roles: user.roles || [],
+        } as UserDto,
+        attachments: updatedMessage.attachments?.map(att => ({
+          id: att.id, url: att.url, filename: att.filename, mimetype: att.mimetype, size: att.size, createdAt: att.createdAt,
+        })) || [],
+        deletedForUserIds: (updatedMessage as any).deletedForUserIds || [],
+        reactions: updatedMessage.reactions?.map(reaction => ({
+          id: reaction.id,
+          messageId: reaction.messageId,
+          userId: reaction.userId,
+          emoji: reaction.emoji,
+          createdAt: reaction.createdAt,
+        })) || [],
+      };
+
+     // Publish reaction added event via PubSub
+     this.pubSub.publish('messageReactionAddedOrRemoved', {
+       messageReactionAddedOrRemoved: messageDto,
+       chatId: messageDto.chatId, // Include chatId for filtering
+     });
+
+    return messageDto; // Return the updated message DTO
+  }
+
+  @Mutation(() => MessageDto) // Return the updated message with reactions
+  @UseGuards(JwtAuthGuard)
+  async removeMessageReaction(
+    @Args('messageId', { type: () => ID }) messageId: string,
+    @Args('emoji') emoji: string,
+    @CurrentUser() user: User,
+  ): Promise<MessageDto> { // Change return type to MessageDto
+    if (!user || !user.id) {
+      throw new UnauthorizedException('Authentication required.');
+    }
+    // Remove the reaction using the message service
+    await this.messageService.removeReaction(messageId, user.id, emoji);
+
+    // Fetch the updated message with reactions to return and publish
+    const updatedMessage = await this.messageService.findOne(messageId);
+     if (!updatedMessage) {
+       // If message not found after removal, this indicates an issue or the message was deleted
+       // Depending on desired behavior, you might throw an error or return null/specific status
+       // For now, let's throw an error as the schema expects MessageDto!
+       throw new Error('Message not found after removing reaction.');
+     }
+
+     // Map updatedMessage to MessageDto including reactions
+     const messageDto: MessageDto = {
+        id: updatedMessage.id,
+        chatId: updatedMessage.chatId,
+        content: updatedMessage.content,
+        senderId: updatedMessage.senderId,
+        createdAt: updatedMessage.createdAt,
+        sender: { // Placeholder sender data - ideally fetch full sender
+          id: user.id, name: user.name, username: user.username || null, email: user.email, isVerified: user.isVerified, avatarUrl: user.avatarUrl || null, bio: user.bio || null, status: 'Online', roles: user.roles || [],
+        } as UserDto,
+        attachments: updatedMessage.attachments?.map(att => ({
+          id: att.id, url: att.url, filename: att.filename, mimetype: att.mimetype, size: att.size, createdAt: att.createdAt,
+        })) || [],
+        deletedForUserIds: (updatedMessage as any).deletedForUserIds || [],
+        reactions: updatedMessage.reactions?.map(reaction => ({
+          id: reaction.id,
+          messageId: reaction.messageId,
+          userId: reaction.userId,
+          emoji: reaction.emoji,
+          createdAt: reaction.createdAt,
+        })) || [],
+      };
+
+     // Publish reaction removed event via PubSub
+     this.pubSub.publish('messageReactionAddedOrRemoved', {
+       messageReactionAddedOrRemoved: messageDto,
+       chatId: messageDto.chatId, // Include chatId for filtering
+     });
+
+    return messageDto; // Return the updated message DTO
+  }
+
 
   @Subscription(() => MessageDto, {
     resolve: (payload) => {
@@ -476,5 +588,21 @@ export class ChatResolver {
     @CurrentUser() user: User,
   ): AsyncIterator<MessageDto> {
     return (this.pubSub as any).asyncIterator('newMessage');
+  }
+
+  @Subscription(() => MessageDto, {
+    filter: (payload, variables) => {
+      // Only send updates to subscribers of the relevant chat
+      return payload.chatId === variables.chatId;
+    },
+    resolve: (payload) => {
+      // The payload is the updated message DTO
+      return payload.messageReactionAddedOrRemoved;
+    },
+  })
+  messageReactionAddedOrRemoved(
+    @Args('chatId', { type: () => ID }) chatId: string,
+  ): AsyncIterator<MessageDto> {
+    return (this.pubSub as any).asyncIterator('messageReactionAddedOrRemoved');
   }
 }

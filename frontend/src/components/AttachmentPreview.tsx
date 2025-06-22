@@ -16,10 +16,11 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemoveFi
     } else if (file.type.startsWith('audio/')) {
       return (
         <div className="attachment-preview-placeholder">
-          <Image src={icons.musicNote} alt="Audio File" width={32} height={32} />
+          <Image src={icons.audio} alt="Audio File" width={32} height={32} className="attachment-preview-image-audio" />
         </div>
       );
-    } else if (file.type === 'video/mp4') {
+    }
+    else if (file.type === 'video/mp4') {
       return (
         <div className="attachment-preview-placeholder">
           <Image src={icons.videoCamera} alt="Video File" width={32} height={32} />
@@ -28,7 +29,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemoveFi
     } else {
       return (
         <div className="attachment-preview-placeholder">
-          <Image src={icons.file} alt="Generic File" width={32} height={32} />
+          <Image src={icons.file} alt="Generic File" width={32} height={32} className="attachment-preview-image-file" />
         </div>
       );
     }

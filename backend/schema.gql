@@ -46,6 +46,8 @@ type MessageDto {
   createdAt: DateTime!
   attachments: [AttachmentDto!]
   deletedForUserIds: [String!]
+  isViewed: Boolean! # Add isViewed field
+  reactions: [MessageReactionDto!] # Add reactions field
 }
 
 type ChatDto {
@@ -58,6 +60,13 @@ type ChatDto {
   participants: [UserDto!]!
   hasUnviewedMessagesFromSender: Boolean!
   messages: [MessageDto]
+}
+
+type MessageReactionDto { # Define MessageReactionDto type
+  id: ID!
+  user: UserDto! # User who added the reaction
+  emoji: String!
+  createdAt: DateTime!
 }
 
 type FileDto {
@@ -109,6 +118,7 @@ type Mutation {
   sendMessage(chatId: ID!, content: String!, files: [Upload!]): MessageDto
   uploadFile(file: Upload!): FileDto!
   deleteFile(fileId: ID!): Boolean!
+  removeMessageReaction(messageId: ID!, emoji: String!): MessageDto! # Add remove reaction mutation
 }
 
 input RegisterInput {
@@ -146,4 +156,5 @@ input CreateChatInput {
 
 type Subscription {
   newMessage(chatId: ID!): MessageDto!
+  messageReactionRemoved(chatId: ID!): MessageReactionDto! # Add reaction removed subscription
 }

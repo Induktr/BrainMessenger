@@ -12,20 +12,20 @@ export class MessageService {
   async findOne(id: string) {
     return this.prisma.message.findUnique({
       where: { id },
-      include: { sender: true, attachments: true }, // Include sender and attachments
+      include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
     });
   }
  
   async findMany(ids: string[]) {
     return this.prisma.message.findMany({
       where: { id: { in: ids } },
-      include: { sender: true, attachments: true },
+      include: { sender: true, attachments: true, reactions: true },
     });
   }
  
   async findAll() {
     return this.prisma.message.findMany({
-      include: { sender: true, attachments: true }, // Include sender and attachments
+      include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
     });
   }
 
@@ -33,7 +33,7 @@ export class MessageService {
     console.log('[MessageService] create called with data:', data);
     return this.prisma.message.create({
       data,
-      include: { sender: true, attachments: true }, // Include sender and attachments
+      include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
     });
   }
 
@@ -42,7 +42,7 @@ export class MessageService {
       return await this.prisma.message.update({
         where: { id },
         data,
-        include: { sender: true, attachments: true }, // Include sender and attachments
+        include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
@@ -81,7 +81,7 @@ export class MessageService {
       return await this.prisma.message.update({
         where: { id },
         data: { content },
-        include: { sender: true, attachments: true }, // Include sender and attachments
+        include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
@@ -109,10 +109,65 @@ export class MessageService {
       where: { chatId },
       take: limit,
       skip: offset,
-      include: { sender: true, attachments: true }, // Include sender and attachments
+      include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
       orderBy: {
         createdAt: 'desc',
       }
     });
+  }
+
+  async addReaction(messageId: string, userId: string, emoji: string) {
+    // Check if the user has any existing reaction on this message
+    const existingUserReaction = await this.prisma.messageReaction.findFirst({
+      where: {
+        messageId: messageId,
+        userId: userId,
+      },
+    });
+
+    // If an existing reaction is found and it's the same emoji, do nothing
+    if (existingUserReaction && existingUserReaction.emoji === emoji) {
+      return existingUserReaction;
+    }
+
+    // If an existing reaction is found and it's a different emoji, delete it
+    if (existingUserReaction) {
+      await this.prisma.messageReaction.delete({
+        where: {
+          id: existingUserReaction.id,
+        },
+      });
+    }
+
+    // Create the new reaction
+    return this.prisma.messageReaction.create({
+      data: {
+        messageId,
+        userId,
+        emoji,
+      },
+    });
+  }
+
+  async removeReaction(messageId: string, userId: string, emoji: string) {
+    try {
+      await this.prisma.messageReaction.delete({
+        where: {
+          messageId_userId_emoji: {
+            messageId,
+            userId,
+            emoji,
+          },
+        },
+      });
+      return true; // Indicate successful deletion
+    } catch (error) {
+      // Handle case where reaction does not exist
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+        console.warn(`Reaction not found for message ${messageId}, user ${userId}, emoji ${emoji}.`);
+        return false; // Indicate reaction not found
+      }
+      throw error; // Re-throw other errors
+    }
   }
 }

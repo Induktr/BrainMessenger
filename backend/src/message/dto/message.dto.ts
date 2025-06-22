@@ -26,6 +26,24 @@ export class AttachmentDto {
 }
 
 @ObjectType()
+export class MessageReactionDto {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  messageId: string;
+
+  @Field(() => ID)
+  userId: string;
+
+  @Field()
+  emoji: string;
+
+  @Field()
+  createdAt: Date;
+}
+
+@ObjectType()
 export class MessageDto {
 
   @Field(() => ID)
@@ -55,4 +73,7 @@ export class MessageDto {
 
   @Field(() => [String], { nullable: true })
   deletedForUserIds?: string[];
+
+  @Field(() => [MessageReactionDto], { nullable: true })
+  reactions?: MessageReactionDto[];
 }

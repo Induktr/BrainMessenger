@@ -5,7 +5,8 @@ import LazyLoading from '@/components/LazyLoading';
 export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useLazyQuery, useSubscription, useMutation, useApolloClient } from '@apollo/client';
-import { GET_CHATS, GET_MESSAGES, NEW_MESSAGE_SUBSCRIPTION, SEARCH_USERS_BY_USERNAME, FIND_OR_CREATE_PRIVATE_CHAT, UPDATE_MESSAGE, SEND_MESSAGE, DELETE_MESSAGES, DELETE_CHAT_HISTORY_FOR_USER, DELETE_CHAT_AND_REMOVE_USER, CREATE_CHANNEL, SUBSCRIBE_TO_CHANNEL, UNSUBSCRIBE_FROM_CHANNEL, DELETE_CHANNEL, SEARCH_CHANNELS } from '@/graphql/queries';
+import { GET_CHATS, GET_MESSAGES, SEARCH_USERS_BY_USERNAME, FIND_OR_CREATE_PRIVATE_CHAT, UPDATE_MESSAGE, SEND_MESSAGE, DELETE_MESSAGES, DELETE_CHAT_HISTORY_FOR_USER, DELETE_CHAT_AND_REMOVE_USER, CREATE_CHANNEL, SUBSCRIBE_TO_CHANNEL, UNSUBSCRIBE_FROM_CHANNEL, DELETE_CHANNEL, SEARCH_CHANNELS } from '@/graphql/queries';
+import { NEW_MESSAGE_SUBSCRIPTION, MESSAGE_REACTION_ADDED_OR_REMOVED_SUBSCRIPTION } from '@/graphql/subscriptions'; // Import subscriptions
 import Button from '@/components/Button';
 import { useRouter } from 'next/navigation';
 import SidebarMenu from '@/ui/SidebarMenu';
@@ -304,6 +305,52 @@ const ChatPage = () => {
           }
           return existingChats;
         });
+      }
+    },
+  });
+
+  useSubscription(MESSAGE_REACTION_ADDED_OR_REMOVED_SUBSCRIPTION, {
+    variables: { chatId: selectedChatIdRef.current },
+    skip: !selectedChatIdRef.current,
+    onData: ({ data }) => {
+      console.log('[ChatPage - Reaction Subscription onData] Received data:', data);
+      if (data && data.data && data.data.messageReactionAddedOrRemoved) {
+        const updatedMessage = data.data.messageReactionAddedOrRemoved;
+        console.log('[ChatPage - Reaction Subscription onData] Updated message with reactions:', updatedMessage);
+
+        setSelectedChatMessages(prevMessages => {
+          // Find the index of the message to update
+          const messageIndex = prevMessages.findIndex(msg => msg.id === updatedMessage.id);
+
+          if (messageIndex > -1) {
+            // Create a new array with the updated message
+            const newMessages = [...prevMessages];
+            newMessages[messageIndex] = updatedMessage;
+            return newMessages;
+          } else {
+            // If the message is not found (shouldn't happen for reaction updates on existing messages),
+            // you might want to refetch messages or handle this case appropriately.
+            console.warn('[ChatPage - Reaction Subscription onData] Received reaction update for a message not in current state:', updatedMessage.id);
+            // Optionally refetch messages:
+            // refetchMessages();
+            return prevMessages;
+          }
+        });
+
+        // Optionally update the cache for GET_MESSAGES query
+        client.cache.updateQuery(
+          { query: GET_MESSAGES, variables: { chatId: updatedMessage.chatId } },
+          (existingMessages) => {
+            if (existingMessages && existingMessages.getMessages) {
+              return {
+                getMessages: existingMessages.getMessages.map((msg: Message) =>
+                  msg.id === updatedMessage.id ? updatedMessage : msg
+                ),
+              };
+            }
+            return existingMessages;
+          }
+        );
       }
     },
   });
@@ -894,6 +941,7 @@ const ChatPage = () => {
                         onShowGlobalAudioControls={handleOpenGlobalAudioOptions} // Use the new prop name
                         isPoorConnection={isPoorConnection}
                         isRecentMessage={isRecentMessage}
+                        currentUserId={currentUser?.id} // Pass the current user's ID
                       />
                     );
                   })}
