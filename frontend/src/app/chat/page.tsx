@@ -737,7 +737,7 @@ const ChatPage = () => {
           <div className="chat-sidebar">
             <div className="chat-list relative">
               <NetworkStatusDropdown />
-              <div className="search-input-panel-container">
+              <div className="chat-messages-list">
                 <InputPanel
                   type="text"
                   placeholder="Search"
@@ -833,7 +833,7 @@ const ChatPage = () => {
               )}
             </div>
           </div>
-          <div className="chat-main-content">
+          <div className="chat-main-content chat-area-container">
             {selectedChatId && selectedChat ? (
               <>
                 <div className="chat-header">
@@ -942,7 +942,7 @@ const ChatPage = () => {
                 {showGlobalAudioOptions && <GlobalAudioControls />}
 
                 <div
-                  className="chat-messages"
+                  className="chat-messages-list"
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
@@ -953,7 +953,7 @@ const ChatPage = () => {
                       <LazyLoading className="chat-message-bubble other-user" />
                       <LazyLoading className="chat-message-bubble other-user" />
                       <LazyLoading className="chat-message-bubble other-user" />
-                    </>
+                    </> 
                   )}
                   {errorMessages && <p>Error loading messages: {errorMessages.message}</p>}
                   {selectedChatMessages.map((message, index) => {
@@ -979,17 +979,19 @@ const ChatPage = () => {
                   })}
                   <div ref={messagesEndRef} />
                 </div>
-                <ChatInput
-                  chatId={selectedChatId}
-                  editingMessage={editingMessage}
-                  setEditingMessage={setEditingMessage}
-                  onSendMessageOrUpdate={handleSendMessageOrUpdate}
-                  isChannel={selectedChat.type === 'CHANNEL'}
-                  isChannelOwner={selectedChat.type === 'CHANNEL' && selectedChat.channel?.owner.id === currentUser?.id}
-                  isSubscribedToChannel={selectedChat.type === 'CHANNEL' && selectedChat.participants.some((p: UserDto) => p.id === currentUser?.id)}
-                  onSubscribe={() => handleSubscribeToChannel(selectedChat.id)}
-                  onUnsubscribe={() => handleUnsubscribeFromChannel(selectedChat.id)}
-                />
+                <div className="chat-input-panel">
+                  <ChatInput
+                    chatId={selectedChatId}
+                    editingMessage={editingMessage}
+                    setEditingMessage={setEditingMessage}
+                    onSendMessageOrUpdate={handleSendMessageOrUpdate}
+                    isChannel={selectedChat.type === 'CHANNEL'}
+                    isChannelOwner={selectedChat.type === 'CHANNEL' && selectedChat.channel?.owner.id === currentUser?.id}
+                    isSubscribedToChannel={selectedChat.type === 'CHANNEL' && selectedChat.participants.some((p: UserDto) => p.id === currentUser?.id)}
+                    onSubscribe={() => handleSubscribeToChannel(selectedChat.id)}
+                    onUnsubscribe={() => handleUnsubscribeFromChannel(selectedChat.id)}
+                  />
+                </div>
               </>
             ) : (
               <div className="chat-welcome-message">
