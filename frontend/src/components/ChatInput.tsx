@@ -8,6 +8,7 @@ import Button from '@/components/Button';
 import Image from 'next/image'; // Import Image component
 import { icons } from '@/app/lib/constants'; // Import icons
 import AttachmentPreview from './AttachmentPreview'; // Import the new AttachmentPreview component
+import { isCodeSnippet } from '@/utils/codeDetector';
 
 interface ChatInputProps {
   chatId: string;
@@ -93,7 +94,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
       return; // Don't send empty messages or messages with no content and no files
     }
 
-    await onSendMessageOrUpdate(messageContent, attachedFiles);
+    let contentToSend = messageContent;
+    if (isCodeSnippet(messageContent)) {
+      contentToSend = '```\n' + messageContent + '\n```';
+    }
+    await onSendMessageOrUpdate(contentToSend, attachedFiles);
     setMessageContent(''); // Clear input after sending
     setEditingMessage(null); // Clear editing state
     setAttachedFiles([]); // Clear attached files after sending

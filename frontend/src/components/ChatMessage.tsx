@@ -10,6 +10,8 @@ import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation } from '@apollo/client';
 import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/graphql/mutations'; // Import mutations
 import LinkRenderer from './LinkRenderer'; // Import LinkRenderer
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { icons, SMILES } from '@/app/lib/constants'; // Import SMILES
 
 interface ChatMessageProps {
@@ -249,7 +251,17 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                   ))}
                 </div>
               )}
-              {message.content && message.content.trim() !== '' && <div className="chat-message-content"><LinkRenderer text={message.content} /></div>}
+                            {message.content && message.content.trim() !== '' && (
+                <div className="chat-message-content">
+                  {message.content.startsWith('```') && message.content.endsWith('```') ? (
+                    <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ borderRadius: '8px', margin: 0 }}>
+                      {message.content.slice(3, -3).trim()}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <LinkRenderer text={message.content} />
+                  )}
+                </div>
+              )}
             </>
           ) : (
             <LazyLoading className={`chat-message-bubble ${isCurrentUser ? 'current-user' : 'other-user'}`} />
