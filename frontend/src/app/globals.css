@@ -1,4 +1,98 @@
 /* General styles */
+
+/* Deep Work Mode Styles - Symmetric Animations */
+
+/* Base styles for elements to handle return animations via transition */
+.chat-sidebar {
+  /* This transition now handles ALL animated properties for a smooth return */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              opacity 0.4s ease-out, 
+              width 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              margin 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              padding 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chat-main-content {
+  /* Smoothly transition width and margin in both directions */
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Styles for ACTIVATING deep work mode (disappearing) */
+body.deep-work-active .chat-sidebar {
+  animation: enhanced-burn-and-glitch-out 1s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+
+body.deep-work-active .chat-main-content {
+  width: 100%;
+  margin-left: 0;
+  animation: screen-shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation-delay: 0.1s; /* Shake starts just after the sidebar starts moving */
+}
+
+@keyframes enhanced-burn-and-glitch-out {
+  0% {
+    transform: translateX(0) skewX(0);
+    opacity: 1;
+    filter: none;
+  }
+  15% { /* Stronger recoil */
+    transform: translateX(-30px) skewX(-5deg);
+  }
+  30% { /* Overshoot */
+    transform: translateX(15px) skewX(5deg);
+    opacity: 0.8;
+    filter: brightness(1.5);
+  }
+  60% { /* The glitch and burn */
+    transform: translateX(-40px) skewX(-3deg);
+    opacity: 0.6;
+    filter: brightness(2.5) saturate(0) contrast(1.5);
+  }
+  100% { /* Fly off and collapse */
+    transform: translateX(-150%);
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+}
+
+@keyframes screen-shake {
+  10%, 90% {
+    transform: translateX(-1px);
+  }
+  20%, 80% {
+    transform: translateX(2px);
+  }
+  30%, 50%, 70% {
+    transform: translateX(-3px);
+  }
+  40%, 60% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Add a global vignette overlay to focus the view */
+body.deep-work-active::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Let clicks go through */
+  background: radial-gradient(ellipse at center, 
+    rgba(26, 26, 26, 0) 90%, /* Center is transparent */
+    rgba(26, 26, 26, 0.7) 100% /* Edges are dark */
+  );
+  z-index: 9999; /* Ensure it's on top of everything */
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -44,6 +138,8 @@ svg {
 }
 
 /* Welcome Page Container */
+
+
 .welcome-container {
   display: flex;
   flex-direction: column;
@@ -780,7 +876,6 @@ svg {
 .chat-main-content {
   flex-grow: 1;
   display: flex;
-  color: #B0B0B0; /* Light grey text */
   font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
 }
 

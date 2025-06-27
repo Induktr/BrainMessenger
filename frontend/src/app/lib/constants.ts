@@ -11,6 +11,7 @@ export const icons = {
     clear: '/icons/clear.svg',
     closeModal: '/icons/closeModal.svg',
     download: '/icons/download.svg',
+    rotate: '/icons/rotate.svg',
     duplicate: '/icons/duplicate.svg',
     en: '/icons/en.svg',
     ua: '/icons/ua.svg',

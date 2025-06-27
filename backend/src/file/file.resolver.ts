@@ -23,6 +23,9 @@ const mapFileToDto = (file: any): FileDto | null => {
         email: file.uploader.email,
         username: file.uploader.username, // Include username field
         isVerified: file.uploader.isVerified, // Добавлено поле isVerified
+        twoFactorEnabled: file.uploader.twoFactorEnabled ?? null,
+        twoFactorMethod: file.uploader.twoFactorMethod ?? null,
+        recoveryEmail: file.uploader.recoveryEmail ?? null,
         avatarUrl: file.uploader.avatarUrl, // Include avatarUrl
         bio: file.uploader.bio, // Include bio field
         status: file.uploader.status, // Include status field

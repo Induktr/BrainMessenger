@@ -3,11 +3,13 @@ import { PrismaService } from '../prisma/prisma.service';
 // Import Prisma namespace and specific error type
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Logger } from '@nestjs/common';
 // Message type will be inferred from PrismaClient return types
 
 @Injectable()
 export class MessageService {
   constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(MessageService.name);
 
   async findOne(id: string) {
     return this.prisma.message.findUnique({
@@ -30,7 +32,7 @@ export class MessageService {
   }
 
   async create(data: Prisma.MessageCreateInput) {
-    console.log('[MessageService] create called with data:', data);
+    this.logger.log('[MessageService] create called with data:', data);
     return this.prisma.message.create({
       data,
       include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
@@ -57,7 +59,7 @@ export class MessageService {
       await this.prisma.message.delete({ where: { id } });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        console.warn(`Message with ID ${id} not found for deletion.`);
+        this.logger.warn(`Message with ID ${id} not found for deletion.`);
         return;
       }
       throw error; // Re-throw other errors
@@ -71,7 +73,7 @@ export class MessageService {
       });
     } catch (error) {
       // Handle errors, e.g., if some messages are not found
-      console.error('Error deleting many messages:', error);
+      this.logger.error('Error deleting many messages:', error);
       throw error;
     }
   }
@@ -164,7 +166,7 @@ export class MessageService {
     } catch (error) {
       // Handle case where reaction does not exist
       if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        console.warn(`Reaction not found for message ${messageId}, user ${userId}, emoji ${emoji}.`);
+        this.logger.warn(`Reaction not found for message ${messageId}, user ${userId}, emoji ${emoji}.`);
         return false; // Indicate reaction not found
       }
       throw error; // Re-throw other errors

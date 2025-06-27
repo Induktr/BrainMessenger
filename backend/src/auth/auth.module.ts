@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common'; // Import forwardRef
+import { Module, forwardRef, Logger } from '@nestjs/common'; // Import forwardRef and Logger
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
 import { UserModule } from '../user/user.module';
@@ -28,7 +28,7 @@ import { MailModule } from '../mail/mail.module';
      inject: [ConfigService],
    }),
  ],
-  providers: [AuthService, AuthResolver, JwtStrategy],
+  providers: [AuthService, AuthResolver, JwtStrategy, Logger], // Provide Logger
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

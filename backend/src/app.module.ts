@@ -1,6 +1,7 @@
-import { Module, forwardRef } from '@nestjs/common'; // Import forwardRef
+import { Module, forwardRef, Logger, UnauthorizedException } from '@nestjs/common'; // Import forwardRef and Logger
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +13,7 @@ import { MailModule } from './mail/mail.module';
 import { ConfigModule } from '@nestjs/config';
 import { WebrtcSignalingGateway } from './webrtc-signaling';
 import { PrismaModule } from './prisma/prisma.module';
+import { PrismaService } from './prisma/prisma.service';
 import { FileModule } from './file/file.module'; // Import FileModule
 import { CloudflareModule } from './cloudflare/cloudflare.module'; // Import CloudflareModule
 import { APP_GUARD } from '@nestjs/core'; // Import APP_GUARD
@@ -19,9 +21,12 @@ import { UpdateLastActiveGuard } from './common/guards/update-last-active.guard'
 import { CacheModule } from '@nestjs/cache-manager'; // Import CacheModule
 import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
-import { PubSub } from 'graphql-subscriptions'; // Keep PubSub for type
-import { RedisPubSub } from 'graphql-redis-subscriptions'; // Import RedisPubSub
-import Redis from 'ioredis'; // Import Redis constructor directly
+import { PubSubModule } from './pubsub/pubsub.module'; // Import PubSubModule
+import { LinkPreviewModule } from './link-preview/link-preview.module'; // Import LinkPreviewModule
+// Remove old PubSub related imports
+// import { PubSub } from 'graphql-subscriptions'; // Keep PubSub for type
+// import { RedisPubSub } from 'graphql-redis-subscriptions'; // Import RedisPubSub
+// import Redis from 'ioredis'; // Import Redis constructor directly
 import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
 
 @Module({
@@ -36,60 +41,96 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     }),
     GraphQLModule.forRootAsync({
       driver: ApolloDriver,
-      imports: [AuthModule, ConfigModule], // Import AuthModule and ConfigModule
-      inject: [JwtService, ConfigService], // Inject JwtService and ConfigService
-      useFactory: async (jwtService: JwtService, configService: ConfigService) => ({
+      imports: [AuthModule, ConfigModule, PrismaModule],
+      inject: [JwtService, ConfigService, PrismaService],
+      useFactory: async (
+        jwtService: JwtService,
+        configService: ConfigService,
+        prisma: PrismaService,
+      ) => ({
         autoSchemaFile: 'dist/schema.gql',
-        // formatError: (error) => {
-        //   // Safely log GraphQL errors, checking for 'locations' property
-        //   const errorDetails = {
-        //     message: error.message,
-        //     path: error.path,
-        //     extensions: error.extensions,
-        //     locations: (error as any).locations ? (error as any).locations : 'N/A' // Safely access locations
-        //   };
-        //   console.error('[GraphQL Error Formatter] Formatted error:', JSON.stringify(errorDetails, null, 2));
-        //   // Return the original error to the client for full details during development
-        //   // In production, you might want to mask sensitive details
-        //   return error;
-        // },
         subscriptions: {
           'graphql-ws': {
-            path: '/graphql', // Specify the WebSocket path
+            path: '/graphql',
             onConnect: async (context: any) => {
-              const { connectionParams, extra } = context;
-              // Extract token from connectionParams for WebSocket connections
+              const logger = new Logger('GraphQLModule-onConnect');
+              const { connectionParams } = context;
+              logger.log(`[onConnect] Received connectionParams: ${JSON.stringify(connectionParams)}`);
+
               const token = connectionParams?.Authorization?.split(' ')[1] || connectionParams?.authorization?.split(' ')[1];
 
-              console.log('[GraphQLModule - onConnect] Received connectionParams:', connectionParams);
-              console.log('[GraphQLModule - onConnect] Extracted token:', token ? token.substring(0, 10) + '...' : 'No token');
+              logger.log(`[onConnect] Extracted token: ${token ? 'Token found' : 'No token'}`);
 
               if (token) {
                 try {
                   const payload = jwtService.verify(token, {
                     secret: configService.get<string>('JWT_SECRET'),
                   });
-                  console.log('[GraphQLModule - onConnect] Token verified. Payload:', payload);
-                  // Attach the user payload and the raw token to the extra object, which will be available in context
-                  extra.user = payload;
-                  extra.token = token; // Attach the raw token
-                  return extra; // Return the extra object as the context
-                } catch (e) {
-                  console.error('[GraphQLModule - onConnect] WebSocket authentication error:', e.message);
-                  throw new Error('Unauthorized'); // Reject connection
+
+                  const user = await prisma.user.findUnique({
+                    where: { id: payload.sub },
+                  });
+
+                  if (!user) {
+                    logger.warn(
+                      `[onConnect] Authentication failed: User with ID ${payload.sub} not found.`,
+                    );
+                    throw new Error(
+                      'Authentication failed: Invalid token or user not found.',
+                    );
+                  }
+
+                  logger.log(
+                    `[onConnect] User ${user.email} authenticated. Creating request context.`,
+                  );
+                  // Return the full context object that the guard expects, now including the user.
+                  return { req: { user, context: { token } } };
+                } catch (error) {
+                  logger.error(
+                    `[onConnect] Token verification or user lookup failed: ${error.message}`,
+                  );
+                  throw new Error('Unauthorized: Invalid token or user.');
                 }
               }
-              console.warn('[GraphQLModule - onConnect] No token provided for WebSocket connection. Rejecting.');
-              throw new Error('Unauthorized'); // Reject connection if no token
+              logger.warn('[onConnect] No token provided for WebSocket connection. Rejecting.');
+              throw new Error('Unauthorized: No token provided');
             },
           },
         },
-        context: ({ req, connection }) => {
-          // For HTTP requests, req.user will be populated by Passport.js after JwtAuthGuard.
-          // For WebSocket connections, connection.context.user is populated by onConnect.
-          // We ensure both are available in the context.
-          return { req, connection };
+        // The context function is now simplified.
+        // For HTTP, it receives { req, res } and passes it on.
+        // For WebSockets, it receives the context object we returned from `onConnect`
+        context: ({ req, res, connection }) => {
+          // For WebSockets, the context is already populated by `onConnect`
+          if (connection) {
+            return { req: connection.context.req, res };
+          }
+          // For HTTP requests, just pass the request and response objects.
+          return { req, res };
         },
+        formatError: (error: GraphQLError) => {
+          const logger = new Logger('GraphQLFormatError');
+          const originalError = error.extensions?.originalError as any;
+
+          if (originalError instanceof UnauthorizedException) {
+            logger.warn(`[formatError] Caught UnauthorizedException: "${originalError.message}". Formatting for client.`);
+            const graphQLFormattedError: GraphQLFormattedError = {
+              message: originalError.message || 'Unauthorized',
+              locations: error.locations,
+              path: error.path,
+              extensions: {
+                code: 'UNAUTHENTICATED',
+                timestamp: new Date().toISOString(),
+              },
+            };
+            return graphQLFormattedError;
+          }
+
+          logger.error(`[formatError] Unhandled error: ${error.message}`);
+          return error;
+        },
+        playground: false, // Disable the old playground
+        // Instead, Apollo Server v4 uses the landing page which is enabled by default.
       }),
     }),
     CacheModule.registerAsync({
@@ -112,34 +153,41 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     MailModule,
     FileModule, // Add FileModule here
     CloudflareModule, // Add CloudflareModule here
+    PubSubModule, // Import the new PubSubModule
+    LinkPreviewModule, // Add LinkPreviewModule here
   ],
   controllers: [AppController],
   providers: [
     AppService,
     WebrtcSignalingGateway,
-    {
-      provide: PubSub,
-      useFactory: (configService: ConfigService) => {
-        const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
-        const redisOptions = {
-           retryStrategy: (times: number) => {
-             // reconnect after
-             return Math.min(times * 50, 2000);
-           },
-         };
-        console.log('[AppModule] Initializing RedisPubSub with URL:', redisUrl);
-        return new RedisPubSub({
-          publisher: new Redis(redisUrl, redisOptions), // Pass URL and options
-          subscriber: new Redis(redisUrl, redisOptions), // Pass URL and options
-        });
-      },
-      inject: [ConfigService], // Inject ConfigService to get Redis config
-    },
+    Logger, // Provide Logger globally
+    // Remove the old PubSub provider factory
+    // {
+    //   provide: PubSub,
+    //   useFactory: (configService: ConfigService) => {
+    //     const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
+    //     const redisOptions = {
+    //        retryStrategy: (times: number) => {
+    //          // reconnect after
+    //          return Math.min(times * 50, 2000);
+    //        },
+    //      };
+    //     const logger = new Logger('AppModule'); // Initialize logger for AppModule
+    //     logger.log(`Initializing RedisPubSub with URL: ${redisUrl}`); // Replaced console.log
+    //     return new RedisPubSub({
+    //       publisher: new Redis(redisUrl, redisOptions), // Pass URL and options
+    //       subscriber: new Redis(redisUrl, redisOptions), // Pass URL and options
+    //     });
+    //   },
+    //   inject: [ConfigService], // Inject ConfigService to get Redis config
+    // },
     // { // Temporarily disabled for debugging 'Forbidden resource'
     //   provide: APP_GUARD,
     //   useClass: UpdateLastActiveGuard,
     // },
   ],
-  exports: [PubSub], // Export PubSub to make it available to other modules
+  // Remove PubSub from exports as it's now exported by PubSubModule
+  // exports: [PubSub], // Export PubSub to make it available to other modules
+  exports: [Logger], // Export Logger to make it available to other modules
 })
 export class AppModule {}

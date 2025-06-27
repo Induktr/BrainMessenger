@@ -34,7 +34,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
 }) => {
   const [messageContent, setMessageContent] = useState('');
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dragCounter = useRef(0);
+  const isTouchDevice =
+    typeof window !== 'undefined' && 'ontouchstart' in window;
 
   const [sendMessage, { loading, error }] = useMutation(SEND_MESSAGE);
 
@@ -46,11 +50,49 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [editingMessage]);
 
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    if (isTouchDevice) return;
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current++;
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    if (isTouchDevice) return;
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current--;
+    if (dragCounter.current === 0) {
+      setIsDragging(false);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    if (isTouchDevice) return;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    if (isTouchDevice) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    dragCounter.current = 0;
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const newFiles = Array.from(e.dataTransfer.files);
+      setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles]);
+    }
+  };
+
   const handleSendOrUpdate = async () => {
     if (messageContent.trim() === '' && attachedFiles.length === 0) {
       return; // Don't send empty messages or messages with no content and no files
     }
- 
+
     await onSendMessageOrUpdate(messageContent, attachedFiles);
     setMessageContent(''); // Clear input after sending
     setEditingMessage(null); // Clear editing state
@@ -76,7 +118,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   const handleRemoveFile = (indexToRemove: number) => {
-    setAttachedFiles((prevFiles) => prevFiles.filter((_, index) => index !== indexToRemove));
+    setAttachedFiles((prevFiles) =>
+      prevFiles.filter((_, index) => index !== indexToRemove)
+    );
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -88,9 +132,24 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const isInputDisabled = isChannel && !isChannelOwner;
 
   return (
-    <div className="chat-input-wrapper">
+    <div
+      className="chat-input-wrapper"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {isDragging && (
+        <div className="drag-drop-overlay">
+          <Image src={icons.uploadImage} alt="Upload File" width={64} height={64} />
+          <span>Release to upload</span>
+        </div>
+      )}
       {attachedFiles.length > 0 && (
-        <AttachmentPreview files={attachedFiles} onRemoveFile={handleRemoveFile} />
+        <AttachmentPreview
+          files={attachedFiles}
+          onRemoveFile={handleRemoveFile}
+        />
       )}
       <div className="chat-input-container">
         {isChannel && !isChannelOwner ? (
@@ -105,7 +164,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
           )
         ) : (
           <>
-            <Button className="folder-button" onClick={handleFolderClick} disabled={isInputDisabled}>
+            <Button
+              className="folder-button"
+              onClick={handleFolderClick}
+              disabled={isInputDisabled}
+            >
               <Image src={icons.folder} alt="Folder" width={24} height={24} />
             </Button>
             <input
@@ -126,8 +189,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
               onPaste={handlePaste}
               disabled={loading || isInputDisabled}
             />
-            <Button onClick={handleSendOrUpdate} disabled={loading || isInputDisabled} className="send-button">
-              <Image src={editingMessage ? icons.checkmark : icons.sendButton} alt={editingMessage ? "Confirm Edit" : "Send"} width={24} height={24} />
+            <Button
+              onClick={handleSendOrUpdate}
+              disabled={loading || isInputDisabled}
+              className="send-button"
+            >
+              <Image
+                src={editingMessage ? icons.checkmark : icons.sendButton}
+                alt={editingMessage ? 'Confirm Edit' : 'Send'}
+                width={24}
+                height={24}
+              />
             </Button>
           </>
         )}

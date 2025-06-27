@@ -1,6 +1,8 @@
 import React from 'react';
-import Input from '@/components/Input'
+import Input from '@/components/Input';
 import Image from 'next/image';
+
+import Button from './Button';
 
 
 interface HeaderProps {
@@ -10,6 +12,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ title, status, rightIcons }) => {
+
+
   return (
     <header className="app-header">
       {/* Left Section: Menu Icon Placeholder */}
@@ -33,6 +37,7 @@ const Header: React.FC<HeaderProps> = ({ title, status, rightIcons }) => {
 
       {/* Right Section: Action Icons Placeholder */}
       <div className="header-right-section">
+
         {rightIcons && rightIcons.map((icon, index) => (
           <Image src="" key={index} alt={icon.name} className="header-icon" onClick={icon.onClick} />
         ))}

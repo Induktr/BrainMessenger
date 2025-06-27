@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { Logger } from '@nestjs/common';
  
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
@@ -16,6 +17,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       errorFormat: 'pretty', // Optional: pretty print errors
     });
   }
+  private readonly logger = new Logger(PrismaService.name);
   private logPoolStats() {
     const pool = (this as any)._engine?.client?.pool;
     if (pool) {
@@ -27,7 +29,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       
       // Warning if approaching connection limit (80% of max)
       if (pool.totalCount / pool.options.max > 0.8) {
-        console.warn('WARNING: Approaching database connection limit!');
+        this.logger.warn('WARNING: Approaching database connection limit!');
       }
     }
   }

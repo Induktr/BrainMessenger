@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, UseGuards, Inject, forwardRef } from '@nestjs/common'; // Import UseGuards, Inject, forwardRef
+import { BadRequestException, UseGuards, Inject, forwardRef, Logger } from '@nestjs/common'; // Import UseGuards, Inject, forwardRef
 import { LoginResponse } from './dto/login-response';
 import { RegisterInput } from './dto/register-input';
 import { LoginInput } from './dto/login-input';
@@ -19,6 +19,7 @@ export class AuthResolver {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly prisma: PrismaService,
+    private readonly logger: Logger = new Logger(AuthResolver.name), // Initialize logger
   ) {}
 
   @Query(() => UserDto) // Define a new query
@@ -52,7 +53,7 @@ export class AuthResolver {
       throw new Error('Invalid credentials');
     }
     const loginResult = await this.authService.login(user);
-    console.log('AuthResolver - login mutation returning:', loginResult); // Added log
+    this.logger.log('AuthResolver - login mutation returning:', loginResult); // Added log
     // Explicitly construct LoginResponse to ensure correct serialization
     return {
       access_token: loginResult.access_token,
@@ -76,16 +77,16 @@ export class AuthResolver {
     // Updated regex to match 8 characters from the allowed set
     const allowedCharactersRegex = /^[0-9a-zA-Z!@#$%^&*()]{8}$/;
     if (!allowedCharactersRegex.test(normalizedCode)) {
-      console.error(`Invalid code format received: ${code}`);
+      this.logger.error(`Invalid code format received: ${code}`);
       throw new BadRequestException('The code must contain 8 characters (digits, letters, !@#$%^&*())'); // Updated error message
     }
-    console.log(`AuthResolver: verifyEmail called with email: ${email}, normalized code: ${normalizedCode}`);
+    this.logger.log(`AuthResolver: verifyEmail called with email: ${email}, normalized code: ${normalizedCode}`);
     try {
       await this.authService.verifyConfirmationCode(email, code); // Call the service method
-      console.log(`AuthResolver: verifyEmail successful for email: ${email}`);
+      this.logger.log(`AuthResolver: verifyEmail successful for email: ${email}`);
       return true; // Return true on success
     } catch (error) {
-      console.error(`AuthResolver: Error calling authService.verifyConfirmationCode for email ${email}:`, error);
+      this.logger.error(`AuthResolver: Error calling authService.verifyConfirmationCode for email ${email}:`, error);
       // Перебрасываем ошибку дальше, чтобы NestJS обработал ее стандартно
       throw error;
     }
@@ -99,14 +100,14 @@ export class AuthResolver {
     if (!user) {
       // It's often better not to reveal if an email exists for security reasons
       // Log the attempt but return true to the client
-      console.warn(`Attempt to resend verification code for non-existent email: ${email}`);
+      this.logger.warn(`Attempt to resend verification code for non-existent email: ${email}`);
       return true; // Or throw a generic error if preferred
       // throw new Error('User not found.'); // Less secure
     }
 
     // Check if user is already verified
     if (user.isVerified) {
-      console.warn(`Attempt to resend verification code for already verified email: ${email}`);
+      this.logger.warn(`Attempt to resend verification code for already verified email: ${email}`);
       // Optionally throw an error or just return true
       // throw new Error('Email is already verified.');
       return true; // Indicate success even if no email is sent
@@ -131,12 +132,12 @@ export class AuthResolver {
       // Send the new code via email (asynchronously)
       this.mailService.sendVerificationEmail(email, code).catch(err => {
         // Log error but don't fail the mutation for the client
-        console.error(`Failed to resend verification email to ${email}: ${err.message}`, err.stack);
+        this.logger.error(`Failed to resend verification email to ${email}: ${err.message}`, err.stack);
       });
 
       return true; // Indicate success
     } catch (error) {
-      console.error(`Error updating user or sending email during resendVerificationCode for ${email}:`, error);
+      this.logger.error(`Error updating user or sending email during resendVerificationCode for ${email}:`, error);
       // Throw a generic error to the client
       throw new Error('Failed to resend verification code. Please try again later.');
     }

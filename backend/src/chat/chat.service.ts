@@ -6,14 +6,48 @@ import { MessageService } from '../message/message.service';
 import { CloudflareR2Service } from '../cloudflare/cloudflare-r2.service'; // Import CloudflareR2Service
 import { FileUpload } from 'graphql-upload-ts'; // Import FileUpload
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique filenames
+import { Logger } from '@nestjs/common';
+
+const userSelect = {
+  id: true,
+  email: true,
+  name: true,
+  username: true,
+  isVerified: true,
+  twoFactorEnabled: true,
+  twoFactorMethod: true,
+  recoveryEmail: true,
+  avatarUrl: true,
+  bio: true,
+  roles: true,
+  lastActiveAt: true,
+};
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name); // Logger for debugging
   constructor(
     private prisma: PrismaService,
     private messageService: MessageService,
     private cloudflareR2Service: CloudflareR2Service, // Inject CloudflareR2Service
   ) {}
+
+  async findChatById(id: string) {
+    return this.prisma.chat.findUnique({
+      where: { id },
+      include: {
+        participants: {
+          include: {
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
   async findOne(id: string) {
     return this.prisma.chat.findUnique({
@@ -21,12 +55,12 @@ export class ChatService {
       include: {
         participants: {
           include: {
-            user: true, // Include user details for participants
+            user: { select: userSelect }, // Include user details for participants
           },
         },
         messages: {
           include: {
-            sender: true, // Include sender details for messages
+            sender: { select: userSelect }, // Include sender details for messages
             attachments: true, // Include attachments
           },
           orderBy: {
@@ -36,7 +70,7 @@ export class ChatService {
         channel: { // Explicitly include nested relations for channel
           include: {
             chat: true,
-            owner: true,
+            owner: { select: userSelect },
           },
         },
       },
@@ -44,9 +78,9 @@ export class ChatService {
   }
 
   async findAllForUser(userId: string) {
-    console.log('[ChatService] findAllForUser called for userId:', userId);
-    // Find all chat participants for the given user
-    const chatParticipants = await this.prisma.chatParticipant.findMany({
+    this.logger.log('[ChatService] findAllForUser called for userId:', userId);
+    // Find all chat participants for the given user and return the rich objects
+    return this.prisma.chatParticipant.findMany({
       where: { userId },
       include: {
         chat: {
@@ -57,142 +91,52 @@ export class ChatService {
               },
               take: 1, // Get the last message
               include: {
-                sender: true, // Include sender of the last message
-                attachments: true, // Include attachments for the last message
+                sender: { select: userSelect },
+                attachments: true,
               },
             },
-            participants: { // Include participants to determine chat name for private chats
+            participants: {
               include: {
-                user: true,
+                user: { select: userSelect },
               },
             },
-            channel: { // Explicitly include nested relations for channel
+            channel: {
               include: {
-                chat: true,
-                owner: true,
+                chat: true, // This will be the simple Chat model
+                owner: { select: userSelect },
               },
             },
           },
         },
-        lastReadMessage: true, // Include the last read message for unread count calculation
+        lastReadMessage: true,
       },
-    });
-
-    // Process the results to match the ChatDto structure
-    return chatParticipants.map(cp => {
-      const chat = cp.chat;
-      const lastMessage = chat.messages[0];
-      const unreadCount = lastMessage ?
-        chat.messages.filter(msg => msg.createdAt > (cp.lastReadMessage?.createdAt || new Date(0))).length : 0; // Basic unread count
-
-      // Determine chat name for private chats or channels
-      let chatName: string | null = chat.name;
-      if (chat.type === ChatType.PRIVATE) {
-        chatName = chat.participants.find(p => p.userId !== userId)?.user.name || 'Private Chat';
-      } else if (chat.type === ChatType.CHANNEL && chat.channel) {
-        chatName = chat.channel.chat.name; // Use channel's name
-      }
-
-      return {
-        id: chat.id,
-        name: chatName,
-        type: chat.type,
-        lastMessageSnippet: lastMessage?.content || null,
-        lastMessageTimestamp: lastMessage?.createdAt.toISOString() || null, // Convert Date to string
-        unreadCount: unreadCount,
-       messages: [], // Include empty messages array for ChatDto compatibility
-       participants: chat.participants.map(p => { // Include participants
-         return {
-           id: p.user.id,
-           email: p.user.email,
-           name: p.user.name,
-           username: p.user.username,
-           isVerified: p.user.isVerified,
-           avatarUrl: p.user.avatarUrl,
-           bio: p.user.bio,
-           status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-           roles: p.user.roles || [], // Ensure roles are included
-         };
-       }),
-       channel: chat.channel ? { // Include channel data if it exists
-         id: chat.channel.id,
-         chatId: chat.channel.chatId,
-         chat: {
-           id: chat.channel.chat.id,
-           name: chat.channel.chat.name,
-           type: chat.channel.chat.type,
-           lastMessageSnippet: null,
-           lastMessageTimestamp: null,
-           unreadCount: 0,
-           messages: [],
-           participants: [],
-         },
-         ownerId: chat.channel.ownerId,
-         owner: {
-           id: chat.channel.owner.id,
-           email: chat.channel.owner.email,
-           name: chat.channel.owner.name,
-           username: chat.channel.owner.username,
-           isVerified: chat.channel.owner.isVerified,
-           avatarUrl: chat.channel.owner.avatarUrl,
-           bio: chat.channel.owner.bio,
-           status: chat.channel.owner.lastActiveAt ? (new Date(chat.channel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-           roles: chat.channel.owner.roles || [],
-         },
-         description: chat.channel.description,
-         subscribersCount: chat.channel.subscribersCount,
-         isPublic: chat.channel.isPublic,
-       } : undefined,
-      };
     });
   }
 
-  async create(type: ChatType, name?: string, participantIds: string[] = []) { // Use ChatType enum
-    const newChat = await this.prisma.chat.create({
+  async create(type: ChatType, name?: string, participantIds: string[] = []) {
+    const uniqueParticipantIds = [...new Set(participantIds)];
+
+    return this.prisma.chat.create({
       data: {
         name: name,
         type: type,
         participants: {
-          create: participantIds.map(userId => ({
+          create: uniqueParticipantIds.map(userId => ({
             userId: userId,
-            role: ChatParticipantRole.MEMBER, // Default role for new chat participants
+            role: ChatParticipantRole.MEMBER,
           })),
         },
       },
       include: {
         participants: {
           include: {
-            user: true,
+            user: { select: userSelect },
           },
         },
-        messages: {
-           include: {
-             sender: true,
-             attachments: true, // Include attachments for messages in new chat
-           }
-        },
+        messages: false, // A new chat has no messages
+        channel: true, // Include channel in case this is a channel chat
       },
     });
-     // Map the created chat to ChatDto structure
-    return {
-        id: newChat.id,
-        name: newChat.name,
-        type: newChat.type,
-        lastMessageSnippet: null, // New chat has no messages yet
-        lastMessageTimestamp: null,
-        unreadCount: 0,
-        messages: [],
-        participants: newChat.participants.map(p => ({ // Include participants
-          id: p.user.id,
-          email: p.user.email,
-          name: p.user.name,
-          username: p.user.username,
-          isVerified: p.user.isVerified,
-          avatarUrl: p.user.avatarUrl,
-          bio: p.user.bio,
-          status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-        })),
-    };
   }
 
   async findOrCreatePrivateChat(user1Id: string, user2Id: string) {
@@ -214,13 +158,14 @@ export class ChatService {
         include: {
           participants: {
             include: {
-              user: true,
+              user: { select: userSelect },
             },
           },
           messages: {
             include: {
-              sender: true,
+              sender: { select: userSelect },
               attachments: true,
+              reactions: true, // Include reactions
             },
             orderBy: {
               createdAt: 'asc',
@@ -289,12 +234,12 @@ export class ChatService {
           include: {
             participants: {
               include: {
-                user: true,
+                user: { select: userSelect },
               },
             },
             messages: {
               include: {
-                sender: true,
+                sender: { select: userSelect },
                 attachments: true,
               },
             },
@@ -346,12 +291,12 @@ export class ChatService {
       include: {
         participants: { // Include participants to check count
           include: { // Include user details for participants
-            user: true,
+            user: { select: userSelect },
           },
         },
         messages: { // Include messages for the ChatDto mapping
            include: {
-             sender: true,
+             sender: { select: userSelect },
              attachments: true, // Include attachments for messages
            },
            orderBy: {
@@ -438,7 +383,7 @@ export class ChatService {
 
   // MessageService needs to be updated to include 'sender' for this to work correctly with MessageDto
   async sendMessage(chatId: string, content: string, senderId: string, files?: FileUpload[]) {
-    console.log('[ChatService] sendMessage called for chatId:', chatId, 'senderId:', senderId, 'files:', files?.length);
+    this.logger.log('[ChatService] sendMessage called for chatId:', chatId, 'senderId:', senderId, 'files:', files?.length);
 
     const attachmentsData: Prisma.AttachmentCreateWithoutMessageInput[] = [];
 
@@ -466,10 +411,10 @@ export class ChatService {
               size: buffer.length,
             });
           } else {
-            console.warn(`[ChatService] Uploaded file ${filename} to R2, but no Location URL was returned.`);
+            this.logger.warn(`[ChatService] Uploaded file ${filename} to R2, but no Location URL was returned.`);
           }
         } catch (uploadError) {
-          console.error(`[ChatService] Failed to upload file ${filename} to R2:`, uploadError);
+          this.logger.error(`[ChatService] Failed to upload file ${filename} to R2:`, uploadError);
           // Log and continue, meaning the message might be sent without this attachment
         }
       }
@@ -485,7 +430,7 @@ export class ChatService {
     };
 
     const newMessage = await this.messageService.create(messageData);
-    console.log('[ChatService] sendMessage created message with ID:', newMessage.id);
+    this.logger.log('[ChatService] sendMessage created message with ID:', newMessage.id);
     return newMessage;
   }
 
@@ -548,92 +493,37 @@ export class ChatService {
     }
   }
   async createChannel(ownerId: string, name: string, description?: string) {
-    // Margulan Seysembay's System First: Create chat and channel in a transaction for atomicity.
-    // Coin22's Risk Awareness: Ensure data consistency.
-    return this.prisma.$transaction(async (prisma) => {
-      const newChat = await prisma.chat.create({
-        data: {
-          name: name,
-          type: ChatType.CHANNEL,
-          participants: {
-            create: {
-              userId: ownerId,
-              role: ChatParticipantRole.OWNER, // Owner of the channel
-            },
+    return this.prisma.chat.create({
+      data: {
+        name: name,
+        type: ChatType.CHANNEL,
+        participants: {
+          create: {
+            userId: ownerId,
+            role: ChatParticipantRole.OWNER,
           },
         },
-        include: {
-          participants: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
-
-      const newChannel = await prisma.channel.create({
-        data: {
-          chatId: newChat.id,
-          ownerId: ownerId,
-          description: description,
-          subscribersCount: 0, // Initial subscriber count
-        },
-        include: {
-          chat: true,
-          owner: true,
-        },
-      });
-
-      // Map the created channel to ChatDto structure
-      return {
-        id: newChat.id,
-        name: newChat.name,
-        type: newChat.type,
-        lastMessageSnippet: null,
-        lastMessageTimestamp: null,
-        unreadCount: 0,
-        messages: [],
-        participants: newChat.participants.map(p => ({
-          id: p.user.id,
-          email: p.user.email,
-          name: p.user.name,
-          username: p.user.username,
-          isVerified: p.user.isVerified,
-          avatarUrl: p.user.avatarUrl,
-          bio: p.user.bio,
-          status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-          roles: p.user.roles || [],
-        })),
         channel: {
-          id: newChannel.id,
-          chatId: newChannel.chatId,
-          chat: {
-            id: newChannel.chat.id,
-            name: newChannel.chat.name,
-            type: newChannel.chat.type,
-            lastMessageSnippet: null,
-            lastMessageTimestamp: null,
-            unreadCount: 0,
-            messages: [],
-            participants: [], // Participants will be fetched with the main chat query
+          create: {
+            ownerId: ownerId,
+            description: description,
+            subscribersCount: 1, // Start with the owner as a subscriber
           },
-          ownerId: newChannel.ownerId,
-          owner: {
-            id: newChannel.owner.id,
-            email: newChannel.owner.email,
-            name: newChannel.owner.name,
-            username: newChannel.owner.username,
-            isVerified: newChannel.owner.isVerified,
-            avatarUrl: newChannel.owner.avatarUrl,
-            bio: newChannel.owner.bio,
-            status: newChannel.owner.lastActiveAt ? (new Date(newChannel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-            roles: newChannel.owner.roles || [],
-          },
-          description: newChannel.description,
-          subscribersCount: newChannel.subscribersCount,
-          isPublic: newChannel.isPublic,
         },
-      };
+      },
+      include: {
+        participants: {
+          include: {
+            user: { select: userSelect },
+          },
+        },
+        channel: {
+          include: {
+            owner: { select: userSelect },
+            chat: true, // Use the simple BaseChatDto relation
+          },
+        },
+      },
     });
   }
 
@@ -652,7 +542,7 @@ export class ChatService {
       // Already subscribed, return existing chat participant
       return this.prisma.chatParticipant.findUnique({
         where: { id: existingParticipant.id },
-        include: { chat: true, user: true },
+        include: { chat: true, user: { select: userSelect } },
       });
     }
 
@@ -670,7 +560,7 @@ export class ChatService {
               channel: true,
             },
           },
-          user: true,
+          user: { select: userSelect },
         },
       });
 
@@ -763,13 +653,13 @@ export class ChatService {
       include: {
         channel: {
           include: {
-            owner: true,
+            owner: { select: userSelect },
             chat: true, // Include the chat relation within the channel
           },
         },
         participants: {
           include: {
-            user: true,
+            user: { select: userSelect },
           },
         },
       },
@@ -794,7 +684,7 @@ export class ChatService {
       data: { isPublic: isPublic },
       include: { // Include necessary relations for the ChannelDto return type
         chat: true,
-        owner: true,
+        owner: { select: userSelect },
       },
     });
 
@@ -806,17 +696,7 @@ export class ChatService {
       description: updatedChannel.description,
       subscribersCount: updatedChannel.subscribersCount,
       isPublic: updatedChannel.isPublic,
-      owner: {
-        id: updatedChannel.owner.id,
-        email: updatedChannel.owner.email,
-        name: updatedChannel.owner.name,
-        username: updatedChannel.owner.username,
-        isVerified: updatedChannel.owner.isVerified,
-        avatarUrl: updatedChannel.owner.avatarUrl,
-        bio: updatedChannel.owner.bio,
-        status: updatedChannel.owner.lastActiveAt ? (new Date(updatedChannel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-        roles: updatedChannel.owner.roles || [],
-      },
+      owner: updatedChannel.owner,
       chat: {
         id: updatedChannel.chat.id,
         name: updatedChannel.chat.name,

@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { graphqlUploadExpress } from 'graphql-upload-ts'; // Import middleware
 import * as Sentry from '@sentry/node';
+import { LOG_LEVELS } from '@nestjs/common';
 // import { SentryInterceptor } from '@sentry/nestjs'; // Temporarily commented out
 // import { GraphQLErrorFilter } from './common/filters/graphql-error.filter'; // Assuming this path - Temporarily commented out
 
@@ -16,7 +17,7 @@ async function bootstrap() {
   });
 
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn'], // Only log errors and warnings
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'], // Enable all log levels for debugging
   });
 
   // app.useGlobalInterceptors(new SentryInterceptor()); // Temporarily commented out
@@ -50,5 +51,5 @@ async function bootstrap() {
       const port = process.env.PORT ?? 4000;
       await app.listen(port, '0.0.0.0'); // Listen on all interfaces
       // console.log(`Nest application is listening on port ${port}`); // Removed console.log
-    }
-  bootstrap();
+}
+bootstrap();

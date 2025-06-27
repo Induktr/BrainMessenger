@@ -9,6 +9,7 @@ import AudioPlayer from './AudioPlayer'; // Import AudioPlayer
 import LazyLoading from '@/components/LazyLoading'; // Import LazyLoading
 import { useMutation } from '@apollo/client';
 import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/graphql/mutations'; // Import mutations
+import LinkRenderer from './LinkRenderer'; // Import LinkRenderer
 import { icons, SMILES } from '@/app/lib/constants'; // Import SMILES
 
 interface ChatMessageProps {
@@ -47,9 +48,10 @@ interface ChatMessageProps {
   isPoorConnection: boolean; // New prop for network status
   isRecentMessage: boolean; // New prop to indicate if it's one of the last 10 messages
   currentUserId?: string | null; // Add currentUserId prop
+  onImageClick?: (imageUrl: string) => void; // Prop to handle image click for gallery
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage, currentUserId }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [selectedProfileUserId, setSelectedProfileUserId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string; showEmojis?: boolean } | null>(null);
@@ -177,7 +179,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
     <>
       <div
         id={`message-${message.id}`} // Add ID for selection logic
-        className={`chat-message-container ${isCurrentUser ? 'current-user' : 'other-user'} ${isSelected ? 'selected-message' : ''}`}
+        className={`chat-message-container ${isCurrentUser ? 'current-user' : 'other-user'} ${isSelected ? '' : ''}`}
         onContextMenu={handleContextMenu}
         ref={messageRef} // Attach ref to the message container
       >
@@ -206,9 +208,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
               {message.attachments && message.attachments.length > 0 && (
                 <div className="chat-attachments-wrapper">
                   {message.attachments.map((attachment, attachmentIndex) => (
-                    <div key={attachment.id} className={`chat-attachment-item-display ${isPoorConnection ? 'grayscale opacity-50' : ''}`}>
+                    <div key={attachment.id} className={`chat-attachment-item-display ${isPoorConnection ? 'grayscale oacity-50' : ''}`}>
                       {attachment.mimetype.startsWith('image/') && (
-                        <img src={attachment.url} alt={attachment.filename} className={`chat-attachment-image ${isPoorConnection ? 'blur-sm' : ''}`} />
+                                                <img 
+                          src={attachment.url} 
+                          alt={attachment.filename} 
+                          className={`chat-attachment-image ${isPoorConnection ? 'blur-sm' : ''}`}
+                          onClick={() => onImageClick?.(attachment.url)}
+                          style={{ cursor: 'pointer' }}
+                        />
                       )}
                       {attachment.mimetype.startsWith('audio/') && (
                         <AudioPlayer
@@ -241,7 +249,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                   ))}
                 </div>
               )}
-              {message.content && message.content.trim() !== '' && <p className="chat-message-content">{message.content}</p>}
+              {message.content && message.content.trim() !== '' && <div className="chat-message-content"><LinkRenderer text={message.content} /></div>}
             </>
           ) : (
             <LazyLoading className={`chat-message-bubble ${isCurrentUser ? 'current-user' : 'other-user'}`} />

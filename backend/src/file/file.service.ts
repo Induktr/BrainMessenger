@@ -3,7 +3,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CloudflareR2Service } from '../cloudflare/cloudflare-r2.service';
 import { Prisma } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { Readable } from 'stream'; // Import Readable stream type
+import { Readable } from 'stream'; // Import Readable stream 
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class FileService {
@@ -11,6 +12,7 @@ export class FileService {
     private prisma: PrismaService,
     private cloudflareR2Service: CloudflareR2Service,
   ) {}
+  private readonly logger = new Logger(FileService.name);
 
   // Using 'any' for FileUpload and return type
   async uploadFile(fileUpload: any /* FileUpload */, uploaderId: string): Promise<any> {
@@ -56,7 +58,7 @@ export class FileService {
       return savedFile;
 
     } catch (error) {
-      console.error('Error uploading file:', error);
+      this.logger.error('Error uploading file:', error);
       throw new InternalServerErrorException('Failed to process file upload.');
     }
   }
@@ -106,12 +108,12 @@ export class FileService {
           r2Key = urlParts.pathname.substring(`/${bucketName}/`.length);
       }
     } catch (e) {
-       console.error(`Error parsing file URL for R2 key: ${file.url}`, e);
+       this.logger.error(`Error parsing file URL for R2 key: ${file.url}`, e);
        throw new InternalServerErrorException('Could not determine file key for deletion.');
     }
 
     if (!r2Key) {
-        console.error(`Could not extract R2 key from URL: ${file.url}`);
+        this.logger.error(`Could not extract R2 key from URL: ${file.url}`);
         throw new InternalServerErrorException('Could not process file deletion.');
     }
 
@@ -123,7 +125,7 @@ export class FileService {
       await this.prisma.file.delete({ where: { id: fileId } });
       return true;
     } catch (error) {
-      console.error(`Error deleting file ${fileId} (key: ${r2Key}):`, error);
+      this.logger.error(`Error deleting file ${fileId} (key: ${r2Key}):`, error);
       throw new InternalServerErrorException('Failed to delete file.');
     }
   }

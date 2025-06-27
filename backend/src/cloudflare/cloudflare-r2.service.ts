@@ -3,11 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class CloudflareR2Service {
   private readonly s3Client: S3Client;
   public readonly bucketName: string;
+  private readonly logger = new Logger(CloudflareR2Service.name);
 
   constructor(private configService: ConfigService) {
     const endpoint = this.configService.get<string>('R2_ENDPOINT');
@@ -53,11 +55,11 @@ export class CloudflareR2Service {
       // Construct the public URL using the R2_PUBLIC_URL environment variable
       const r2PublicUrl = this.configService.get<string>('R2_PUBLIC_URL');
       if (!r2PublicUrl) {
-        console.warn('R2_PUBLIC_URL not found in config. Public avatar URL may be incorrect.');
+        this.logger.warn('R2_PUBLIC_URL not found in config. Public avatar URL may be incorrect.');
         // Fallback to the previous method if R2_PUBLIC_URL is not set
         const accountId = this.configService.get<string>('R2_ACCOUNT_ID');
         if (!accountId) {
-           console.warn('R2_ACCOUNT_ID also not found. Public avatar URL construction failed.');
+           this.logger.warn('R2_ACCOUNT_ID also not found. Public avatar URL construction failed.');
            // Fallback to endpoint if both R2_PUBLIC_URL and R2_ACCOUNT_ID are missing
            const endpoint = this.configService.get<string>('R2_ENDPOINT');
            const publicUrl = `${endpoint}/${this.bucketName}/${key}`;
@@ -75,15 +77,15 @@ export class CloudflareR2Service {
       return { ETag: output.ETag, Location: publicUrl };
 
     } catch (error) {
-      console.error('CloudflareR2Service - Detailed error during uploadFile:', error);
+      this.logger.error('CloudflareR2Service - Detailed error during uploadFile:', error);
       if (error instanceof Error) {
-        console.error('CloudflareR2Service - Error name:', error.name);
-        console.error('CloudflareR2Service - Error message:', error.message);
+        this.logger.error('CloudflareR2Service - Error name:', error.name);
+        this.logger.error('CloudflareR2Service - Error message:', error.message);
         if ('code' in error) {
-          console.error('CloudflareR2Service - Error code:', (error as any).code);
+          this.logger.error('CloudflareR2Service - Error code:', (error as any).code);
         }
         if ('stack' in error) {
-          console.error('CloudflareR2Service - Error stack:', error.stack);
+          this.logger.error('CloudflareR2Service - Error stack:', error.stack);
         }
       }
       throw new InternalServerErrorException('Failed to upload file to R2.');
@@ -104,7 +106,7 @@ export class CloudflareR2Service {
     try {
       return await this.s3Client.send(command);
     } catch (error) {
-      console.error(`Error deleting file ${key} from R2:`, error);
+      this.logger.error(`Error deleting file ${key} from R2:`, error);
       throw new InternalServerErrorException('Failed to delete file from R2.');
     }
   }
@@ -123,7 +125,7 @@ export class CloudflareR2Service {
      try {
        return await getSignedUrl(this.s3Client, command, { expiresIn });
      } catch (error) {
-       console.error(`Error generating signed URL for ${key}:`, error);
+       this.logger.error(`Error generating signed URL for ${key}:`, error);
        throw new InternalServerErrorException('Failed to generate signed URL.');
      }
   }
@@ -143,7 +145,7 @@ export class CloudflareR2Service {
       const output = await this.s3Client.send(command);
       return output;
     } catch (error) {
-      console.error(`Error getting object metadata for ${key} from R2:`, error);
+      this.logger.error(`Error getting object metadata for ${key} from R2:`, error);
       throw new InternalServerErrorException('Failed to get file metadata from R2.');
     }
   }

@@ -3,7 +3,7 @@
 import LazyLoading from '@/components/LazyLoading';
 
 export const dynamic = 'force-dynamic';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useQuery, useLazyQuery, useSubscription, useMutation, useApolloClient } from '@apollo/client';
 import { GET_CHATS, GET_MESSAGES, SEARCH_USERS_BY_USERNAME, FIND_OR_CREATE_PRIVATE_CHAT, UPDATE_MESSAGE, SEND_MESSAGE, DELETE_MESSAGES, DELETE_CHAT_HISTORY_FOR_USER, DELETE_CHAT_AND_REMOVE_USER, CREATE_CHANNEL, SUBSCRIBE_TO_CHANNEL, UNSUBSCRIBE_FROM_CHANNEL, DELETE_CHANNEL, SEARCH_CHANNELS } from '@/graphql/queries';
 import { NEW_MESSAGE_SUBSCRIPTION, MESSAGE_REACTION_ADDED_OR_REMOVED_SUBSCRIPTION } from '@/graphql/subscriptions'; // Import subscriptions
@@ -30,6 +30,8 @@ import { playNotificationSound } from '@/utils/audioUtils';
 import CreateChannelModal from '@/components/CreateChannelModal';
 import ChannelDetailsModal from '@/components/ChannelDetailsModal';
 import { GlobalAudioProvider, useGlobalAudio } from '@/context/GlobalAudioContext';
+import { useImageGallery } from '@/context/ImageGalleryContext';
+import { useDeepWork } from '@/context/DeepWorkContext';
 
 interface Message {
   id: string;
@@ -119,13 +121,24 @@ const ChatPage = () => {
   const [showChannelDetailsModal, setShowChannelDetailsModal] = useState(false); // New state for channel details modal
   const [channelSearchResults, setChannelSearchResults] = useState<Chat[]>([]); // New state for channel search results
 
-  const { isOnline, isPoorConnection } = useNetworkStatus();
-  const { setChatId: setGlobalChatId } = useChatId();
-  const { showNotification } = useNotification();
+  const { openGallery } = useImageGallery();
+  const { isDeepWorkActive, toggleDeepWork } = useDeepWork();
 
-  const client = useApolloClient();
+  const imageSlides = useMemo(() => {
+    return selectedChatMessages.flatMap(message => {
+      const description = message.content?.trim() ? message.content.trim() : undefined;
+      return (
+        message.attachments
+          ?.filter(attachment => attachment.mimetype.startsWith('image/'))
+          .map(attachment => ({
+            src: attachment.url,
+            alt: attachment.filename,
+            description: description,
+          })) || []
+      );
+    });
+  }, [selectedChatMessages]);
 
-  const { loading: loadingChats, error: errorChats, data: dataChats, refetch: refetchChats } = useQuery(GET_CHATS);
   const [getMessages, { loading: loadingMessages, error: errorMessages, data: dataMessages, refetch: refetchMessages }] = useLazyQuery(GET_MESSAGES, {
     fetchPolicy: 'cache-first',
   });
@@ -159,8 +172,6 @@ const ChatPage = () => {
             return existingMessages;
           }
         );
-
-        refetchChats();
       }
     },
   });
@@ -176,6 +187,16 @@ const ChatPage = () => {
 
   const { user: currentUser, queryLoading: authLoading, isInitializing } = useAuth();
   const router = useRouter();
+
+  const { isOnline, isPoorConnection } = useNetworkStatus();
+  const { setChatId: setGlobalChatId } = useChatId();
+  const { showNotification } = useNotification();
+
+  const client = useApolloClient();
+
+  const { loading: loadingChats, error: errorChats, data: dataChats, refetch: refetchChats } = useQuery(GET_CHATS, {
+    skip: isInitializing || !currentUser, // Skip fetching chats if initializing or no user is logged in
+  });
 
   const handleCreateChannel = async (channelName: string, channelDescription: string) => {
     try {
@@ -215,12 +236,15 @@ const ChatPage = () => {
   useEffect(() => {
     selectedChatIdRef.current = selectedChatId;
     setGlobalChatId(selectedChatId);
-    if (selectedChatId) {
+    // Only fetch messages if a chat is selected AND the user is authenticated
+    if (selectedChatId && currentUser) {
+      console.log(`[ChatPage] Fetching messages for chat ${selectedChatId} for user ${currentUser.id}`);
       getMessages({ variables: { chatId: selectedChatId } });
-    } else {
+    } else if (!selectedChatId) {
       setSelectedChatMessages([]);
     }
-  }, [selectedChatId, getMessages, setGlobalChatId]);
+    // Add currentUser to the dependency array
+  }, [selectedChatId, getMessages, setGlobalChatId, currentUser]);
 
   useEffect(() => {
     if (dataMessages && dataMessages.getMessages) {
@@ -250,7 +274,7 @@ const ChatPage = () => {
 
   useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
     variables: { chatId: selectedChatIdRef.current },
-    skip: !selectedChatIdRef.current,
+    skip: !selectedChatIdRef.current || !currentUser, // Also skip if user is not authenticated
     onData: ({ data }) => {
       console.log('[ChatPage - Subscription onData] Received data:', data);
       if (data && data.data && data.data.newMessage) {
@@ -275,9 +299,12 @@ const ChatPage = () => {
           console.log('[ChatPage - Subscription onData] Message for current chat. Updating local state directly.');
           console.log(`[ChatPage - Subscription onData] incomingMessage.chatId: ${incomingMessage.chatId}, selectedChatIdRef.current: ${selectedChatIdRef.current}`);
           setSelectedChatMessages(prevMessages => {
-            return [...prevMessages, incomingMessage];
+            const messageExists = prevMessages.some(msg => msg.id === incomingMessage.id);
+            if (!messageExists) {
+              return [...prevMessages, incomingMessage];
+            }
+            return prevMessages;
           });
-          refetchMessages();
         } else {
           console.log('[ChatPage - Subscription onData] Message for a different chat. Updating cache and triggering notification.');
           if (incomingMessage.sender.id !== currentUser?.id) {
@@ -307,11 +334,11 @@ const ChatPage = () => {
         });
       }
     },
-  });
+  }); // Corrected useSubscription call
 
   useSubscription(MESSAGE_REACTION_ADDED_OR_REMOVED_SUBSCRIPTION, {
     variables: { chatId: selectedChatIdRef.current },
-    skip: !selectedChatIdRef.current,
+    skip: !selectedChatIdRef.current || !currentUser, // Also skip if user is not authenticated
     onData: ({ data }) => {
       console.log('[ChatPage - Reaction Subscription onData] Received data:', data);
       if (data && data.data && data.data.messageReactionAddedOrRemoved) {
@@ -338,22 +365,25 @@ const ChatPage = () => {
         });
 
         // Optionally update the cache for GET_MESSAGES query
-        client.cache.updateQuery(
-          { query: GET_MESSAGES, variables: { chatId: updatedMessage.chatId } },
-          (existingMessages) => {
-            if (existingMessages && existingMessages.getMessages) {
-              return {
-                getMessages: existingMessages.getMessages.map((msg: Message) =>
-                  msg.id === updatedMessage.id ? updatedMessage : msg
-                ),
-              };
-            }
-            return existingMessages;
-          }
-        );
+        client.cache.modify({
+          id: client.cache.identify(updatedMessage), // Get the cache ID for the message
+          fields: {
+            reactions(existingReactions = []) {
+              // Return the new reactions array from the updatedMessage
+              return updatedMessage.reactions;
+            },
+          },
+        });
       }
     },
-  });
+  }); // Corrected useSubscription call
+
+  const handleImageClick = (imageUrl: string) => {
+    const imageIndex = imageSlides.findIndex(slide => slide.src === imageUrl);
+    if (imageIndex !== -1) {
+      openGallery(imageSlides, imageIndex);
+    }
+  };
 
   const [updateMessage] = useMutation(UPDATE_MESSAGE, {
     onCompleted: (data) => {
@@ -869,8 +899,9 @@ const ChatPage = () => {
                             x={contextMenuX}
                             y={contextMenuY}
                             options={[
+                              { label: isDeepWorkActive ? 'Exit Focus Mode' : 'Enter Focus Mode', onClick: toggleDeepWork },
                               { label: 'Delete chat history', onClick: handleDeleteChatHistory },
-                              { label: 'Delete user', onClick: handleDeleteUser },
+                              { label: 'Delete user and chat', onClick: handleDeleteUser },
                             ]}
                             onClose={() => setShowChatOptionsContextMenu(false)}
                           />
@@ -941,7 +972,8 @@ const ChatPage = () => {
                         onShowGlobalAudioControls={handleOpenGlobalAudioOptions} // Use the new prop name
                         isPoorConnection={isPoorConnection}
                         isRecentMessage={isRecentMessage}
-                        currentUserId={currentUser?.id} // Pass the current user's ID
+                        currentUserId={currentUser?.id}
+                        onImageClick={handleImageClick}
                       />
                     );
                   })}

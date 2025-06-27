@@ -15,7 +15,6 @@ import * as Sentry from "@sentry/nextjs"; // Import Sentry
 // Configure the HTTP link for queries and mutations
 // Determine the backend URL dynamically based on the frontend's location
 const isBrowser = typeof window !== 'undefined';
-const backendPort = 4000; // Your backend port
 
 const getBackendUrl = (protocol: string) => {
   // Prioritize NEXT_PUBLIC_API_URL for Vercel/production
@@ -80,6 +79,8 @@ const createNewWsClient = () => {
         Authorization: currentToken ? `Bearer ${currentToken}` : '',
       };
     },
+    // Defer the connection until the first subscription is made
+    lazy: true,
   });
   client.on('connected', () => console.log('[ApolloClient] WebSocket connected!'));
   client.on('closed', (event: any) => { // Revert to 'any' type for compatibility
@@ -161,6 +162,12 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
       console.error('ErrorLink - GraphQL Error:', JSON.stringify(errorDetails, null, 2)); // Log the full GraphQL error with more detail
       Sentry.captureException(err); // Capture GraphQL error in Sentry
       // Handle authentication errors
+      if (err.extensions?.code === 'UNAUTHENTICATED') {
+        console.warn('ErrorLink - UNAUTHENTICATED error detected. Attempting token refresh.');
+      } else {
+        // Added logging for other GraphQL errors
+        console.error('ErrorLink - Received GraphQL error without UNAUTHENTICATED code:', JSON.stringify(err, null, 2));
+      }
       if (err.extensions?.code === 'UNAUTHENTICATED') {
         console.warn('ErrorLink - UNAUTHENTICATED error detected. Attempting token refresh.');
 
@@ -269,14 +276,14 @@ const createSplitLink = (wsLink: GraphQLWsLink | null) => {
       );
     },
     wsLink,
-    // Route file upload mutations (UploadAvatar and SendMessage) to uploadLink, others to httpLink
-    split(({ operationName }) => operationName === 'UploadAvatar' || operationName === 'SendMessage', uploadLink, httpLink),
-  ) : httpLink; // Use only httpLink on the server or if wsLink is not defined
+    // Route all requests to uploadLink
+    uploadLink,
+  ) : uploadLink; // Use only uploadLink on the server or if wsLink is not defined
 };
 
 let splitLink = createSplitLink(currentWsLink);
 
-// Chain the links: errorLink -> authLink -> splitLink
+// ...
 let link = from(
   [
     errorLink, // Handle errors first
@@ -301,7 +308,7 @@ const client = new ApolloClient({
 
 // Function to update the access token and re-initialize WebSocket connection
 export const setAccessTokenForApollo = (token: string | null) => {
-  console.log('[ApolloClient] setAccessTokenForApollo called. New token:', token ? 'Present' : 'Missing');
+  console.log('[ApolloClient] setAccessTokenForApollo called. New token:', token ? `Present (first 10 chars: ${token.substring(0, 10)}...)` : 'Missing');
   tokenRef.currentAccessToken = token;
 
   if (isBrowser) {
@@ -313,9 +320,11 @@ export const setAccessTokenForApollo = (token: string | null) => {
 
     // Create a new WebSocket client with the updated token, only if token is present
     if (token) {
+      console.log('[ApolloClient] Re-initializing WebSocket client with new token.');
       wsClientRef = createNewWsClient();
       currentWsLink = new GraphQLWsLink(wsClientRef);
     } else {
+      console.log('[ApolloClient] Clearing WebSocket client (no token).');
       wsClientRef = null;
       currentWsLink = null;
     }
@@ -324,7 +333,13 @@ export const setAccessTokenForApollo = (token: string | null) => {
     splitLink = createSplitLink(currentWsLink);
     link = from([
       errorLink,
-      authLink,
+      new ApolloLink((operation, forward) => {
+        if (operation.operationName === 'verifyEmail') {
+          console.log('[ApolloClient] Bypassing AuthLink for verifyEmail operation during link update.');
+          return forward(operation);
+        }
+        return authLink.request(operation, forward);
+      }),
       splitLink,
     ]);
     client.setLink(link); // Update the client's link

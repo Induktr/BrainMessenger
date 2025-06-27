@@ -90,7 +90,9 @@ export const SEND_MESSAGE = gql`
       sender {
         id
         name
-        avatarUrl # Add avatarUrl to sender
+        avatarUrl
+        username
+        bio
       }
       # Add fields for attached files if they are returned by the backend
       # For example:
@@ -104,29 +106,6 @@ export const SEND_MESSAGE = gql`
   }
 `;
 
-export const NEW_MESSAGE_SUBSCRIPTION = gql`
-  subscription NewMessage($chatId: ID!) {
-    newMessage(chatId: $chatId) {
-      id
-      chatId
-      content
-      createdAt
-      sender {
-        id
-        name
-        avatarUrl
-        username
-        bio
-      }
-      attachments {
-        id
-        url
-        filename
-        mimetype
-      }
-    }
-  }
-`;
 
 export const REGISTER_USER = gql`
   mutation RegisterUser($email: String!, $password: String!, $name: String!, $username: String) {
@@ -134,8 +113,10 @@ export const REGISTER_USER = gql`
       id
       email
       name
-      username # Include username in the response
+      username
       isVerified
+      avatarUrl
+      bio
     }
   }
 `;
@@ -273,6 +254,14 @@ export const UPDATE_USER_PROFILE = gql`
 export const SEND_VERIFICATION_EMAIL = gql`
   mutation SendVerificationEmail($email: String!) {
     resendVerificationCode(email: $email)
+  }
+`;
+
+export const UPDATE_LAST_ACTIVE_MUTATION = gql`
+  mutation UpdateLastActive {
+    updateLastActive {
+      id
+    }
   }
 `;
 

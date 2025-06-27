@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { ChatDto } from './chat.dto';
+import { BaseChatDto } from './base-chat.dto';
 import { UserDto } from '../../user/dto/user.dto'; // Assuming UserDto exists
 
 @ObjectType()
@@ -10,8 +10,8 @@ export class ChannelDto {
   @Field(() => String)
   chatId: string;
 
-  @Field(() => ChatDto)
-  chat: ChatDto;
+  @Field(() => BaseChatDto)
+  chat: BaseChatDto;
 
   @Field(() => String)
   ownerId: string;

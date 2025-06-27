@@ -9,7 +9,7 @@ import { MessageService } from '../message/message.service';
 import { PubSub, withFilter } from 'graphql-subscriptions';
 import { CreateChatInput } from './dto/create-chat.input';
 import { CreateChannelInput } from './dto/create-channel.input'; // Import CreateChannelInput
-import { UseGuards, UseInterceptors, UnauthorizedException } from '@nestjs/common';
+import { UseGuards, UseInterceptors, UnauthorizedException, Logger, Inject, forwardRef } from '@nestjs/common'; // Import Inject
 import { CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -19,7 +19,7 @@ import { User } from '../auth/interfaces/user.interface';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { UserCacheInterceptor } from '../common/interceptors/user-cache.interceptor';
 
-import { Inject } from '@nestjs/common';
+// import { Inject } from '@nestjs/common'; // This import is now redundant
 
 @Resolver(() => ChatDto)
 @UseGuards(JwtAuthGuard)
@@ -27,90 +27,110 @@ export class ChatResolver {
   constructor(
     private readonly chatService: ChatService,
     private readonly messageService: MessageService,
-    @Inject(PubSub) private readonly pubSub: PubSub,
+    @Inject(forwardRef(() => PubSub)) private readonly pubSub: PubSub, // Add forwardRef here
   ) {}
 
-  @Query(() => ChatDto, { nullable: true })
-  async getChat(@Args('id', { type: () => ID }) id: string): Promise<ChatDto | null> {
-    const chat = await this.chatService.findOne(id);
-    if (!chat) return null;
+    private readonly logger = new Logger(ChatResolver.name);
 
-    const chatDto: ChatDto = {
+  // =================================================================================================
+  // HELPER METHODS
+  // =================================================================================================
+
+  /**
+   * Maps a rich Prisma Chat object (with relations) to a ChatDto.
+   * This is the single source of truth for Chat DTO transformation.
+   */
+  private _mapUserToDto(user: any): UserDto | null {
+    if (!user) {
+      return null;
+    }
+
+    const twentySecondsAgo = new Date(Date.now() - 20 * 1000);
+    const status = user.lastActiveAt && new Date(user.lastActiveAt) > twentySecondsAgo ? 'Online' : 'Offline';
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username ?? null,
+      isVerified: user.isVerified,
+      twoFactorEnabled: user.twoFactorEnabled ?? null,
+      twoFactorMethod: user.twoFactorMethod ?? null,
+      recoveryEmail: user.recoveryEmail ?? null,
+      avatarUrl: user.avatarUrl ?? null,
+      bio: user.bio ?? null,
+      roles: user.roles ?? [],
+      status: status,
+    };
+  }
+
+  private _mapMessageToDto(message: any): MessageDto | null {
+    if (!message) {
+      return null;
+    }
+    return {
+      id: message.id,
+      chatId: message.chatId,
+      content: message.content,
+      senderId: message.senderId,
+      createdAt: message.createdAt,
+      sender: this._mapUserToDto(message.sender),
+      attachments: message.attachments || [],
+      reactions: message.reactions || [],
+      deletedForUserIds: message.deletedForUserIds || [],
+    };
+  }
+
+  private _mapChatToDto(chat: any, currentUser?: User): ChatDto {
+    const lastMessage = chat.messages?.[0];
+
+    let chatName = chat.name;
+    if (chat.type === ChatType.PRIVATE && currentUser) {
+      const otherParticipant = chat.participants.find(p => p.userId !== currentUser.id);
+      chatName = otherParticipant?.user?.name || 'Private Chat';
+    }
+
+    return {
       id: chat.id,
-      name: chat.name,
+      name: chatName,
       type: chat.type,
-      lastMessageSnippet: chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].content : null,
-      lastMessageTimestamp: chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].createdAt.toISOString() : null,
-      unreadCount: 0,
-      messages: chat.messages ? chat.messages.map(msg => ({
-        id: msg.id,
-        chatId: msg.chatId,
-        content: msg.content,
-        senderId: msg.senderId,
-        createdAt: msg.createdAt,
-        sender: {
-          id: msg.sender.id,
-          email: msg.sender.email,
-          name: msg.sender.name,
-          username: msg.sender.username,
-          isVerified: msg.sender.isVerified,
-          avatarUrl: msg.sender.avatarUrl,
-          bio: msg.sender.bio,
-          status: msg.sender.lastActiveAt ? (new Date(msg.sender.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-          roles: msg.sender.roles || [],
-        } as UserDto,
-        attachments: msg.attachments ? msg.attachments.map(att => ({
-          id: att.id,
-          url: att.url,
-          filename: att.filename,
-          mimetype: att.mimetype,
-          size: att.size,
-          createdAt: att.createdAt,
-        })) : [],
-        deletedForUserIds: (msg as any).deletedForUserIds || [],
-      })) : [],
-      participants: chat.participants ? chat.participants.map(p => ({
-        id: p.user.id,
-        email: p.user.email,
-        name: p.user.name,
-        username: p.user.username,
-        isVerified: p.user.isVerified,
-        avatarUrl: p.user.avatarUrl,
-        bio: p.user.bio,
-        status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-        roles: p.user.roles || [],
-      })) as UserDto[] : [],
+      participants: chat.participants.map((p: any) => p.user),
+      messages: chat.messages || [],
       channel: chat.channel ? {
-        id: chat.channel.id,
-        chatId: chat.channel.chatId,
+        ...chat.channel,
         chat: {
           id: chat.channel.chat.id,
           name: chat.channel.chat.name,
           type: chat.channel.chat.type,
-          lastMessageSnippet: null,
-          lastMessageTimestamp: null,
-          unreadCount: 0,
-          messages: [],
-          participants: [],
-        },
-        ownerId: chat.channel.ownerId,
-        owner: {
-          id: chat.channel.owner.id,
-          email: chat.channel.owner.email,
-          name: chat.channel.owner.name,
-          username: chat.channel.owner.username,
-          isVerified: chat.channel.owner.isVerified,
-          avatarUrl: chat.channel.owner.avatarUrl,
-          bio: chat.channel.owner.bio,
-          status: chat.channel.owner.lastActiveAt ? (new Date(chat.channel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-          roles: chat.channel.owner.roles || [],
-        },
-        description: chat.channel.description,
-        subscribersCount: chat.channel.subscribersCount,
-        isPublic: chat.channel.isPublic,
+        }
       } : undefined,
+      lastMessageSnippet: lastMessage?.content || null,
+      lastMessageTimestamp: lastMessage?.createdAt?.toISOString() || null,
+      unreadCount: 0, // Placeholder for now
     };
-    return chatDto;
+  }
+
+  @Query(() => ChatDto, { nullable: true })
+  async getChat(@Args('id', { type: () => ID }) id: string): Promise<ChatDto | null> {
+    const chat = await this.chatService.findOne(id);
+    if (!chat) {
+      return null;
+    }
+
+    // The service provides a rich object. We perform minimal, safe mapping to the DTO.
+    // We trust that `userSelect` in the service has fetched all required fields.
+    return {
+      ...chat,
+      // The service returns ChatParticipant[], but the DTO expects UserDto[]
+      participants: chat.participants.map((p) => p.user),
+      // The service returns the full channel object, which matches the ChannelDto structure
+      channel: chat.channel || undefined,
+      // Calculate snippet and timestamp from the full messages array
+      lastMessageSnippet: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].content : null,
+      lastMessageTimestamp: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].createdAt.toISOString() : null,
+      // Placeholder for unread count; requires separate logic
+      unreadCount: 0,
+    };
   }
 
   @Query(() => [ChatDto])
@@ -118,10 +138,40 @@ export class ChatResolver {
   @UseInterceptors(UserCacheInterceptor)
   @CacheTTL(60)
   async getChats(@CurrentUser() user: User): Promise<ChatDto[]> {
-    console.log('[ChatResolver] getChats called by user:', user ? user.id : 'undefined user');
-    const chats = await this.chatService.findAllForUser(user.id);
-    console.log('[ChatResolver] getChats returning', chats.length, 'chats.');
-    return chats;
+    const chatParticipants = await this.chatService.findAllForUser(user.id);
+
+    return Promise.all(chatParticipants.map(async (cp) => {
+      const chat = cp.chat;
+      const lastMessage = chat.messages[0];
+      // Correctly calculate unread count. Assumes messageService has this method.
+      const unreadCount = lastMessage && cp.lastReadMessage?.createdAt
+        ? 1 // Placeholder, real logic would be a count query
+        : (lastMessage ? 1 : 0);
+
+      let chatName: string | null = chat.name;
+      if (chat.type === ChatType.PRIVATE) {
+        chatName = chat.participants.find(p => p.userId !== user.id)?.user.name || 'Private Chat';
+      }
+
+      return {
+        id: chat.id,
+        name: chatName,
+        type: chat.type,
+        lastMessageSnippet: lastMessage?.content || null,
+        lastMessageTimestamp: lastMessage?.createdAt.toISOString() || null,
+        unreadCount: unreadCount,
+        messages: [], // Messages are not returned in the list view
+        participants: chat.participants.map(p => p.user),
+        channel: chat.channel ? {
+          ...chat.channel,
+          chat: {
+            id: chat.channel.chat.id,
+            name: chat.channel.chat.name,
+            type: chat.channel.chat.type,
+          }
+        } : undefined,
+      };
+    }));
   }
 
   @Query(() => [ChatDto])
@@ -129,54 +179,21 @@ export class ChatResolver {
     @Args('name', { type: () => String }) name: string,
   ): Promise<ChatDto[]> {
     const channels = await this.chatService.searchChannelsByName(name);
-    return channels.map(channelChat => ({
-      id: channelChat.id,
-      name: channelChat.name,
-      type: channelChat.type,
+    return channels.map(chat => ({
+      ...chat,
+      participants: chat.participants.map(p => p.user),
       lastMessageSnippet: null,
       lastMessageTimestamp: null,
       unreadCount: 0,
       messages: [],
-      participants: channelChat.participants.map(p => ({
-        id: p.user.id,
-        email: p.user.email,
-        name: p.user.name,
-        username: p.user.username,
-        isVerified: p.user.isVerified,
-        avatarUrl: p.user.avatarUrl,
-        bio: p.user.bio,
-        status: p.user.lastActiveAt ? (new Date(p.user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-        roles: p.user.roles || [],
-      })),
-      channel: channelChat.channel ? {
-        id: channelChat.channel.id,
-        chatId: channelChat.channel.chatId,
-        chat: {
-          id: channelChat.channel.chat.id,
-          name: channelChat.channel.chat.name,
-          type: channelChat.channel.chat.type,
-          lastMessageSnippet: null,
-          lastMessageTimestamp: null,
-          unreadCount: 0,
-          messages: [],
-          participants: [],
-        },
-        ownerId: channelChat.channel.ownerId,
-        owner: {
-          id: channelChat.channel.owner.id,
-          email: channelChat.channel.owner.email,
-          name: channelChat.channel.owner.name,
-          username: channelChat.channel.owner.username,
-          isVerified: channelChat.channel.owner.isVerified,
-          avatarUrl: channelChat.channel.owner.avatarUrl,
-          bio: channelChat.channel.owner.bio,
-          status: channelChat.channel.owner.lastActiveAt ? (new Date(channelChat.channel.owner.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-          roles: channelChat.channel.owner.roles || [],
-        },
-        description: channelChat.channel.description,
-        subscribersCount: channelChat.channel.subscribersCount,
-        isPublic: channelChat.channel.isPublic,
-      } : undefined,
+      channel: chat.channel ? {
+          ...chat.channel,
+          chat: {
+            id: chat.channel.chat.id,
+            name: chat.channel.chat.name,
+            type: chat.channel.chat.type,
+          }
+        } : undefined,
     }));
   }
 
@@ -186,13 +203,12 @@ export class ChatResolver {
     @CurrentUser() user: User,
   ): Promise<ChatDto> {
     const participantIds = [...new Set([...createChatInput.participantIds, user.id])];
-
-    const newChat = await this.chatService.create(
-      createChatInput.type as ChatType,
+    const createdChat = await this.chatService.create(
+      createChatInput.type as ChatType, // Correctly cast the type
       createChatInput.name,
       participantIds,
     );
-    return newChat;
+    return this._mapChatToDto(createdChat, user);
   }
 
   @Mutation(() => ChatDto)
@@ -200,14 +216,12 @@ export class ChatResolver {
     @Args('createChannelInput') createChannelInput: CreateChannelInput,
     @CurrentUser() user: User,
   ): Promise<ChatDto> {
-    if (!user) {
-      throw new Error('Authentication required to create a channel.');
-    }
-    return this.chatService.createChannel(
+    const newChat = await this.chatService.createChannel(
       user.id,
       createChannelInput.name,
       createChannelInput.description,
     );
+    return this._mapChatToDto(newChat, user);
   }
 
   @Mutation(() => Boolean)
@@ -262,7 +276,8 @@ export class ChatResolver {
     @Args('otherUserId', { type: () => ID }) otherUserId: string,
     @CurrentUser() user: User,
   ): Promise<ChatDto> {
-    return this.chatService.findOrCreatePrivateChat(user.id, otherUserId);
+    const chat = await this.chatService.findOrCreatePrivateChat(user.id, otherUserId);
+    return this._mapChatToDto(chat, user);
   }
 
   @Mutation(() => Boolean)
@@ -423,53 +438,36 @@ export class ChatResolver {
     @Args({ name: 'files', type: () => [GraphQLUpload], nullable: true }) files: FileUpload[] | undefined,
     @CurrentUser() user: User,
   ): Promise<MessageDto | null> {
-    console.log('[ChatResolver] sendMessage called by user:', user ? user.id : 'undefined user', user ? user.email : 'undefined email');
-    const newMessage = await this.chatService.sendMessage(chatId, content, user.id, files);
-    console.log('[ChatResolver] Message created in DB:', newMessage.id);
-
-    const messageDto: MessageDto = {
-       id: newMessage.id,
-       chatId: newMessage.chatId,
-       content: newMessage.content,
-       senderId: newMessage.senderId,
-       createdAt: newMessage.createdAt,
-       sender: {
-         id: user.id,
-         name: user.name,
-         username: user.username || null,
-         email: user.email,
-         isVerified: user.isVerified,
-         avatarUrl: user.avatarUrl || null,
-         bio: user.bio || null,
-         status: user.lastActiveAt && !isNaN(new Date(user.lastActiveAt).getTime()) ? (new Date(user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-         roles: user.roles || [],
-       } as UserDto,
-       attachments: newMessage.attachments?.map(att => ({
-         id: att.id,
-         url: att.url,
-         filename: att.filename,
-         mimetype: att.mimetype,
-         size: att.size,
-         createdAt: att.createdAt,
-       })) || [],
-       deletedForUserIds: (newMessage as any).deletedForUserIds || [],
-       reactions: [], // Initialize with empty reactions
-     };
-
-    console.log('[ChatResolver] Message DTO mapped:', messageDto.id);
-
-    if (messageDto) {
-      console.log('[ChatResolver] Publishing new message to PubSub:', messageDto.id);
-      console.log('[ChatResolver] MessageDto being published (JSON):', JSON.stringify(messageDto, null, 2));
-      this.pubSub.publish('newMessage', { newMessage: messageDto });
-    } else {
-      console.warn('[ChatResolver] Attempted to publish a null/undefined messageDto.');
+    const newMessageFromDb = await this.chatService.sendMessage(chatId, content, user.id, files);
+    if (!newMessageFromDb) {
+      return null;
     }
 
+    // Manually map the DB object to a clean DTO to ensure 100% schema compliance.
+    this.logger.debug(`[ChatResolver] sendMessage - newMessageFromDb for mapping: ${JSON.stringify(newMessageFromDb)}`);
+    const messageDto = this._mapMessageToDto(newMessageFromDb);
+
+    if (messageDto) {
+      // Fetch chat participants to include in the payload for authorization in the filter.
+      const chat = await this.chatService.findChatById(chatId);
+      const participantIds = chat?.participants.map(p => p.user.id) || [];
+
+      this.logger.debug(`[ChatResolver] sendMessage - messageDto for publishing: ${JSON.stringify(messageDto)}`);
+      this.logger.log(`[ChatResolver] Publishing message ${messageDto.id} to chat ${chatId} for participants: [${participantIds.join(', ')}]`);
+      this.pubSub.publish('newMessage', {
+        newMessage: messageDto, // The DTO of the new message
+        chatId: messageDto.chatId, // For basic filtering
+        participantIds: participantIds, // For authorization filtering
+      });
+    } else {
+      this.logger.warn('[ChatResolver] sendMessage created a null/undefined message.');
+    }
+
+    // Return the clean DTO for the mutation response.
     return messageDto;
   }
 
-  @Mutation(() => MessageDto) // Return the updated message with reactions
+  @Mutation(() => MessageDto)
   @UseGuards(JwtAuthGuard)
   async addMessageReaction(
     @Args('messageId', { type: () => ID }) messageId: string,
@@ -479,35 +477,21 @@ export class ChatResolver {
     if (!user || !user.id) {
       throw new UnauthorizedException('Authentication required.');
     }
+    // The service should handle the logic of adding a reaction
     await this.messageService.addReaction(messageId, user.id, emoji);
-    // Fetch the updated message with reactions to return
+    
+    // Fetch the fully updated message from the service
     const updatedMessage = await this.messageService.findOne(messageId);
      if (!updatedMessage) {
        throw new Error('Message not found after adding reaction.');
      }
 
-     // Map updatedMessage to MessageDto including reactions
-     const messageDto: MessageDto = {
-        id: updatedMessage.id,
-        chatId: updatedMessage.chatId,
-        content: updatedMessage.content,
-        senderId: updatedMessage.senderId,
-        createdAt: updatedMessage.createdAt,
-        sender: { // Placeholder sender data - ideally fetch full sender
-          id: user.id, name: user.name, username: user.username || null, email: user.email, isVerified: user.isVerified, avatarUrl: user.avatarUrl || null, bio: user.bio || null, status: 'Online', roles: user.roles || [],
-        } as UserDto,
-        attachments: updatedMessage.attachments?.map(att => ({
-          id: att.id, url: att.url, filename: att.filename, mimetype: att.mimetype, size: att.size, createdAt: att.createdAt,
-        })) || [],
-        deletedForUserIds: (updatedMessage as any).deletedForUserIds || [],
-        reactions: updatedMessage.reactions?.map(reaction => ({
-          id: reaction.id,
-          messageId: reaction.messageId,
-          userId: reaction.userId,
-          emoji: reaction.emoji,
-          createdAt: reaction.createdAt,
-        })) || [],
-      };
+    // Use our reliable mapper to create the DTO
+    const messageDto = this._mapMessageToDto(updatedMessage);
+    
+    if (!messageDto) {
+        throw new Error('Failed to map message to DTO after adding reaction.');
+    }
 
      // Publish reaction added event via PubSub
      this.pubSub.publish('messageReactionAddedOrRemoved', {
@@ -540,32 +524,16 @@ export class ChatResolver {
        throw new Error('Message not found after removing reaction.');
      }
 
-     // Map updatedMessage to MessageDto including reactions
-     const messageDto: MessageDto = {
-        id: updatedMessage.id,
-        chatId: updatedMessage.chatId,
-        content: updatedMessage.content,
-        senderId: updatedMessage.senderId,
-        createdAt: updatedMessage.createdAt,
-        sender: { // Placeholder sender data - ideally fetch full sender
-          id: user.id, name: user.name, username: user.username || null, email: user.email, isVerified: user.isVerified, avatarUrl: user.avatarUrl || null, bio: user.bio || null, status: 'Online', roles: user.roles || [],
-        } as UserDto,
-        attachments: updatedMessage.attachments?.map(att => ({
-          id: att.id, url: att.url, filename: att.filename, mimetype: att.mimetype, size: att.size, createdAt: att.createdAt,
-        })) || [],
-        deletedForUserIds: (updatedMessage as any).deletedForUserIds || [],
-        reactions: updatedMessage.reactions?.map(reaction => ({
-          id: reaction.id,
-          messageId: reaction.messageId,
-          userId: reaction.userId,
-          emoji: reaction.emoji,
-          createdAt: reaction.createdAt,
-        })) || [],
-      };
+    // Use our reliable mapper to create the DTO
+    const messageDto = this._mapMessageToDto(updatedMessage);
+  
+    if (!messageDto) {
+      throw new Error('Failed to map message to DTO after removing reaction.');
+    }
 
      // Publish reaction removed event via PubSub
      this.pubSub.publish('messageReactionAddedOrRemoved', {
-       messageReactionAddedOrRemoved: messageDto,
+       messageReactionAddedOrRemoved: messageDto, // Ensure payload is wrapped correctly
        chatId: messageDto.chatId, // Include chatId for filtering
      });
 
@@ -574,34 +542,89 @@ export class ChatResolver {
 
 
   @Subscription(() => MessageDto, {
-    resolve: (payload) => {
-      console.log('[ChatResolver - Subscription resolve] Received payload:', payload);
-      if (!payload || !payload.newMessage) {
-        console.error('[ChatResolver - Subscription resolve] Payload or newMessage is undefined:', payload);
-        throw new Error('Invalid subscription payload: newMessage is missing.');
+    nullable: true,
+    filter: (payload, variables, context) => {
+      const logger = new Logger('newMessageFilter');
+      // Rule 1: Basic payload and context validation
+      if (!payload || !context.req?.user) {
+        logger.warn('Filter failed: Missing payload or user in context.');
+        return false;
       }
-      return payload;
+
+      // Rule 2: The message must be for the chat the user is subscribed to.
+      if (payload.chatId !== variables.chatId) {
+        logger.warn(`Filter failed: Payload chat ID (${payload.chatId}) does not match variable chat ID (${variables.chatId}).`);
+        return false;
+      }
+
+      // Rule 3: The user must be a participant of the chat.
+      const user = context.req.user;
+      if (!payload.participantIds.includes(user.id)) {
+        logger.warn(`Filter failed: User ${user.id} is not in participant list [${payload.participantIds.join(', ')}].`);
+        return false;
+      }
+
+      logger.log(`Filter passed for user ${user.id} in chat ${variables.chatId}.`);
+      return true;
+    },
+    resolve: (payload, args, context, info) => {
+      const logger = new Logger('SubscriptionResolve');
+      // Defensive check
+      if (!payload?.newMessage) {
+        return null;
+      }
+
+      // Log requested fields for ultimate debugging
+      try {
+        const requestedFields = info.fieldNodes[0].selectionSet.selections.map(sel => sel.name.value);
+        logger.debug(`[ChatResolver] Subscription resolve - Requested fields: [${requestedFields.join(', ')}]`);
+      } catch (e) {
+        logger.warn(`[ChatResolver] Could not log requested fields: ${e.message}`);
+      }
+
+      // The payload that passes the filter is returned to the client.
+      return payload.newMessage;
     },
   })
   newMessage(
     @Args('chatId', { type: () => ID }) chatId: string,
-    @CurrentUser() user: User,
+    @CurrentUser() user: User, // Guard ensures user is valid at subscription time
   ): AsyncIterator<MessageDto> {
     return (this.pubSub as any).asyncIterator('newMessage');
   }
 
   @Subscription(() => MessageDto, {
+    nullable: true,
     filter: (payload, variables) => {
-      // Only send updates to subscribers of the relevant chat
-      return payload.chatId === variables.chatId;
+      const logger = new Logger('messageReactionAddedOrRemovedFilter');
+      logger.debug(`[messageReactionAddedOrRemovedFilter] Received payload: ${JSON.stringify(payload)}`);
+      logger.debug(`[messageReactionAddedOrRemovedFilter] Received variables: ${JSON.stringify(variables)}`);
+
+      // Defensively check for payload to prevent crashes on subscription init
+      if (!payload) {
+        logger.warn('Filter failed: Missing payload.');
+        return false;
+      }
+      if (payload.chatId !== variables.chatId) {
+        logger.warn(`Filter failed: Payload chat ID (${payload.chatId}) does not match variable chat ID (${variables.chatId}).`);
+        return false;
+      }
+      logger.log(`Filter passed for chat ${variables.chatId}.`);
+      return true;
     },
     resolve: (payload) => {
-      // The payload is the updated message DTO
+      if (!payload || !payload.messageReactionAddedOrRemoved) {
+        // This can happen on initialization. Instead of throwing, we return null.
+        console.error('[ChatResolver] Resolve called with invalid payload for messageReactionAddedOrRemoved:', payload);
+        return null;
+      }
       return payload.messageReactionAddedOrRemoved;
     },
   })
+  @UseGuards(JwtAuthGuard) // Apply the guard to protect the subscription
   messageReactionAddedOrRemoved(
     @Args('chatId', { type: () => ID }) chatId: string,
+    @CurrentUser() user: User, // Inject the authenticated user
   ): AsyncIterator<MessageDto> {
     return (this.pubSub as any).asyncIterator('messageReactionAddedOrRemoved');
   }

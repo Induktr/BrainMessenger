@@ -1,64 +1,56 @@
 import { Injectable, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC_KEY } from '../common/decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor() {
-    super('jwt', { session: false });
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
+  constructor(private reflector: Reflector) {
+    super();
   }
-    getRequest(context: ExecutionContext) {
-        const ctx = GqlExecutionContext.create(context);
-        const { req, connection } = ctx.getContext();
 
-        // For HTTP requests, req will be present
-        if (req) {
-            if (req.headers) {
-                console.log('[JwtAuthGuard] Incoming HTTP Authorization header:', req.headers.authorization ? req.headers.authorization.substring(0, 20) + '...' : 'No Authorization header');
-            }
-            return req;
-        }
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
-        // For WebSocket connections (subscriptions), connection will be present
-        if (connection) {
-            // Create a dummy request object for Passport-JWT
-            const dummyReq = {
-                headers: {},
-                user: connection.context.user, // User already authenticated and attached by onConnect
-            };
-
-            // Passport-JWT's ExtractJwt.fromAuthHeaderAsBearerToken() expects 'authorization' in headers.
-            // The token is attached to connection.context.token by the onConnect function in GraphQLModule.
-            const tokenFromContext = connection.context.token;
-            if (tokenFromContext) {
-                dummyReq.headers['authorization'] = `Bearer ${tokenFromContext}`;
-                console.log('[JwtAuthGuard] WebSocket Authorization header set from context.token:', tokenFromContext.substring(0, 20) + '...');
-            } else {
-                console.warn('[JwtAuthGuard] WebSocket connection.context.token is missing. Throwing UnauthorizedException.');
-                throw new UnauthorizedException('Authentication token missing for WebSocket connection.');
-            }
-            
-            console.log('[JwtAuthGuard] WebSocket user attached from context:', connection.context.user ? connection.context.user.id : 'No user');
-            return dummyReq;
-        }
-
-        // Fallback if neither req nor connection is present (should not happen in GraphQL context)
-        console.error('[JwtAuthGuard] Neither HTTP request nor WebSocket connection context found.');
-        return {}; // Return an empty object to prevent further errors, though this indicates a problem
+    if (isPublic) {
+      this.logger.log('[JwtAuthGuard] Public route detected. Allowing access.');
+      return true; // Allow access to public routes
     }
 
-    handleRequest(err, user, info, context, status) {
-        const gqlContext = GqlExecutionContext.create(context);
-        const req = gqlContext.getContext().req;
+    // For protected routes, proceed with default authentication
+    return super.canActivate(context);
+  }
 
-        if (err || !user) {
-            console.error('[JwtAuthGuard] Authentication failed:', err || 'No user returned');
-            throw err || new UnauthorizedException('Could not authenticate with token');
-        }
-        
-        // Explicitly attach the authenticated user to the request object
-        req.user = user;
-        console.log('[JwtAuthGuard] User successfully authenticated and attached to request:', user.id);
-        return user;
+  getRequest(context: ExecutionContext): any {
+    this.logger.log(`[JwtAuthGuard] getRequest called for context type: ${context.getType()}`);
+
+    if (context.getType() === 'http') {
+      // For standard REST requests
+      this.logger.log('[JwtAuthGuard] Handling HTTP request.');
+      return context.switchToHttp().getRequest();
     }
+
+    // For GraphQL requests (queries, mutations, subscriptions)
+    this.logger.log('[JwtAuthGuard] Handling GraphQL/WS request.');
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
+  }
+
+  handleRequest(err, user, info, context, status) {
+    this.logger.log(`[JwtAuthGuard] handleRequest called. Info: ${info?.message || info || 'N/A'}`);
+
+    if (err || !user) {
+      this.logger.error(`[JwtAuthGuard] Authentication failed. Info: ${info?.message}`);
+      throw err || new UnauthorizedException('Authentication failed: Invalid token or user not found.');
+    }
+
+    this.logger.log(`[JwtAuthGuard] User successfully authenticated: ${user.id}`);
+    return user;
+  }
 }

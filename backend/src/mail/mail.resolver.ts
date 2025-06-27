@@ -1,10 +1,11 @@
 // backend/src/mail/mail.resolver.ts
-    import { Resolver, Mutation, Args, Int } from '@nestjs/graphql';
-    import { MailService } from './mail.service';
-    import { UseGuards } from '@nestjs/common';
-    // import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Removed incorrect import
-    import { AuthGuard } from '@nestjs/passport'; // Added correct guard import
-    import { UserService } from '../user/user.service';
+import { Resolver, Mutation, Args, Int } from '@nestjs/graphql';
+import { MailService } from './mail.service';
+import { UseGuards } from '@nestjs/common';
+// import { JwtAuthGuard } from '../auth/jwt-auth.guard'; // Removed incorrect import
+import { AuthGuard } from '@nestjs/passport'; // Added correct guard import
+import { UserService } from '../user/user.service';
+import { Logger } from '@nestjs/common';
 
     @Resolver()
     export class MailResolver {
@@ -12,6 +13,7 @@
         private readonly mailService: MailService,
         private readonly userService: UserService
       ) {}
+      private readonly logger = new Logger(MailResolver.name);
 
       // Removed redundant sendVerificationCode mutation.
       // This logic is handled in AuthResolver/AuthService.
@@ -20,7 +22,7 @@
       async enableTwoFactorAuth(@Args('userId', { type: () => Int }) userId: number): Promise<boolean> {
         // Implement two-factor authentication enabling logic here
         // This is a placeholder
-        console.warn(`enableTwoFactorAuth called for user ${userId}, but is not implemented.`);
+        this.logger.warn(`enableTwoFactorAuth called for user ${userId}, but is not implemented.`);
         return true;
       }
 
@@ -28,7 +30,7 @@
       async disableTwoFactorAuth(@Args('userId', { type: () => Int }) userId: number): Promise<boolean> {
         // Implement two-factor authentication disabling logic here
         // This is a placeholder
-        console.warn(`disableTwoFactorAuth called for user ${userId}, but is not implemented.`);
+        this.logger.warn(`disableTwoFactorAuth called for user ${userId}, but is not implemented.`);
         return true;
       }
 

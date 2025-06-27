@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useQuery, useApolloClient, useMutation, gql, useSubscription } from '@apollo/client'; // Added useSubscription
-import { GET_CURRENT_USER, UPDATE_LAST_ACTIVE, REFRESH_TOKEN_MUTATION, NEW_MESSAGE_SUBSCRIPTION } from '@/graphql/queries'; // Added NEW_MESSAGE_SUBSCRIPTION
+import { GET_CURRENT_USER, UPDATE_LAST_ACTIVE, REFRESH_TOKEN_MUTATION } from '@/graphql/queries';
+import { NEW_MESSAGE_SUBSCRIPTION } from '@/graphql/subscriptions'; // Corrected import for NEW_MESSAGE_SUBSCRIPTION
 import { useRouter, usePathname } from 'next/navigation';
 import { setAccessTokenForApollo } from '@/apollo-client'; // Import setAccessTokenForApollo
 import NotificationDropdown from '@/components/NotificationDropdown'; // Import NotificationDropdown
@@ -71,6 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isClientMounted, setIsClientMounted] = useState(false); // Add isClientMounted state
   const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
   const [offlineTimer, setOfflineTimer] = useState<NodeJS.Timeout | null>(null);
   const [isOnline, setIsOnline] = useState(true);
@@ -178,9 +180,14 @@ const logout = React.useCallback(() => {
     }
   }, [logout, refreshTokenMutation]); // Add logout and refreshTokenMutation as dependencies
 
+  // Effect to set isClientMounted to true after initial render on the client
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []); // Empty dependency array ensures this runs only once on mount
+
   // Effect to handle online/offline status
   useEffect(() => {
-    if (typeof window === 'undefined' || !user || isInitializing) return; // Добавлена проверка isInitializing
+    if (typeof window === 'undefined' || !user || isInitializing || !isClientMounted) return; // Add isClientMounted check
 
     let activityInterval: NodeJS.Timeout;
 
@@ -326,14 +333,24 @@ const logout = React.useCallback(() => {
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {isInitializing ? (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
-          <LazyLoading className="lazy-loading-logo-container">
-            <Image src="/images/logo.png" alt="BrainMessenger Logo" width={120} height={120} />
-          </LazyLoading>
-        </div>
+      {/* Render children only after the component has mounted on the client */}
+      {isClientMounted ? (
+        isInitializing ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
+            <LazyLoading className="lazy-loading-logo-container">
+              <Image src="/images/logo.png" alt="BrainMessenger Logo" width={120} height={120} />
+            </LazyLoading>
+          </div>
+        ) : (
+          children
+        )
       ) : (
-        children
+        // Optionally render a minimal loading state on the server and during initial client render
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
+           <LazyLoading className="lazy-loading-logo-container">
+             <Image src="/images/logo.png" alt="BrainMessenger Logo" width={120} height={120} />
+           </LazyLoading>
+         </div>
       )}
       <NotificationDropdown
         message={notificationMessage}

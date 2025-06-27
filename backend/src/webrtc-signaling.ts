@@ -2,6 +2,7 @@
 
 import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common'; // Import Logger for logging
 
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
 
@@ -38,23 +39,25 @@ import { ConfigService } from '@nestjs/config'; // Import ConfigService
 export class WebrtcSignalingGateway {
   constructor(private configService: ConfigService) {} // Inject ConfigService
 
+  private readonly logger = new Logger(WebrtcSignalingGateway.name); // Initialize Logger
+
   @WebSocketServer()
   server: Server;
 
   handleConnection(client: Socket) {
-    console.log(`Client connected: ${client.id}`);
+    this.logger.log(`Client connected: ${client.id}`);
 
     client.on('message', (data: any) => {
-      console.log(`Message from ${client.id}: ${JSON.stringify(data)}`);
+      this.logger.log(`Message from ${client.id}: ${JSON.stringify(data)}`);
       this.server.emit('message', data);
     });
 
     client.on('disconnect', () => {
-      console.log(`Client disconnected: ${client.id}`);
+      this.logger.log(`Client disconnected: ${client.id}`);
     });
 
     client.on('ice-candidate', (data: any) => {
-      console.log(`ICE candidate from ${client.id}: ${JSON.stringify(data)}`);
+      this.logger.log(`ICE candidate from ${client.id}: ${JSON.stringify(data)}`);
       this.server.to(data.roomId).emit('ice-candidate', {
         candidate: data.candidate,
         from: client.id,
@@ -62,7 +65,7 @@ export class WebrtcSignalingGateway {
     });
 
     client.on('offer', (data: any) => {
-      console.log(`Offer from ${client.id}: ${JSON.stringify(data)}`);
+      this.logger.log(`Offer from ${client.id}: ${JSON.stringify(data)}`);
       this.server.to(data.roomId).emit('offer', {
         offer: data.offer,
         from: client.id,
@@ -70,7 +73,7 @@ export class WebrtcSignalingGateway {
     });
 
     client.on('answer', (data: any) => {
-      console.log(`Answer from ${client.id}: ${JSON.stringify(data)}`);
+      this.logger.log(`Answer from ${client.id}: ${JSON.stringify(data)}`);
       this.server.to(data.roomId).emit('answer', {
         answer: data.answer,
         from: client.id,
@@ -78,7 +81,7 @@ export class WebrtcSignalingGateway {
     });
 
     client.on('join', (roomId: string) => {
-      console.log(`Client ${client.id} joining room ${roomId}`);
+      this.logger.log(`Client ${client.id} joining room ${roomId}`);
       client.join(roomId);
     });
   }
@@ -88,7 +91,7 @@ export class WebrtcSignalingGateway {
     client: Socket,
     data: { settings: any; roomId: string },
   ): void {
-    console.log(`Quality settings from ${client.id}: ${JSON.stringify(data)}`);
+    this.logger.log(`Quality settings from ${client.id}: ${JSON.stringify(data)}`);
     this.server.to(data.roomId).emit('qualitySettings', data);
   }
 }

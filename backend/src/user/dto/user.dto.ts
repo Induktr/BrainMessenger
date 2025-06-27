@@ -19,26 +19,25 @@ export class UserDto {
   isVerified: boolean;
 
   @Field(() => Boolean, { nullable: true })
-  twoFactorEnabled?: boolean;
+  twoFactorEnabled: boolean | null;
 
   @Field(() => String, { nullable: true })
-  twoFactorMethod?: string;
+  twoFactorMethod: string | null;
 
   @Field(() => String, { nullable: true })
-  recoveryEmail?: string;
+  recoveryEmail: string | null;
 
-// Добавьте другие поля по мере необходимости, например:
-@Field(() => String, { nullable: true }) // Явное указание типа GraphQL
-avatarUrl: string | null;
+  @Field(() => String, { nullable: true })
+  avatarUrl: string | null;
 
-@Field(() => String, { nullable: true }) // Add bio field
-bio: string | null;
+  @Field(() => String, { nullable: true })
+  bio: string | null;
 
-@Field(() => String, { nullable: true }) // Make status field nullable
-status?: string;
+  @Field(() => String, { nullable: true })
+  status?: string | null;
 
-@Field(() => [String], { nullable: true }) // Add roles field as an array of strings, make it nullable
-roles?: string[];
+  @Field(() => [String], { nullable: true })
+  roles: string[] | null;
 
 // Не включайте пароль в DTO!
 }

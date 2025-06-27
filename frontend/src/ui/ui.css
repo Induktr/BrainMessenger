@@ -1,3 +1,134 @@
+/* Image Gallery */
+.gallery-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr auto;
+    align-items: center;
+    justify-items: center;
+  }
+  
+  .gallery-main-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    grid-row: 1 / -1; /* Span all rows */
+    grid-column: 1 / -1; /* Span all columns */
+    justify-content: center; /* Center content vertically */
+  }
+  
+  .gallery-image-container {
+    max-width: 90vw;
+    max-height: 75vh; /* Adjusted to make space for description */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* This is crucial to hide parts of the image that are panned out of view */
+  }
+  
+  .gallery-description {
+    color: #f1f1f1;
+    background-color: rgba(20, 20, 20, 0.6);
+    padding: 12px 18px;
+    border-radius: 8px;
+    max-width: 60vw;
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-height: 10vh; /* Limit description height */
+    overflow-y: auto;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  }
+  
+  .gallery-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+  
+  .gallery-toolbar {
+    position: absolute;
+    top: 20px;
+    right: 80px; /* Adjusted to not overlap with close button */
+    display: flex;
+    gap: 15px;
+    z-index: 1001;
+  }
+  
+  .gallery-button {
+    background: rgba(30, 30, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+  }
+  
+  .gallery-button:hover {
+    background: rgba(50, 50, 50, 0.9);
+  }
+  
+  .gallery-button img {
+    filter: invert(1);
+    opacity: 0.8;
+  }
+  
+  .gallery-close-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+  }
+  
+  .gallery-nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    padding: 20px;
+    opacity: 0.7;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  .gallery-nav-button:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  .gallery-nav-prev {
+    left: 20px;
+  }
+  
+  .gallery-nav-next {
+    right: 20px;
+  }
+  
+  .gallery-nav-button img {
+    filter: invert(1);
+    z-index: 1001;
+  }  
+
 /* Styles for Settings Component */
 .settings-modal-content {
     padding: 0; /* Remove padding from the modal content wrapper */
@@ -398,17 +529,36 @@
 
 .myaccount-detailed-info {
     padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center the detailed info block */
-    gap: 20px; /* Space between the name/username group and email */
+}
+
+/* Drag and Drop Overlay */
+.drag-drop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.drag-drop-overlay span {
+  margin-top: 10px;
+}
+
 .myaccount-name-username-group {
     display: flex;
     flex-direction: row;
     gap: 40px; /* Space between Name and Username */
     justify-content: center; /* Center the group within the parent */
     width: 100%; /* Allow the group to take full width for centering */
-}
 }
  
 /* Styles for Avatar Dropdown */
@@ -507,7 +657,6 @@
 
 .chat-list-item-snippet {
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
-    color: #B0B0B0; /* Lighter color for snippet */
     margin-top: 2px; /* Space above snippet */
     white-space: nowrap; /* Prevent text wrapping */
     overflow: hidden; /* Hide overflow */
@@ -556,7 +705,6 @@
 
 .chat-message-sender {
     font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
-    color: #B0B0B0; /* Lighter color for sender name */
     margin-bottom: 2px; /* Space below sender name */
 }
 
@@ -811,12 +959,8 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
-    z-index: 100; /* Ensure it's above other content */
 }
 
-/* Styles for the SidebarMenu component when it's inside the overlay */
 .sidebar-overlay .sidebar-menu-container {
     position: absolute;
     top: 0;
@@ -827,7 +971,6 @@
 .chat-list-item-snippet p {
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     margin: 0;
-    color: #B0B0B0; /* Lighter color for snippet */
     white-space: nowrap; /* Prevent wrapping */
     overflow: hidden; /* Hide overflow */
     text-overflow: ellipsis; /* Add ellipsis if text overflows */
@@ -894,7 +1037,6 @@
     font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
     font-weight: 500;
     margin-bottom: 5px; /* Space below sender name */
-    color: #B0B0B0; /* Lighter color for sender name */
 }
 
 .chat-attachments-wrapper {
@@ -911,7 +1053,6 @@
     display: flex;
     align-items: center;
     gap: 8px; /* Space between icon and filename */
-    color: #f0f0f0; /* Light text color */
 }
 
 .chat-attachment-pdf-link {
@@ -932,6 +1073,125 @@
     bottom: 5px; /* Position from the bottom */
     right: 5px; /* Position from the right */
     white-space: nowrap; /* Prevent timestamp from wrapping */
+}
+
+.chat-message-content .chat-link {
+  color: #00BFFF;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden; /* To contain the ripple */
+  background-color: rgba(26, 26, 26, 0.5); /* Semi-transparent dark background */
+  padding: 2px 8px;
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: inline-block; /* Ensure background properties apply correctly */
+  margin: 1px 0;
+}
+
+.chat-message-content .chat-link:hover {
+  text-decoration: none;
+}
+
+.chat-message-content .chat-link::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: #00BFFF;
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.chat-message-content .chat-link:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0) translate(-50%);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(30, 30) translate(-50%);
+    opacity: 0;
+  }
+}
+
+/* Link Preview Styles */
+.link-preview-loader {
+  font-size: 0.8rem;
+  color: #888;
+  padding: 8px 0;
+}
+
+.link-preview-card {
+  display: flex;
+  background-color: var(--chat-bubble-background-secondary, #333);
+  border-radius: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #444);
+  max-width: 400px; /* Or adjust as needed */
+}
+
+.link-preview-image-container {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.link-preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This makes the image cover the container without distortion */
+}
+
+.link-preview-content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  overflow: hidden; /* Prevents text from overflowing */
+}
+
+.link-preview-sitename {
+  font-size: 0.75rem;
+  color: #aaa;
+  font-weight: bold;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-preview-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--text-color, #f0f0f0);
+  margin: 4px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link-preview-description {
+  font-size: 0.8rem;
+  color: #ccc;
+  /* Allow multiple lines for description, with ellipsis for overflow */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  line-clamp: 2; /* Standard property for compatibility */
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-message-bubble.current-user .chat-message-timestamp {
@@ -1661,7 +1921,6 @@
     max-width: 100%;
     max-height: 256px; /* Approximately h-64 in Tailwind */
     object-fit: contain;
-    filter: brightness(0) contrast(0.5) invert(1);
     border-radius: 0.5rem; /* Approximately rounded-lg in Tailwind */
 }
 
@@ -2440,4 +2699,159 @@
 
 .message-reaction-item.current-user-reacted .reaction-count {
     color: #1a1a1a; /* Dark text for the count as well */
+}
+/* Styles for Notification Feature */
+
+.notification-badge {
+  display: inline-block;
+  background-color: #96C93D; /* Green accent color */
+  color: #1a1a1a; /* Dark text for contrast */
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.7em;
+  margin-left: 8px;
+  min-width: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.notification-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.notification-modal-content {
+  background-color: #2B2B2B; /* Dark background */
+  padding: 20px;
+  border-radius: 8px; /* Match other modals */
+  max-width: 400px; /* Example max width */
+  width: 90%;
+  max-height: 80vh; /* Example max height */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
+  color: #f0f0f0; /* Light text color */
+}
+
+.notification-modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px; /* Space below title */
+    font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
+    text-align: center;
+    color: #f0f0f0;
+}
+
+.notification-list {
+  margin-top: 0; /* Adjust margin */
+}
+
+.notification-list-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #3a3a3a; /* Darker separator */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notification-list-item:last-child {
+  border-bottom: none;
+}
+
+.notification-list-item:hover {
+    background-color: #3a3a3a; /* Darker background on hover */
+}
+
+.notification-sender-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #4f545c; /* Darker placeholder color */
+  border-radius: 50%;
+  margin-right: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9em;
+  color: #b0b0b0; /* Lighter color for placeholder text */
+  flex-shrink: 0;
+}
+
+.notification-item-content {
+  flex-grow: 1;
+}
+
+.notification-sender-info {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.notification-sender-name {
+  margin-right: 5px;
+  color: #f0f0f0; /* Light text color */
+}
+
+.notification-sender-status {
+  font-size: 0.8em;
+  color: #b0b0b0; /* Lighter color for status */
+  font-weight: normal;
+}
+
+.notification-message-preview {
+  font-size: 0.9em;
+  color: #b0b0b0; /* Lighter color for message preview */
+  margin-bottom: 4px;
+}
+
+.notification-timestamp {
+  font-size: 0.7em;
+  color: #999; /* Keep a slightly lighter grey for timestamp */
+}
+
+.notification-unread-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: #96C93D; /* Green accent color */
+  border-radius: 50%;
+  margin-left: 10px;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+.notification-modal-close-button {
+  background-color: #4f545c; /* Darker grey background */
+  color: #f0f0f0; /* Light text color */
+  border: none;
+  padding: 10px 20px; /* Padding */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+  transition: background-color 0.2s ease;
+  margin-top: 15px; /* Space above the button */
+}
+
+.notification-modal-close-button:hover {
+  background-color: #6a707a; /* Lighter grey on hover */
+}
+.notification-modal-mark-read-button {
+  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient */
+  color: #1a1a1a; /* Dark text for contrast */
+  border: none;
+  padding: 10px 20px; /* Padding */
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
+  transition: opacity 0.2s ease;
+  margin-top: 15px; /* Space above the button */
+  width: 100%; /* Full width */
+}
+
+.notification-modal-mark-read-button:hover {
+  opacity: 0.9; /* Slightly dim on hover */
 }
