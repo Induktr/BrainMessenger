@@ -1199,8 +1199,8 @@ html {
   }
 
   /* Responsive styles for SmallSettings and Support Modals */
-  .settings-small-modal-content,
-  .support-modal-content {
+  .support-modal-content,
+  .settings-small-modal-content {
     padding: 1rem; /* Reduce padding on smaller screens */
     max-width: 90%; /* Allow modal to take more width */
   }
@@ -1208,14 +1208,6 @@ html {
   .settings-option-item-row {
     flex-direction: column; /* Stack buttons vertically */
     gap: 0.75rem; /* Adjust gap for vertical layout */
-  }
-
-  .settings-action-button {
-    width: 100%; /* Make buttons full-width */
-  }
-  
-  .settings-action-button:last-child {
-    margin-left: 0; /* Remove margin when stacked */
   }
 
   .support-header-title {
@@ -1285,14 +1277,6 @@ html {
 @media (max-width: 360px) {
   .modal-overlay {
     padding: 0;
-  }
-
-  /* Default modal should wrap content */
-  .modal-container {
-    width: 90%;
-    max-width: 500px;
-    margin-top: auto;
-    margin-bottom: auto;
   }
 
   /* Support modal requires full height for scrolling */
@@ -1482,10 +1466,6 @@ html {
     transition: background-color 0.3s;
 }
 
-.settings-action-button:last-child {
-    margin-left: 0.5rem; /* Add margin to the right button */
-}
-
 .settings-action-button:hover {
     background-color: #4a4a4a;
 }
@@ -1500,7 +1480,7 @@ html {
 /* Support Modal Styles */
 .support-modal-content {
   padding: 1.5rem;
-  background-color: #1A1A1A;
+  background-color: transparent;
   color: #F0F0F0;
   border-radius: 10px;
   display: flex;
@@ -1619,13 +1599,3 @@ html {
   padding-left: 0.25rem;
 }
 
-.settings-small-option {
-  display: grid;
-  grid-template-columns: 20px 20px;
-  transition: 200ms;
-}
-
-.settings-small-option:hover {
-  background-color: #404040;
-  transition: 200ms;
-}

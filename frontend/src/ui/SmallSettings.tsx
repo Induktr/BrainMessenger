@@ -81,13 +81,15 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* Language and Support Buttons */}
-            <div className="settings-option-item-row">
+            <div className="settings-option-item">
+                <div className="settings-option-item-row">
                 <button className="settings-action-button" onClick={handleLanguageClick}>
                     Language
                 </button>
                 <button className="settings-action-button" onClick={handleSupportClick}>
                     Support
                 </button>
+                </div>
             </div>
             <div className="support-description">
                 <p>Have questions? Contact our support team.</p>

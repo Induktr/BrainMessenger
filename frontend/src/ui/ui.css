@@ -371,6 +371,117 @@
     overflow-y: auto; /* Enable scrolling for content */
 }
 
+/* Styles for SmallSettings Modal */
+.settings-small-modal-content {
+    padding: 20px;
+    color: #f0f0f0;
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+.settings-small-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.settings-small-title {
+    margin: 0;
+    font-size: 22px;
+    color: #f0f0f0;
+}
+
+.settings-small-close-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.settings-small-close-button .icon {
+    width: 20px;
+    height: 20px;
+    margin: 0; /* Reset margin for icon inside button */
+}
+
+.settings-small-options-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-option-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-option-label {
+    font-size: 16px;
+    color: #B0B0B0;
+}
+
+.theme-buttons-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.theme-button {
+    flex-grow: 1; /* Allow buttons to share space */
+    padding: 12px;
+    border: 1px solid #4f4f4f;
+    background-color: #3a3a3a;
+    color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.theme-button:hover {
+    background-color: #4f4f4f;
+}
+
+.theme-button.dark-mode {
+    /* Specific styles for dark mode button if needed */
+}
+
+.theme-button.light-mode {
+    /* Specific styles for light mode button if needed */
+}
+
+.settings-option-item-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+}
+
+.settings-action-button {
+    flex-grow: 1;
+    padding: 12px;
+    background-color: #3a3a3a;
+    border: 1px solid #4f4f4f;
+    color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.settings-action-button:hover {
+    background-color: #4f4f4f;
+}
+
+.support-description {
+    font-size: 12px;
+    color: #888;
+    text-align: center;
+    margin-top: -10px; /* Adjust spacing */
+}
+
+
 /* Styles for MyAccount Component */
 .myaccount-modal-content {
     padding: 0;
@@ -1268,22 +1379,34 @@
 .language-modal-content {
     padding: 0;
     color: #f0f0f0;
-    max-width: 456px; /* Match Settings modal width */
-    width: 90%; /* Make it flexible on smaller screens */
+    max-width: 456px; /* Maintain design on large screens */
+    width: 95vw; /* Use viewport width for responsiveness */
     border-radius: 8px;
     overflow: hidden;
 }
 
 .language-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    justify-content: center; /* Center the title block by default */
+    padding: 20px;
     border-bottom: 3px solid #96C93D;
+    position: relative; /* Make it a positioning context */
+}
+
+.language-back-button {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .language-back-button,
 .language-close-button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     color: #f0f0f0;
@@ -1291,14 +1414,14 @@
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
     align-items: center;
-    justify-content: center;
 }
 
 .language-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
-    flex-grow: 1; /* Allow title to take available space */
+    /* No flex-grow needed with absolute positioning of siblings */
+    text-align: center; /* Center the title text */
 }
 
 .language-separator {
@@ -1308,35 +1431,19 @@
 
 .language-interface-label {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #96C93D; /* Specified color */
-    text-align: start;
-    padding: 15px 20px 5px 20px; /* Add padding, less at bottom */
+    color: #B0B0B0;
+    padding: 15px 20px 0; /* Use padding for alignment */
     margin: 0;
-}
-
-/* Ensure input takes full width in forms */
-.create-group-form input {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.create-channel-form .input-container {
-    width: auto;
-    height: 48px;
-    font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-}
-
-.language-options-list {
-    display: flex;
-    flex-direction: column;
 }
 
 .language-option {
     display: flex;
     align-items: center;
+    padding: 15px 20px; /* Add horizontal padding here */
     cursor: pointer;
-    padding: 10px 20px; /* Padding for options */
+    border-bottom: 1px solid #3a3a3a;
     transition: background-color 0.2s ease;
+    box-sizing: border-box; /* Crucial for correct width calculation */
 }
 
 .language-option:hover {
@@ -1359,8 +1466,55 @@
 .language-option-text {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #f0f0f0; /* Specified color */
-    text-align: start;
     flex-grow: 1;
+}
+
+/* Responsive adjustments for the language modal */
+@media (max-width: 480px) {
+    .language-modal-content {
+        width: 90vw; /* Use viewport width for flexibility */
+        padding: 15px; /* Adjust padding */
+    }
+
+    .language-header {
+        padding: 0 15px; /* Adjust header padding */
+    }
+
+    .language-header-title {
+        font-size: 18px; /* Reduce font size for the title */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .language-option-icon {
+        margin-right: 10px; /* Reduce space next to icon */
+    }
+
+    .language-option-text {
+        font-size: 14px; /* Reduce font size for option text */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+/* More aggressive adjustments for very small screens */
+@media (max-width: 320px) {
+    .language-header-title {
+        font-size: 16px; /* Further reduce font size */
+    }
+
+    .language-option-text {
+        font-size: 12px; /* Further reduce font size */
+    }
+
+    .language-option-icon .icon {
+        width: 18px; /* Make icons smaller */
+        height: 18px;
+    }
+
+
 }
 
 
@@ -2489,7 +2643,7 @@
         width: 456px;
     }
     .language-modal-content {
-        width: 250px;
+        width: 456px;
     }
     .premium-modal-content,
     .create-channel-modal-content,
@@ -2516,7 +2670,10 @@
         width: 90px;
         height: 90px;
     }
-    .language-modal-content,
+    .language-modal-content {
+        width: 300px;
+    }
+
     .myaccount-avatar {
         width: 90px;
         height: 90px;
@@ -2553,7 +2710,9 @@
         width: 80px;
         height: 80px;
     }
-    .language-modal-content,
+    .language-modal-content {
+        width: 250px;
+    }
     .premium-modal-content,
     .create-channel-modal-content,
     .create-group-modal-content,
@@ -2581,7 +2740,14 @@
         width: 100vw; /* Increased width for larger screens */
         height: 400px;
     }
-    .language-modal-content,
+    .language-modal-content {
+        flex-direction: column;
+        width: 100vw;
+    }
+    .language-header-title {
+        font-size: 5px;
+    }
+
     .premium-modal-content,
     .create-channel-modal-content,
     .create-group-modal-content,
@@ -2609,7 +2775,6 @@
         height: 400px;
         overflow: auto;
     }
-    .language-modal-content,
     .premium-modal-content,
     .create-channel-modal-content,
     .create-group-modal-content,
