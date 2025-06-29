@@ -21,12 +21,13 @@ import { UpdateLastActiveGuard } from './common/guards/update-last-active.guard'
 import { CacheModule } from '@nestjs/cache-manager'; // Import CacheModule
 import { JwtService } from '@nestjs/jwt'; // Import JwtService
 import { ConfigService } from '@nestjs/config'; // Import ConfigService
-import { PubSubModule } from './pubsub/pubsub.module'; // Import PubSubModule
+import { PubSubModule } from './pubsub/pubsub.module';
+// import { PubSubModule } from './pubsub/pubsub.module'; // Import PubSubModule
 import { LinkPreviewModule } from './link-preview/link-preview.module'; // Import LinkPreviewModule
 // Remove old PubSub related imports
-// import { PubSub } from 'graphql-subscriptions'; // Keep PubSub for type
-// import { RedisPubSub } from 'graphql-redis-subscriptions'; // Import RedisPubSub
-// import Redis from 'ioredis'; // Import Redis constructor directly
+import { PubSub } from 'graphql-subscriptions';
+
+
 import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
 
 @Module({
@@ -161,33 +162,11 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     AppService,
     WebrtcSignalingGateway,
     Logger, // Provide Logger globally
-    // Remove the old PubSub provider factory
-    // {
-    //   provide: PubSub,
-    //   useFactory: (configService: ConfigService) => {
-    //     const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
-    //     const redisOptions = {
-    //        retryStrategy: (times: number) => {
-    //          // reconnect after
-    //          return Math.min(times * 50, 2000);
-    //        },
-    //      };
-    //     const logger = new Logger('AppModule'); // Initialize logger for AppModule
-    //     logger.log(`Initializing RedisPubSub with URL: ${redisUrl}`); // Replaced console.log
-    //     return new RedisPubSub({
-    //       publisher: new Redis(redisUrl, redisOptions), // Pass URL and options
-    //       subscriber: new Redis(redisUrl, redisOptions), // Pass URL and options
-    //     });
-    //   },
-    //   inject: [ConfigService], // Inject ConfigService to get Redis config
-    // },
     // { // Temporarily disabled for debugging 'Forbidden resource'
     //   provide: APP_GUARD,
     //   useClass: UpdateLastActiveGuard,
     // },
   ],
-  // Remove PubSub from exports as it's now exported by PubSubModule
-  // exports: [PubSub], // Export PubSub to make it available to other modules
-  exports: [Logger], // Export Logger to make it available to other modules
+    exports: [Logger], // Export Logger to make it available to other modules
 })
 export class AppModule {}

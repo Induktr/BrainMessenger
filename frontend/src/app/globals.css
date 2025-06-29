@@ -1259,3 +1259,42 @@ html {
     /* Add other base styles like vertical-align if needed */
   }
 }
+
+.settings-small-modal-content {
+  display: grid;
+  padding: 20px;
+  width: 420px;
+}
+
+.settings-small-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.settings-small-options-list {
+  display: grid;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 50px;
+}
+
+.settings-small-close-button {
+  display: flex;
+  cursor: pointer;
+  background: none;
+  align-items: center;
+  border: none;
+  height: 32px;
+  width: 32px;
+}
+
+.settings-small-option {
+  display: grid;
+  grid-template-columns: 20px 20px;
+  transition: 200ms;
+}
+
+.settings-small-option:hover {
+  background-color: #404040;
+  transition: 200ms;
+}

@@ -6,10 +6,10 @@ import { PubSubModule } from '../pubsub/pubsub.module'; // Import PubSubModule
 import { ChatResolver } from './chat.resolver';
 import { MessageModule } from '../message/message.module';
 import { CloudflareModule } from '../cloudflare/cloudflare.module'; // Import CloudflareModule
-import { AppModule } from '../app.module'; // Import AppModule
+
 
 @Module({
-  imports: [MessageModule, CloudflareModule, PubSubModule, forwardRef(() => AppModule)], // Remove forwardRef from MessageModule import
+  imports: [MessageModule, CloudflareModule, PubSubModule],
   providers: [
     ChatService,
     ChatResolver, // Remove forwardRef here

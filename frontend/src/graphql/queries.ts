@@ -393,6 +393,12 @@ export const UPDATE_MESSAGE = gql`
     }
   }
 `;
+
+export const SET_USER_TYPING = gql`
+  mutation SetUserTyping($chatId: ID!, $isTyping: Boolean!) {
+    setUserTyping(chatId: $chatId, isTyping: $isTyping)
+  }
+`;
  
 // Add other queries and mutations later
 

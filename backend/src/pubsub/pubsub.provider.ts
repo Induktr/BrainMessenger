@@ -1,5 +1,5 @@
 import { Provider, Logger } from '@nestjs/common';
-import { PubSub } from 'graphql-subscriptions';
+import { PubSubEngine } from 'graphql-subscriptions';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import Redis from 'ioredis';
 import { ConfigService } from '@nestjs/config';
@@ -7,8 +7,8 @@ import { ConfigService } from '@nestjs/config';
 export const PUB_SUB = 'PUB_SUB'; // Define a token for the provider
 
 export const pubSubProvider: Provider = {
-  provide: PubSub, // Provide the PubSub instance
-  useFactory: (configService: ConfigService) => {
+  provide: PUB_SUB, // Provide the PubSub instance
+    useFactory: (configService: ConfigService): PubSubEngine => {
     const logger = new Logger('PubSubProvider');
     const redisUrl = configService.get<string>('REDIS_URL') || 'redis://localhost:6379'; // Default to localhost URL
     const redisOptions = {

@@ -6,10 +6,12 @@ import { MessageDto } from '../message/dto/message.dto';
 import { UserDto } from '../user/dto/user.dto';
 import { ChannelDto } from './dto/channel.dto'; // Import ChannelDto
 import { MessageService } from '../message/message.service';
-import { PubSub, withFilter } from 'graphql-subscriptions';
+import { PubSubEngine } from 'graphql-subscriptions';
+import { PUB_SUB } from '../pubsub/pubsub.provider';
+import { PubSubModule } from '../pubsub/pubsub.module';
 import { CreateChatInput } from './dto/create-chat.input';
 import { CreateChannelInput } from './dto/create-channel.input'; // Import CreateChannelInput
-import { UseGuards, UseInterceptors, UnauthorizedException, Logger, Inject, forwardRef } from '@nestjs/common'; // Import Inject
+import { UseGuards, UseInterceptors, UnauthorizedException, Logger, Inject } from '@nestjs/common'; // Import Inject
 import { CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -18,19 +20,67 @@ import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '../auth/interfaces/user.interface';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { UserCacheInterceptor } from '../common/interceptors/user-cache.interceptor';
+import { ObjectType, Field } from '@nestjs/graphql';
+
+@ObjectType()
+class TypingUser {
+  @Field(() => ID)
+  id: string;
+
+  @Field()
+  name: string;
+}
+
+@ObjectType()
+class TypingStatus {
+  @Field(() => TypingUser)
+  user: TypingUser;
+
+  @Field()
+  isTyping: boolean;
+}
 
 // import { Inject } from '@nestjs/common'; // This import is now redundant
 
 @Resolver(() => ChatDto)
 @UseGuards(JwtAuthGuard)
 export class ChatResolver {
-  constructor(
+    constructor(
     private readonly chatService: ChatService,
     private readonly messageService: MessageService,
-    @Inject(forwardRef(() => PubSub)) private readonly pubSub: PubSub, // Add forwardRef here
+    @Inject(PUB_SUB) private readonly pubSub: PubSubEngine,
   ) {}
 
     private readonly logger = new Logger(ChatResolver.name);
+
+  // =================================================================================================
+  // SUBSCRIPTIONS
+  // =================================================================================================
+
+  @Subscription(() => TypingStatus, {
+    filter: (payload, variables, context) => {
+      // The user is attached to the context by the JwtAuthGuard.
+      // For WebSocket connections, the context needs to be properly populated,
+      // potentially via an onConnect handler in your GraphQL server setup.
+      const user = context.req?.user || context.user;
+      if (!user) {
+        return false;
+      }
+      // Don't send the notification to the user who is typing
+      if (payload.typingStatus.user.id === user.id) {
+          return false;
+      }
+      // Only send to users in the same chat
+      return payload.typingStatus.chatId === variables.chatId;
+    },
+    resolve: (payload) => {
+      // Resolve to the shape of the TypingStatus GQL type
+      return { user: payload.typingStatus.user, isTyping: payload.typingStatus.isTyping };
+    },
+  })
+  typingStatus(@Args('chatId', { type: () => ID }) chatId: string) {
+    return (this.pubSub as any).asyncIterator('typingStatus');
+  }
 
   // =================================================================================================
   // HELPER METHODS
@@ -319,7 +369,24 @@ export class ChatResolver {
     if (!message || message.senderId !== user.id) {
       throw new Error('Unauthorized to delete this message.');
     }
-    await this.messageService.deleteMessage(messageId);
+        await this.messageService.deleteMessage(messageId);
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async setUserTyping(
+    @Args('chatId', { type: () => ID }) chatId: string,
+    @Args('isTyping', { type: () => Boolean }) isTyping: boolean,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    const payload = {
+      typingStatus: {
+        chatId,
+        user: { id: user.id, name: user.name },
+        isTyping,
+      },
+    };
+    await this.pubSub.publish('typingStatus', payload);
     return true;
   }
  

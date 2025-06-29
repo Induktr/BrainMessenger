@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'; // Import useAuth
 import { icons, images } from './lib/constants';
 import Button from '@/components/Button';
 import Image from 'next/image';
+import SmallSettings from '@/ui/SmallSettings';
 
 const slides = [
   {
@@ -41,6 +42,7 @@ const WelcomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter(); // Get router instance
   const { user, queryLoading } = useAuth(); // Use useAuth hook
+  const [currentView, setCurrentView] = useState('');
   
   // Redirect authenticated users to the chat page
   useLayoutEffect(() => { // Use useLayoutEffect
@@ -59,6 +61,14 @@ const WelcomePage = () => {
   const prevSlide = () => {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
   };
+
+  const handleSmallSettingsClick = () => {
+    setCurrentView('smallSettings')
+  }
+
+  const handleClose = () => {
+    setCurrentView('')
+  }
 
   // Keep the original useEffect for potential other side effects if needed,
   // but the primary redirect logic is now in useLayoutEffect
@@ -92,11 +102,16 @@ const WelcomePage = () => {
   // If not authenticated, render the welcome page.
   return (
     <div className="welcome-container">
+      {currentView === 'smallSettings' && (
+        <div>
+          <SmallSettings onClose={handleClose} isOpen={true}/>
+        </div>
+      )}
       {/* Header */}
       <header className="welcome-header">
         {/* Right side: Burger Menu Icon */}
         <div className="burger-menu-container">
-            <Image src={icons.burgerMenu} alt="Burger menu" className="icon" width={24} height={24}></Image>
+            <Image src={icons.burgerMenu} alt="Burger menu" onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
         </div>
       </header>
 

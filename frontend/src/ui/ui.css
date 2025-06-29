@@ -222,8 +222,8 @@
 }
 
 .settings-avatar-image {
-    width: 100%;
-    height: 100%;
+    width: 100px;
+    height: 100px;
     object-fit: cover; /* Ensure the image covers the area without distortion */
     border-radius: 50%; /* Make the image round */
 }
@@ -1364,8 +1364,8 @@
 }
 
 
-/* Styles for Premium Component */
-.premium-modal-content {
+/* Styles for Advanced Settings Component */
+.advanced-settings-modal-content {
     padding: 0;
     color: #f0f0f0;
     max-width: 456px; /* Match Settings modal width */
@@ -1374,7 +1374,7 @@
     overflow: hidden;
 }
 
-.premium-header {
+.advanced-settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1382,8 +1382,8 @@
     border-bottom: 1px solid #96C93D;
 }
 
-.premium-back-button,
-.premium-close-button {
+.advanced-settings-back-button,
+.advanced-settings-close-button {
     background: none;
     border: none;
     color: #f0f0f0;
@@ -1394,19 +1394,19 @@
     justify-content: center;
 }
 
-.premium-header-title {
+.advanced-settings-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     color: #f0f0f0;
     flex-grow: 1; /* Allow title to take available space */
 }
 
-.premium-separator {
+.advanced-settings-separator {
     border-bottom: 1px solid #96C93D;
     width: 100%; /* Full width separator */
 }
 
-.premium-content {
+.advanced-settings-content {
     padding: 20px; /* Add some padding to the content area */
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     color: #f0f0f0;
@@ -2485,8 +2485,48 @@
 /* Responsive adjustments for modal widths */
 @media (max-width: 1000px) {
     .settings-modal-content,
-    .myaccount-modal-content,
+    .myaccount-modal-content {
+        width: 456px;
+    }
+    .language-modal-content {
+        width: 250px;
+    }
+    .premium-modal-content,
+    .create-channel-modal-content,
+    .create-group-modal-content,
+    .edit-modal-content,
+    .verification-modal-content {
+        width: 350px; /* Increased width for larger screens */
+    }
+}
+
+@media (max-width: 540px) {
+    .settings-modal-content,
+    .myaccount-modal-content {
+        width: 350px;
+    }
+    .settings-avatar-image {
+        width: 90px;
+        height: 90px;
+    }
+    .settings-modal-content {
+        width: 300px;
+    }
+    .settings-user-profile .settings-avatar {
+        width: 90px;
+        height: 90px;
+    }
     .language-modal-content,
+    .myaccount-avatar {
+        width: 90px;
+        height: 90px;
+    }
+    .myaccount-name-status {
+        font-size: 13px;
+    }
+    .myaccount-avatar-dropdown {
+        min-width: 60px;
+    }
     .premium-modal-content,
     .create-channel-modal-content,
     .create-group-modal-content,
@@ -2498,16 +2538,91 @@
 
 /* Responsive adjustments for modal widths */
 @media (max-width: 400px) {
-    .settings-modal-content,
-    .myaccount-modal-content,
+    .settings-modal-content {
+        width: 250px;
+    }
+    .myaccount-modal-content {
+        overflow: auto;
+        width: 100vw;
+    }
+    .settings-user-profile .settings-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    .settings-avatar-image {
+        width: 80px;
+        height: 80px;
+    }
     .language-modal-content,
     .premium-modal-content,
     .create-channel-modal-content,
     .create-group-modal-content,
-    .edit-modal-content,
+    .edit-modal-content {
+        display: flex;
+        flex-direction: column;
+        width: 220px; /* Increased width for larger screens */
+        height: 250px;
+        justify-content: center;
+        overflow: auto;
+    }
     .verification-modal-content {
-        width: 150px; /* Increased width for larger screens */
-        height: 800px;
+        width: 220px; /* Increased width for larger screens */
+        height: 600px;
+        overflow: auto;
+    }
+}
+
+/* Responsive adjustments for modal widths */
+@media (max-width: 280px) {
+    .settings-modal-content {
+        width: 100vw;
+    }
+    .myaccount-modal-content {
+        width: 100vw; /* Increased width for larger screens */
+        height: 400px;
+    }
+    .language-modal-content,
+    .premium-modal-content,
+    .create-channel-modal-content,
+    .create-group-modal-content,
+    .edit-modal-content {
+        height: 250px;
+        width: auto;
+    }
+    .verification-modal-content {
+        display: flex;
+        flex-direction: column;
+        width: 200px; /* Increased width for larger screens */
+        height: 500px;
+        justify-content: center;
+    }
+}
+
+/* Responsive adjustments for modal widths */
+@media (max-width: 260px) {
+    .settings-modal-content {
+        width: 100vw;
+        overflow: hidden;
+    }
+    .myaccount-modal-content {
+        width: 100vw; /* Increased width for larger screens */
+        height: 400px;
+        overflow: auto;
+    }
+    .language-modal-content,
+    .premium-modal-content,
+    .create-channel-modal-content,
+    .create-group-modal-content,
+    .edit-modal-content {
+        height: 250px;
+        width: auto;
+    }
+    .verification-modal-content {
+        display: flex;
+        flex-direction: column;
+        width: 200px; /* Increased width for larger screens */
+        height: 500px;
+        justify-content: center;
     }
 }
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import MyAccount from './MyAccount';
 import Language from './Language';
-import Premium from './Premium';
+import AdvancedSettings from './AdvancedSettings';
 import { icons } from '../app/lib/constants'; // Keep import for now
 import Button from '@/components/Button';
 import Image from 'next/image';
@@ -49,7 +49,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
   };
 
   const handlePremiumClick = () => {
-    setCurrentView('premium');
+    setCurrentView('advancedSettings');
   };
 
   return (
@@ -97,8 +97,8 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
               <p className="settings-option-text">Language</p>
             </div>
             <div className="settings-option" onClick={handlePremiumClick}>
-              <div className="settings-option-icon"><Image src={icons.premium} alt="Premium" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">Premium BrainMessenger</p>
+              <div className="settings-option-icon"><Image src={icons.settings} alt="Settings" className="icon" width={20} height={20} /></div> {/* Use img tag */}
+              <p className="settings-option-text">Advanced settings</p>
             </div>
           </div>
         </div>
@@ -120,8 +120,8 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
         />
       )}
 
-      {currentView === 'premium' && (
-        <Premium
+      {currentView === 'advancedSettings' && (
+        <AdvancedSettings
           isOpen={isOpen} // Pass isOpen to keep the modal open
           onClose={handleCloseModal}
           onBack={handleBackClick}

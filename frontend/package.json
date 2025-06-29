@@ -27,7 +27,8 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.1",
     "react-image-crop": "^11.0.10",
-    "react-syntax-highlighter": "^15.6.1"
+    "react-syntax-highlighter": "^15.6.1",
+    "use-debounce": "^10.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

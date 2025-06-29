@@ -14,6 +14,7 @@ import Settings from '@/ui/Settings';
 import ChatListItem from '@/components/ChatListItem';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
+import { TypingIndicator } from '@/components/TypingIndicator';
 import InputPanel from '@/components/InputPanel';
 import GlobalAudioControls from '@/components/GlobalAudioControls'; // Import GlobalAudioControls
 import { icons } from '@/app/lib/constants';
@@ -979,6 +980,7 @@ const ChatPage = () => {
                   })}
                   <div ref={messagesEndRef} />
                 </div>
+                {selectedChatId && <TypingIndicator chatId={selectedChatId} />}
                 <div className="chat-input-panel">
                   <ChatInput
                     chatId={selectedChatId}

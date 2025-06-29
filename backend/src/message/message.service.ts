@@ -113,7 +113,7 @@ export class MessageService {
       skip: offset,
       include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'asc',
       }
     });
   }

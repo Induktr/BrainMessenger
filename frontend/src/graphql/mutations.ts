@@ -26,6 +26,12 @@ export const REMOVE_MESSAGE_REACTION = gql`
   }
 `;
 
+export const SET_USER_TYPING = gql`
+  mutation SetUserTyping($chatId: ID!, $isTyping: Boolean!) {
+    setUserTyping(chatId: $chatId, isTyping: $isTyping)
+  }
+`;
+
 export const DELETE_MESSAGE = gql`
   mutation DeleteMessage($messageId: ID!) {
     deleteMessage(messageId: $messageId)
