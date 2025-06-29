@@ -994,14 +994,6 @@
     overflow: hidden; /* Hide overflow */
 }
 
-.chat-sidebar {
-    width: 350px; /* Fixed width for the sidebar */
-    background-color: #2B2B2B; /* Dark background */
-    display: flex;
-    flex-direction: column;
-    padding: 0; /* Remove padding from sidebar container */
-}
-
 .chat-list {
     flex-grow: 1; /* Allow chat list to take available space */
     overflow-y: auto; /* Enable scrolling for chat list */
@@ -1015,29 +1007,6 @@
     background-color: #1a1a1a; /* Dark background for main content */
 }
 
-/* Responsive adjustments for smaller screens */
-@media (max-width: 768px) {
-    .chat-container:not(.chat-selected) .chat-main-content {
-        display: none; /* Hide main content when no chat is selected */
-    }
-
-    .chat-container:not(.chat-selected) .chat-sidebar {
-        width: 100%; /* Sidebar takes full width when no chat is selected */
-        border-right: none; /* Remove sidebar border on full width */
-    }
-
-    .chat-container.chat-selected .chat-sidebar {
-        display: none; /* Hide sidebar when a chat is selected */
-    }
-
-    .chat-container.chat-selected .chat-main-content {
-        width: 100%; /* Main content takes full width when a chat is selected */
-    }
-
-    .chat-container.chat-selected .back-button {
-        display: flex; /* Show back button when chat is selected on small screens */
-    }
-}
 .search-input::placeholder {
     color: #B0B0B0;
 }
@@ -1335,6 +1304,50 @@
 .myaccount-info-item-centered {
     /* Specific styling for the centered email item if needed,
        but justify-content: center on .myaccount-info-item might be enough */
+}
+
+@media (max-width: 768px) {
+
+    .chat-container:not(.chat-selected) .chat-main-content {
+
+        display: none; /* Hide main content when no chat is selected */
+
+    }
+
+
+
+    .chat-container:not(.chat-selected) .chat-sidebar {
+
+        width: 100%; /* Sidebar takes full width when no chat is selected */
+
+        border-right: none; /* Remove sidebar border on full width */
+
+    }
+
+
+
+    .chat-container.chat-selected .chat-sidebar {
+
+        display: none; /* Hide sidebar when a chat is selected */
+
+    }
+
+
+
+    .chat-container.chat-selected .chat-main-content {
+
+        width: 100%; /* Main content takes full width when a chat is selected */
+
+    }
+
+
+
+    .chat-container.chat-selected .back-button {
+
+        display: flex; /* Show back button when chat is selected on small screens */
+
+    }
+
 }
 
 
@@ -1780,7 +1793,7 @@
 }
 
 .chat-sidebar {
-    width: 350px; /* Fixed width for the sidebar */
+    width: 450px; /* Fixed width for the sidebar */
     background-color: #2b2b2b; /* Darker background for the sidebar */
     display: flex;
     flex-direction: column;
@@ -3144,33 +3157,34 @@
      Примените этот класс к div'у, который оборачивает всю правую часть чата.
 */
 .chat-area-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Занимает 100% высоты окна браузера */
-  background-color: #1e1e1e; /* Фоновый цвет чата */
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Занимает 100% высоты окна браузера */
+    background-color: #1e1e1e; /* Фоновый цвет чата */
 }
-
-/* 
-  2. Контейнер для списка сообщений.
-     Он должен растягиваться, чтобы занять все доступное пространство, и иметь свою прокрутку.
-     Примените этот класс к div'у, который оборачивает все сообщения.
-*/
-.chat-messages-list {
-  flex-grow: 1; /* Растягивается, чтобы занять все свободное пространство */
-  overflow-y: auto; /* Включает вертикальную прокрутку, когда контент не помещается */
-  padding: 15px;
-}
-
-/* 
-  3. Контейнер для панели ввода.
-     Он должен быть прижат к низу и не изменять свой размер.
-     Примените этот класс к div'у, который оборачивает ваш ChatInput.
-*/
-.chat-input-panel {
-  flex-shrink: 0; /* Запрещает контейнеру сжиматься */
-  padding: 15px;
-  background-color: #2b2b2b; /* Цвет фона панели ввода */
-  border-top: 1px solid #3a3a3a;
-}
-
-/* === End of Chat Layout Fix === */
+  
+  
+  /* 
+    2. Контейнер для списка сообщений.
+    Он должен растягиваться, чтобы занять все доступное пространство, и иметь свою прокрутку.
+    Примените этот класс к div'у, который оборачивает все сообщения.
+  */
+  .chat-messages-list {
+    flex-grow: 1; /* Растягивается, чтобы занять все свободное пространство */
+    overflow-y: auto; /* Включает вертикальную прокрутку, когда контент не помещается */
+    padding: 15px;
+  }
+  
+  /* 
+    3. Контейнер для панели ввода.
+    Он должен быть прижат к низу и не изменять свой размер.
+    Примените этот класс к div'у, который оборачивает ваш ChatInput.
+  */
+  
+  .chat-input-panel {
+    flex-shrink: 0; /* Запрещает контейнеру сжиматься */
+    padding: 15px;
+    background-color: #2b2b2b; /* Цвет фона панели ввода */
+    border-top: 1px solid #3a3a3a;
+  }
+  /* === End of Chat Layout Fix === */

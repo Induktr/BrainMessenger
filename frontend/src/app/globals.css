@@ -2,16 +2,6 @@
 
 /* Deep Work Mode Styles - Symmetric Animations */
 
-/* Base styles for elements to handle return animations via transition */
-.chat-sidebar {
-  /* This transition now handles ALL animated properties for a smooth return */
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-              opacity 0.4s ease-out, 
-              width 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-              margin 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-              padding 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 .chat-main-content {
   /* Smoothly transition width and margin in both directions */
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -101,7 +91,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 svg {
@@ -1141,53 +1130,8 @@ html {
     font-size: 14px; /* Smaller base size on mobile */
   }
 
-  .chat-sidebar {
-    position: fixed; /* Keep sidebar fixed on mobile */
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 260px; /* Adjust width as needed */
-    transform: translateX(-100%); /* Initially off-screen */
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000; /* Ensure it's above the main content */
-  }
-
-  .chat-sidebar.open {
-    transform: translateX(0); /* Slide in when open */
-  }
-
-  .chat-main-content {
-    margin-left: 0; /* No margin when sidebar is hidden */
-    width: 100%;
-  }
-
   .burger-menu-button {
     display: block; /* Show the burger menu button */
-  }
-
-  /* Adjust chat header for mobile */
-  .chat-main-content .chat-header {
-    display: flex;
-    align-items: center;
-    padding: 1rem; /* Add some padding */
-    background-color: #2B2B2B; /* Example background */
-    border-bottom: 1px solid #4D4D4D; /* Example border */
-  }
-
-  .chat-main-content .chat-header .back-button {
-    display: block; /* Show back button on mobile when chat is selected */
-    margin-right: 1rem; /* Space between back button and avatar */
-  }
-
-  /* Chat List Item adjustments */
-  .chat-list {
-    padding-top: 60px; /* Add padding to account for header/search */
-    flex-grow: 1; /* Allow chat list to take available space */
-    overflow-y: auto; /* Enable scrolling for chat list */
-  }
-
-  .chat-list-item {
-    padding: 0.75rem; /* Slightly less padding */
   }
 
   /* Input Panel adjustments */
@@ -1222,14 +1166,6 @@ html {
     font-size: 0.9rem;
   }
 
-
-  /* Chat Message adjustments */
-  .chat-messages {
-    flex-grow: 1; /* Allow messages to take available space */
-    overflow-y: auto; /* Enable scrolling for messages */
-    padding: 1rem 0.5rem; /* Adjust padding top/bottom and left/right */
-  }
-
   /* Modal adjustments */
   .modal-content {
     max-width: 95%; /* Increase max-width on smaller screens */
@@ -1251,12 +1187,6 @@ html {
     width: 100%; /* Full width */
     height: 50px; /* Adjust height */
     font-size: 16px; /* Adjust font size */
-  }
-
-  /* Adjustments for the welcome message when no chat is selected */
-  .chat-main-content .chat-welcome-message {
-    font-size: 16px; /* Smaller font size */
-    padding: 1rem; /* Add padding */
   }
 }
 
@@ -1598,4 +1528,3 @@ html {
   margin-top: 0.25rem;
   padding-left: 0.25rem;
 }
-

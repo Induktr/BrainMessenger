@@ -12,6 +12,8 @@ import { useRouter } from 'next/navigation'; // Import useRouter
 import Image from 'next/image';
 import { images } from '../lib/constants'
 import { useAuth } from '@/context/AuthContext'; // Import useAuth hook
+import SmallSettings from '@/ui/SmallSettings';
+import { icons } from '../lib/constants';
 
 interface LoginFormInputs {
   email: string;
@@ -24,6 +26,7 @@ const LoginPage = () => {
   const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
   const [sendVerificationEmailMutation, { loading: isSendingVerificationEmail, error: sendVerificationEmailError }] = useMutation(SEND_VERIFICATION_EMAIL);
   const [verifyEmailMutation, { loading: isVerifyingEmail, error: verifyEmailError }] = useMutation(VERIFY_EMAIL);
+  const [currentView, setCurrentView] = useState('');
 
   const router = useRouter();
   const { user, setUserState, showEmailVerificationModal, setShowEmailVerificationModal, refetchUser } = useAuth(); // Получаем новые состояния и функции из AuthContext
@@ -32,6 +35,14 @@ const LoginPage = () => {
   const [verificationError, setVerificationError] = useState('');
   const [isResendingCode, setIsResendingCode] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
+
+  const handleSmallSettingsClick = () => {
+    setCurrentView('smallSettings')
+  }
+
+  const handleClose = () => {
+    setCurrentView('')
+  }
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
@@ -125,6 +136,10 @@ const LoginPage = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen bg-background-dark text-textPrimary-dark p-4">
         <div className="w-full max-w-md p-8 space-y-6 bg-surface-dark rounded-lg shadow-md">
+        {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
+        <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
+          <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
+        </div>
         <div className="icon-container-steps">
           <Image
             src={images.logoBrainMessenger}

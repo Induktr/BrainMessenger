@@ -4,11 +4,12 @@ interface InputCellProps {
   value: string;
   onChange: (value: string) => void;
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>; // Add onKeyDown prop
+  onPaste?: React.ClipboardEventHandler<HTMLInputElement>; // Add onPaste prop
   inputRef?: React.RefObject<HTMLInputElement | null>; // Allow null in the ref object
   className?: string;
 }
 
-const InputCell: React.FC<InputCellProps> = ({ value, onChange, onKeyDown, inputRef, className }) => {
+const InputCell: React.FC<InputCellProps> = ({ value, onChange, onKeyDown, onPaste, inputRef, className }) => {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -32,6 +33,7 @@ const InputCell: React.FC<InputCellProps> = ({ value, onChange, onKeyDown, input
       value={localValue}
       onChange={handleChange}
       onKeyDown={onKeyDown} // Pass onKeyDown prop
+      onPaste={onPaste} // Pass onPaste prop
       ref={inputRef}
       className={className} // Add a class for styling
     />

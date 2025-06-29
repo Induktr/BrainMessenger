@@ -12,6 +12,7 @@ import ProgressIndicator from '../../components/ProgressIndicator';
 import { useMutation } from '@apollo/client';
 import { REGISTER_USER, VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/graphql/queries'; // Import mutations
 import { icons, images } from '../lib/constants';
+import SmallSettings from '@/ui/SmallSettings';
 
 interface RegisterFormInputs {
   email: string;
@@ -33,6 +34,7 @@ const RegisterPage = () => {
     const [verifyEmail, { loading: loadingVerification, error: errorVerification }] = useMutation(VERIFY_EMAIL); // Use useMutation for verification
     const [resendVerificationCode, { loading: loadingResend, error: errorResend }] = useMutation(SEND_VERIFICATION_EMAIL); // Use useMutation for resending code
     const [verificationSuccess, setVerificationSuccess] = useState(false); // State for verification success
+    const [currentView, setCurrentView] = useState('');
    
    
      // Function to handle resending the verification code
@@ -110,6 +112,14 @@ const RegisterPage = () => {
      }
    };
  
+   const handleSmallSettingsClick = () => {
+    setCurrentView('smallSettings')
+   }
+ 
+   const handleClose = () => {
+    setCurrentView('')
+   }
+ 
    // Function to handle code verification submission
    const handleVerificationSubmit = async (emailToVerify: string) => {
      const enteredCode = confirmationCode.join('');
@@ -184,6 +194,24 @@ const RegisterPage = () => {
      }
    };
 
+   const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const pastedData = event.clipboardData.getData('text');
+    const codeArray = pastedData.slice(0, 8).split('');
+    const newCode = [...confirmationCode];
+    codeArray.forEach((char, index) => {
+      if (index < 8) {
+        newCode[index] = char;
+      }
+    });
+    setConfirmationCode(newCode);
+    // Focus the last input cell that was filled
+    const lastFilledIndex = Math.min(codeArray.length, 8) - 1;
+    if (lastFilledIndex >= 0) {
+      inputRefs.current[lastFilledIndex]?.current?.focus();
+    }
+  };
+
    // Function to determine the text to display based on the current step
    const getStepText = (step: number, email?: string) => {
      switch (step) {
@@ -205,8 +233,9 @@ const RegisterPage = () => {
 
    return (
      <div className="welcome-container"> {/* Reusing welcome-container for centering */}
+     {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
           <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-              <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" width={24} height={24} /> {/* Use img tag */}
+              <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
           </div>
        <div className="main-content-area"> {/* Reusing main-content-area */}
          {/* Logo */}
@@ -384,6 +413,7 @@ const RegisterPage = () => {
                      value={value}
                      onChange={(val) => handleCodeInputChange(index, val)}
                      onKeyDown={(e) => handleKeyDown(index, e)} // Add onKeyDown handler
+                     onPaste={handlePaste} // Add onPaste handler
                      inputRef={inputRefs.current[index]}
                    />
                  ))}
