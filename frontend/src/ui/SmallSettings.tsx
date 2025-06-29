@@ -15,8 +15,9 @@ interface SmallSettingsProps {
 }
 
 const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
-  const [currentView, setCurrentView] = useState('smallSettings'); // 'smallSettings', 'support', 'language', 'theme'
- 
+  const [currentView, setCurrentView] = useState('smallSettings');
+  // 'smallSettings', 'support', 'language'
+
   // Reset view when modal is closed
   useEffect(() => {
     if (!isOpen) {
@@ -30,62 +31,81 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
   };
 
   const handleSupportClick = () => {
-    setCurrentView('support'); // Reset view on close
-  }
+    setCurrentView('support');
+  };
 
   const handleLanguageClick = () => {
-    setCurrentView('language'); // Reset view on close
-  }
+    setCurrentView('language');
+  };
 
-  const handleToggleTheme = () => {
-    console.log(`Currnet theme changes: ${handleToggleTheme}`)
-  }
+  const handleThemeChange = (theme: 'dark' | 'light') => {
+    // Placeholder for theme change logic
+    console.log(`Theme set to: ${theme}`);
+  };
+
+  const handleBackToSettings = () => {
+    setCurrentView('smallSettings');
+  };
+
+  const containerClass = currentView === 'support' ? 'modal-support-view' : '';
 
   return (
-    <Modal onClose={handleCloseModal} isOpen={isOpen}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCloseModal}
+      containerClassName={containerClass}
+    >
       {currentView === 'smallSettings' && (
         <div className="settings-small-modal-content">
           {/* Settings Header */}
           <div className="settings-small-header">
-            <h2 className="settings-small-header">Settings</h2>
+            <h2 className="settings-small-title">Settings</h2>
             <Button className="settings-small-close-button" onClick={handleCloseModal}>
-              <img src={icons.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
+              <img src={icons.closeModal} alt="Close" className="icon" />
             </Button>
           </div>
 
           {/* Settings Options List */}
           <div className="settings-small-options-list">
-            <div className="settings-small-option" onClick={handleToggleTheme}>
-              <div className="settings-small-option-icon"><Image src={icons.account} alt="My account" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-small-option-theme">Theme</p>
+            {/* Theme Setting */}
+            <div className="settings-option-item theme-option">
+              <label className="settings-option-label">Theme</label>
+              <div className="theme-buttons-container">
+                <button className="theme-button dark-mode" onClick={() => handleThemeChange('dark')}>
+                  Dark Mode
+                </button>
+                <button className="theme-button light-mode" onClick={() => handleThemeChange('light')}>
+                  Light Mode
+                </button>
+              </div>
             </div>
-            <div className="settings-small-option" onClick={handleLanguageClick}>
-              <div className="settings-small-option-icon"><Image src={icons.language} alt="Language" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-small-option-text">Language</p>
+
+            {/* Language and Support Buttons */}
+            <div className="settings-option-item-row">
+                <button className="settings-action-button" onClick={handleLanguageClick}>
+                    Language
+                </button>
+                <button className="settings-action-button" onClick={handleSupportClick}>
+                    Support
+                </button>
             </div>
-            <div className="settings-small-option" onClick={handleSupportClick}>
-              <div className="settings-small-option-icon"><Image src={icons.support} alt="Premium" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-small-option-text">Support</p>
+            <div className="support-description">
+                <p>Have questions? Contact our support team.</p>
             </div>
           </div>
         </div>
       )}
       {currentView === 'support' && (
-        <div>
-          <Support onBack={handleCloseModal} onClose={handleCloseModal} isOpen={true}/>
-        </div>
+        <Support onBack={handleBackToSettings} onClose={handleCloseModal} />
       )}
       {currentView === 'language' && (
         <div>
-          <Language onBack={handleCloseModal} onClose={handleCloseModal} isOpen={true}/>
-        </div>
-      )}
-      {currentView === 'theme' && (
-        <div>
+          <Language onBack={handleBackToSettings} onClose={handleCloseModal} isOpen={true} />
         </div>
       )}
     </Modal>
   );
+
 };
 
 export default SmallSettings;

@@ -1,55 +1,59 @@
 'use client';
 
 import React from 'react';
-import Modal from '@/components/Modal';
-import { icons } from '../app/lib/constants';
 import Button from '@/components/Button';
+import { icons } from '../app/lib/constants';
 
 interface SupportProps {
-  isOpen: boolean;
+  onBack: () => void;
   onClose: () => void;
-  onBack: () => void; // Prop to handle going back to main settings
 }
 
-const Support: React.FC<SupportProps> = ({ isOpen, onClose, onBack }) => {
+const Support: React.FC<SupportProps> = ({ onBack, onClose }) => {
   return (
-    <Modal onClose={onClose} isOpen={isOpen}>
-      <div className="support-modal-content">
-        {/* Header */}
-        <div className="support-header">
-          <Button className="support-back-button" onClick={onBack}>
-            {/* Rotated arrow icon */}
-            <img src={icons.arrowLeft} alt="Back" className="icon" /> {/* Use img tag */}
-          </Button>
-          <h2 className="support-header-title">Language</h2> {/* Title based on screenshot */}
-          <Button className="support-close-button" onClick={onClose}>
-            <img src={icons.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
-          </Button>
-        </div>
-
-        {/* Separator */}
-        <div className="support-separator"></div>
-
-        {/* Interface Language Label */}
-        <p className="support-interface-label">Interface language</p>
-
-        {/* Language Options List */}
-        <div className="support-options-list">
-          <div className="support-option">
-            <div className="support-option-icon"><img src={icons.en} alt="English" className="icon" /></div> {/* Use img tag */}
-            <p className="support-option-text">English</p>
-          </div>
-          <div className="support-option">
-            <div className="support-option-icon"><img src={icons.ua} alt="Ukranian" className="icon" /></div> {/* Use img tag */}
-            <p className="support-option-text">Ukranian</p>
-          </div>
-          <div className="support-option">
-            <div className="support-option-icon"><img src={icons.ru} alt="Russia" className="icon" /></div> {/* Use img tag */}
-            <p className="support-option-text">Russia</p>
-          </div>
-        </div>
+    <div className="support-modal-content">
+      {/* Header */}
+      <div className="support-header">
+        <Button className="support-back-button" onClick={onBack}>
+          <img src={icons.arrowLeft} alt="Back" className="icon" style={{ transform: 'rotate(0deg)' }} />
+        </Button>
+        <h2 className="support-header-title">Support & Service</h2>
+        <Button className="support-close-button" onClick={onClose}>
+          <img src={icons.closeModal} alt="Close" className="icon" />
+        </Button>
       </div>
-    </Modal>
+
+      {/* Separator */}
+      <div className="support-separator"></div>
+
+      {/* Body */}
+      <div className="support-body">
+        <h3 className="support-section-title">Our Philosophy</h3>
+        <p className="support-text">
+          Support and maintenance are an integral part of our system, aimed at maintaining the health of the application and preserving the value of this digital asset for our users. We are guided by the principles of continuous improvement (Kaizen), quality, and responsibility.
+        </p>
+
+        <h3 className="support-section-title">How to Reach Us</h3>
+        <p className="support-text">
+          For any questions or issues, you can contact us through the following channels:
+        </p>
+        <ul className="support-channels-list">
+          <li className="support-channel-item">
+            <strong>Email:</strong> <a href="mailto:support@brainmessenger.com" className="support-link">support@brainmessenger.com</a>
+            <p className="support-channel-description">Primary channel, response within 24 hours.</p>
+          </li>
+          <li className="support-channel-item">
+            <strong>In-App Feedback Form:</strong>
+            <p className="support-channel-description">Go to "Settings" → "Help" → "Contact Us" for structured problem reporting.</p>
+          </li>
+        </ul>
+
+        <h3 className="support-section-title">For More Information</h3>
+        <p className="support-text">
+          For detailed documentation and guides, please visit our official landing page.
+        </p>
+      </div>
+    </div>
   );
 };
 
