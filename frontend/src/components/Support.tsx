@@ -44,7 +44,7 @@ const Support: React.FC<SupportProps> = ({ onBack, onClose }) => {
           </li>
           <li className="support-channel-item">
             <strong>In-App Feedback Form:</strong>
-            <p className="support-channel-description">Go to "Settings" → "Help" → "Contact Us" for structured problem reporting.</p>
+            <p className="support-channel-description">Go to Settings → Help → Contact Us for structured problem reporting.</p>
           </li>
         </ul>
 
