@@ -36,15 +36,12 @@ export class UserDto {
   @Field(() => String, { nullable: true })
   status?: string | null;
 
-<<<<<<< HEAD
   @Field(() => Boolean, { nullable: true })
   isOnline?: boolean;
 
   @Field(() => String, { nullable: true })
   lastSeen?: string;
 
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   @Field(() => [String], { nullable: true })
   roles: string[] | null;
 

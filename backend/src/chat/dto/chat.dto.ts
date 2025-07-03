@@ -12,12 +12,9 @@ export class ChatDto {
   @Field(() => String, { nullable: true })
   name: string | null;
 
-<<<<<<< HEAD
   @Field({ nullable: true })
   avatarUrl?: string;
 
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   @Field()
   type: string;
 

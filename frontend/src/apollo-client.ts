@@ -9,11 +9,7 @@ import { onError } from '@apollo/client/link/error';
 import { ApolloLink, FetchResult } from '@apollo/client';
 import Observable from 'zen-observable';
 import { execute, Operation } from '@apollo/client/link/core';
-<<<<<<< HEAD
 import { REFRESH_TOKEN_MUTATION } from '@/entities/user/model/user.queries';
-=======
-import { REFRESH_TOKEN_MUTATION } from '@/graphql/queries';
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 import * as Sentry from "@sentry/nextjs"; // Import Sentry
 
 // Configure the HTTP link for queries and mutations

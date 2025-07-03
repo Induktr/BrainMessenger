@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useLayoutEffect } from 'react'; // Import useLayoutEffect
 import { useRouter } from 'next/navigation'; // Import useRouter
-<<<<<<< HEAD
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth
 import { ICONS } from '@/shared/assets/Icons/icons';
 import { IMAGES } from '@/shared/assets/Images/images';
@@ -13,54 +12,27 @@ import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 const slides = [
   {
     image: <Image src={IMAGES.logoBrainMessenger} alt="logoBrainMessenger" className="logo-container-size" width={175} height={175}></Image>, // Temporarily commented out for debugging
-=======
-import { useAuth } from '@/context/AuthContext'; // Import useAuth
-import { icons, images } from './lib/constants';
-import Button from '@/components/Button';
-import Image from 'next/image';
-import SmallSettings from '@/ui/SmallSettings';
-
-const slides = [
-  {
-    image: <Image src={images.logoBrainMessenger} alt="logoBrainMessenger" className="logo-container-size" width={175} height={175}></Image>, // Temporarily commented out for debugging
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     title: 'Welcome to BrainMessenger - let\'s get started!',
     description: 'Brain Messenger helps you stay connected.',
     // Add more slides as needed based on the mockup/requirements
   },
   {
-<<<<<<< HEAD
     icon: <Image src={ICONS.shield} alt="Shield" className="icon-container-size" width={120} height={120}></Image>,
-=======
-    icon: <Image src={icons.shield} alt="Shield" className="icon-container-size" width={120} height={120}></Image>,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     title: 'Secure Communication', // Example from mockup
     description: 'End-to-end encryption ensures your messages stay private and secure.', // Example from mockup
   },
   {
-<<<<<<< HEAD
     icon: <Image src={ICONS.channel} alt="Group" className="icon-container-size" width={120} height={120}></Image>,
-=======
-    icon: <Image src={icons.channel} alt="Group" className="icon-container-size" width={120} height={120}></Image>,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     title: 'Main features', // Example from mockup
     description: 'Create private and group chats, send messages and receive real-time notifications.', // Example from mockup
   },
   {
-<<<<<<< HEAD
     icon: <Image src={ICONS.castle} alt="Castle" className="icon-container-size" width={120} height={120}></Image>,
-=======
-    icon: <Image src={icons.castle} alt="Castle" className="icon-container-size" width={120} height={120}></Image>,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     title: 'Safety first', // Example from mockup
     description: 'Your data is protected by end-to-end encryption and state-of-the-art security protocols.', // Example from mockup
   },
   {
-<<<<<<< HEAD
     icon: <Image src={ICONS.increase} alt="Increase" className="icon-container-size" width={120} height={120}></Image>,
-=======
-    icon: <Image src={icons.increase} alt="Increase" className="icon-container-size" width={120} height={120}></Image>,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     title: 'The future of BrainMessenger', // Example from mockup
     description: 'Coming soon: AI assistant, CRM integrations and blockchain transaction support!', // Example from mockup
   },
@@ -140,11 +112,7 @@ const WelcomePage = () => {
       <header className="welcome-header">
         {/* Right side: Burger Menu Icon */}
         <div className="burger-menu-container">
-<<<<<<< HEAD
             <Image src={ICONS.burgerMenu} alt="Burger menu" onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
-=======
-            <Image src={icons.burgerMenu} alt="Burger menu" onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
         </div>
       </header>
 
@@ -167,11 +135,7 @@ const WelcomePage = () => {
           >
             {/* Left Arrow SVG */}
               {/* Left Arrow SVG */}
-<<<<<<< HEAD
               <Image src={ICONS.arrowLeft} alt="Arrow Left" className="icon" width={24} height={24}></Image>
-=======
-              <Image src={icons.arrowLeft} alt="Arrow Left" className="icon" width={24} height={24}></Image>
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           </Button>
           {/* Placeholder for slider indicators if needed */}
           <div className="slider-indicators">
@@ -188,11 +152,7 @@ const WelcomePage = () => {
             className="slider-button next-button"
           >
             {/* Right Arrow SVG */}
-<<<<<<< HEAD
             <Image src={ICONS.arrowRight} alt="Arrow Right" className="icon" width={24} height={24}></Image>
-=======
-            <Image src={icons.arrowRight} alt="Arrow Right" className="icon" width={24} height={24}></Image>
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           </Button>
         </div>
 
@@ -206,8 +166,4 @@ const WelcomePage = () => {
   );
 };
 
-<<<<<<< HEAD
 export default WelcomePage;
-=======
-export default WelcomePage;
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df

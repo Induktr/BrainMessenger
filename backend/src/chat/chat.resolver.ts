@@ -21,10 +21,7 @@ import { User } from '../auth/interfaces/user.interface';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { UserCacheInterceptor } from '../common/interceptors/user-cache.interceptor';
 import { ObjectType, Field } from '@nestjs/graphql';
-<<<<<<< HEAD
 import { GlobalSearchResultDto } from './dto/global-search-result.dto';
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 @ObjectType()
 class TypingUser {
@@ -63,7 +60,6 @@ export class ChatResolver {
 
   @Subscription(() => TypingStatus, {
     filter: (payload, variables, context) => {
-<<<<<<< HEAD
       const logger = new Logger('typingStatusFilter');
       logger.debug(`Payload: ${JSON.stringify(payload)}, Variables: ${JSON.stringify(variables)}`);
       const user = context.req?.user || context.user;
@@ -88,28 +84,6 @@ export class ChatResolver {
     if (!user) {
       throw new UnauthorizedException('You must be logged in to subscribe to typing status.');
     }
-=======
-      // The user is attached to the context by the JwtAuthGuard.
-      // For WebSocket connections, the context needs to be properly populated,
-      // potentially via an onConnect handler in your GraphQL server setup.
-      const user = context.req?.user || context.user;
-      if (!user) {
-        return false;
-      }
-      // Don't send the notification to the user who is typing
-      if (payload.typingStatus.user.id === user.id) {
-          return false;
-      }
-      // Only send to users in the same chat
-      return payload.typingStatus.chatId === variables.chatId;
-    },
-    resolve: (payload) => {
-      // Resolve to the shape of the TypingStatus GQL type
-      return { user: payload.typingStatus.user, isTyping: payload.typingStatus.isTyping };
-    },
-  })
-  typingStatus(@Args('chatId', { type: () => ID }) chatId: string) {
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     return (this.pubSub as any).asyncIterator('typingStatus');
   }
 
@@ -127,11 +101,7 @@ export class ChatResolver {
     }
 
     const twentySecondsAgo = new Date(Date.now() - 20 * 1000);
-<<<<<<< HEAD
     const isOnline = user.lastActiveAt && new Date(user.lastActiveAt) > twentySecondsAgo;
-=======
-    const status = user.lastActiveAt && new Date(user.lastActiveAt) > twentySecondsAgo ? 'Online' : 'Offline';
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
     return {
       id: user.id,
@@ -145,13 +115,9 @@ export class ChatResolver {
       avatarUrl: user.avatarUrl ?? null,
       bio: user.bio ?? null,
       roles: user.roles ?? [],
-<<<<<<< HEAD
       status: isOnline ? 'Online' : 'Offline',
       isOnline: isOnline,
       lastSeen: user.lastActiveAt?.toISOString() ?? null,
-=======
-      status: status,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     };
   }
 
@@ -184,16 +150,10 @@ export class ChatResolver {
     return {
       id: chat.id,
       name: chatName,
-<<<<<<< HEAD
       avatarUrl: chat.avatarUrl ?? undefined,
       type: chat.type,
       participants: chat.participants.map((p: any) => this._mapUserToDto(p.user ?? p)),
       messages: (chat.messages || []).map(m => this._mapMessageToDto(m)),
-=======
-      type: chat.type,
-      participants: chat.participants.map((p: any) => p.user),
-      messages: chat.messages || [],
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
       channel: chat.channel ? {
         ...chat.channel,
         chat: {
@@ -208,36 +168,13 @@ export class ChatResolver {
     };
   }
 
-<<<<<<< HEAD
   @Query(() => ChatDto, { name: 'chat', nullable: true })
   async getChat(@Args('id', { type: () => ID }) id: string, @CurrentUser() user: User): Promise<ChatDto | null> {
-=======
-  @Query(() => ChatDto, { nullable: true })
-  async getChat(@Args('id', { type: () => ID }) id: string): Promise<ChatDto | null> {
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     const chat = await this.chatService.findOne(id);
     if (!chat) {
       return null;
     }
-<<<<<<< HEAD
     return this._mapChatToDto(chat, user);
-=======
-
-    // The service provides a rich object. We perform minimal, safe mapping to the DTO.
-    // We trust that `userSelect` in the service has fetched all required fields.
-    return {
-      ...chat,
-      // The service returns ChatParticipant[], but the DTO expects UserDto[]
-      participants: chat.participants.map((p) => p.user),
-      // The service returns the full channel object, which matches the ChannelDto structure
-      channel: chat.channel || undefined,
-      // Calculate snippet and timestamp from the full messages array
-      lastMessageSnippet: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].content : null,
-      lastMessageTimestamp: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].createdAt.toISOString() : null,
-      // Placeholder for unread count; requires separate logic
-      unreadCount: 0,
-    };
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   }
 
   @Query(() => [ChatDto])
@@ -263,10 +200,7 @@ export class ChatResolver {
       return {
         id: chat.id,
         name: chatName,
-<<<<<<< HEAD
         avatarUrl: chat.avatarUrl ?? undefined,
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
         type: chat.type,
         lastMessageSnippet: lastMessage?.content || null,
         lastMessageTimestamp: lastMessage?.createdAt.toISOString() || null,
@@ -291,14 +225,10 @@ export class ChatResolver {
   ): Promise<ChatDto[]> {
     const channels = await this.chatService.searchChannelsByName(name);
     return channels.map(chat => ({
-<<<<<<< HEAD
       id: chat.id,
       name: chat.name,
       avatarUrl: chat.avatarUrl ?? undefined,
       type: chat.type,
-=======
-      ...chat,
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
       participants: chat.participants.map(p => p.user),
       lastMessageSnippet: null,
       lastMessageTimestamp: null,
@@ -315,7 +245,6 @@ export class ChatResolver {
     }));
   }
 
-<<<<<<< HEAD
   @Query(() => GlobalSearchResultDto)
   async globalSearch(
     @Args('query', { type: () => String }) query: string,
@@ -331,8 +260,6 @@ export class ChatResolver {
     };
   }
 
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   @Mutation(() => ChatDto)
   async createChat(
     @Args('createChatInput') createChatInput: CreateChatInput,
@@ -465,10 +392,7 @@ export class ChatResolver {
     @Args('isTyping', { type: () => Boolean }) isTyping: boolean,
     @CurrentUser() user: User,
   ): Promise<boolean> {
-<<<<<<< HEAD
     const logger = new Logger('setUserTyping');
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     const payload = {
       typingStatus: {
         chatId,
@@ -476,10 +400,7 @@ export class ChatResolver {
         isTyping,
       },
     };
-<<<<<<< HEAD
     logger.debug(`Publishing typing status: ${JSON.stringify(payload)}`);
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     await this.pubSub.publish('typingStatus', payload);
     return true;
   }
@@ -515,40 +436,10 @@ export class ChatResolver {
     if (!updatedMessage) {
       throw new Error('Message not found or could not be updated.');
     }
-<<<<<<< HEAD
     const messageDto = this._mapMessageToDto(updatedMessage);
     if (!messageDto) {
       throw new Error('Failed to map updated message to DTO.');
     }
-=======
-    const messageDto: MessageDto = {
-      id: updatedMessage.id,
-      chatId: updatedMessage.chatId,
-      content: updatedMessage.content,
-      senderId: updatedMessage.senderId,
-      createdAt: updatedMessage.createdAt,
-      sender: {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        isVerified: user.isVerified,
-        avatarUrl: user.avatarUrl,
-        bio: user.bio,
-        status: user.lastActiveAt && !isNaN(new Date(user.lastActiveAt).getTime()) ? (new Date(user.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-        roles: user.roles || [],
-      } as UserDto,
-      attachments: updatedMessage.attachments?.map(att => ({
-        id: att.id,
-        url: att.url,
-        filename: att.filename,
-        mimetype: att.mimetype,
-        size: att.size,
-        createdAt: att.createdAt,
-      })),
-      deletedForUserIds: (updatedMessage as any).deletedForUserIds || [],
-    };
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     return messageDto;
   }
 
@@ -562,44 +453,7 @@ export class ChatResolver {
     const messages = await this.messageService.getMessagesByChatId(chatId, limit, offset);
     return messages
       .filter(msg => !(msg as any).deletedForUserIds.includes(user.id))
-<<<<<<< HEAD
       .map(msg => this._mapMessageToDto(msg));
-=======
-      .map(msg => ({
-        id: msg.id,
-        chatId: msg.chatId,
-        content: msg.content,
-        senderId: msg.senderId,
-        createdAt: msg.createdAt,
-        sender: {
-          id: msg.sender.id,
-          name: msg.sender.name,
-          username: msg.sender.username,
-          email: msg.sender.email,
-          isVerified: msg.sender.isVerified,
-          avatarUrl: msg.sender.avatarUrl,
-          bio: msg.sender.bio,
-          status: msg.sender.lastActiveAt ? (new Date(msg.sender.lastActiveAt).getTime() > (Date.now() - 15 * 1000) ? 'Online' : 'Offline') : 'Offline',
-          roles: msg.sender.roles || [],
-        } as UserDto,
-        attachments: msg.attachments ? msg.attachments.map(att => ({
-          id: att.id,
-          url: att.url,
-          filename: att.filename,
-          mimetype: att.mimetype,
-          size: att.size,
-          createdAt: att.createdAt,
-        })) : [],
-        deletedForUserIds: (msg as any).deletedForUserIds || [],
-        reactions: msg.reactions ? msg.reactions.map(reaction => ({
-          id: reaction.id,
-          messageId: reaction.messageId,
-          userId: reaction.userId,
-          emoji: reaction.emoji,
-          createdAt: reaction.createdAt,
-        })) : [],
-      }));
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   }
 
   @Mutation(() => MessageDto, { nullable: true })
@@ -758,20 +612,14 @@ export class ChatResolver {
       return payload.newMessage;
     },
   })
-<<<<<<< HEAD
   @UseGuards(JwtAuthGuard)
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   newMessage(
     @Args('chatId', { type: () => ID }) chatId: string,
     @CurrentUser() user: User, // Guard ensures user is valid at subscription time
   ): AsyncIterator<MessageDto> {
-<<<<<<< HEAD
     if (!user) {
       throw new UnauthorizedException('You must be logged in to subscribe to new messages.');
     }
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     return (this.pubSub as any).asyncIterator('newMessage');
   }
 

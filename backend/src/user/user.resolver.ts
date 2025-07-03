@@ -1,14 +1,8 @@
-<<<<<<< HEAD
 import { Resolver, Query, Mutation, Args, Int, ID, ObjectType, Context, ResolveField, Parent, Subscription } from '@nestjs/graphql';
 import { UseGuards, UnauthorizedException, UseInterceptors, Inject } from '@nestjs/common'; // Import UseInterceptors
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'; // Import CacheInterceptor, CacheKey, CacheTTL
 import { PubSubEngine } from 'graphql-subscriptions';
 import { PUB_SUB } from '../pubsub/pubsub.provider';
-=======
-import { Resolver, Query, Mutation, Args, Int, ID, ObjectType, Context, ResolveField, Parent } from '@nestjs/graphql';
-import { UseGuards, UnauthorizedException, UseInterceptors } from '@nestjs/common'; // Import UseInterceptors
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager'; // Import CacheInterceptor, CacheKey, CacheTTL
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 import { InputType, Field } from '@nestjs/graphql';
@@ -51,7 +45,6 @@ class UpdateUserInput {
 
 }
  
-<<<<<<< HEAD
 @ObjectType()
 class UserStatus {
   @Field(() => ID)
@@ -83,12 +76,6 @@ export class UserResolver {
     return (this.pubSub as any).asyncIterator('userStatusUpdated');
   }
 
-=======
-@Resolver(() => UserDto)
-export class UserResolver {
-  constructor(private readonly userService: UserService) {}
- 
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   @Query(() => UserDto, { nullable: true })
   async getUser(@Args('id', { type: () => ID }) id: string): Promise<UserDto | null> {
     const user = await this.userService.findOne(id);
@@ -166,7 +153,6 @@ export class UserResolver {
     if (!user || !user.id) {
       throw new UnauthorizedException('Authentication required: User ID not available.');
     }
-<<<<<<< HEAD
     const updatedUser = await this.userService.updateLastActive(user.id);
     
     this.pubSub.publish('userStatusUpdated', {
@@ -178,9 +164,6 @@ export class UserResolver {
     });
 
     return updatedUser;
-=======
-    return this.userService.updateLastActive(user.id);
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   }
 
   @Mutation(() => [String])

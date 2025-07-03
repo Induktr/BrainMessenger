@@ -48,10 +48,7 @@ model User {
 model Chat {
   id               String            @id @default(uuid())
   name             String? // Name is optional for private chats
-<<<<<<< HEAD
   avatarUrl        String?
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   type             ChatType // Use ChatType enum
   messages         Message[]
   calls            Call[] // Added relation

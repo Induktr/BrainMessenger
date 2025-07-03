@@ -7,10 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from '../mail/mail.module';
-<<<<<<< HEAD
 import { JwtAuthGuard } from './jwt-auth.guard';
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 @Module({
  imports: [
@@ -32,12 +29,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
      inject: [ConfigService],
    }),
  ],
-<<<<<<< HEAD
   providers: [AuthService, AuthResolver, JwtStrategy, Logger, JwtAuthGuard], // Provide Logger and JwtAuthGuard
   exports: [AuthService, JwtModule, JwtAuthGuard],
-=======
-  providers: [AuthService, AuthResolver, JwtStrategy, Logger], // Provide Logger
-  exports: [AuthService, JwtModule],
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 })
 export class AuthModule {}

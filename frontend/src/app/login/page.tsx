@@ -3,7 +3,6 @@
 import React, { useState } from 'react'; // Добавляем useState
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
-<<<<<<< HEAD
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import Modal from '@/shared/ui/Modal/Modal'; // Импортируем Modal
@@ -15,19 +14,6 @@ import { IMAGES } from '@/shared/assets/Images/images'
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 import { ICONS } from '@/shared/assets/Icons/icons';
-=======
-import Input from '@/components/Input';
-import Button from '@/components/Button';
-import Modal from '@/components/Modal'; // Импортируем Modal
-import { useMutation } from '@apollo/client'; // Import useMutation
-import { LOGIN_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/graphql/queries'; // Импортируем новые мутации
-import { useRouter } from 'next/navigation'; // Import useRouter
-import Image from 'next/image';
-import { images } from '../lib/constants'
-import { useAuth } from '@/context/AuthContext'; // Import useAuth hook
-import SmallSettings from '@/ui/SmallSettings';
-import { icons } from '../lib/constants';
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 interface LoginFormInputs {
   email: string;
@@ -152,19 +138,11 @@ const LoginPage = () => {
         <div className="w-full max-w-md p-8 space-y-6 bg-surface-dark rounded-lg shadow-md">
         {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
         <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-<<<<<<< HEAD
           <Image src={ICONS.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
         </div>
         <div className="icon-container-steps">
           <Image
             src={IMAGES.logoBrainMessenger}
-=======
-          <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
-        </div>
-        <div className="icon-container-steps">
-          <Image
-            src={images.logoBrainMessenger}
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
             alt="BrainMessenger Logo" // Added alt text
             width={175} // Example width, adjust as needed
             height={175} // Example height, adjust as needed

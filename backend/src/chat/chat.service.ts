@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-=======
-import { Injectable } from '@nestjs/common';
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, ChatType, ChatParticipantRole } from '@prisma/client'; // Explicitly import enums
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -11,10 +7,7 @@ import { CloudflareR2Service } from '../cloudflare/cloudflare-r2.service'; // Im
 import { FileUpload } from 'graphql-upload-ts'; // Import FileUpload
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique filenames
 import { Logger } from '@nestjs/common';
-<<<<<<< HEAD
 import { UserService } from '../user/user.service';
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 const userSelect = {
   id: true,
@@ -38,11 +31,8 @@ export class ChatService {
     private prisma: PrismaService,
     private messageService: MessageService,
     private cloudflareR2Service: CloudflareR2Service, // Inject CloudflareR2Service
-<<<<<<< HEAD
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   ) {}
 
   async findChatById(id: string) {
@@ -194,10 +184,7 @@ export class ChatService {
         return {
           id: existingChat.id,
           name: existingChat.name,
-<<<<<<< HEAD
           avatarUrl: existingChat.avatarUrl ?? undefined,
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           type: existingChat.type,
           lastMessageSnippet: existingChat.messages.length > 0 ? existingChat.messages[existingChat.messages.length - 1].content : null,
           lastMessageTimestamp: existingChat.messages.length > 0 ? existingChat.messages[existingChat.messages.length - 1].createdAt.toISOString() : null,
@@ -266,10 +253,7 @@ export class ChatService {
         return {
           id: newChat.id,
           name: newChat.name,
-<<<<<<< HEAD
           avatarUrl: newChat.avatarUrl ?? undefined,
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           type: newChat.type,
           lastMessageSnippet: null,
           lastMessageTimestamp: null,
@@ -336,10 +320,7 @@ export class ChatService {
         return {
             id: chat.id,
             name: chat.name, // Name might be null for private chats
-<<<<<<< HEAD
             avatarUrl: chat.avatarUrl ?? undefined,
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
             type: chat.type,
             lastMessageSnippet: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].content : null,
             lastMessageTimestamp: chat.messages.length > 0 ? chat.messages[chat.messages.length - 1].createdAt.toISOString() : null,
@@ -692,7 +673,6 @@ export class ChatService {
     });
   }
 
-<<<<<<< HEAD
   async globalSearch(query: string, currentUserId: string) {
     const users = await this.userService.searchByUsername(query);
     const channels = await this.searchChannelsByName(query);
@@ -706,8 +686,6 @@ export class ChatService {
     };
   }
 
-=======
->>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   async updateChannelPrivacy(channelId: string, ownerId: string, isPublic: boolean) {
     // Margulan Seysembay's Responsibility & Proactivity: Ensure only the owner can update.
     const channel = await this.prisma.channel.findUnique({
