@@ -26,7 +26,7 @@ interface User {
   status: string;
 }
 
-const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, userId }) => {
+const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, userId, status }) => {
   const { user: currentUser } = useAuth(); // Get current authenticated user
   const { data, loading, error } = useQuery<{ getUser: User }>(GET_USER_BY_ID, {
     variables: { id: userId },
@@ -66,8 +66,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
           </div>
           <div className="myaccount-name-status">
             <h2 className="myaccount-user-name">{user.name || user.username || 'Unknown User'}</h2>
-            <p className={`myaccount-user-status ${user.status === 'Offline' ? 'offline' : ''}`}>
-              {user.status || 'Offline'}
+            <p className={`myaccount-user-status ${status === 'Offline' ? 'offline' : ''}`}>
+              {status || 'Offline'}
             </p>
           </div>
           {user.bio && (
