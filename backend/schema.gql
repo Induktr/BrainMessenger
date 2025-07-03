@@ -1,0 +1,160 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserDto {
+  id: ID!
+  email: String!
+  name: String!
+  username: String
+  isVerified: Boolean!
+  twoFactorEnabled: Boolean
+  twoFactorMethod: String
+  recoveryEmail: String
+  avatarUrl: String
+  bio: String
+  status: String
+  roles: [String!]
+}
+
+type LoginResponse {
+  access_token: String!
+  refresh_token: String!
+  user: UserDto!
+}
+
+type AttachmentDto {
+  id: ID!
+  url: String!
+  filename: String!
+  mimetype: String!
+  size: Int!
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type MessageDto {
+  id: ID!
+  chatId: String!
+  content: String!
+  sender: UserDto
+  senderId: String!
+  createdAt: DateTime!
+  attachments: [AttachmentDto!]
+  deletedForUserIds: [String!]
+  isViewed: Boolean! # Add isViewed field
+  reactions: [MessageReactionDto!] # Add reactions field
+}
+
+type ChatDto {
+  id: ID!
+  name: String
+  type: String!
+  lastMessageSnippet: String
+  lastMessageTimestamp: String
+  unreadCount: Float!
+  participants: [UserDto!]!
+  hasUnviewedMessagesFromSender: Boolean!
+  messages: [MessageDto]
+}
+
+type MessageReactionDto { # Define MessageReactionDto type
+  id: ID!
+  user: UserDto! # User who added the reaction
+  emoji: String!
+  createdAt: DateTime!
+}
+
+type FileDto {
+  id: ID!
+  name: String!
+  url: String!
+  size: Int!
+  type: String!
+  uploader: UserDto
+  createdAt: DateTime!
+}
+
+type Query {
+  getCurrentUser: UserDto
+  getUser(id: ID!): UserDto
+  getUsers: [UserDto!]!
+  searchUsersByUsername(username: String!): [UserDto!]!
+  getDevices(id: ID!): [String!]!
+  getChat(id: ID!): ChatDto
+  getChats: [ChatDto!]!
+  getMessages(chatId: ID!, limit: Float, offset: Float): [MessageDto]
+  getFiles: [FileDto!]!
+}
+
+type Mutation {
+  register(registerInput: RegisterInput!): UserDto!
+  login(loginInput: LoginInput!): LoginResponse!
+  logoutUser: Boolean!
+  verifyEmail(code: String!): UserDto!
+  resendVerificationCode(email: String!): Boolean!
+  refreshToken(refreshToken: String!): LoginResponse!
+  createUser(email: String!, password: String!, name: String!): UserDto!
+  updateUser(id: ID!, input: UpdateUserInput!): UserDto
+  deleteUser(id: ID!): Boolean!
+  updateLastActive: UserDto!
+  generateRecoveryCodes(id: ID!): [String!]!
+  verifyDevice(id: ID!, code: String!): Boolean!
+  logoutDevice(deviceId: String!): Boolean!
+  uploadAvatar(file: Upload!): UserDto!
+  sendVerificationEmail: Boolean!
+  createChat(createChatInput: CreateChatInput!): ChatDto!
+  findOrCreatePrivateChat(otherUserId: ID!): ChatDto!
+  deleteChat(id: ID!): Boolean!
+  deleteChatHistoryForUser(chatId: ID!): Boolean!
+  deleteChatAndRemoveUser(chatId: ID!): Boolean!
+  deleteMessage(messageId: ID!): Boolean!
+  deleteMessages(messageIds: [ID!]!): Boolean!
+  updateMessage(messageId: ID!, content: String!): MessageDto!
+  sendMessage(chatId: ID!, content: String!, files: [Upload!]): MessageDto
+  uploadFile(file: Upload!): FileDto!
+  deleteFile(fileId: ID!): Boolean!
+  removeMessageReaction(messageId: ID!, emoji: String!): MessageDto! # Add remove reaction mutation
+}
+
+input RegisterInput {
+  name: String!
+  username: String
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  email: String
+  username: String
+  password: String
+  name: String
+  twoFactorEnabled: Boolean
+  twoFactorMethod: String
+  recoveryEmail: String
+  devices: String
+  bio: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input CreateChatInput {
+  type: String!
+  name: String
+  participantIds: [ID!]!
+}
+
+type Subscription {
+  newMessage(chatId: ID!): MessageDto!
+  messageReactionRemoved(chatId: ID!): MessageReactionDto! # Add reaction removed subscription
+}

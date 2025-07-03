@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+ 
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  password         String
+  name             String
+  username         String? @unique
+  isVerified       Boolean   @default(false) // Renamed from emailVerified
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorMethod  String?
+  recoveryEmail    String?
+  recoveryPhone    String?
+  sentMessages     Message[] @relation("SentMessages")
+  chatParticipants ChatParticipant[] // Changed relation to ChatParticipant
+  callsAsCaller    Call[]    @relation("CallsAsCaller")
+  callsAsCallee    Call[]    @relation("CallsAsCallee")
+  uploadedFiles    File[]    // Added relation for uploaded files
+  ownedChannels    Channel[] // Add relation for channels owned by the user
+  verificationCode            String?   // 6-digit verification code
+  verificationCodeExpiresAt   DateTime? // Code expiration time
+  verificationAttempts       Int       @default(0) // Failed attempt count
+  lastVerificationAttempt    DateTime? // Last failed attempt time
+  avatarUrl                  String?   // URL of the user's avatar image
+  refreshToken               String?   @unique // Store the refresh token
+  refreshTokenExpiresAt      DateTime? // Store the refresh token expiration time
+  bio                        String?   // Add bio field for biography
+  lastActiveAt               DateTime? // Timestamp of last user activity
+  roles                      String[]  @default(["user"]) // Add roles field with a default 'user' role
+  messageReactions MessageReaction[] // Add relation for message reactions
+  // transactions     Transaction[] // Add later after clarifying ID type mismatch
+}
+ 
+// Removed the separate VerificationCode model as fields are now on User model
+model Chat {
+  id               String            @id @default(uuid())
+  name             String? // Name is optional for private chats
+  avatarUrl        String?
+  type             ChatType // Use ChatType enum
+  messages         Message[]
+  calls            Call[] // Added relation
+  participants     ChatParticipant[]
+  channel          Channel? // Optional one-to-one relation to Channel
+}
+
+model Channel {
+  id               String    @id @default(uuid())
+  chatId           String    @unique
+  chat             Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  ownerId          String
+  owner            User      @relation(fields: [ownerId], references: [id])
+  description      String?
+  subscribersCount Int       @default(0)
+  isPublic         Boolean   @default(true) // Channels are generally public
+}
+
+enum ChatType {
+  PRIVATE
+  GROUP
+  CHANNEL
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  content   String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId  String
+  createdAt DateTime @default(now())
+  readByParticipants ChatParticipant[] @relation("LastReadMessage") // Added opposite relation
+  attachments        Attachment[]
+  deletedForUserIds  String[] @default([]) // New field to mark messages as deleted for specific users
+  isViewed           Boolean  @default(false) // Added isViewed field
+  reactions          MessageReaction[] // Add relation for message reactions
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  url       String
+  filename  String
+  mimetype  String
+  size      Int
+  createdAt DateTime @default(now())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String
+}
+
+model Call {
+  id        String   @id @default(uuid())
+  caller    User     @relation("CallsAsCaller", fields: [callerId], references: [id])
+  callerId  String   // Matches User ID type (UUID)
+  callee    User     @relation("CallsAsCallee", fields: [calleeId], references: [id])
+  calleeId  String   // Matches User ID type (UUID)
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   // Matches Chat ID type (UUID)
+  status    String   // Consider Enum: Ringing, InProgress, Ended, Missed, Declined
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// model Transaction {
+//   id        Int      @id @default(autoincrement()) // ID is Int here
+//   caller    User     @relation("CallsAsCaller", fields: [callerId], references: [id]) // Needs clarification
+//   callerId  String
+//   callee    User     @relation("CallsAsCallee", fields: [calleeId], references: [id]) // Needs clarification
+//   calleeId  String
+//   chat      Chat     @relation(fields: [chatId], references: [id]) // Needs clarification if chatId is UUID
+//   chatId    String
+//   status    String // Consider Enum (INITIATED, ACCEPTED, ENDED, MISSED etc.)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// model Transaction {
+//   id        Int      @id @default(autoincrement()) // ID is Int here
+//   user      User     @relation(fields: [userId], references: [id]) // Mismatch: User ID is String (UUID)
+//   userId    String   // Should match User ID type
+//   amount    Decimal  @db.Decimal(10, 2)
+//   createdAt DateTime @default(now())
+// }
+
+model File {
+  id         String   @id @default(uuid())
+  name       String
+  url        String // URL from S3
+  size       Int // Size in bytes
+  type       String // MIME type
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+  uploaderId String
+  createdAt  DateTime @default(now())
+  // TODO: Add fields/relations for sharedWith, favorite, lastModified etc. later
+}
+
+model ChatParticipant {
+  id                String    @id @default(uuid())
+  user              User      @relation(fields: [userId], references: [id])
+  userId            String
+  chat              Chat      @relation(fields: [chatId], references: [id])
+  chatId            String
+  lastReadMessage   Message?  @relation("LastReadMessage", fields: [lastReadMessageId], references: [id])
+  lastReadMessageId String?
+  role              ChatParticipantRole @default(MEMBER) // Role within the chat (e.g., OWNER, SUBSCRIBER, MEMBER)
+
+  @@unique([userId, chatId]) // Ensures a user can only be a participant once per chat
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  messageId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  emoji     String // Stores the emoji character
+  createdAt DateTime @default(now())
+
+  @@unique([messageId, userId, emoji]) // Ensures a user can only add one of each emoji type per message
+}
+
+enum ChatParticipantRole {
+  OWNER
+  MEMBER
+  SUBSCRIBER
+}

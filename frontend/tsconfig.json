@@ -1,0 +1,60 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node", // Keep "node" or change to "bundler" for newer setups
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".", // Optional: Define base URL for paths
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/app/*": [
+        "./src/app/*"
+      ],
+      "@/pages/*": [
+        "./src/pages/*"
+      ],
+      "@/widgets/*": [
+        "./src/widgets/*"
+      ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
+      "@/entities/*": [
+        "./src/entities/*"
+      ],
+      "@/shared/*": [
+        "./src/shared/*"
+      ]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ], // Corrected include paths
+  "exclude": [
+    "node_modules"
+  ] // Standard exclude
+}
+// Added a comment to trigger re-evaluation

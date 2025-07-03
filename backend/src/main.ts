@@ -1,0 +1,55 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { graphqlUploadExpress } from 'graphql-upload-ts'; // Import middleware
+import * as Sentry from '@sentry/node';
+import { LOG_LEVELS } from '@nestjs/common';
+// import { SentryInterceptor } from '@sentry/nestjs'; // Temporarily commented out
+// import { GraphQLErrorFilter } from './common/filters/graphql-error.filter'; // Assuming this path - Temporarily commented out
+
+async function bootstrap() {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    debug: false,
+  });
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'], // Enable all log levels for debugging
+  });
+
+  // app.useGlobalInterceptors(new SentryInterceptor()); // Temporarily commented out
+  // app.useGlobalFilters(new GraphQLErrorFilter()); // Temporarily commented out
+
+
+      // Enable CORS with the specific frontend origin
+      // Get frontend URL from environment variable
+      // Get frontend URL(s) from environment variable, split by comma
+      const frontendUrls = process.env.APP_URL ? process.env.APP_URL.split(',').map(url => url.trim()).filter(Boolean) : [];
+
+      const allowedOrigins = [
+        'http://localhost:3000', // Allow local frontend development server
+        ...frontendUrls, // Spread the parsed frontend URLs
+        // Add other allowed origins as needed, e.g., preview URLs
+        /https:\/\/[a-zA-Z0-9-]+\.cloudworkstations\.dev$/, // Allow preview URLs from cloud workstations
+      ].filter(Boolean); // Filter out any undefined or null values
+
+      app.enableCors({
+        origin: allowedOrigins,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type, Accept, Authorization, Origin, X-Requested-With, x-apollo-operation-name',
+        credentials: true,
+        preflightContinue: false, // Let NestJS handle OPTIONS
+        optionsSuccessStatus: 204 // Standard success status for preflight
+      });
+
+      // Add graphql-upload middleware AFTER CORS setup
+      app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 })); // Enable for file uploads, increased maxFiles
+
+      const port = process.env.PORT ?? 4000;
+      await app.listen(port, '0.0.0.0'); // Listen on all interfaces
+      // console.log(`Nest application is listening on port ${port}`); // Removed console.log
+}
+bootstrap();
