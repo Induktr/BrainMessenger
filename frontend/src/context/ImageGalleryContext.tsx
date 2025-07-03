@@ -14,7 +14,7 @@ interface ImageGalleryContextType {
   currentImageIndex: number;
   openGallery: (slides: Slide[], index: number) => void;
   closeGallery: () => void;
-  setCurrentImageIndex: (index: number) => void;
+  setCurrentImageIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ImageGalleryContext = createContext<ImageGalleryContextType | undefined>(undefined);
