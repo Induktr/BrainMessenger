@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+<<<<<<< HEAD
 import './ui.css';
 
 import ApolloWrapper from '@/app/providers/ApolloWrapper';
@@ -16,6 +17,24 @@ import { GlobalAudioProvider } from '@/features/manage-audio-player/ui/GlobalAud
 import { ImageGalleryProvider } from '@/features/gallery-images/ui/ImageGalleryContext';
 import ImageGallery from '@/features/gallery-images/ui/ImageGallery';
 import UserStatusUpdater from '@/features/update-user-status/ui/UserStatusUpdater';
+=======
+import '../ui/ui.css';
+
+import ApolloWrapper from '@/components/ApolloWrapper'; // Import ApolloWrapper
+import BodyClassNameUpdater from '@/components/BodyClassNameUpdater'; // Import BodyClassNameUpdater
+import { AuthProvider, useAuth } from '@/context/AuthContext'; // Import AuthProvider and useAuth
+import { NetworkStatusProvider } from '@/context/NetworkStatusContext'; // Import NetworkStatusProvider
+import { ChatIdProvider } from '@/context/ChatIdContext'; // Import ChatIdProvider
+import { DeepWorkProvider } from '@/context/DeepWorkContext';
+import { NotificationProvider, useNotification } from '@/context/NotificationContext';
+import { useMutation } from '@apollo/client';
+import { UPDATE_LAST_ACTIVE_MUTATION, GET_CURRENT_USER } from '@/graphql/queries';
+import { useEffect } from 'react';
+import { GlobalAudioProvider } from '@/context/GlobalAudioContext'; // Import GlobalAudioProvider
+import { ImageGalleryProvider } from '@/context/ImageGalleryContext';
+import ImageGallery from '@/components/ImageGallery';
+import NotificationDropdown from '@/components/NotificationDropdown';
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 // Import Roboto font
 import { Roboto } from 'next/font/google';
@@ -58,7 +77,13 @@ export default function RootLayout({
                     <NotificationProvider>
                       <ImageGalleryProvider>
                         <UserStatusUpdater />
+<<<<<<< HEAD
                         {children}
+=======
+                        <NotificationWrapper>
+                          {children}
+                        </NotificationWrapper>
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                         <ImageGallery />
                       </ImageGalleryProvider>
                     </NotificationProvider>
@@ -73,4 +98,36 @@ export default function RootLayout({
   );
 }
 
+<<<<<<< HEAD
 
+=======
+function NotificationWrapper({ children }: { children: React.ReactNode }) {
+  // NotificationDropdown is now rendered directly within AuthProvider
+  return <>{children}</>;
+}
+
+// This component handles periodically updating the user's last active status
+function UserStatusUpdater() {
+  const { user } = useAuth();
+  const [updateLastActive] = useMutation(UPDATE_LAST_ACTIVE_MUTATION, {
+    refetchQueries: [{ query: GET_CURRENT_USER }],
+  });
+
+  useEffect(() => {
+    if (user) {
+      // Immediately update status on login/app load
+      updateLastActive();
+
+      // Set up an interval to update the status every 15 seconds
+      const intervalId = setInterval(() => {
+        updateLastActive();
+      }, 15000); // 15 seconds
+
+      // Clear the interval on component unmount or when the user logs out
+      return () => clearInterval(intervalId);
+    }
+  }, [user, updateLastActive]);
+
+  return null; // This component does not render anything
+}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df

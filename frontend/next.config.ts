@@ -10,11 +10,14 @@ const nextConfig = {
         hostname: 'a9626498a00940957150d921ac383a62.r2.cloudflarestorage.com',
         pathname: '/brainmessenger-files/avatars/**', // Убедитесь, что pathname соответствует структуре ваших URL аватаров
       },
+<<<<<<< HEAD
       {
         protocol: 'https',
         hostname: 'pub-51a1a8880278493e9425821ed8b219e9.r2.dev',
         pathname: '/brainmessenger-files/avatars/**',
       },
+=======
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     ],
   },
   /* config options here */

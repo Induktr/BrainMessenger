@@ -35,7 +35,11 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
     PrismaModule, // Add PrismaModule here
     ConfigModule.forRoot({
       isGlobal: true,
+<<<<<<< HEAD
       envFilePath: '.env', // Correct path for the test environment
+=======
+      envFilePath: './backend/.env', // Specify the path to your .env file
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
     }),
     HttpModule.register({
       global: true,
@@ -49,11 +53,16 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
         configService: ConfigService,
         prisma: PrismaService,
       ) => ({
+<<<<<<< HEAD
         autoSchemaFile: process.env.NODE_ENV === 'test' ? true : 'dist/schema.gql',
+=======
+        autoSchemaFile: 'dist/schema.gql',
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
         subscriptions: {
           'graphql-ws': {
             path: '/graphql',
             onConnect: async (context: any) => {
+<<<<<<< HEAD
               const logger = new Logger('GraphQLWS onConnect');
               logger.debug('New WebSocket connection attempt.');
 
@@ -106,6 +115,61 @@ import * as redisStore from 'cache-manager-redis-store'; // Keep redisStore
             return { ...connection.context, req, res };
           }
           // For HTTP, we rely on the standard request flow.
+=======
+              const logger = new Logger('GraphQLModule-onConnect');
+              const { connectionParams } = context;
+              logger.log(`[onConnect] Received connectionParams: ${JSON.stringify(connectionParams)}`);
+
+              const token = connectionParams?.Authorization?.split(' ')[1] || connectionParams?.authorization?.split(' ')[1];
+
+              logger.log(`[onConnect] Extracted token: ${token ? 'Token found' : 'No token'}`);
+
+              if (token) {
+                try {
+                  const payload = jwtService.verify(token, {
+                    secret: configService.get<string>('JWT_SECRET'),
+                  });
+
+                  const user = await prisma.user.findUnique({
+                    where: { id: payload.sub },
+                  });
+
+                  if (!user) {
+                    logger.warn(
+                      `[onConnect] Authentication failed: User with ID ${payload.sub} not found.`,
+                    );
+                    throw new Error(
+                      'Authentication failed: Invalid token or user not found.',
+                    );
+                  }
+
+                  logger.log(
+                    `[onConnect] User ${user.email} authenticated. Creating request context.`,
+                  );
+                  // Return the full context object that the guard expects, now including the user.
+                  return { req: { user, context: { token } } };
+                } catch (error) {
+                  logger.error(
+                    `[onConnect] Token verification or user lookup failed: ${error.message}`,
+                  );
+                  throw new Error('Unauthorized: Invalid token or user.');
+                }
+              }
+              logger.warn('[onConnect] No token provided for WebSocket connection. Rejecting.');
+              throw new Error('Unauthorized: No token provided');
+            },
+          },
+        },
+        // The context function is now simplified.
+        // For HTTP, it receives { req, res } and passes it on.
+        // For WebSockets, it receives the context object we returned from `onConnect`
+        context: ({ req, res, connection }) => {
+          // For WebSockets, the context is already populated by `onConnect`
+          if (connection) {
+            return { req: connection.context.req, res };
+          }
+          // For HTTP requests, just pass the request and response objects.
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           return { req, res };
         },
         formatError: (error: GraphQLError) => {

@@ -1,8 +1,11 @@
 import { Injectable, UnauthorizedException, InternalServerErrorException, NotImplementedException, BadRequestException, Logger, Inject, forwardRef } from '@nestjs/common'; // Import Inject and forwardRef
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+<<<<<<< HEAD
 import { PubSubEngine } from 'graphql-subscriptions';
 import { PUB_SUB } from '../pubsub/pubsub.provider';
+=======
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 import * as crypto from 'crypto';
 import { RegisterInput } from '../auth/dto/register-input';
 import { LoginInput } from '../auth/dto/login-input';
@@ -28,7 +31,10 @@ export class UserService {
     @Inject(forwardRef(() => AuthService))
     private authService: AuthService, // Inject AuthService with forwardRef
     private jwtService: JwtService,
+<<<<<<< HEAD
     @Inject(PUB_SUB) private readonly pubSub: PubSubEngine,
+=======
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
   ) {}
 
   private readonly logger = new Logger(UserService.name);
@@ -232,6 +238,7 @@ export class UserService {
    }
  }
 
+<<<<<<< HEAD
  async setUserOffline(userId: string): Promise<void> {
    try {
      const user = await this.prisma.user.update({
@@ -257,6 +264,11 @@ export class UserService {
  async findOneByEmail(email: string): Promise<any | null> {
    throw new NotImplementedException('findOneByEmail not implemented');
  }
+=======
+  async findOneByEmail(email: string): Promise<any | null> {
+    throw new NotImplementedException('findOneByEmail not implemented');
+  }
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
   async remove(id: string): Promise<void> {
     throw new NotImplementedException('remove not implemented');

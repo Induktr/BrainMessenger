@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import Image from 'next/image';
+<<<<<<< HEAD
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import InputCell from '@/shared/ui/InputCell/InputCell';
@@ -15,6 +16,25 @@ import { ICONS } from '@/shared/assets/Icons/icons';
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 import { IMAGES } from '@/shared/assets/Images/images';
 import { RegisterFormInputs } from '@/features/user-auth/model/user-auth.types';
+=======
+import Input from '@/components/Input';
+import Button from '@/components/Button';
+import InputCell from '@/components/InputCell';
+import { useRouter } from 'next/navigation';
+import ProgressIndicator from '../../components/ProgressIndicator';
+import { useMutation } from '@apollo/client';
+import { REGISTER_USER, VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/graphql/queries'; // Import mutations
+import { icons, images } from '../lib/constants';
+import SmallSettings from '@/ui/SmallSettings';
+
+interface RegisterFormInputs {
+  email: string;
+  password: string;
+  name: string; // Added name field
+  username: string; // Added username field
+  confirmPassword: string;
+}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
 
 const RegisterPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -229,14 +249,22 @@ const RegisterPage = () => {
      <div className="welcome-container"> {/* Reusing welcome-container for centering */}
      {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
           <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
+<<<<<<< HEAD
               <Image src={ICONS.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
+=======
+              <Image src={icons.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           </div>
        <div className="main-content-area"> {/* Reusing main-content-area */}
          {/* Logo */}
          {/* You might want to add the logo here */}
        <div className="icon-container-steps">
          <Image
+<<<<<<< HEAD
            src={IMAGES.logoBrainMessenger}
+=======
+           src={images.logoBrainMessenger}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
            alt="BrainMessenger Logo" // Added alt text
            width={175} // Example width, adjust as needed
            height={175} // Example height, adjust as needed
@@ -255,7 +283,11 @@ const RegisterPage = () => {
                    placeholder="Password"
                    id="password"
                    type="password"
+<<<<<<< HEAD
                    iconPath={ICONS.castle} // Use iconPath prop
+=======
+                   iconPath={icons.castle} // Use iconPath prop
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                    registration={register('password', {
                      required: 'Input field is empty', // Figma message
                      minLength: { value: 6, message: 'Password is too short' }, // Figma message
@@ -267,7 +299,11 @@ const RegisterPage = () => {
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
+<<<<<<< HEAD
                    <Image src={ICONS.arrowRight} alt="Next" className="icon-container-size-lg" width={24} height={24} /> {/* Use img tag */}
+=======
+                   <Image src={icons.arrowRight} alt="Next" className="icon-container-size-lg" width={24} height={24} /> {/* Use img tag */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                  </Button>
                </div>
                {errors.password && <p className="input-error-message">{errors.password.message}</p>}
@@ -294,7 +330,11 @@ const RegisterPage = () => {
                    placeholder="Your name"
                    id="name"
                    type="text"
+<<<<<<< HEAD
                    iconPath={ICONS.man} // Use iconPath prop
+=======
+                   iconPath={icons.man} // Use iconPath prop
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                    registration={register('name', {
                      required: 'Input field is empty',
                      minLength: { value: 2, message: 'The name is too short' },
@@ -302,7 +342,11 @@ const RegisterPage = () => {
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
+<<<<<<< HEAD
                    <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+=======
+                   <Image src={icons.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                  </Button>
                </div>
                {errors.name && <p className="input-error-message">{errors.name.message}</p>}
@@ -329,7 +373,11 @@ const RegisterPage = () => {
                    placeholder="Username"
                    id="username"
                    type="text"
+<<<<<<< HEAD
                    iconPath={ICONS.usernameDog} // Assuming you have an icon for username
+=======
+                   iconPath={icons.usernameDog} // Assuming you have an icon for username
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                    registration={register('username', {
                      // Removed 'required' validation to make username optional
                      minLength: { value: 3, message: 'Username is too short' },
@@ -338,7 +386,11 @@ const RegisterPage = () => {
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
+<<<<<<< HEAD
                    <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+=======
+                   <Image src={icons.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                  </Button>
                </div>
                {errors.username && <p className="input-error-message">{errors.username.message}</p>}
@@ -365,7 +417,11 @@ const RegisterPage = () => {
                    placeholder="Email"
                    id="email"
                    type="email"
+<<<<<<< HEAD
                    iconPath={ICONS.mail} // Use iconPath prop
+=======
+                   iconPath={icons.mail} // Use iconPath prop
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                    registration={register('email', {
                      required: 'Input field is empty',
                      pattern: {
@@ -375,7 +431,11 @@ const RegisterPage = () => {
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
+<<<<<<< HEAD
                    <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+=======
+                   <Image src={icons.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
                  </Button>
                </div>
                {errors.email && <p className="input-error-message">{errors.email.message}</p>}
@@ -445,7 +505,11 @@ const RegisterPage = () => {
         {/* Back Button */}
         {currentStep >= 1 && (
           <Button type="button" onClick={handleBack} className="back-button-top-left"> {/* Added class for styling */}
+<<<<<<< HEAD
             <Image src={ICONS.arrowBack} alt="Back" className="icon svg-icon" width={24} height={24} /> {/* Use img tag and apply svg-icon class */}
+=======
+            <Image src={icons.arrowBack} alt="Back" className="icon svg-icon" width={24} height={24} /> {/* Use img tag and apply svg-icon class */}
+>>>>>>> f701f644797923ab65532d63750f4fcba8d1b5df
           </Button>
         )}
         {currentStep !== 4 && (<p className="text-center text-sm text-textSecondary-dark">
