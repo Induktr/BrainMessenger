@@ -205,7 +205,7 @@ const logout = React.useCallback(() => {
       }
       stopActivityTracking();
     };
-  }, [user, offlineTimer, updateLastActive, refetch, isInitializing]); // Add isInitializing dependency
+  }, [user, offlineTimer, updateLastActive, refetch, isInitializing, isClientMounted]); // Добавляем isClientMounted dependency
 
   // Effect to handle redirection based on authentication state
   useEffect(() => {

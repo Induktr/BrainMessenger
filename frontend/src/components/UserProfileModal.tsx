@@ -12,6 +12,7 @@ interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
+  status: string; // Добавляем пропс status
 }
 
 interface User {

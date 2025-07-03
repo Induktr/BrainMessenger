@@ -328,6 +328,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
           isOpen={showUserProfileModal}
           onClose={handleCloseUserProfileModal}
           userId={selectedProfileUserId}
+          status={message.sender.status || ''} // Добавляем пропс status
         />
       )}
     </>

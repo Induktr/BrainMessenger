@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { icons } from '@/app/lib/constants';
 import { useImageGallery } from '@/context/ImageGalleryContext';
@@ -111,7 +111,17 @@ const ImageGallery: React.FC = () => {
     initialPinchDistance.current = null;
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const handleNext = useCallback(() => {
+    setCurrentImageIndex((currentImageIndex + 1) % slides.length);
+    setRotation(0);
+  }, [currentImageIndex, slides.length, setCurrentImageIndex]);
+
+  const handlePrev = useCallback(() => {
+    setCurrentImageIndex((currentImageIndex - 1 + slides.length) % slides.length);
+    setRotation(0);
+  }, [currentImageIndex, slides.length, setCurrentImageIndex]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'ArrowRight') {
       handleNext();
     } else if (e.key === 'ArrowLeft') {
@@ -119,7 +129,7 @@ const ImageGallery: React.FC = () => {
     } else if (e.key === 'Escape') {
       closeGallery();
     }
-  };
+  }, [handleNext, handlePrev, closeGallery]); // Добавляем зависимости
 
   useEffect(() => {
     if (isGalleryOpen) {
@@ -131,21 +141,11 @@ const ImageGallery: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isGalleryOpen, slides, currentImageIndex]); // Re-add listener if slides or index change
+  }, [isGalleryOpen, slides, currentImageIndex, handleKeyDown]); // Добавляем handleKeyDown в зависимости
 
   if (!isGalleryOpen || !slides.length) {
     return null;
   }
-
-  const handleNext = () => {
-    setCurrentImageIndex((currentImageIndex + 1) % slides.length);
-    setRotation(0);
-  };
-
-  const handlePrev = () => {
-    setCurrentImageIndex((currentImageIndex - 1 + slides.length) % slides.length);
-    setRotation(0);
-  };
 
   const handleRotate = (e: React.MouseEvent) => {
     e.stopPropagation();
