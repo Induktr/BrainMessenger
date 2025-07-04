@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client';
-import { CREATE_CHAT, GET_CHATS } from '@/entities/chat/model/chat.queries';
+import { GET_CHATS } from '@/entities/chat/model/chat.queries';
+import { CREATE_CHAT } from '@/entities/chat/model/chat.mutations'
 
 export const useCreateChat = () => {
   const [createChatMutation, { loading, error }] = useMutation(CREATE_CHAT, {
