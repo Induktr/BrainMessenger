@@ -13,8 +13,9 @@ import { UPLOAD_AVATAR, UPDATE_USER_PROFILE, GET_CURRENT_USER, SEND_VERIFICATION
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { MyAccountProps } from '@/features/manage-account/model/manage-account.types';
+import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 
-const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
+const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack, chatId, status }) => {
   const { user, queryLoading, refetchUser, setUserState, logout } = useAuth();
   const [uploadAvatarMutation, { loading: uploading, error: uploadError }] = useMutation(UPLOAD_AVATAR);
   const [updateUserProfileMutation, { loading: isUpdatingProfile, error: updateProfileError }] = useMutation(UPDATE_USER_PROFILE);
@@ -38,6 +39,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const [crop, setCrop] = useState<Crop>(); // State for the crop object
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>(); // State for the completed crop
   const imgRef = useRef<HTMLImageElement>(null); // Ref for the image element
+  const { dynamicStatus } = useStatusTyping(chatId, status)
 
 // Effect to potentially show email verification modal
   useEffect(() => {
@@ -424,8 +426,8 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
             )}
             <div className="myaccount-name-status">
                 <h2 className="myaccount-user-name">{user.name || 'Guest'}</h2>
-                <p className={`myaccount-user-status ${user.status === 'Offline' ? 'offline' : ''}`}>
-                  {user.status || 'Offline'}
+                <p className={`myaccount-user-status ${dynamicStatus}`}>
+                  {dynamicStatus  || 'offline' ? 'online' : 'offline'}
                 </p>
             </div>
             {/* Replace placeholder p with textarea for biography */}
