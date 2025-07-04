@@ -1,6 +1,6 @@
 // frontend/src/ui/Group.tsx
 import Modal from '@/shared/ui/Modal/Modal';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface CreateGroupModalProps {
   isOpen: boolean;

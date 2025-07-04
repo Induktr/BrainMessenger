@@ -41,4 +41,5 @@ export interface ChatHeaderProps {
   status: string;
   avatar?: string;
   onOpenChannelDetails: (event: React.MouseEvent) => void;
+  onBackButtonClick?: () => void;
 }

@@ -110,11 +110,6 @@ const ChatPage = () => {
         </div>
 
         <div className="chat-main-content chat-area-container">
-          {selectedChatId && (
-            <button className="back-button" onClick={() => setSelectedChatId(null)}>
-              {ICONS.arrowBack && <Image src={ICONS.arrowBack} alt="Back" className="icon" width={24} height={24} />}
-            </button>
-          )}
           {selectedChat && selectedChatType && selectedChatName ? (
             <ChatWindowWidget
               chatId={selectedChatId!}
@@ -125,6 +120,7 @@ const ChatPage = () => {
               onUnsubscribe={handleUnsubscribe}
               onSendMessageOrUpdate={handleSendMessageOrUpdate}
               onOpenContextMenu={handleOpenContextMenu}
+              onBackButtonClick={() => setSelectedChatId(null)} // Pass the back button handler
             />
           ) : (
             !selectedChatId && <div className="chat-welcome-message">Communication starts here, start with us!</div>

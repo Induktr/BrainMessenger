@@ -6,7 +6,7 @@ import UserProfileModal from '@/entities/user/ui/UserProfileModal';
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, status, avatar, onOpenChannelDetails }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, status, avatar, onOpenChannelDetails, onBackButtonClick }) => {
   const [showDetailsUserModal, setShowDetailsUserModal] = useState(false);
 
   const handleOpenUserDetails = () => {
@@ -31,17 +31,24 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, statu
           status={dynamicStatus}
         />
       )}
-      <div className="header-left-section" onClick={handleOpenUserDetails}>
-        {avatar ? (
-          <Image src={avatar} alt={title} className="header-avatar" width={40} height={40} />
-        ) : (
-          <div className="avatar-placeholder header-avatar" style={{ backgroundColor: color }}>
-            <span>{letter}</span>
-          </div>
+      <div className="header-left-section">
+        {onBackButtonClick && (
+          <button className="back-button" onClick={onBackButtonClick}>
+            {ICONS.arrowBack && <Image src={ICONS.arrowBack} alt="Back" className="icon" width={24} height={24} />}
+          </button>
         )}
-        <div className="header-user-info">
-          <h1 className="header-title">{title}</h1>
-          <p className="header-status">{dynamicStatus}</p>
+        <div onClick={handleOpenUserDetails} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          {avatar ? (
+            <Image src={avatar} alt={title} className="header-avatar" width={40} height={40} />
+          ) : (
+            <div className="avatar-placeholder header-avatar" style={{ backgroundColor: color }}>
+              <span>{letter}</span>
+            </div>
+          )}
+          <div className="header-user-info">
+            <h1 className="header-title">{title}</h1>
+            <p className="header-status">{dynamicStatus}</p>
+          </div>
         </div>
       </div>
       <div className="header-right-section">

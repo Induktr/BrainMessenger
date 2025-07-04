@@ -904,18 +904,6 @@
     text-align: center;
 }
 
-/* Styles for Chat Header */
-.chat-header {
-    padding: 12px 20px; /* Re-introduced horizontal padding */
-    border-bottom: 1px solid #3a3a3a; /* Darker separator line */
-    background-color: #2B2B2B; /* Dark background */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px; /* Slightly increased fixed height for better spacing */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-    z-index: 1; /* Ensure it's above chat messages */
-}
 
 .chat-header-content {
     display: flex;
@@ -3161,33 +3149,52 @@
     flex-direction: column;
     height: 100%; /* Занимает 100% высоты родительского элемента */
     background-color: #1e1e1e; /* Фоновый цвет чата */
+    box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
 }
   
-  
-  /* 
-    2. Контейнер для списка сообщений.
-    Он должен растягиваться, чтобы занять все доступное пространство, и иметь свою прокрутку.
-    Примените этот класс к div'у, который оборачивает все сообщения.
-  */
-  .chat-messages-list {
-    flex-grow: 1; /* Растягивается, чтобы занять все свободное пространство */
-    overflow-y: auto; /* Включает вертикальную прокрутку, когда контент не помещается */
-    padding: 15px;
-  }
-  
-  /* 
-    3. Контейнер для панели ввода.
-    Он должен быть прижат к низу и не изменять свой размер.
-    Примените этот класс к div'у, который оборачивает ваш ChatInput.
-  */
-  
-  .chat-input-panel {
-    flex-shrink: 0; /* Запрещает контейнеру сжиматься */
-    padding: 15px;
-    background-color: #2b2b2b; /* Цвет фона панели ввода */
-    border-top: 1px solid #3a3a3a;
-  }
-  /* === End of Chat Layout Fix === */
+/*
+  2. Контейнер для списка сообщений.
+  Он должен растягиваться, чтобы занять все доступное пространство, и иметь свою прокрутку.
+  Примените этот класс к div'у, который оборачивает все сообщения.
+*/
+.chat-messages-list {
+  flex-grow: 1; /* Растягивается, чтобы занять все свободное пространство */
+  overflow-y: auto; /* Включает вертикальную прокрутку, когда контент не помещается */
+  padding: 15px;
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+}
+
+/*
+  3. Контейнер для панели ввода.
+  Он должен быть прижат к низу и не изменять свой размер.
+  Примените этот класс к div'у, который оборачивает ваш ChatInput.
+*/
+
+.chat-input-panel {
+  flex-shrink: 0; /* Запрещает контейнеру сжиматься */
+  padding: 15px;
+  background-color: #2b2b2b; /* Цвет фона панели ввода */
+  border-top: 1px solid #3a3a3a;
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+}
+
+/* Styles for Chat Header - Consolidated and updated */
+.chat-header {
+    padding: 12px 20px; /* Re-introduced horizontal padding */
+    border-bottom: 1px solid #3a3a3a; /* Darker separator line */
+    background-color: #2B2B2B; /* Dark background */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px; /* Slightly increased fixed height for better spacing */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    z-index: 1; /* Ensure it's above chat messages */
+    flex-shrink: 0; /* Prevent header from shrinking */
+    color: #f0f0f0; /* Header text color */
+    width: 100%; /* Ensure it takes full width of its parent */
+    box-sizing: border-box; /* Include padding in the width calculation */
+}
+/* === End of Chat Layout Fix === */
 /* Styles for Chat List Items */
 .chat-list-item {
     display: flex;

@@ -19,6 +19,7 @@ interface ChatWindowWidgetProps {
   onUnsubscribe: () => Promise<void>;
   onSendMessageOrUpdate: (content: string, files: File[]) => Promise<void>;
   onOpenContextMenu: (event: React.MouseEvent) => void;
+  onBackButtonClick: () => void; // Add this prop
 }
 
 const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
@@ -27,6 +28,7 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
   isChannelOwner,
   isSubscribedToChannel,
   onOpenContextMenu,
+  onBackButtonClick, // Destructure the new prop
 }) => {
   const { user } = useAuth();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -99,6 +101,7 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
         status={getStatus()}
         avatar={getAvatar()}
         onOpenChannelDetails={onOpenContextMenu}
+        onBackButtonClick={onBackButtonClick} // Pass the new prop
       />
       <div className="chat-messages-list">
         {messages.map((msg) => {
