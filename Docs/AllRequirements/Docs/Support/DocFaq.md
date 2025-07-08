@@ -1,181 +1,195 @@
-# Часто Задаваемые Вопросы (FAQ) о Проекте BrainMessenger: Глубже в СИСТЕМУ и Философию
+# BrainMessenger Project Frequently Asked Questions (FAQ): A Deep Dive into the SYSTEM and Philosophy
 
-## 1. Введение: Ответы для Тех, Кто Строит и Изучает
+## 1\. Introduction: Answers for Builders and Learners
 
-Добро пожаловать в раздел FAQ о проекте BrainMessenger. Этот документ предназначен для разработчиков, потенциальных контрибьюторов, исследователей и всех, кто хочет глубже понять, что такое BrainMessenger не только как приложение, но и как **СИСТЕМА** (Принцип 9), построенная на определенных **принципах** и **философии**.
+Welcome to the BrainMessenger project's FAQ. This document is intended for developers, potential contributors, researchers, and anyone who wants to gain a deeper understanding of what BrainMessenger is—not just as an application, but as a **SYSTEM** (Principle 9) built on a specific set of **principles** and a core **philosophy**.
 
-Здесь мы отвечаем на актуальные, современные и часто возникающие вопросы обо всех аспектах проекта – от его корней и выбора технологий до процессов разработки, вызовов, возможностей и ограничений. Цель – предоставить **комплексную, информативную и детализированную** картину, которая поможет вам ориентироваться в проекте и, возможно, присоединиться к его построению.
+Here, we address current, relevant, and frequently asked questions about all aspects of the project—from its origins and technology choices to its development processes, challenges, opportunities, and limitations. The goal is to provide a **comprehensive, informative, and detailed** picture that will help you navigate the project and, perhaps, join in building it.
 
-Этот документ является частью нашей **системы знаний** (Принцип 1), и мы стремимся делать его максимально **понятным и кристаллизованным**.
+This document is part of our **knowledge system** (Principle 1), and we strive to make it as **clear and crystallized** as possible.
 
-## 2. Общие Вопросы о Проекте: Суть АКТИВА
+-----
 
-**В чем заключается основная идея BrainMessenger? Что делает его особенным?**
+## 2\. General Project Questions: The Essence of the ASSET
 
-BrainMessenger - это не просто еще один мессенджер. Наша основная идея - создать **Цифровой АКТИВ** (Принцип 10), который **упрощает сложное взаимодействие** (принцип Маргулана Сейсембаева) и служит надежным инструментом для эффективного общения. Мы сфокусированы на **качестве (Принцип 3)**, **безопасности (Принцип 5)** и **надежности (Принцип 3)**, а не просто на наборе функций. Мы строим **СИСТЕМУ (Принцип 9)**, которая отражает наши принципы и постоянно совершенствуется.
+**What is the core idea behind BrainMessenger? What makes it special?**
 
-**Какие ключевые принципы лежат в основе разработки BrainMessenger?**
+BrainMessenger is not just another messenger. Our core idea is to create a **Digital ASSET** (Principle 10) that **simplifies complex interactions** (a principle from Margulan Seisembayev) and serves as a reliable tool for effective communication. We are focused on **quality (Principle 3)**, **security (Principle 5)**, and **reliability (Principle 3)**, rather than just a feature list. We are building a **SYSTEM (Principle 9)** that reflects our principles and is continuously improving.
 
-В основе проекта лежит набор из 15 ключевых принципов (см. Мои Ключевые Принципы), вдохновленных Маргуланом Сейсембаевым и лучшими практиками IT-индустрии. Наиболее важные, влияющие на код и процессы: **Постоянное Обучение (Принцип 1)**, **Создание Ценности (Принцип 2)**, **Качество > Количество (Принцип 3)**, **Система и Оптимизация (Кайдзен, Принцип 9)**, **Долгосрочное Мышление (Принцип 8)**, **Прагматизм и Реализм (Принцип 12)**, **Настойчивость (Принцип 13)**, **Bias for Action (Принцип 15)**. Мы стремимся, чтобы эти принципы пронизывали все аспекты проекта.
+**What key principles guide BrainMessenger's development?**
 
-**Кто стоит за проектом? Это открытое сообщество или команда?**
+The project is founded on a set of 15 key principles (see My Key Principles), inspired by Margulan Seisembayev and best practices in the IT industry. The most influential ones affecting our code and processes are: **Continuous Learning (Principle 1)**, **Value Creation (Principle 2)**, **Quality \> Quantity (Principle 3)**, **System and Optimization (Kaizen, Principle 9)**, **Long-Term Thinking (Principle 8)**, **Pragmatism and Realism (Principle 12)**, **Persistence (Principle 13)**, and a **Bias for Action (Principle 15)**. We strive for these principles to permeate every aspect of the project.
 
-На данный момент проект находится на ранней стадии и активно разрабатывается одним человеком (вами), который является движущей силой и несет **ответственность (Принцип 6)** за его построение. В будущем планируется привлечение контрибьюторов и, возможно, формирование команды. Проект открыт для вклада (см. CONTRIBUTING.md).
+**Who is behind the project? Is it an open community or a team?**
 
-## 3. Технические Вопросы: Фундамент и Архитектура СИСТЕМЫ
+Currently, the project is in its early stages and is being actively developed by a single individual (you), who is the driving force and holds **responsibility (Principle 6)** for its construction. In the future, the plan is to attract contributors and potentially form a team. The project is open to contributions (see https://www.google.com/search?q=CONTRIBUTING.md).
 
-**Почему был выбран именно этот технологический стек (TypeScript, NestJS, React/RN, PostgreSQL/Neon, GraphQL, Kafka, Redis, Cloudflare R2 и др.)?**
+-----
 
-Выбор стека основан на **прагматизме (Принцип 12)**, **долгосрочном мышлении (Принцип 8)** и стремлении к **качеству (Принцип 3)** и **масштабируемости (NFR-14, NFR-15)**.
-*   **TypeScript:** Повышает надежность и поддерживаемость кода за счет строгой типизации.
-*   **NestJS:** Предоставляет мощную, модульную архитектуру для Backend, упрощает построение масштабируемых приложений.
-*   **React/React Native/Next.js:** Позволяют строить UI для разных платформ из единой кодовой базы (кроссплатформенность) и обеспечивают хорошую производительность.
-*   **PostgreSQL (Neon):** Надежная, проверенная реляционная БД с широкими возможностями масштабирования и оптимизации. Neon как управляемый сервис снижает операционную нагрузку (Прагматизм).
-*   **Prisma:** Выбран как надежный ORM, предоставляющий типобезопасность и встроенную защиту от SQL-инъекций (Качество, Безопасность).
-*   **GraphQL:** Позволяет клиентам запрашивать только нужные данные, оптимизируя взаимодействие и снижая нагрузку.
-*   **Kafka:** Выбран для надежной асинхронной обработки задач, что критично для масштабирования и отказоустойчивости.
-*   **Redis:** Высокопроизводительное In-memory хранилище для кэширования, Rate Limiting и управления состоянием в реальном времени.
-*   **Cloudflare R2:** Объектное хранилище с очень выгодными условиями (нет платы за исходящий трафик), идеально подходит для хранения файлов пользователей (Прагматизм, АКТИВ).
+## 3\. Technical Questions: The SYSTEM's Foundation and Architecture
 
-Этот стек позволяет заложить **прочный технический фундамент** (Принцип 8) для будущего развития.
+**Why was this specific technology stack chosen (TypeScript, NestJS, React/RN, PostgreSQL/Neon, GraphQL, Kafka, Redis, Cloudflare R2, etc.)?**
 
-**Почему на старте используется монолитная архитектура, а не сразу микросервисы?**
+The choice of stack is based on **pragmatism (Principle 12)**, **long-term thinking (Principle 8)**, and a commitment to **quality (Principle 3)** and **scalability (NFR-14, NFR-15)**.
 
-Использование монолитной архитектуры на старте (MVP) — это **прагматичное и реалистичное решение (Принцип 12)**. Оно позволяет быстро разрабатывать и итерировать базовый функционал, минимизировать сложность на раннем этапе, когда команда невелика. Запуск MVP важнее, чем построение избыточно сложной архитектуры. Как только MVP будет завершен и проект начнет расти, планируется поэтапный переход на микросервисы (см. План Миграции на Микросервисы).
+  * **TypeScript:** Increases code reliability and maintainability through strong typing.
+  * **NestJS:** Provides a powerful, modular architecture for the backend, simplifying the construction of scalable applications.
+  * **React/React Native/Next.js:** Allows building UIs for different platforms from a single codebase (cross-platform) and ensures good performance.
+  * **PostgreSQL (Neon):** A reliable, proven relational database with extensive scaling and optimization capabilities. Neon as a managed service reduces operational load (Pragmatism).
+  * **Prisma:** Chosen as a reliable ORM that provides type safety and built-in protection against SQL injections (Quality, Security).
+  * **GraphQL:** Allows clients to request only the data they need, optimizing interaction and reducing load.
+  * **Kafka:** Selected for reliable asynchronous task processing, which is critical for scaling and fault tolerance.
+  * **Redis:** A high-performance in-memory store for caching, rate limiting, and real-time state management.
+  * **Cloudflare R2:** Object storage with very favorable terms (no egress fees), ideal for storing user files (Pragmatism, ASSET).
 
-**Какие подходы используются для обеспечения безопасности?**
+This stack lays a **solid technical foundation** (Principle 8) for future development.
 
-Безопасность – это **фундаментальный аспект (Принцип 5)** и приоритет (см. Руководство по безопасности).
-*   Шифрование данных при передаче (TLS 1.2+) и в покое (AES для чувствительных данных, шифрование в R2).
-*   Надежное хэширование паролей (bcrypt/argon2).
-*   Использование **Prisma** для предотвращения SQL-инъекций.
-*   Валидация всех входных данных на Backend.
-*   Двухфакторная аутентификация (2FA) через email.
-*   Rate Limiting для защиты от атак перебора и DDoS.
-*   Регулярное сканирование на уязвимости.
-*   Хранение секретов в безопасных местах (Kubernetes Secrets).
+**Why start with a monolithic architecture instead of microservices?**
 
-**Как реализуется работа в реальном времени (обмен сообщениями)?**
+Using a monolithic architecture at the start (for the MVP) is a **pragmatic and realistic decision (Principle 12)**. It allows for rapid development and iteration of core functionality while minimizing complexity at an early stage when the team is small. Launching the MVP is more important than building an overly complex architecture. Once the MVP is complete and the project begins to grow, a phased transition to microservices is planned (see Microservices Migration Plan).
 
-Работа в реальном времени (обмен сообщениями) реализуется с использованием **WebSockets**. Backend (NestJS Gateway) управляет WebSocket-соединениями, а клиенты подписываются на события чатов. Доставка сообщений происходит через WebSocket. Для масштабирования WebSockets при микросервисной архитектуре будет использоваться Redis Pub/Sub или Kafka.
+**What approaches are used to ensure security?**
 
-**Почему используется GraphQL, а не REST API?**
+Security is a **fundamental aspect (Principle 5)** and a top priority (see Security Guide).
 
-GraphQL позволяет клиентам запрашивать только те данные, которые им действительно нужны, одним запросом. Это **оптимизирует** сетевое взаимодействие (особенно для мобильных клиентов) и снижает избыточность данных по сравнению с REST. Также GraphQL упрощает получение связанных данных (решение N+1 проблем с DataLoader).
+  * Encryption of data in transit (TLS 1.2+) and at rest (AES for sensitive data, R2 encryption).
+  * Strong password hashing (bcrypt/argon2).
+  * Using **Prisma** to prevent SQL injections.
+  * Validation of all input data on the backend.
+  * Two-factor authentication (2FA) via email.
+  * Rate limiting to protect against brute-force and DDoS attacks.
+  * Regular vulnerability scanning.
+  * Storing secrets in secure locations (e.g., Kubernetes Secrets).
 
-**Как управляются большие объемы данных и файлов?**
+**How is real-time functionality (messaging) implemented?**
 
-*   **Структурированные данные (сообщения, пользователи, чаты):** Хранятся в PostgreSQL (Neon). Используются индексы и оптимизация запросов (Prisma) для быстрой выборки. При росте планируется партиционирование таблиц и репликация БД.
-*   **Неструктурированные данные (файлы, изображения):** Хранятся в Cloudflare R2. Используется асинхронная обработка (Kafka) для оптимизации изображений перед загрузкой. R2 выбран за масштабируемость и выгодные тарифы на трафик.
+Real-time messaging is implemented using **WebSockets**. The backend (NestJS Gateway) manages WebSocket connections, and clients subscribe to chat events. Message delivery occurs via WebSockets. To scale WebSockets in a microservices architecture, Redis Pub/Sub or Kafka will be used.
 
-## 4. Процессы Разработки: Кайдзен в Действии
+**Why use GraphQL instead of a REST API?**
 
-**Какой подход к управлению проектом и задачами?**
+GraphQL allows clients to request exactly the data they need in a single query. This **optimizes** network interaction (especially for mobile clients) and reduces data over-fetching compared to REST. GraphQL also simplifies fetching related data (solving N+1 problems with DataLoader).
 
-Проект управляется с использованием **системы планирования (см. Моя Система Планирования 2025-2026)** в Notion. Используется декомпозиция глобальных целей на этапы (Roadmap), недельное планирование, трекер задач. Важный элемент – **Кайдзен-Час (Принцип 9)** для ежедневной рефлексии, анализа "затыков" и поиска путей улучшения.
+**How are large volumes of data and files managed?**
 
-**Как обеспечивается качество кода?**
+  * **Structured Data (messages, users, chats):** Stored in PostgreSQL (Neon). Indexes and query optimization (Prisma) are used for fast retrieval. As the system grows, table partitioning and database replication are planned.
+  * **Unstructured Data (files, images):** Stored in Cloudflare R2. Asynchronous processing (Kafka) is used to optimize images before upload. R2 was chosen for its scalability and cost-effective traffic pricing.
 
-Качество кода обеспечивается через **систематические** подходы (Принцип 3, 9):
-*   Использование **TypeScript** со строгой типизацией.
-*   Соблюдение **стандартов кодирования** (ESLint, Prettier).
-*   **Код-ревью** всех изменений.
-*   **Автоматизированное тестирование** на разных уровнях (Unit, Integration, E2E).
-*   **Непрерывная интеграция (CI)** для автоматической проверки кода и тестов на каждый коммит/PR.
+-----
 
-**Какая стратегия тестирования используется?**
+## 4\. Development Processes: Kaizen in Action
 
-Используется **многоуровневая стратегия тестирования** (см. Руководство по тестированию), сочетающая ручное и автоматизированное тестирование: Unit, Integration, API, E2E, Нагрузочное, Безопасности, Регрессионное. Тесты интегрированы в CI/CD. Фокус на проверке **ключевых требований (FRs, NFRs)**.
+**What is the approach to project and task management?**
 
-**Как происходит обработка ошибок?**
+The project is managed using a **planning system (see My Planning System 2025-2026)** in Notion. This involves breaking down global goals into milestones (Roadmap), weekly planning, and a task tracker. A key element is the **Kaizen Hour (Principle 9)** for daily reflection, analyzing bottlenecks, and finding ways to improve.
 
-Ошибки обрабатываются **централизованно и единообразно** на Backend (NestJS Exception Filters) и преобразуются в стандартный формат ответа API с кодами (`extensions.code`). На Frontend ошибки обрабатываются на основе этих кодов, отображая пользователю понятное сообщение и предлагая действие. Все ошибки подробно **логируются (Winston → ELK)** и отправляются в **Sentry** для отслеживания и анализа (см. Спецификация Ошибок, Руководство по Мониторингу).
+**How is code quality ensured?**
 
-**Как происходит развертывание (деплой) проекта?**
+Code quality is ensured through **systematic** approaches (Principles 3, 9):
 
-Развертывание автоматизировано через **CI/CD пайплайн (GitHub Actions)**. Используется **Docker** для контейнеризации и **Kubernetes** для оркестрации в облаке. Инфраструктура описывается как код (**Terraform**). Процесс включает автоматическую сборку, тестирование, публикацию образов и **Rolling Updates** в Kubernetes для деплоя без простоя (см. Руководство по Развертыванию).
+  * Using **TypeScript** with strict typing.
+  * Adhering to **coding standards** (ESLint, Prettier).
+  * **Code reviews** for all changes.
+  * **Automated testing** at various levels (Unit, Integration, E2E).
+  * **Continuous Integration (CI)** to automatically check code and run tests on every commit/PR.
 
-**Как система мониторится в продакшене?**
+**What is the testing strategy?**
 
-Система мониторинга является **глазами и ушами** проекта (Принцип 9, 5). Используются:
-*   **Prometheus** для сбора метрик производительности и ресурсов.
-*   **Grafana** для визуализации метрик и дашбордов.
-*   **Sentry** для отслеживания ошибок приложения (Frontend и Backend).
-*   **ELK Stack (или Kibana с Winston)** для централизованного логирования и анализа.
-*   **Alertmanager** для настройки автоматических оповещений о проблемах (Alerts).
-Эти инструменты позволяют проактивно выявлять проблемы и проводить оптимизацию (см. Руководство по Мониторингу).
+A **multi-layered testing strategy** is employed (see Testing Guide), combining manual and automated testing: Unit, Integration, API, E2E, Load, Security, and Regression. Tests are integrated into the CI/CD pipeline. The focus is on verifying **key requirements (FRs, NFRs)**.
 
-## 5. Статус, Дорожная Карта и Будущее: Эволюция АКТИВА
+**How is error handling managed?**
 
-**Каков текущий статус проекта?**
+Errors are handled **centrally and uniformly** on the backend (NestJS Exception Filters) and converted into a standard API response format with codes (`extensions.code`). On the frontend, errors are handled based on these codes, displaying a user-friendly message and suggesting an action. All errors are thoroughly **logged (Winston → ELK)** and sent to **Sentry** for tracking and analysis (see Error Specification, Monitoring Guide).
 
-Проект находится на стадии активной разработки **Минимально Жизнеспособного Продукта (MVP)**. Основной технологический фундамент заложен, ключевые UI элементы и базовая безопасность реализованы. В процессе – реализация ядра переписки, работы с файлами, создания групп/каналов. (См. Инструкция по Требованиям Проекта BrainMessenger (MVP)).
+**How is the project deployed?**
 
-**Какие следующие шаги после завершения MVP?**
+Deployment is automated via a **CI/CD pipeline (GitHub Actions)**. **Docker** is used for containerization and **Kubernetes** for orchestration in the cloud. The infrastructure is described as code (**Terraform**). The process includes automated builds, testing, image publication, and **Rolling Updates** in Kubernetes for zero-downtime deployments (see Deployment Guide).
 
-После завершения MVP, следующие шаги включают добавление расширенных функций (аудио/видеозвонки, Premium, расширенная безопасность, полный набор анимаций и локализации), дальнейшую оптимизацию производительности и подготовку к масштабированию. Подробный план представлен в **Дорожной Карте BrainMessenger (см. Дорожная карта)**.
+**How is the system monitored in production?**
 
-**Планируется ли переход на микросервисную архитектуру?**
+The monitoring system serves as the **eyes and ears** of the project (Principles 9, 5). We use:
 
-Да, переход на микросервисы является частью **долгосрочной стратегии развития** (Принцип 8). Он запланирован поэтапно, начиная с Q1 2026, с использованием подхода **Strangler Pattern**. Это позволит масштабировать компоненты независимо, повысить отказоустойчивость и гибкость (см. План Миграции на Микросервисы).
+  * **Prometheus** to collect performance and resource metrics.
+  * **Grafana** for visualizing metrics and creating dashboards.
+  * **Sentry** for application error tracking (Frontend and Backend).
+  * **ELK Stack (or Kibana with Winston)** for centralized logging and analysis.
+  * **Alertmanager** to configure automatic alerts for problems.
+    These tools allow us to proactively identify issues and perform optimizations (see Monitoring Guide).
 
-## 6. Вызовы, Возможности и Ограничения: Подводные Камни и Пути Роста
+-----
 
-**Какие основные технические вызовы (подводные камни) есть в проекте?**
+## 5\. Status, Roadmap, and Future: Evolution of the ASSET
 
-*   **Реализация надежной работы в реальном времени (WebSockets):** Управление тысячами одновременных соединений, надежная доставка сообщений, управление состоянием онлайн/офлайн.
-*   **Масштабирование БД при большом объеме данных:** Управление ростом таблицы сообщений (партиционирование), оптимизация сложных запросов.
-*   **Обработка и доставка файлов:** Эффективная загрузка, оптимизация изображений, безопасное скачивание из Cloudflare R2.
-*   **Переход на микросервисы:** Увеличение операционной сложности, настройка межсервисного взаимодействия (Kafka, GraphQL Federation), миграция данных.
-*   **Поддержание высокого качества и производительности:** Непрерывная оптимизация на всех уровнях (Backend, Frontend, Инфраструктура) по мере роста нагрузки и функционала.
+**What is the current status of the project?**
 
-**Какие возможности и преимущества предоставляет архитектура и стек проекта?**
+The project is currently in the active development phase of its **Minimum Viable Product (MVP)**. The core technical foundation has been laid, and key UI elements and basic security are implemented. Work is in progress on the core messaging functionality, file handling, and the creation of groups/channels (see BrainMessenger Project MVP Requirements).
 
-*   **Высокая масштабируемость:** Выбранные технологии (NestJS, Kubernetes, Kafka, Redis, Neon, R2) позволяют масштабировать приложение горизонтально для поддержки большого количества пользователей.
-*   **Надежность и отказоустойчивость:** Использование надежных сервисов, асинхронной обработки (Kafka), мониторинга и, в будущем, микросервисов повышает устойчивость системы к сбоям.
-*   **Высокая производительность:** GraphQL, кэширование, оптимизация запросов, асинхронная обработка способствуют быстрой работе приложения.
-*   **Кроссплатформенность:** React Native и Next.js позволяют создавать приложения для всех основных платформ из единой кодовой базы (для UI).
-*   **Качество и поддерживаемость кода:** TypeScript, NestJS, Prisma, стандарты кодирования, тестирование упрощают разработку и снижают количество дефектов.
-*   **Экономическая эффективность (на старте):** Использование бесплатных/доступных тарифов (Neon, R2) и проверенных open-source решений.
-*   **Богатая экосистема:** Использование популярных технологий с большим сообществом и множеством готовых библиотек.
+**What are the next steps after the MVP is completed?**
 
-**Какие ограничения есть у проекта на текущем этапе (MVP)?**
+After the MVP, the next steps include adding advanced features (audio/video calls, premium subscriptions, enhanced security, full animations, and localization), further performance optimization, and preparing for scale. A detailed plan is outlined in the **BrainMessenger Roadmap** (see Roadmap).
 
-*   Ограниченный набор функционала по сравнению с видением (нет звонков, Premium, расширенной безопасности).
-*   Ограниченная мультиязычность и возможности доступности (планируется расширение).
-*   Архитектура пока монолитная, что накладывает ограничения на независимое масштабирование отдельных частей.
-*   Возможно, могут быть ограничения по производительности при нагрузке, значительно превышающей целевую для MVP (~1000 одновременных пользователей), до внедрения глубоких оптимизаций и микросервисов.
+**Is there a plan to migrate to a microservices architecture?**
 
-## 7. Узнать Больше и Присоединиться: Система Знаний и Сила Содействия
+Yes, transitioning to microservices is part of the **long-term development strategy (Principle 8)**. It is planned to occur in phases, starting in Q1 2026, using the **Strangler Fig Pattern**. This will allow for independent scaling of components, increased fault tolerance, and greater flexibility (see Microservices Migration Plan).
 
-**Где я могу получить более детальную информацию о проекте?**
+-----
 
-Вся детальная документация доступна в репозитории. Мы стремимся, чтобы она была максимально полной и актуальной:
+## 6\. Challenges, Opportunities, and Limitations: Pitfalls and Growth Paths
 
-*   [**Документация Требований**](ссылка): Что мы строим.
-*   [**Руководство по разработке**](ссылка): Как мы пишем код.
-*   [**Техническая документация**](ссылка): Архитектура и стек.
-*   [**Спецификация API**](ссылка): Взаимодействие компонентов.
-*   [**Документация интеграций**](ссылка): Внешние сервисы.
-*   [**Руководство по безопасности**](ссылка): Защита АКТИВА.
-*   [**Руководство по производительности**](ссылка): Как сделать систему быстрой.
-*   [**Руководство по мониторингу и логированию**](ссылка): Видимость состояния.
-*   [**Документация UI**](ссылка): Визуальный дизайн.
-*   [**Документация звуков**](ссылка): Аудио система.
-*   [**Руководство по поддержке и обслуживанию**](ссылка): Жизнь после релиза.
-*   [**Спецификация ошибок**](ссылка): Обработка сбоев.
-*   [**Руководство по тестированию**](ссылка): Проверка качества.
-*   [**План миграции на микросервисы**](ссылка): Стратегия эволюции.
-*   [**Инструкция по требованиям MVP**](ссылка): Детали MVP.
+**What are the main technical challenges (pitfalls) in the project?**
 
-*(Убедитесь, что все [ссылка] ведут на соответствующие файлы в вашем репозитории)*
+  * **Implementing reliable real-time functionality (WebSockets):** Managing thousands of concurrent connections, ensuring reliable message delivery, and handling online/offline states.
+  * **Scaling the database with a large volume of data:** Managing the growth of the messages table (partitioning) and optimizing complex queries.
+  * **Processing and delivering files:** Efficiently handling uploads, optimizing images, and securely downloading from Cloudflare R2.
+  * **Transitioning to microservices:** Increased operational complexity, configuring inter-service communication (Kafka, GraphQL Federation), and data migration.
+  * **Maintaining high quality and performance:** Continuous optimization at all levels (Backend, Frontend, Infrastructure) as load and functionality grow.
 
-**Как я могу присоединиться к разработке проекта или внести свой вклад?**
+**What opportunities and advantages do the project's architecture and stack provide?**
 
-Мы приветствуем вклад в построение этого цифрового АКТИВА (Принцип 10)! Вы можете внести свой вклад разными способами: кодом, предложениями по дизайну/UX, улучшением документации, помощью с тестированием. Ознакомьтесь с [Руководством по участию](CONTRIBUTING.md) (если есть). Ваше участие — это часть **Силы Содействия** (принцип Маргулана), которая делает проект сильнее.
+  * **High Scalability:** The chosen technologies (NestJS, Kubernetes, Kafka, Redis, Neon, R2) allow the application to be scaled horizontally to support a large number of users.
+  * **Reliability and Fault Tolerance:** Using reliable services, asynchronous processing (Kafka), monitoring, and, in the future, microservices increases the system's resilience to failures.
+  * **High Performance:** GraphQL, caching, query optimization, and asynchronous processing contribute to a fast application experience.
+  * **Cross-Platform Capability:** React Native and Next.js enable the creation of applications for all major platforms from a single UI codebase.
+  * **Code Quality and Maintainability:** TypeScript, NestJS, Prisma, coding standards, and testing simplify development and reduce defects.
+  * **Cost-Effectiveness (at the start):** Utilizing free/affordable tiers (Neon, R2) and proven open-source solutions.
+  * **Rich Ecosystem:** Using popular technologies with large communities and many ready-made libraries.
 
-**Где я могу задать дополнительные вопросы?**
+**What are the project's limitations at the current stage (MVP)?**
 
-Если у вас есть вопросы, которые не покрыты этой документацией, пожалуйста, используйте раздел Issues в репозитории GitHub.
+  * A limited feature set compared to the long-term vision (no calls, premium features, or advanced security).
+  * Limited multilingual support and accessibility options (planned for expansion).
+  * The architecture is still a monolith, which limits the independent scaling of individual parts.
+  * There may be performance limitations under a load significantly exceeding the MVP target (\~1000 concurrent users) before deep optimizations and microservices are implemented.
 
----
+-----
+
+## 7\. Learn More and Contribute: The Knowledge System and the Power of Collaboration
+
+**Where can I get more detailed information about the project?**
+
+All detailed documentation is available in the repository. We strive to keep it as complete and up-to-date as possible:
+
+  * [**Requirements Documentation**](https://www.google.com/search?q=link): What we are building.
+  * [**Development Guide**](https://www.google.com/search?q=link): How we write code.
+  * [**Technical Documentation**](https://www.google.com/search?q=link): Architecture and stack.
+  * [**API Specification**](https://www.google.com/search?q=link): Component interaction.
+  * [**Integrations Documentation**](https://www.google.com/search?q=link): External services.
+  * [**Security Guide**](https://www.google.com/search?q=link): Protecting the ASSET.
+  * [**Performance Guide**](https://www.google.com/search?q=link): How to make the system fast.
+  * [**Monitoring and Logging Guide**](https://www.google.com/search?q=link): System state visibility.
+  * [**UI Documentation**](https://www.google.com/search?q=link): Visual design.
+  * [**Sound System Documentation**](https://www.google.com/search?q=link): Audio system.
+  * [**Support and Maintenance Guide**](https://www.google.com/search?q=link): Life after release.
+  * [**Error Specification**](https://www.google.com/search?q=link): Handling failures.
+  * [**Testing Guide**](https://www.google.com/search?q=link): Quality assurance.
+  * [**Microservices Migration Plan**](https://www.google.com/search?q=link): Evolution strategy.
+  * [**MVP Requirements Guide**](https://www.google.com/search?q=link): Details of the MVP.
+
+*(Ensure all [https://www.google.com/search?q=link] placeholders point to the corresponding files in your repository)*
+
+**How can I join the project's development or contribute?**
+
+We welcome contributions to building this digital ASSET (Principle 10)\! You can contribute in various ways: with code, design/UX suggestions, documentation improvements, or by helping with testing. Please review the [Contribution Guide](https://www.google.com/search?q=CONTRIBUTING.md) (if available). Your participation is part of the **Power of Collaboration** (a principle from Margulan) that makes the project stronger.
+
+**Where can I ask additional questions?**
+
+If you have questions that are not covered by this documentation, please use the Issues section in the GitHub repository.
