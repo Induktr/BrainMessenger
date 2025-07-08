@@ -168,23 +168,21 @@ Yes, transitioning to microservices is part of the **long-term development strat
 
 All detailed documentation is available in the repository. We strive to keep it as complete and up-to-date as possible:
 
-  * [**Requirements Documentation**](https://www.google.com/search?q=link): What we are building.
-  * [**Development Guide**](https://www.google.com/search?q=link): How we write code.
-  * [**Technical Documentation**](https://www.google.com/search?q=link): Architecture and stack.
-  * [**API Specification**](https://www.google.com/search?q=link): Component interaction.
-  * [**Integrations Documentation**](https://www.google.com/search?q=link): External services.
-  * [**Security Guide**](https://www.google.com/search?q=link): Protecting the ASSET.
-  * [**Performance Guide**](https://www.google.com/search?q=link): How to make the system fast.
-  * [**Monitoring and Logging Guide**](https://www.google.com/search?q=link): System state visibility.
-  * [**UI Documentation**](https://www.google.com/search?q=link): Visual design.
-  * [**Sound System Documentation**](https://www.google.com/search?q=link): Audio system.
-  * [**Support and Maintenance Guide**](https://www.google.com/search?q=link): Life after release.
-  * [**Error Specification**](https://www.google.com/search?q=link): Handling failures.
-  * [**Testing Guide**](https://www.google.com/search?q=link): Quality assurance.
-  * [**Microservices Migration Plan**](https://www.google.com/search?q=link): Evolution strategy.
-  * [**MVP Requirements Guide**](https://www.google.com/search?q=link): Details of the MVP.
-
-*(Ensure all [https://www.google.com/search?q=link] placeholders point to the corresponding files in your repository)*
+  * [**Requirements Documentation**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Planing/DocReq.md): What we are building.
+  * [**Development Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Dev/DocDevIn.md): How we write code.
+  * [**Technical Documentation**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Dev/DocTech.md): Architecture and stack.
+  * [**API Specification**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Dev/DocSpec.md): Component interaction.
+  * [**Integrations Documentation**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Dev/DocInt.md): External services.
+  * [**Security Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Infrastructure/DocSecurity.md): Protecting the ASSET.
+  * [**Performance Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Infrastructure/DocPer.md): How to make the system fast.
+  * [**Monitoring and Logging Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Infrastructure/DocMonLog.md): System state visibility.
+  * [**UI Documentation**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Dev/DocUI.md): Visual design.
+  * [**Sound System Documentation**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Sound/DocSound.md): Audio system.
+  * [**Support and Maintenance Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Support/DocSupport.md): Life after release.
+  * [**Error Specification**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Testing/DocSpecError.md): Handling failures.
+  * [**Testing Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Testing/DocTesting.md): Quality assurance.
+  * [**Microservices Migration Plan**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/AllRequirements/Docs/Infrastructure/DocMigrationMicro.md): Evolution strategy.
+  * [**MVP Requirements Guide**](https://github.com/Induktr/BrainMessenger/blob/main/Docs/Roadmap.md): Details of the MVP.
 
 **How can I join the project's development or contribute?**
 
