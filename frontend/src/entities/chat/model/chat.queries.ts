@@ -37,6 +37,7 @@ export const GLOBAL_SEARCH_QUERY = gql`
         }
         channel {
           id
+          name
           description
           subscribersCount
         }
@@ -64,6 +65,7 @@ export const GET_CHATS = gql`
       }
       channel { # Include channel details if it's a channel
         id
+        name
         description
         subscribersCount
         isPublic

@@ -25,23 +25,47 @@ const ChannelDetailsModal: React.FC<ChannelDetailsModalProps> = ({
 
   const [updateChannelPrivacy] = useMutation(UPDATE_CHANNEL_PRIVACY, {
     onCompleted: (data) => {
-      showNotification(t('notifications.success'), t('channelDetailsModal.notifications.privacySet', { status: data.updateChannelPrivacy.isPublic ? t('channelDetailsModal.public') : t('channelDetailsModal.private') }));
+      showNotification({
+        id: new Date().toISOString(),
+        chatId: channel.id,
+        sender: { id: 'system', name: t('notifications.success') },
+        content: t('channelDetailsModal.notifications.privacySet', { status: data.updateChannelPrivacy.isPublic ? t('channelDetailsModal.public') : t('channelDetailsModal.private') }),
+        createdAt: new Date().toISOString(),
+      });
     },
     onError: (error) => {
       console.error('Error updating channel privacy:', error);
-      showNotification(t('notifications.error'), t('channelDetailsModal.notifications.privacyError', { message: error.message }));
+      showNotification({
+        id: new Date().toISOString(),
+        chatId: channel.id,
+        sender: { id: 'system', name: t('notifications.error') },
+        content: t('channelDetailsModal.notifications.privacyError', { message: error.message }),
+        createdAt: new Date().toISOString(),
+      });
     },
   });
 
   const [deleteChannelMutation] = useMutation(DELETE_CHANNEL, {
     onCompleted: () => {
-      showNotification(t('notifications.success'), t('channelDetailsModal.notifications.deletedSuccess'));
+      showNotification({
+        id: new Date().toISOString(),
+        chatId: channel.id,
+        sender: { id: 'system', name: t('notifications.success') },
+        content: t('channelDetailsModal.notifications.deletedSuccess'),
+        createdAt: new Date().toISOString(),
+      });
       onChannelDeleted();
       onClose();
     },
     onError: (error) => {
       console.error('Error deleting channel:', error);
-      showNotification(t('notifications.error'), t('channelDetailsModal.notifications.deletedError', { message: error.message }));
+      showNotification({
+        id: new Date().toISOString(),
+        chatId: channel.id,
+        sender: { id: 'system', name: t('notifications.error') },
+        content: t('channelDetailsModal.notifications.deletedError', { message: error.message }),
+        createdAt: new Date().toISOString(),
+      });
     },
   });
 

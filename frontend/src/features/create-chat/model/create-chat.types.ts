@@ -21,6 +21,7 @@ export interface UserDto {
 export interface ChannelDto {
     id: string;
     chatId: string;
+    name: string;
     description?: string | null;
     subscribersCount: number;
     isPublic: boolean;
