@@ -107,7 +107,7 @@ const ComplaintFeedWidget: React.FC<ComplaintFeedWidgetProps> = ({ complaintItem
                   <div className="complaint-feed-widget__associated-message">
                     <p className="complaint-feed-widget__message-author">{t('admin_dashboard.associated_message_label')}</p>
                     <p className="complaint-feed-widget__message-text">
-                      <strong>{t('complaintFeed.messageLabel')}</strong> "{complaint.message.content}" (ID: {complaint.message.id})
+                      <strong>{t('complaintFeed.messageLabel')}</strong> {complaint.message.content} (ID: {complaint.message.id})
                     </p>
                   </div>
                 )}
