@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,6 +18,7 @@ import { IMAGES } from '@/shared/assets/Images/images';
 import { RegisterFormInputs } from '@/features/user-auth/model/user-auth.types';
 
 const RegisterPage = () => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
     const [confirmationCode, setConfirmationCode] = useState<string[]>(Array(8).fill('')); // State for the 8-digit code
     const inputRefs = useRef<Array<React.RefObject<HTMLInputElement | null>>>(Array(8).fill(null).map(() => React.createRef())); // Refs for input cells
@@ -35,7 +37,7 @@ const RegisterPage = () => {
      const handleResendCode = async () => { // Removed emailToResend parameter
        if (!registeredEmail) {
          console.error("No registered email found to resend verification code.");
-         alert("Cannot resend code: Email not available.");
+         alert(t('register_page.resend_code_unavailable'));
          return;
        }
        try {
@@ -45,15 +47,15 @@ const RegisterPage = () => {
        if (response.data && response.data.resendVerificationCode) { // Check the correct response field
          console.log("Resend code successful:", response.data.resendVerificationCode);
          // Optionally show a message to the user that the code has been resent
-         alert('Verification code resent. Please check your email.'); // Added alert for user feedback
+         alert(t('register_page.code_resent_success')); // Added alert for user feedback
        } else {
           console.error('Resend code failed: No data received.');
-          alert('Failed to resend verification code.'); // Added alert for user feedback
+          alert(t('register_page.resend_code_failed_generic')); // Added alert for user feedback
        }
      } catch (e) {
        console.error('Resend code error:', e);
        // Handle error (e.g., display error message to the user)
-       alert(`Failed to resend verification code: ${e}`); // Added alert with error message
+       alert(t('register_page.resend_code_failed_with_error', { error: e })); // Added alert with error message
      }
    };
  
@@ -210,15 +212,15 @@ const RegisterPage = () => {
    const getStepText = (step: number, email?: string) => {
      switch (step) {
        case 1:
-         return "Create a password";
+         return t('register_page.create_password_placeholder');
        case 2:
-         return "Your name";
+         return t('register_page.your_name_placeholder');
        case 3:
-         return "Choose your username"; // Text for the new username step
+         return t('register_page.username_placeholder'); // Text for the new username step
        case 4:
-         return "Your email";
+         return t('register_page.email_placeholder');
        case 5:
-         return `Welcome, ${email}! To complete the registration process, please enter the code we sent to you by email.`; // Use email from watch
+         return t('register_page.welcome_prompt', { email: email }); // Use email from watch
        default:
          return "";
      }
@@ -229,7 +231,7 @@ const RegisterPage = () => {
      <div className="welcome-container"> {/* Reusing welcome-container for centering */}
      {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
           <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-              <Image src={ICONS.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
+              <Image src={ICONS.burgerMenu} alt={t('register_page.burger_menu_alt')} className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
           </div>
        <div className="main-content-area"> {/* Reusing main-content-area */}
          {/* Logo */}
@@ -237,7 +239,7 @@ const RegisterPage = () => {
        <div className="icon-container-steps">
          <Image
            src={IMAGES.logoBrainMessenger}
-           alt="BrainMessenger Logo" // Added alt text
+           alt={t('register_page.logo_alt')} // Added alt text
            width={175} // Example width, adjust as needed
            height={175} // Example height, adjust as needed
            className="logo"
@@ -249,35 +251,35 @@ const RegisterPage = () => {
          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
            {currentStep === 1 && (
              <>
-               <h2 className="step-heading">Step {currentStep}</h2> {/* Added heading based on mockup */}
+               <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2> {/* Added heading based on mockup */}
                <div className="input-button-container"> {/* Container for input and button */}
                  <Input
-                   placeholder="Password"
+                   placeholder={t('register_page.create_password_placeholder')}
                    id="password"
                    type="password"
                    iconPath={ICONS.castle} // Use iconPath prop
                    registration={register('password', {
-                     required: 'Input field is empty', // Figma message
-                     minLength: { value: 6, message: 'Password is too short' }, // Figma message
-                     maxLength: { value: 50, message: 'Password is too long' }, // Added maxLength based on common practices
+                     required: t('register_page.input_field_empty'), // Figma message
+                     minLength: { value: 6, message: t('register_page.password_too_short') }, // Figma message
+                     maxLength: { value: 50, message: t('register_page.password_too_long') }, // Added maxLength based on common practices
                      pattern: {
                        value: /^(?=.*[A-Z])(?=.*[!@#$%^&*()]).*$/, // Requires at least one capital letter and one special character
-                       message: 'The password must contain an uppercase letter and a special character', // Combined Figma messages
+                       message: t('register_page.password_requirements'), // Combined Figma messages
                      },
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt="Next" className="icon-container-size-lg" width={24} height={24} /> {/* Use img tag */}
+                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon-container-size-lg" width={24} height={24} /> {/* Use img tag */}
                  </Button>
                </div>
                {errors.password && <p className="input-error-message">{errors.password.message}</p>}
                {errorRegistration && (
                  errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
                    errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">Registration Error: {err.message}</p>
+                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
                    ))
                  ) : (
-                   <p className="input-error-message">Registration Error: {errorRegistration.message}</p>
+                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
                  )
                )}
              </>
@@ -286,33 +288,33 @@ const RegisterPage = () => {
              <>
                {/* Progress Indicator for Step 2 */}
                <div className="progress-indicator-container">
-                 <h2 className="step-heading">Step {currentStep}</h2>
+                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
                  <ProgressIndicator currentStep={currentStep} totalSteps={5} />
                </div>
                <div className="input-button-container">
                  <Input
-                   placeholder="Your name"
+                   placeholder={t('register_page.your_name_placeholder')}
                    id="name"
                    type="text"
                    iconPath={ICONS.man} // Use iconPath prop
                    registration={register('name', {
-                     required: 'Input field is empty',
-                     minLength: { value: 2, message: 'The name is too short' },
-                     maxLength: { value: 50, message: 'The name is too long' },
+                     required: t('register_page.input_field_empty'),
+                     minLength: { value: 2, message: t('register_page.name_too_short') },
+                     maxLength: { value: 50, message: t('register_page.name_too_long') },
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
                  </Button>
                </div>
                {errors.name && <p className="input-error-message">{errors.name.message}</p>}
                {errorRegistration && (
                  errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
                    errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">Registration Error: {err.message}</p>
+                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
                    ))
                  ) : (
-                   <p className="input-error-message">Registration Error: {errorRegistration.message}</p>
+                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
                  )
                )}
              </>
@@ -321,34 +323,34 @@ const RegisterPage = () => {
              <>
                {/* Progress Indicator for Step 3 */}
                <div className="progress-indicator-container">
-                 <h2 className="step-heading">Step {currentStep}</h2>
+                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
                  <ProgressIndicator currentStep={currentStep} totalSteps={5} />
                </div>
                <div className="input-button-container">
                  <Input
-                   placeholder="Username"
+                   placeholder={t('register_page.username_placeholder')}
                    id="username"
                    type="text"
                    iconPath={ICONS.usernameDog} // Assuming you have an icon for username
                    registration={register('username', {
                      // Removed 'required' validation to make username optional
-                     minLength: { value: 3, message: 'Username is too short' },
-                     maxLength: { value: 20, message: 'Username is too long' },
+                     minLength: { value: 3, message: t('register_page.username_too_short') },
+                     maxLength: { value: 20, message: t('register_page.username_too_long') },
                      // You might want to add a pattern for valid username characters
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
                  </Button>
                </div>
                {errors.username && <p className="input-error-message">{errors.username.message}</p>}
                {errorRegistration && (
                  errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
                    errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">Registration Error: {err.message}</p>
+                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
                    ))
                  ) : (
-                   <p className="input-error-message">Registration Error: {errorRegistration.message}</p>
+                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
                  )
                )}
              </>
@@ -357,35 +359,35 @@ const RegisterPage = () => {
              <>
                {/* Progress Indicator for Step 4 */}
                <div className="progress-indicator-container">
-                 <h2 className="step-heading">Step {currentStep}</h2>
+                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
                  <ProgressIndicator currentStep={currentStep} totalSteps={5} />
                </div>
                <div className="input-button-container">
                  <Input
-                   placeholder="Email"
+                   placeholder={t('register_page.email_placeholder')}
                    id="email"
                    type="email"
                    iconPath={ICONS.mail} // Use iconPath prop
                    registration={register('email', {
-                     required: 'Input field is empty',
+                     required: t('register_page.input_field_empty'),
                      pattern: {
                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                       message: 'Invalid E-Mail format',
+                       message: t('register_page.invalid_email_format'),
                      },
                    })}
                  />
                  <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt="Next" className="icon" width={24} height={24} /> {/* Use img tag */}
+                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
                  </Button>
                </div>
                {errors.email && <p className="input-error-message">{errors.email.message}</p>}
                {errorRegistration && (
                  errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
                    errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">Registration Error: {err.message}</p>
+                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
                    ))
                  ) : (
-                   <p className="input-error-message">Registration Error: {errorRegistration.message}</p>
+                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
                  )
                )}
              </>
@@ -395,7 +397,7 @@ const RegisterPage = () => {
                {/* Progress Indicator for Step 5 */}
                <p className="step-description">{getStepText(currentStep, email)}</p> {/* Pass email to getStepText */}
                <div className="progress-indicator-container"> {/* Added container for centering */}
-                 <h2 className="step-heading">Step {currentStep}</h2>
+                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
                  <ProgressIndicator currentStep={currentStep} totalSteps={5} />
                </div>
                {/* Confirmation code input cells */}
@@ -413,28 +415,28 @@ const RegisterPage = () => {
                  ))}
                </div>
                 <Button className="custom-button" type="submit" disabled={loadingVerification || !isCodeInputStarted}> {/* Disable button while loading or if code input not started */}
-                   {loadingVerification ? 'Verifying...' : 'Confirm'}
+                   {loadingVerification ? t('register_page.verifying_button') : t('register_page.confirm_button')}
                 </Button>
                 {errorVerification && (
                   errorVerification.graphQLErrors && errorVerification.graphQLErrors.length > 0 ? (
                     errorVerification.graphQLErrors.map((err, index) => (
-                      <p key={index} className="input-error-message text-center">Verification failed: {err.message}</p>
+                      <p key={index} className="input-error-message text-center">{t('register_page.verification_error_prefix')} {err.message}</p>
                     ))
                   ) : (
-                    <p className="input-error-message text-center">Verification failed: {errorVerification.message}</p>
+                    <p className="input-error-message text-center">{t('register_page.verification_error_prefix')} {errorVerification.message}</p>
                   )
                 )}
                 {errorResend && ( // Display resend error
                   errorResend.graphQLErrors && errorResend.graphQLErrors.length > 0 && (
                     errorResend.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message text-center">Resend failed: {errorResend.message}</p>
+                     <p key={index} className="input-error-message text-center">{t('register_page.resend_error_prefix')} {errorResend.message}</p>
                     ))
                   )
                 )}
-                {verificationSuccess && <p className="success-message text-center">Verification successful! Redirecting to chat...</p>}
+                {verificationSuccess && <p className="success-message text-center">{t('register_page.verification_success_redirect')}</p>}
                 {!verificationSuccess && ( // Only show button if verification is not successful
                   <Button onClick={handleResendCode} className="confirmation-send-code-button-container" disabled={loadingResend || verificationSuccess}> {/* Call handleResendCode without arguments */}
-                     {loadingResend ? 'Sending...' : 'Get the code again'} {/* Change button text while loading */}
+                     {loadingResend ? t('register_page.sending_button') : t('register_page.get_code_again_button')} {/* Change button text while loading */}
                   </Button>
                 )}
               </>
@@ -445,13 +447,13 @@ const RegisterPage = () => {
         {/* Back Button */}
         {currentStep >= 1 && (
           <Button type="button" onClick={handleBack} className="back-button-top-left"> {/* Added class for styling */}
-            <Image src={ICONS.arrowBack} alt="Back" className="icon svg-icon" width={24} height={24} /> {/* Use img tag and apply svg-icon class */}
+            <Image src={ICONS.arrowBack} alt={t('register_page.back_button_alt')} className="icon svg-icon" width={24} height={24} /> {/* Use img tag and apply svg-icon class */}
           </Button>
         )}
         {currentStep !== 4 && (<p className="text-center text-sm text-textSecondary-dark">
-          Already have an account?{' '}
+          {t('register_page.already_have_account')}{' '}
           <Link href="/login" className="text-primary-DEFAULT hover:underline">
-            Login
+            {t('register_page.login_link')}
           </Link>
         </p>)}
       </div>

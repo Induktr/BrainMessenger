@@ -29,7 +29,7 @@ const mapFileToDto = (file: any): FileDto | null => {
         avatarUrl: file.uploader.avatarUrl, // Include avatarUrl
         bio: file.uploader.bio, // Include bio field
         status: file.uploader.status, // Include status field
-        roles: file.uploader.roles || [], // Include roles, default to empty array if null/undefined
+        role: file.uploader.role || [], // Include roles, default to empty array if null/undefined
     } : null, // Map uploader or provide default/null
   };
 };

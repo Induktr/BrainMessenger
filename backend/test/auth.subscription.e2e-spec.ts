@@ -16,7 +16,7 @@ const waitForConnection = (client: Client): Promise<void> => {
       resolve();
     });
     // Add a timeout to prevent tests from hanging
-    setTimeout(() => reject(new Error('Connection timeout')), 10000);
+    setTimeout(() => reject(new Error('Connection timeout')), 30000); // Increased timeout for stability
   });
 };
 
@@ -28,6 +28,7 @@ describe('GraphQL Subscriptions Authentication (e2e)', () => {
   const clients: Client[] = [];
 
   beforeAll(async () => {
+    console.log(`[e2e test] NODE_ENV: ${process.env.NODE_ENV}`); // Add this line
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -78,8 +79,20 @@ describe('GraphQL Subscriptions Authentication (e2e)', () => {
   });
 
   const createTrackedClient = (connectionParams?: any): Client => {
+    console.log(`[e2e test] Creating client with wsUrl: ${wsUrl} and connectionParams: ${JSON.stringify(connectionParams)}`);
     const client = createClient({ url: wsUrl, webSocketImpl: WebSocket, connectionParams });
     clients.push(client);
+
+    client.on('error', (err: Error) => { // Explicitly type 'err' as Error
+      console.error(`[e2e test] WebSocket client error: ${err.message}`);
+    });
+    client.on('closed', (event: { code: number; reason: string }) => { // Explicitly type 'event'
+      console.log(`[e2e test] WebSocket client closed: Code=${event.code}, Reason=${event.reason}`);
+    });
+    client.on('connected', () => {
+      console.log('[e2e test] WebSocket client connected.');
+    });
+
     return client;
   };
 

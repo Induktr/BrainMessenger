@@ -13,6 +13,10 @@ import { RegisterInput } from '../auth/dto/register-input'; // Import RegisterIn
 import { LoginInput } from '../auth/dto/login-input'; // Import LoginInput
 import { CurrentUser } from '../auth/current-user.decorator'; // Import CurrentUser decorator
 import { User } from '@prisma/client'; // Import Prisma User type
+import { RolesGuard } from '../common/guards/roles.guard'; // Import RolesGuard
+import { Roles } from '../common/decorators/roles.decorator'; // Import Roles decorator
+import { UserRole } from '@prisma/client'; // Import UserRole enum
+import { UserStats } from './dto/user-stats.dto';
 
 @InputType()
 class UpdateUserInput {
@@ -90,6 +94,13 @@ export class UserResolver {
     return []; // Placeholder
   }
  
+  @Query(() => UserStats)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.MODERATOR, UserRole.ADMIN)
+  async getUserStats(): Promise<UserStats> {
+    return this.userService.getUserStats();
+  }
+
   @Query(() => UserDto, { name: 'getCurrentUser', nullable: true })
   @UseGuards(JwtAuthGuard)
   async getCurrentUser(@CurrentUser() user: User): Promise<UserDto | null> {
@@ -235,5 +246,14 @@ export class UserResolver {
       throw new UnauthorizedException('Authentication required: User ID not available.');
     }
     return this.userService.verifyEmail(user.id, code);
+  }
+  @Mutation(() => UserDto)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  async assignUserRole(
+    @Args('userId', { type: () => ID }) userId: string,
+    @Args('role', { type: () => UserRole }) role: UserRole,
+  ): Promise<UserDto> {
+    return this.userService.assignRole(userId, role);
   }
 }

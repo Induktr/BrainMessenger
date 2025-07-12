@@ -1,3 +1,5 @@
+import { UserRole } from '@prisma/client';
+
 export interface User {
   id: string;
   email: string;
@@ -9,6 +11,6 @@ export interface User {
   twoFactorEnabled?: boolean;
   twoFactorMethod?: string | null;
   recoveryEmail?: string | null;
-  lastActiveAt?: Date | null; // Add lastActiveAt
-  roles: string[]; // Add roles property
+  lastActiveAt?: Date | null;
+  role: UserRole; // Change to single role with UserRole enum
 }

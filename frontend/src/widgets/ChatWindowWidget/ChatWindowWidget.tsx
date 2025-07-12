@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/user-auth/ui/AuthContext';
 import ChatMessage from '@/entities/message/ui/ChatMessage';
 import ChatInput from '@/features/send-message/ui/ChatInput';
@@ -49,8 +50,11 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
     setSelectedImage(url);
   };
 
+  const { t } = useTranslation();
+
+  if (!chatId) return <p>{t('chatWindow.selectChatPrompt')}</p>;
   if (loading) return <Spinner />;
-  if (error) return <p>Error loading messages: {error.message}</p>;
+  if (error) return <p>{t('chatWindow.loadError', { message: error.message })}</p>;
 
   const getChatPartner = () => {
     if (!chatDetails || !user) return null;
@@ -65,22 +69,22 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
   const getTitle = () => {
     if (chatDetails?.name) return chatDetails.name;
     if (chatPartner) return chatPartner.name;
-    return 'Chat';
+    return t('chat_page.chat_title');
   };
 
   const getStatus = () => {
     if (chatPartner) {
-      if (chatPartner.isOnline) return 'online';
+      if (chatPartner.isOnline) return t('chat_page.online_status');
       if (chatPartner.lastSeen) {
-        return `last seen ${new Date(
+        return `${t('chat_page.last_seen_prefix')} ${new Date(
           chatPartner.lastSeen
         ).toLocaleTimeString([], { hour: 'numeric', minute: 'numeric' })}`;
       }
-      return 'offline';
+      return t('chat_page.offline_status');
     }
     if (chatDetails) {
       const onlineCount = chatDetails.participants.filter(u => u.isOnline).length;
-      return `${onlineCount} members`;
+      return t('chat_page.members_count', { count: onlineCount });
     }
     return '...';
   };
@@ -101,7 +105,7 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
         status={getStatus()}
         avatar={getAvatar()}
         onOpenChannelDetails={onOpenContextMenu}
-        onBackButtonClick={onBackButtonClick} // Pass the new prop
+        onBackButtonClick={onBackButtonClick} 
       />
       <div className="chat-messages-list">
         {messages.map((msg) => {
@@ -139,6 +143,12 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
           onUnsubscribe={handleUnsubscribeFromChannel}
           onSendMessageOrUpdate={handleSendMessageOrUpdate}
         />
+        {isChannel && !isSubscribedToChannel && (
+          <div>
+            <button onClick={handleSubscribeToChannel}>{t('chatWindow.subscribeButton')}</button>
+            <p>{t('chatWindow.subscribePrompt')}</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -39,8 +39,13 @@ model User {
   refreshTokenExpiresAt      DateTime? // Store the refresh token expiration time
   bio                        String?   // Add bio field for biography
   lastActiveAt               DateTime? // Timestamp of last user activity
-  roles                      String[]  @default(["user"]) // Add roles field with a default 'user' role
+  role                       UserRole  @default(USER) // Add role field with a default 'USER' role
+  createdAt                  DateTime  @default(now()) // Add createdAt field
   messageReactions MessageReaction[] // Add relation for message reactions
+  feedbackComplaints FeedbackComplaint[] // Add relation for feedback and complaints
+  isBanned           Boolean   @default(false) // New field to indicate if a user is banned
+  bannedUntil        DateTime? // New field for ban expiration date
+  banReason          String?   // New field for the reason of the ban
   // transactions     Transaction[] // Add later after clarifying ID type mismatch
 }
  
@@ -86,6 +91,8 @@ model Message {
   deletedForUserIds  String[] @default([]) // New field to mark messages as deleted for specific users
   isViewed           Boolean  @default(false) // Added isViewed field
   reactions          MessageReaction[] // Add relation for message reactions
+  isDeleted          Boolean   @default(false) // New field to indicate if a message is soft-deleted
+  feedbackComplaints FeedbackComplaint[]
 }
 
 model Attachment {
@@ -170,8 +177,36 @@ model MessageReaction {
   @@unique([messageId, userId, emoji]) // Ensures a user can only add one of each emoji type per message
 }
 
+model FeedbackComplaint {
+  id             String                  @id @default(uuid())
+  userId         String?
+  user           User?                   @relation(fields: [userId], references: [id])
+  messageId      String?
+  message        Message?                @relation(fields: [messageId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  type           String // e.g., "FEEDBACK", "COMPLAINT"
+  subject        String
+  content        String
+  status         FeedbackComplaintStatus @default(NEW)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  moderatorNotes String?
+}
+
+enum FeedbackComplaintStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
 enum ChatParticipantRole {
   OWNER
   MEMBER
   SUBSCRIBER
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
 }

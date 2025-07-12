@@ -1,0 +1,402 @@
+{
+  "language": {
+    "header_title": "Language",
+    "interface_label": "Interface Language",
+    "english": "English",
+    "ukrainian": "Ukrainian",
+    "russian": "Russian"
+  },
+  "sidebar": {
+    "guest": "Guest",
+    "na": "N/A",
+    "settings": "Settings",
+    "createChannel": "Create Channel",
+    "createGroup": "Create Group",
+    "nightMode": "Night Mode",
+    "allNotifications": "All Notifications",
+    "support": "Support",
+    "myAccount": "My Account",
+    "toggleTheme": "Toggle Theme",
+    "notifications": "Notifications",
+    "logout": "Logout"
+  },
+  "myAccount": {
+    "headerTitle": "Info",
+    "uploadPhoto": "Upload a fresh photo",
+    "uploading": "Uploading...",
+    "uploadFailed": "Upload failed: {{message}}",
+    "guest": "Guest",
+    "bioPlaceholder": "Enter your biography here...",
+    "notAvailable": "N/A",
+    "logout": "Logout",
+    "alt": {
+      "back": "Back",
+      "close": "Close",
+      "uploadAvatar": "Upload Avatar",
+      "logout": "Logout Account",
+      "account": "Account",
+      "username": "Username",
+      "email": "Email"
+    },
+    "status": {
+      "online": "online",
+      "offline": "offline"
+    },
+    "labels": {
+      "name": "Name",
+      "username": "Username",
+      "email": "Email"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "verify": "Verify"
+    },
+    "editModal": {
+      "title": "Edit {{field}}",
+      "statusLabel": "Status:",
+      "verified": "Verified",
+      "notVerified": "Not Verified",
+      "sending": "Sending...",
+      "resendButton": "Resend Verification Email",
+      "resendSuccess": "Verification email sent!"
+    },
+    "verifyModal": {
+      "title": "Verify Your Email",
+      "instruction": "Please enter the verification code sent to {{email}}.",
+      "placeholder": "Enter code",
+      "resendButton": "Resend Code"
+    },
+    "cropModal": {
+      "title": "Crop Avatar",
+      "alt": {
+        "crop": "Crop me"
+      }
+    }
+  },
+  "linkPreview": {
+    "loading": "Loading preview..."
+  },
+  "imageGallery": {
+    "alt": {
+      "rotate": "Rotate image",
+      "download": "Download image",
+      "close": "Close gallery",
+      "previous": "Previous image",
+      "next": "Next image"
+    },
+    "downloadedImageName": "downloaded-image"
+  },
+  "createChannelModal": {
+    "title": "Create New Channel",
+    "alt": {
+      "close": "Close"
+    },
+    "nameLabel": "Channel Name",
+    "namePlaceholder": "Enter title...",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Tell us what your channel is about...",
+    "createButton": "Create Channel",
+    "creatingButton": "Creating...",
+    "errorMessage": "Error: {{message}}"
+  },
+  "channelDetailsModal": {
+    "title": "Channel Details",
+    "public": "public",
+    "private": "private",
+    "nameLabel": "Name:",
+    "descriptionLabel": "Description:",
+    "subscribersLabel": "Subscribers:",
+    "ownerLabel": "Owner:",
+    "publicToggleLabel": "Public Channel:",
+    "deleteButton": "Delete Channel",
+    "alt": {
+      "close": "Close",
+      "avatar": "Channel Avatar"
+    },
+    "notifications": {
+      "privacySet": "Channel is now {{status}}.",
+      "privacyError": "Failed to update channel privacy: {{message}}",
+      "deletedSuccess": "Channel deleted successfully!",
+      "deletedError": "Failed to delete channel: {{message}}"
+    },
+    "confirmDelete": {
+      "title": "Confirm Delete Channel",
+      "message": "Are you sure you want to delete the channel \"{{channelName}}\"? This action cannot be undone.",
+      "confirmText": "Delete Channel",
+      "cancelText": "Cancel"
+    }
+  },
+  "languageModal": {
+    "headerTitle": "Language",
+    "interfaceLabel": "Interface Language",
+    "alt": {
+      "back": "Back",
+      "close": "Close"
+    }
+  },
+  "userStats": {
+    "title": "User Statistics",
+    "activeUsers": "Active Users",
+    "newUsersToday": "New Today",
+    "inactiveUsers": "Inactive Users",
+    "totalUsers": "Total Users:"
+  },
+  "languageSwitcherAdmin": {
+    "title": "Interface Language",
+    "alt": {
+      "en": "English",
+      "ua": "Ukrainian",
+      "ru": "Russian"
+    }
+  },
+  "feedbackFeed": {
+    "title": "Feedback Feed",
+    "noFeedback": "No feedback to display."
+  },
+  "complaintFeed": {
+    "title": "Complaint Feed",
+    "noComplaints": "No complaints to display.",
+    "userLabel": "User:",
+    "messageLabel": "Message:",
+    "complaintLabel": "Complaint:",
+    "statusLabel": "Status:",
+    "createdAtLabel": "Created At:",
+    "banUserButton": "Ban User",
+    "deleteMessageButton": "Delete Message",
+    "banError": "Error banning user:",
+    "deleteError": "Error deleting message:",
+    "statuses": {
+      "NEW": "New",
+      "IN_PROGRESS": "In Progress",
+      "RESOLVED": "Resolved",
+      "REJECTED": "Rejected"
+    }
+  },
+  "chatWindow": {
+    "loadError": "Error loading messages: {{message}}",
+    "selectChatPrompt": "Select a chat to start messaging",
+    "subscribePrompt": "You are not subscribed to this channel. Subscribe to see messages and participate.",
+    "subscribeButton": "Subscribe",
+    "unsubscribeButton": "Unsubscribe"
+  },
+  "chatList": {
+    "findOrCreateError": "Error finding or creating private chat:",
+    "loadError": "Error loading chats.",
+    "searchError": "Error during search.",
+    "users": "Users",
+    "channels": "Channels",
+    "groups": "Groups",
+    "noUsersFound": "No users found.",
+    "noChannelsFound": "No channels found.",
+    "noGroupsFound": "No groups found.",
+    "noChatsYet": "No chats yet."
+  },
+  "search": {
+    "placeholder": "Search..."
+  },
+  "header_widget": {
+    "typingSubscriptionError": "Typing subscription error:",
+    "peopleTyping": "{{count}} people are typing...",
+    "userTyping_one": "{{name}} is typing...",
+    "userTyping_other": "{{name}} are typing..."
+  },
+  "welcome_page": {
+    "slide1_title": "Welcome to BrainMessenger",
+    "slide1_description": "Your secure and private communication platform.",
+    "slide2_title": "Secure and Private",
+    "slide2_description": "Your conversations are encrypted and your privacy is our priority.",
+    "slide3_title": "Group Chats & Channels",
+    "slide3_description": "Connect with friends, family, or communities through group chats and public channels.",
+    "slide4_title": "Advanced Security",
+    "slide4_description": "State-of-the-art encryption and security features to protect your data.",
+    "slide5_title": "Scalable & Reliable",
+    "slide5_description": "Built to handle millions of users with high availability and performance.",
+    "loading_text": "Loading BrainMessenger...",
+    "burger_menu_alt": "Burger Menu",
+    "arrow_left_alt": "Previous Slide",
+    "arrow_right_alt": "Next Slide",
+    "get_started_button": "Get Started",
+    "logo_alt": "BrainMessenger Logo",
+    "shield_alt": "Shield",
+    "group_alt": "Group",
+    "castle_alt": "Castle",
+    "increase_alt": "Increase",
+    "next_button_alt": "Next",
+    "back_button_alt": "Back",
+    "already_have_account": "Already have an account?",
+    "login_link": "Login"
+  },
+  "files_page": {
+    "title": "Files",
+    "description": "Your files will appear here."
+  },
+  "admin_dashboard": {
+    "feedback_great_app": "Great app!",
+    "feedback_needs_features": "Needs more features.",
+    "complaint_toxic_content": "Toxic content",
+    "complaint_source_gmail": "Gmail",
+    "complaint_message_text_1": "This is an example of toxic content.",
+    "complaint_spamming_users": "Spamming users",
+    "complaint_source_in_app": "In-app",
+    "complaint_message_text_2": "This user is spamming me with messages.",
+    "logo_alt": "BrainMessenger Logo",
+    "error_title": "Error",
+    "error_loading_data": "Failed to load dashboard data.",
+    "user_stats_error": "User stats error:",
+    "complaints_error": "Complaints error:",
+    "search_placeholder": "Search...",
+    "toggle_focus_mode_alt": "Toggle Focus Mode",
+    "toggle_roles_alt": "Toggle Roles",
+    "toggle_theme_alt": "Toggle Theme",
+    "toggle_language_alt": "Toggle Language",
+    "user_avatar_alt": "User Avatar",
+    "welcome_message": "Welcome to your Admin Dashboard!",
+    "dashboard_title": "Admin Dashboard",
+    "handbook_title": "Moderator Handbook",
+    "handbook_mission_tab": "Mission",
+    "handbook_responsibilities_tab": "Responsibilities",
+    "handbook_rules_tab": "Rules",
+    "handbook_accountability_tab": "Accountability",
+    "mission_section_title": "Our Mission",
+    "mission_description": "To foster a safe, respectful, and engaging community for all BrainMessenger users.",
+    "core_principles_title": "Core Principles:",
+    "fairness_principle": "Fairness: Apply rules consistently and impartially.",
+    "accountability_principle": "Accountability: Take responsibility for actions and decisions.",
+    "empathy_principle": "Empathy: Understand and address user concerns with compassion.",
+    "responsibilities_section_title": "Key Responsibilities",
+    "responsibilities_description": "As a moderator, your duties include:",
+    "responsibility_monitor_channels": "Monitor channels and chats for guideline violations.",
+    "responsibility_respond_reports": "Respond to user reports and complaints promptly.",
+    "responsibility_enforce_guidelines": "Enforce community guidelines and terms of service.",
+    "responsibility_issue_bans": "Issue warnings, temporary bans, or permanent bans as necessary.",
+    "responsibility_collaborate": "Collaborate with other moderators and administrators.",
+    "rules_section_title": "Community Rules",
+    "rules_description": "To ensure a positive environment, all users must adhere to the following rules:",
+    "rule_no_personal_attacks": "No personal attacks or harassment.",
+    "rule_no_hate_speech": "No hate speech or discrimination.",
+    "rule_no_spamming": "No spamming or excessive self-promotion.",
+    "rule_no_illegal_content": "No illegal or illicit content.",
+    "rule_respect_privacy": "Respect the privacy of others.",
+    "accountability_section_title": "Accountability",
+    "accountability_description": "Moderators are held to a high standard of conduct:",
+    "accountability_transparent": "Be transparent in moderation actions where appropriate.",
+    "accountability_consistent": "Ensure consistent application of rules.",
+    "accountability_documented": "Document all significant moderation decisions.",
+    "accountability_reviewable": "Actions are subject to review by administrators.",
+    "complaint_feed_title": "Complaint Feed",
+    "no_complaints_yet": "No complaints yet.",
+    "complaint_against": "Complaint against:",
+    "not_available_short": "N/A",
+    "reason_label": "Reason:",
+    "associated_message_label": "Associated Message:",
+    "ban_user_button": "Ban User",
+    "delete_message_button": "Delete Message",
+    "feedback_feed_title": "Feedback Feed",
+    "no_feedback_yet": "No feedback yet.",
+    "user_statistics_title": "User Statistics",
+    "active_users_label": "Active Users:",
+    "new_users_today_label": "New Users Today:",
+    "total_users_label": "Total Users:",
+    "online_status": "online",
+    "last_seen_prefix": "last seen",
+    "offline_status": "offline",
+    "members_count": "{{count}} members",
+    "chat_title": "Chat",
+    "typing_status_multiple": "{{count}} people are typing...",
+    "typing_status_single": "{{name}} is typing...",
+    "search_placeholder_header": "Search",
+    "settings_button": "Settings",
+    "fresh_channel_button": "Fresh channel",
+    "fresh_group_button": "Fresh group",
+    "night_mode_button": "Night Mode",
+    "notifications_button": "Notifications",
+    "support_button": "Support"
+  },
+  "chat_page": {
+    "burger_menu_alt": "Burger Menu",
+    "search_placeholder": "Search for chats or users...",
+    "welcome_message": "Select a chat to start messaging!",
+    "context_menu_delete_history": "Delete Chat History",
+    "context_menu_delete_user_chat": "Delete User and Chat",
+    "confirm_delete_history_title": "Confirm Deletion",
+    "confirm_delete_history_message": "Are you sure you want to delete the chat history for this chat? This action cannot be undone.",
+    "confirm_delete_history_button": "Delete History",
+    "cancel_button": "Cancel",
+    "confirm_delete_user_chat_title": "Confirm Deletion",
+    "confirm_delete_user_chat_message": "Are you sure you want to delete this user and all associated chat history? This action cannot be undone.",
+    "confirm_delete_user_chat_button": "Delete User & Chat",
+    "error_loading_chats": "Error loading chats",
+    "error_searching": "Error searching",
+    "users_label": "Users",
+    "chats_label": "Chats",
+    "online_status": "online",
+    "last_seen_prefix": "last seen",
+    "offline_status": "offline",
+    "members_count": "{{count}} members",
+    "chat_title": "Chat",
+    "error_loading_messages": "Error loading messages"
+  },
+  "login_page": {
+    "burger_menu_alt": "Burger Menu",
+    "logo_alt": "BrainMessenger Logo",
+    "title": "Login to BrainMessenger",
+    "email_label": "Email",
+    "password_label": "Password",
+    "email_required": "Email is required",
+    "password_required": "Password is required",
+    "logging_in": "Logging in...",
+    "login_button": "Login",
+    "failed_prefix": "Login failed",
+    "no_account_prompt": "Don't have an account?",
+    "register_link": "Register",
+    "resend_email_failed": "Failed to resend verification email.",
+    "verification_error": "Invalid verification code or email."
+  },
+  "verification": {
+    "title": "Email Verification",
+    "prompt": "Please enter the 8-digit code sent to {{email}} to verify your account.",
+    "placeholder": "Enter code",
+    "verifying": "Verifying...",
+    "verify_button": "Verify",
+    "sending": "Sending...",
+    "resend_button": "Resend Code",
+    "sent_success": "Verification code sent successfully!"
+  },
+  "register_page": {
+    "resend_code_unavailable": "Cannot resend code: Email not available.",
+    "code_resent_success": "Verification code resent. Please check your email.",
+    "resend_code_failed_generic": "Failed to resend verification code.",
+    "resend_code_failed_with_error": "Failed to resend verification code: {{error}}",
+    "registration_success": "Registration successful:",
+    "registration_error": "Registration Error:",
+    "enter_complete_code": "Please enter the complete 8-digit code.",
+    "verification_failed_generic": "Verification failed: Invalid code or verification returned false.",
+    "verification_error_prefix": "Verification failed:",
+    "resend_error_prefix": "Resend failed:",
+    "verification_success_redirect": "Verification successful! Redirecting to chat...",
+    "sending_button": "Sending...",
+    "get_code_again_button": "Get the code again",
+    "already_have_account": "Already have an account?",
+    "login_link": "Login",
+    "step_prefix": "Step",
+    "create_password_placeholder": "Password",
+    "input_field_empty": "Input field is empty",
+    "password_too_short": "Password is too short",
+    "password_too_long": "Password is too long",
+    "password_requirements": "The password must contain an uppercase letter and a special character",
+    "your_name_placeholder": "Your name",
+    "name_too_short": "The name is too short",
+    "name_too_long": "The name is too long",
+    "username_placeholder": "Username",
+    "username_too_short": "Username is too short",
+    "username_too_long": "Username is too long",
+    "email_placeholder": "Email",
+    "invalid_email_format": "Invalid E-Mail format",
+    "verifying_button": "Verifying...",
+    "confirm_button": "Confirm",
+    "welcome_prompt": "Welcome, {{email}}! To complete the registration process, please enter the code we sent to you by email.",
+    "next_button_alt": "Next",
+    "back_button_alt": "Back"
+  }
+}

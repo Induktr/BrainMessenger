@@ -1,4 +1,9 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, ID, registerEnumType } from '@nestjs/graphql';
+import { UserRole } from '@prisma/client';
+
+registerEnumType(UserRole, {
+  name: 'UserRole',
+});
 
 @ObjectType()
 export class UserDto {
@@ -42,8 +47,8 @@ export class UserDto {
   @Field(() => String, { nullable: true })
   lastSeen?: string;
 
-  @Field(() => [String], { nullable: true })
-  roles: string[] | null;
+  @Field(() => UserRole)
+  role: UserRole;
 
 // Не включайте пароль в DTO!
 }

@@ -30,18 +30,18 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, is
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="fixed top-0 left-1/2 transform -translate-x-1/2 mt-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg z-50 flex items-center space-x-4"
+          className="fixed bottom-4 right-4 p-4 bg-gray-800 text-white rounded-lg shadow-lg z-50 flex items-center space-x-4"
           style={{ width: 'calc(100% - 32px)', maxWidth: '400px' }} // Responsive width
         >
-          {message.sender.avatarUrl ? (
+          {message.sender?.avatarUrl ? (
             <img src={message.sender.avatarUrl} alt="Sender Avatar" className="w-10 h-10 rounded-full" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-lg font-bold">
-              {message.sender.name.charAt(0).toUpperCase()}
+              {message.sender?.name.charAt(0).toUpperCase()}
             </div>
           )}
           <div className="flex-grow">
-            <p className="font-bold text-sm">{message.sender.name}</p>
+            <p className="font-bold text-sm">{message.sender?.name}</p>
             <p className="text-xs truncate">{message.content}</p>
           </div>
           <button onClick={handleCloseClick} className="text-gray-400 hover:text-white">

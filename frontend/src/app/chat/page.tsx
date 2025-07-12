@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/features/user-auth/ui/AuthContext';
@@ -19,8 +20,14 @@ import { useChatActions } from '@/features/manage-chat/useChatActions';
 import ContextMenu from '@/shared/ui/ContextMenu/ContextMenu';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
 import SearchWidget from '@/widgets/SearchWidget/SearchWidget';
+import { useSubscription } from '@apollo/client'; // Import useSubscription
+import { useNotification } from '@/features/manage-notifications/ui/NotificationContext'; // Import useNotification
+import NotificationDropdown from '@/features/manage-notifications/ui/NotificationDropdown'; // Import NotificationDropdown
+import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
+import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions'; // Import existing subscription
 
 const ChatPage = () => {
+  const { t } = useTranslation();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [selectedChatType, setSelectedChatType] = useState<'PRIVATE' | 'GROUP' | 'CHANNEL' | null>(null);
   const [selectedChatName, setSelectedChatName] = useState<string | null>(null);
@@ -32,11 +39,45 @@ const ChatPage = () => {
   const [showDeleteChatHistoryConfirmModal, setShowDeleteChatHistoryConfirmModal] = useState(false);
   const [showDeleteUserConfirmModal, setShowDeleteUserConfirmModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isNotificationDropdownVisible, setIsNotificationDropdownVisible] = useState(false); // State for dropdown visibility
 
   const { user: currentUser, queryLoading: authLoading, isInitializing } = useAuth();
   const router = useRouter();
   const { chats, refetch: refetchChats } = useChatList();
   const { handleDeleteChatHistory, handleDeleteUserAndChat } = useChatActions(selectedChatId);
+  const { showNotification, notification, clearNotification } = useNotification(); // Use notification context
+
+  // Subscribe to new messages
+  const { data: subscriptionData, loading: subscriptionLoading, error: subscriptionError } = useSubscription(NEW_MESSAGE_SUBSCRIPTION, {
+    variables: { chatId: selectedChatId },
+    skip: !selectedChatId, // Skip subscription if no chat is selected
+    onData: ({ data }) => {
+      console.log('[ChatPage] New message subscription data:', data);
+      if (data?.data?.newMessage && data.data.newMessage.sender.id !== currentUser?.id) {
+        // Only show notification if the message is not from the current user
+        showNotification(data.data.newMessage);
+        setIsNotificationDropdownVisible(true);
+      }
+    },
+  });
+
+  useEffect(() => {
+    console.log('[ChatPage] Subscription loading state:', subscriptionLoading);
+    console.log('[ChatPage] Subscription error state:', subscriptionError);
+  }, [subscriptionLoading, subscriptionError]);
+
+  useEffect(() => {
+    if (notification) {
+      setIsNotificationDropdownVisible(true);
+    }
+  }, [notification]);
+
+
+
+  const handleCloseNotificationDropdown = () => {
+    setIsNotificationDropdownVisible(false);
+    clearNotification();
+  };
 
   if (authLoading || isInitializing) {
     return (
@@ -102,9 +143,9 @@ const ChatPage = () => {
         <div className="chat-sidebar">
           <div className="sidebar-header">
             <Button className="burger-icon" onClick={handleOpenMenu}>
-              {ICONS.burgerMenu && <Image src={ICONS.burgerMenu} alt="Burger Menu" className="icon" width={24} height={24} />}
+              {ICONS.burgerMenu && <Image src={ICONS.burgerMenu} alt={t('chat_page.burger_menu_alt')} className="icon" width={24} height={24} />}
             </Button>
-            <SearchWidget searchQuery={searchQuery} setSearchQuery={setSearchQuery} placeholder="Search" />
+            <SearchWidget searchQuery={searchQuery} setSearchQuery={setSearchQuery} placeholder={t('chat_page.search_placeholder')} />
           </div>
           <ChatListWidget onSelectChat={handleSelectChat} activeChatId={selectedChatId} searchQuery={searchQuery} />
         </div>
@@ -123,7 +164,7 @@ const ChatPage = () => {
               onBackButtonClick={() => setSelectedChatId(null)} // Pass the back button handler
             />
           ) : (
-            !selectedChatId && <div className="chat-welcome-message">Communication starts here, start with us!</div>
+            !selectedChatId && <div className="chat-welcome-message">{t('chat_page.welcome_message')}</div>
           )}
         </div>
 
@@ -134,8 +175,8 @@ const ChatPage = () => {
             x={contextMenuX}
             y={contextMenuY}
             options={[
-              { label: 'Delete chat history', onClick: () => { setShowDeleteChatHistoryConfirmModal(true); setShowChatOptionsContextMenu(false); } },
-              { label: 'Delete user and chat', onClick: () => { setShowDeleteUserConfirmModal(true); setShowChatOptionsContextMenu(false); } },
+              { label: t('chat_page.context_menu_delete_history'), onClick: () => { setShowDeleteChatHistoryConfirmModal(true); setShowChatOptionsContextMenu(false); } },
+              { label: t('chat_page.context_menu_delete_user_chat'), onClick: () => { setShowDeleteUserConfirmModal(true); setShowChatOptionsContextMenu(false); } },
             ]}
             onClose={() => setShowChatOptionsContextMenu(false)}
           />
@@ -146,10 +187,10 @@ const ChatPage = () => {
             isOpen={showDeleteChatHistoryConfirmModal}
             onClose={() => setShowDeleteChatHistoryConfirmModal(false)}
             onConfirm={onConfirmDeleteHistory}
-            title="Confirm Delete Chat History"
-            message="Are you sure you want to delete the chat history for yourself? This action cannot be undone."
-            confirmText="Delete History"
-            cancelText="Cancel"
+            title={t('chat_page.confirm_delete_history_title')}
+            message={t('chat_page.confirm_delete_history_message')}
+            confirmText={t('chat_page.confirm_delete_history_button')}
+            cancelText={t('chat_page.cancel_button')}
           />
         )}
 
@@ -158,13 +199,20 @@ const ChatPage = () => {
             isOpen={showDeleteUserConfirmModal}
             onClose={() => setShowDeleteUserConfirmModal(false)}
             onConfirm={onConfirmDeleteUserAndChat}
-            title="Confirm Delete User and Chat"
-            message="Are you sure you want to delete this user and all chat history for both participants? This action cannot be undone."
-            confirmText="Delete User & Chat"
-            cancelText="Cancel"
+            title={t('chat_page.confirm_delete_user_chat_title')}
+            message={t('chat_page.confirm_delete_user_chat_message')}
+            confirmText={t('chat_page.confirm_delete_user_chat_button')}
+            cancelText={t('chat_page.cancel_button')}
           />
         )}
       </div>
+
+      {/* Notification Dropdown */}
+      <NotificationDropdown
+        message={notification}
+        isVisible={isNotificationDropdownVisible}
+        onClose={handleCloseNotificationDropdown}
+      />
     </GlobalAudioProvider>
   );
 };

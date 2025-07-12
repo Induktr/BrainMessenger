@@ -13,6 +13,7 @@ export const REFRESH_TOKEN_MUTATION = gql`
         avatarUrl
         username
         bio
+        role
       }
     }
   }
@@ -45,6 +46,7 @@ export const LOGIN_USER = gql`
         avatarUrl
         username
         bio
+        role
       }
     }
   }
@@ -60,6 +62,7 @@ export const GET_CURRENT_USER = gql`
       avatarUrl
       bio # Add bio field
       username
+      role
     }
   }
 `;
@@ -158,6 +161,16 @@ export const GET_USER_BY_ID = gql`
       avatarUrl
       bio
       username
+    }
+  }
+`;
+
+export const GET_USER_STATS = gql`
+  query GetUserStats {
+    getUserStats {
+      totalUsers
+      activeUsers
+      newUsersToday
     }
   }
 `;

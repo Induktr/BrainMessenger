@@ -1,3 +1,9 @@
+export enum UserRole {
+  USER = 'USER',
+  MODERATOR = 'MODERATOR',
+  ADMIN = 'ADMIN',
+}
+
 export interface User {
   id: string;
   email: string;
@@ -8,6 +14,7 @@ export interface User {
   username: string | null;
   status: string;
   lastActiveAt?: string | null;
+  role: UserRole;
 }
 
 export interface UserDto {
@@ -24,6 +31,7 @@ export interface UserDto {
   status?: string;
   isOnline?: boolean;
   lastSeen?: string;
+  role?: UserRole;
 }
 
 export interface UserProfileModalProps {

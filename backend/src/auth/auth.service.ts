@@ -108,7 +108,7 @@ export class AuthService {
           name,
           username: finalUsername, // Use the determined finalUsername
           isVerified: false, // Используем isVerified согласно схеме
-          roles: ['user'], // Assign default 'user' role
+          role: 'USER', // Assign default 'user' role
           verificationCode: code,
           verificationCodeExpiresAt: expiresAt,
         },

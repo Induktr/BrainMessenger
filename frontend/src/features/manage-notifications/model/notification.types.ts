@@ -2,19 +2,33 @@ import { Message } from '@/features/user-auth/model/user-auth.types';
 
 export interface Notification {
     id: string;
-    senderName: string;
-    messageSnippet: string;
-    avatarUrl?: string | null;
+    chatId: string;
+    sender: {
+      id: string;
+      name: string;
+      avatarUrl?: string | null;
+      username?: string | null;
+      status?: string;
+      bio?: string | null;
+    };
+    content: string;
+    createdAt: string;
+    attachments?: {
+      id: string;
+      url: string;
+      filename: string;
+      mimetype: string;
+    }[];
 }
 
 export interface NotificationContextType {
     notification: Notification | null;
-    showNotification: (senderName: string, messageSnippet: string, avatarUrl?: string | null) => void;
+    showNotification: (notification: Notification) => void;
     clearNotification: () => void;
 }
 
 export interface NotificationDropdownProps {
-  message: Message | null;
+  message: Notification | null;
   isVisible: boolean;
   onClose: () => void;
 }

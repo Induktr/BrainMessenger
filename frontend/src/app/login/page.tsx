@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react'; // Добавляем useState
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import Input from '@/shared/ui/Input/Input';
@@ -21,6 +22,7 @@ interface LoginFormInputs {
 }
 
 const LoginPage = () => {
+  const { t } = useTranslation();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
 
   const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
@@ -107,7 +109,7 @@ const LoginPage = () => {
       setResendSuccess(true);
     } catch (error: any) {
       console.error('Error resending verification email:', error);
-      setVerificationError(error.message || 'Failed to resend verification email.');
+      setVerificationError(error.message || t('login_page.resend_email_failed'));
     } finally {
       setIsResendingCode(false);
     }
@@ -128,7 +130,7 @@ const LoginPage = () => {
       }
     } catch (error: any) {
       console.error('Error verifying email:', error);
-      setVerificationError(error.message || 'Invalid verification code or email.');
+      setVerificationError(error.message || t('login_page.verification_error'));
     }
   };
 
@@ -138,31 +140,31 @@ const LoginPage = () => {
         <div className="w-full max-w-md p-8 space-y-6 bg-surface-dark rounded-lg shadow-md">
         {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
         <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-          <Image src={ICONS.burgerMenu} alt="Burger Menu" className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
+          <Image src={ICONS.burgerMenu} alt={t('login_page.burger_menu_alt')} className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
         </div>
         <div className="icon-container-steps">
           <Image
             src={IMAGES.logoBrainMessenger}
-            alt="BrainMessenger Logo" // Added alt text
+            alt={t('login_page.logo_alt')}
             width={175} // Example width, adjust as needed
             height={175} // Example height, adjust as needed
             className="logo"
           />
         </div>
-          <h1 className="text-2xl font-bold text-center text-textPrimary-dark">Login</h1>
+          <h1 className="text-2xl font-bold text-center text-textPrimary-dark">{t('login_page.title')}</h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <Input
               id="email"
-              label="Email:"
+              label={t('login_page.email_label')}
               type="email"
-              registration={register('email', { required: 'Email is required' })}
+              registration={register('email', { required: t('login_page.email_required') })}
               error={errors.email?.message}
             />
             <Input
               id="password"
-              label="Password:"
+              label={t('login_page.password_label')}
               type="password"
-              registration={register('password', { required: 'Password is required' })}
+              registration={register('password', { required: t('login_page.password_required') })}
               error={errors.password?.message}
             />
             <Button
@@ -170,22 +172,22 @@ const LoginPage = () => {
               className="w-full"
               disabled={loading} // Disable button while loading
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? t('login_page.logging_in') : t('login_page.login_button')}
             </Button>
             {error && (
               error.graphQLErrors && error.graphQLErrors.length > 0 ? (
                 error.graphQLErrors.map((err, index) => (
-                  <p key={index} className="input-error-message text-center">Login failed: {err.message}</p>
+                  <p key={index} className="input-error-message text-center">{t('login_page.failed_prefix')}: {err.message}</p>
                 ))
               ) : (
-                <p className="input-error-message text-center">Login failed: {error.message}</p>
+                <p className="input-error-message text-center">{t('login_page.failed_prefix')}: {error.message}</p>
               )
             )}
           </form>
           <p className="text-center text-sm text-textSecondary-dark">
-            Dont have an account?{' '}
+            {t('login_page.no_account_prompt')}{' '}
             <Link href="/register" className="text-primary-DEFAULT hover:underline">
-              Register
+              {t('login_page.register_link')}
             </Link>
           </p>
         </div>
@@ -195,23 +197,23 @@ const LoginPage = () => {
       {showEmailVerificationModal && user && (
         <Modal onClose={handleEmailVerificationModalClose} isOpen={showEmailVerificationModal}>
           <div className="verification-modal-content">
-            <h3>Verify Your Email</h3>
-            <p>Please enter the verification code sent to {user.email}.</p>
+            <h3>{t('verification.title')}</h3>
+            <p>{t('verification.prompt', { email: user.email })}</p>
             <input
               type="text"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="Enter code"
+              placeholder={t('verification.placeholder')}
               className="verification-modal-input"
             />
             {verificationError && <p className="error-message">{verificationError}</p>}
             <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail}>
-              {isVerifyingEmail ? 'Verifying...' : 'Verify'}
+              {isVerifyingEmail ? t('verification.verifying') : t('verification.verify_button')}
             </Button>
             <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-              {isResendingCode ? 'Sending...' : 'Resend Code'}
+              {isResendingCode ? t('verification.sending') : t('verification.resend_button')}
             </Button>
-            {resendSuccess && <p className="success-message">Verification email sent!</p>}
+            {resendSuccess && <p className="success-message">{t('verification.sent_success')}</p>}
           </div>
         </Modal>
       )}

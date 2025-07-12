@@ -1,16 +1,22 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../common/decorators/public.decorator';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
+  private readonly logger = new Logger(JwtAuthGuard.name);
+
+  constructor(
+    private reflector: Reflector,
+    private prisma: PrismaService,
+  ) {
     super();
   }
 
-  canActivate(context: ExecutionContext) {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -20,34 +26,62 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    return super.canActivate(context);
-  }
+    const ctx = GqlExecutionContext.create(context);
+    const request = ctx.getContext().req;
 
-  getRequest(context: ExecutionContext): any {
-    const ctx = GqlExecutionContext.create(context).getContext();
-    // For HTTP, we return the request object for Passport's strategy to use.
-    // For WS, the request object is not what we need, but Passport requires something to be returned.
-    // The actual user object will be retrieved from the context in `handleRequest`.
-    return ctx.req;
-  }
-
-  handleRequest(err, user, info, context) {
-    const ctx = GqlExecutionContext.create(context).getContext();
-
-    // For WebSocket connections, the user object is attached in `onConnect`.
-    // We retrieve it from the context directly.
-    if (ctx.user) {
-      return ctx.user;
+    // Call the parent's canActivate method, which will run the JWT strategy
+    // and populate req.user if successful.
+    const canActivate = await super.canActivate(context) as boolean;
+    if (!canActivate) {
+      return false;
     }
 
-    // For HTTP requests, Passport populates the `user` object.
-    // If there's an error or the user is not found, we throw an exception.
+    // Fetch the user from the database to get their role
+    const user = request.user;
+    if (!user || !user.id) {
+      this.logger.warn('No user found in request after JWT validation.');
+      throw new UnauthorizedException('Authentication failed: User data missing.');
+    }
+
+    const userWithRole = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        username: true,
+        isVerified: true,
+        avatarUrl: true,
+        bio: true,
+        twoFactorEnabled: true,
+        twoFactorMethod: true,
+        recoveryEmail: true,
+        lastActiveAt: true,
+        role: true, // Include the role
+      },
+    });
+
+    if (!userWithRole) {
+      this.logger.warn(`User with ID ${user.id} not found in database.`);
+      throw new UnauthorizedException('User not found in database.');
+    }
+
+    // Attach the full user object with role to the request
+    request.user = userWithRole;
+
+    return true;
+  }
+
+  getRequest(context: ExecutionContext) {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req;
+  }
+
+  handleRequest(err, user, info: Error) {
     if (err || !user) {
-      throw err || new UnauthorizedException('Authentication failed for HTTP request.');
+      this.logger.error(`Auth failed: ${info?.message || 'No user found'}`);
+      throw err || new UnauthorizedException('Authentication failed.');
     }
-
     return user;
   }
-
-
 }

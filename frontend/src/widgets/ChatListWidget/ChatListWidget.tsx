@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import ChatListItem from '@/entities/chat/ui/ChatListItem';
 import Spinner from '@/shared/ui/Spinner/Spinner';
 import { useChatList } from '@/hooks/useChatList';
@@ -25,6 +26,7 @@ const ChatListWidget: React.FC<ChatListWidgetProps> = ({ onSelectChat, activeCha
     { data: searchData, loading: searchLoading, error: searchError },
   ] = useLazyQuery(GLOBAL_SEARCH_QUERY);
   const [findOrCreatePrivateChat] = useMutation(FIND_OR_CREATE_PRIVATE_CHAT);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (searchQuery.trim() !== '') {
@@ -46,21 +48,22 @@ const ChatListWidget: React.FC<ChatListWidgetProps> = ({ onSelectChat, activeCha
         onSelectChat(chat.id, chat.type, chat.name);
       }
     } catch (error) {
-      console.error('Error finding or creating private chat:', error);
+      console.error(t('chatList.findOrCreateError'), error);
     }
   };
 
   return (
     <div className="chat-list-widget">
       {chatsLoading && <Spinner />}
-      {chatsError && <p>Error loading chats: {chatsError.message}</p>}
+      {chatsError && <p>{t('chatList.loadError')}</p>}
       {searchLoading && <Spinner />}
-      {searchError && <p>Error searching: {searchError.message}</p>}
+      {searchError && <p>{t('chatList.searchError')}</p>}
       {!chatsLoading && !chatsError && (
         <>
           {searchData && searchQuery.trim() !== '' ? (
             <div className="search-results">
-              <h4>Users</h4>
+              <h3>{t('chatList.users')}</h3>
+              {searchData.globalSearch.users.length === 0 && <p>{t('chatList.noUsersFound')}</p>}
               {searchData.globalSearch.users.map((user: UserDto) => (
                 <UserListItem
                   key={user.id}
@@ -68,8 +71,19 @@ const ChatListWidget: React.FC<ChatListWidgetProps> = ({ onSelectChat, activeCha
                   onClick={() => handleSelectUser(user.id, user.name)}
                 />
               ))}
-              <h4>Chats</h4>
-              {searchData.globalSearch.chats.map((chat: Chat) => (
+              <h3>{t('chatList.groups')}</h3>
+              {searchData.globalSearch.groups.length === 0 && <p>{t('chatList.noGroupsFound')}</p>}
+              {searchData.globalSearch.groups.map((chat: Chat) => (
+                <ChatListItem
+                  key={chat.id}
+                  chat={chat}
+                  isActive={chat.id === activeChatId}
+                  onClick={() => onSelectChat(chat.id, chat.type, chat.name)}
+                />
+              ))}
+              <h3>{t('chatList.channels')}</h3>
+              {searchData.globalSearch.channels.length === 0 && <p>{t('chatList.noChannelsFound')}</p>}
+              {searchData.globalSearch.channels.map((chat: Chat) => (
                 <ChatListItem
                   key={chat.id}
                   chat={chat}

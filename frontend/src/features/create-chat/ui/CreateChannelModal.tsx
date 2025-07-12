@@ -7,12 +7,14 @@ import Button from '@/shared/ui/Button/Button';
 import { ICONS } from '@/shared/assets/Icons/icons';
 import Image from 'next/image';
 import { useMutation } from '@apollo/client'; // Import useMutation
+import { useTranslation } from 'react-i18next';
 import { CREATE_CHANNEL } from '@/entities/channel/model/channel.queries'; // Import CREATE_CHANNEL mutation
 import { CreateChannelModalProps } from '@/features/create-chat/model/create-chat.types';
 
 const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose }) => {
   const [channelName, setChannelName] = useState('');
   const [channelDescription, setChannelDescription] = useState('');
+  const { t } = useTranslation();
 
   const [createChannel, { loading, error }] = useMutation(CREATE_CHANNEL, {
     onCompleted: (data) => {
@@ -51,28 +53,28 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
       <div className="create-channel-modal-content">
         {/* Header */}
         <div className="create-channel-header">
-          <h2 className="create-channel-header-title">Create New Channel</h2>
+          <h2 className="create-channel-header-title">{t('createChannelModal.title')}</h2>
           <Button className="create-channel-close-button" onClick={handleCloseClick}>
-            <Image src={ICONS.closeModal} alt="Close" className="icon" width={24} height={24} /> {/* Use img tag */}
+            <Image src={ICONS.closeModal} alt={t('createChannelModal.alt.close')} className="icon" width={24} height={24} /> {/* Use img tag */}
           </Button> 
         </div>
 
         {/* Form */}
         <div className="create-channel-form">
           <div className="create-channel-input-group">
-            <label className="create-channel-label">Channel Name</label>
+            <label className="create-channel-label">{t('createChannelModal.nameLabel')}</label>
             <Input
-              placeholder="Enter title..."
+              placeholder={t('createChannelModal.namePlaceholder')}
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
             />
           </div>
 
           <div className="create-channel-input-group">
-            <label className="create-channel-label">Description (optional)</label>
+            <label className="create-channel-label">{t('createChannelModal.descriptionLabel')}</label>
              <textarea
               className="create-channel-textarea"
-              placeholder="Tell us what your channel is about..."
+              placeholder={t('createChannelModal.descriptionPlaceholder')}
               value={channelDescription}
               onChange={(e) => setChannelDescription(e.target.value)}
             />
@@ -86,9 +88,9 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
              onClick={handleCreateClick}
              disabled={loading || !channelName.trim()} // Disable if loading or name is empty
            >
-             {loading ? 'Creating...' : 'Create Channel'}
+             {loading ? t('createChannelModal.creatingButton') : t('createChannelModal.createButton')}
            </Button>
-           {error && <p className="error-message">Error: {error.message}</p>}
+           {error && <p className="error-message">{t('createChannelModal.errorMessage', { message: error.message })}</p>}
         </div>
       </div>
     </Modal>

@@ -5,16 +5,16 @@ import { Notification, NotificationContextType } from '@/features/manage-notific
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
+const notificationSound = typeof Audio !== 'undefined' ? new Audio('/sound/notification.mp3') : null;
+
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [notification, setNotification] = useState<Notification | null>(null);
 
-  const showNotification = useCallback((senderName: string, messageSnippet: string, avatarUrl?: string | null) => {
-    setNotification({
-      id: Date.now().toString(), // Unique ID for each notification
-      senderName,
-      messageSnippet,
-      avatarUrl,
-    });
+  const showNotification = useCallback((newNotification: Notification) => {
+    setNotification(newNotification);
+    if (notificationSound) {
+      notificationSound.play().catch(error => console.error("Error playing notification sound:", error));
+    }
   }, []);
 
   const clearNotification = useCallback(() => {

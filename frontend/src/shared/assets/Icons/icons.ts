@@ -49,4 +49,7 @@ export const ICONS = {
     image: '/icons/image.svg',
     thinking: '/icons/thinking.svg',
     close: '/icons/close.svg',
+    refresh: '/icons/refresh.svg',
+    globe: '/icons/globe.svg',
+    foucsMode: '/icons/foucsMode.svg',
 };

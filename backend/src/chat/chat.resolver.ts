@@ -14,10 +14,12 @@ import { CreateChannelInput } from './dto/create-channel.input'; // Import Creat
 import { UseGuards, UseInterceptors, UnauthorizedException, Logger, Inject } from '@nestjs/common'; // Import Inject
 import { CacheTTL } from '@nestjs/cache-manager';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
+import { WsJwtAuthGuard } from '../auth/ws-jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../auth/current-user.decorator';
 import { User } from '../auth/interfaces/user.interface';
+import { UserRole } from '@prisma/client';
 import { GraphQLUpload, FileUpload } from 'graphql-upload-ts';
 import { UserCacheInterceptor } from '../common/interceptors/user-cache.interceptor';
 import { ObjectType, Field } from '@nestjs/graphql';
@@ -61,12 +63,28 @@ export class ChatResolver {
   @Subscription(() => TypingStatus, {
     filter: (payload, variables, context) => {
       const logger = new Logger('typingStatusFilter');
-      logger.debug(`Payload: ${JSON.stringify(payload)}, Variables: ${JSON.stringify(variables)}`);
-      const user = context.req?.user || context.user;
-      if (!user) {
-        logger.warn('No user in context');
+      logger.debug(`[ChatResolver] typingStatus filter - Received raw payload: ${payload === undefined || payload === null ? 'null/undefined' : JSON.stringify(payload)}, Variables: ${JSON.stringify(variables)}`);
+      
+      // Ensure payload and typingStatus exist before accessing properties
+      if (!payload || !payload.typingStatus) {
+        logger.warn('Filter failed: Payload or typingStatus is missing.');
         return false;
       }
+
+      const user = context.req?.user || context.user;
+      logger.debug(`[ChatResolver] typingStatus filter - User from context: ${user ? JSON.stringify(user.id) : 'null/undefined'}`);
+
+      if (!user) {
+        logger.warn('Filter failed: No user in context.');
+        return false;
+      }
+      
+      // Ensure payload.typingStatus.user exists before accessing its id
+      if (!payload.typingStatus.user) {
+        logger.warn('Filter failed: payload.typingStatus.user is missing.');
+        return false;
+      }
+
       if (payload.typingStatus.user.id === user.id) {
         // We don't send the typing notification to the user who is typing.
         return false;
@@ -76,10 +94,15 @@ export class ChatResolver {
       return shouldSend;
     },
     resolve: (payload) => {
+      const logger = new Logger('typingStatusResolve'); // Add logger here
+      logger.debug(`[ChatResolver] typingStatus resolve - Received raw payload: ${payload === undefined || payload === null ? 'null/undefined' : JSON.stringify(payload)}`);
+      if (!payload || !payload.typingStatus) {
+        // Return a default TypingStatus object to prevent TypeError, as the schema expects a non-nullable type.
+        return { user: { id: '', name: '' }, isTyping: false };
+      }
       return { user: payload.typingStatus.user, isTyping: payload.typingStatus.isTyping };
     },
   })
-  @UseGuards(JwtAuthGuard)
   typingStatus(@Args('chatId', { type: () => ID }) chatId: string, @CurrentUser() user: User) {
     if (!user) {
       throw new UnauthorizedException('You must be logged in to subscribe to typing status.');
@@ -114,7 +137,7 @@ export class ChatResolver {
       recoveryEmail: user.recoveryEmail ?? null,
       avatarUrl: user.avatarUrl ?? null,
       bio: user.bio ?? null,
-      roles: user.roles ?? [],
+      role: user.role,
       status: isOnline ? 'Online' : 'Offline',
       isOnline: isOnline,
       lastSeen: user.lastActiveAt?.toISOString() ?? null,
@@ -152,7 +175,7 @@ export class ChatResolver {
       name: chatName,
       avatarUrl: chat.avatarUrl ?? undefined,
       type: chat.type,
-      participants: chat.participants.map((p: any) => this._mapUserToDto(p.user ?? p)),
+      participants: chat.participants.map((p: any) => this._mapUserToDto(p.user ?? p)).filter(Boolean) as UserDto[],
       messages: (chat.messages || []).map(m => this._mapMessageToDto(m)),
       channel: chat.channel ? {
         ...chat.channel,
@@ -206,9 +229,10 @@ export class ChatResolver {
         lastMessageTimestamp: lastMessage?.createdAt.toISOString() || null,
         unreadCount: unreadCount,
         messages: [], // Messages are not returned in the list view
-        participants: chat.participants.map(p => p.user),
+        participants: chat.participants.map(p => this._mapUserToDto(p.user)).filter(Boolean) as UserDto[],
         channel: chat.channel ? {
           ...chat.channel,
+          owner: this._mapUserToDto(chat.channel.owner) as UserDto, // Ensure owner is mapped to UserDto
           chat: {
             id: chat.channel.chat.id,
             name: chat.channel.chat.name,
@@ -229,13 +253,14 @@ export class ChatResolver {
       name: chat.name,
       avatarUrl: chat.avatarUrl ?? undefined,
       type: chat.type,
-      participants: chat.participants.map(p => p.user),
+      participants: chat.participants.map(p => this._mapUserToDto(p.user)).filter(Boolean) as UserDto[],
       lastMessageSnippet: null,
       lastMessageTimestamp: null,
       unreadCount: 0,
       messages: [],
       channel: chat.channel ? {
           ...chat.channel,
+          owner: this._mapUserToDto(chat.channel.owner) as UserDto, // Ensure owner is mapped to UserDto
           chat: {
             id: chat.channel.chat.id,
             name: chat.channel.chat.name,
@@ -331,7 +356,21 @@ export class ChatResolver {
     if (!user) {
       throw new Error('Authentication required to update channel privacy.');
     }
-    return this.chatService.updateChannelPrivacy(channelId, user.id, isPublic);
+    const updatedChannel = await this.chatService.updateChannelPrivacy(channelId, user.id, isPublic);
+    // Manually map the owner to UserDto
+    const ownerDto = this._mapUserToDto(updatedChannel.owner);
+    if (!ownerDto) {
+      throw new Error('Failed to map channel owner to DTO.');
+    }
+    return {
+      ...updatedChannel,
+      owner: ownerDto,
+      chat: {
+        id: updatedChannel.chat.id,
+        name: updatedChannel.chat.name,
+        type: updatedChannel.chat.type,
+      }
+    };
   }
 
   @Mutation(() => ChatDto)
@@ -382,7 +421,7 @@ export class ChatResolver {
     if (!message || message.senderId !== user.id) {
       throw new Error('Unauthorized to delete this message.');
     }
-        await this.messageService.deleteMessage(messageId);
+    await this.messageService.softDeleteMessage(messageId);
     return true;
   }
 
@@ -457,40 +496,48 @@ export class ChatResolver {
   }
 
   @Mutation(() => MessageDto, { nullable: true })
-  @Roles('user')
+  @Roles(UserRole.USER)
   async sendMessage(
     @Args('chatId', { type: () => ID }) chatId: string,
     @Args('content') content: string,
     @Args({ name: 'files', type: () => [GraphQLUpload], nullable: true }) files: FileUpload[] | undefined,
     @CurrentUser() user: User,
   ): Promise<MessageDto | null> {
-    const newMessageFromDb = await this.chatService.sendMessage(chatId, content, user.id, files);
-    if (!newMessageFromDb) {
+    try {
+      const newMessageFromDb = await this.chatService.sendMessage(chatId, content, user.id, files);
+      if (!newMessageFromDb) {
+        this.logger.warn('[ChatResolver] sendMessage - chatService.sendMessage returned null/undefined.');
+        return null;
+      }
+
+      // Manually map the DB object to a clean DTO to ensure 100% schema compliance.
+      this.logger.debug(`[ChatResolver] sendMessage - newMessageFromDb for mapping: ${JSON.stringify(newMessageFromDb)}`);
+      const messageDto = this._mapMessageToDto(newMessageFromDb);
+
+      if (messageDto) {
+        // Fetch chat participants to include in the payload for authorization in the filter.
+        const chat = await this.chatService.findChatById(chatId);
+        const participantIds = chat?.participants.map(p => p.user.id) || [];
+
+        this.logger.debug(`[ChatResolver] sendMessage - messageDto for publishing: ${JSON.stringify(messageDto)}`);
+        this.logger.log(`[ChatResolver] Publishing message ${messageDto.id} to chat ${chatId} for participants: [${participantIds.join(', ')}]`);
+        this.pubSub.publish('newMessage', {
+          newMessage: messageDto, // The DTO of the new message
+          chatId: messageDto.chatId, // For basic filtering
+          participantIds: participantIds, // For authorization filtering
+        });
+      } else {
+        this.logger.warn('[ChatResolver] sendMessage - _mapMessageToDto returned null/undefined.');
+      }
+
+      // Return the clean DTO for the mutation response.
+      return messageDto;
+    } catch (error) {
+      this.logger.error(`[ChatResolver] Error in sendMessage mutation: ${error.message}`, error.stack);
+      // Depending on your error handling strategy, you might re-throw a user-friendly error
+      // or return null. For now, returning null to match the existing nullable return type.
       return null;
     }
-
-    // Manually map the DB object to a clean DTO to ensure 100% schema compliance.
-    this.logger.debug(`[ChatResolver] sendMessage - newMessageFromDb for mapping: ${JSON.stringify(newMessageFromDb)}`);
-    const messageDto = this._mapMessageToDto(newMessageFromDb);
-
-    if (messageDto) {
-      // Fetch chat participants to include in the payload for authorization in the filter.
-      const chat = await this.chatService.findChatById(chatId);
-      const participantIds = chat?.participants.map(p => p.user.id) || [];
-
-      this.logger.debug(`[ChatResolver] sendMessage - messageDto for publishing: ${JSON.stringify(messageDto)}`);
-      this.logger.log(`[ChatResolver] Publishing message ${messageDto.id} to chat ${chatId} for participants: [${participantIds.join(', ')}]`);
-      this.pubSub.publish('newMessage', {
-        newMessage: messageDto, // The DTO of the new message
-        chatId: messageDto.chatId, // For basic filtering
-        participantIds: participantIds, // For authorization filtering
-      });
-    } else {
-      this.logger.warn('[ChatResolver] sendMessage created a null/undefined message.');
-    }
-
-    // Return the clean DTO for the mutation response.
-    return messageDto;
   }
 
   @Mutation(() => MessageDto)
@@ -612,7 +659,6 @@ export class ChatResolver {
       return payload.newMessage;
     },
   })
-  @UseGuards(JwtAuthGuard)
   newMessage(
     @Args('chatId', { type: () => ID }) chatId: string,
     @CurrentUser() user: User, // Guard ensures user is valid at subscription time
@@ -651,7 +697,6 @@ export class ChatResolver {
       return payload.messageReactionAddedOrRemoved;
     },
   })
-  @UseGuards(JwtAuthGuard) // Apply the guard to protect the subscription
   messageReactionAddedOrRemoved(
     @Args('chatId', { type: () => ID }) chatId: string,
     @CurrentUser() user: User, // Inject the authenticated user

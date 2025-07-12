@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
 import { ICONS } from '@/shared/assets/Icons/icons';
 import { useImageGallery } from '@/features/gallery-images/ui/ImageGalleryContext';
 
 const ImageGallery: React.FC = () => {
+  const { t } = useTranslation();
   const { isGalleryOpen, closeGallery, slides, currentImageIndex, setCurrentImageIndex } = useImageGallery();
   const [rotation, setRotation] = useState(0);
   const [scale, setScale] = useState(1);
@@ -157,7 +159,7 @@ const ImageGallery: React.FC = () => {
     const currentSlide = slides[currentImageIndex];
     const link = document.createElement('a');
     link.href = currentSlide.src;
-    link.download = currentSlide.alt || 'downloaded-image';
+    link.download = currentSlide.alt || t('imageGallery.downloadedImageName');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -175,19 +177,19 @@ const ImageGallery: React.FC = () => {
     <div className="gallery-overlay" onClick={handleOverlayClick}>
       <div className="gallery-toolbar">
         <button onClick={handleRotate} className="gallery-button">
-          <Image src={ICONS.rotate} alt="Rotate" width={24} height={24} />
+          <Image src={ICONS.rotate} alt={t('imageGallery.alt.rotate')} width={24} height={24} />
         </button>
         <button onClick={handleDownload} className="gallery-button">
-          <Image src={ICONS.download} alt="Download" width={24} height={24} />
+          <Image src={ICONS.download} alt={t('imageGallery.alt.download')} width={24} height={24} />
         </button>
       </div>
 
       <button onClick={closeGallery} className="gallery-close-button">
-        <Image src={ICONS.closeModal} alt="Close" width={32} height={32} />
+        <Image src={ICONS.closeModal} alt={t('imageGallery.alt.close')} width={32} height={32} />
       </button>
 
       <button onClick={handlePrev} className="gallery-nav-button gallery-nav-prev">
-        <Image src={ICONS.arrowBack} alt="Previous" width={48} height={48} />
+        <Image src={ICONS.arrowBack} alt={t('imageGallery.alt.previous')} width={48} height={48} />
       </button>
 
       <div className="gallery-main-view" ref={containerRef}>
@@ -221,7 +223,7 @@ const ImageGallery: React.FC = () => {
       </div>
 
       <button onClick={handleNext} className="gallery-nav-button gallery-nav-next">
-        <Image src={ICONS.arrowRight} alt="Next" width={48} height={48} />
+        <Image src={ICONS.arrowRight} alt={t('imageGallery.alt.next')} width={48} height={48} />
       </button>
     </div>
   );

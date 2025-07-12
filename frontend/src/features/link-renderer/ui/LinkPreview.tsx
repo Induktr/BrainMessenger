@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PreviewData } from '@/features/link-renderer/model/link-renderer.types';
 
 interface LinkPreviewProps {
@@ -8,6 +9,7 @@ interface LinkPreviewProps {
 }
 
 const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
+  const { t } = useTranslation();
   const [preview, setPreview] = useState<PreviewData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
   }, [url]);
 
   if (loading) {
-    return <div className="link-preview-loader">Loading preview...</div>;
+    return <div className="link-preview-loader">{t('linkPreview.loadingMessage')}</div>;
   }
 
   if (!preview) {

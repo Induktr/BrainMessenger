@@ -1,7 +1,8 @@
 'use client';
  
 // frontend/src/ui/SidebarMenu.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '@/shared/ui/Button/Button';
 import CreateChannelModal from '@/features/create-chat/ui/CreateChannelModal';
 import CreateGroupModal from '@/features/create-chat/ui/CreateGroupModal';
@@ -10,6 +11,9 @@ import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now, mig
 import Image from 'next/image';
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
+import AllNotificationsModal from '@/features/manage-notifications/ui/AllNotificationsModal'; // Import AllNotificationsModal
+import { useNotification } from '@/features/manage-notifications/ui/NotificationContext'; // Import useNotification hook
+import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
  
 interface SidebarMenuWidgetProps {
   onOpenSettings: () => void;
@@ -18,10 +22,22 @@ interface SidebarMenuWidgetProps {
 }
 
 const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, onToggleTheme, onToggleNotification }) => {
+  const { t } = useTranslation();
   const [isCreateChannelModalOpen, setIsCreateChannelModalOpen] = useState(false);
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
- 
-  const { user, queryLoading } = useAuth(); // Get user and queryLoading state from context
+  const [isAllNotificationsModalOpen, setIsAllNotificationsModalOpen] = useState(false); // State for AllNotificationsModal
+  const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // State to store all notifications
+
+  const { user, queryLoading, logout } = useAuth(); // Get user, queryLoading, and logout from context
+  const { notification, clearNotification } = useNotification(); // Get notification and clearNotification from context
+
+  // Effect to add new notifications to the list
+  useEffect(() => {
+    if (notification) {
+      setAllNotifications((prevNotifications) => [notification, ...prevNotifications]);
+      clearNotification(); // Clear the current notification after adding to the list
+    }
+  }, [notification, clearNotification]);
  
   // Generate avatar data
   const avatarData = generateAvatarData(user?.name);
@@ -56,32 +72,33 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
   }
  
   const handleOpenCreateChannelModal = () => {
-      setIsCreateChannelModalOpen(true);
-    };
-  
-    const handleCloseCreateChannelModal = () => {
-      setIsCreateChannelModalOpen(false);
-    };
-  
-    const handleCreateChannel = (channelName: string, channelDescription: string) => {
-      // Placeholder for channel creation logic
-      // Placeholder for channel creation logic
-      // console.log('Creating channel:', channelName, channelDescription); // Removed console.log
-      handleCloseCreateChannelModal();
-      // In a real application, you would dispatch an action or call an API here
-      // After successful creation, you might want to update the chat list
-    };
-  
-    const handleOpenCreateGroupModal = () => {
-      setIsCreateGroupModalOpen(true);
-    };
-  
-    const handleCloseCreateGroupModal = () => {
-      setIsCreateGroupModalOpen(false);
-    };
-  
+    setIsCreateChannelModalOpen(true);
+  };
 
+  const handleCloseCreateChannelModal = () => {
+    setIsCreateChannelModalOpen(false);
+  };
 
+  const handleCreateChannel = (channelName: string, channelDescription: string) => {
+    // Placeholder for channel creation logic
+    // Placeholder for channel creation logic
+    // console.log('Creating channel:', channelName, channelDescription); // Removed console.log
+    handleCloseCreateChannelModal();
+    // In a real application, you would dispatch an action or call an API here
+    // After successful creation, you might want to update the chat list
+  };
+
+  const handleOpenCreateGroupModal = () => {
+    setIsCreateGroupModalOpen(true);
+  };
+
+  const handleCloseCreateGroupModal = () => {
+    setIsCreateGroupModalOpen(false);
+  };
+
+  const handleReload = () => {
+    window.location.reload();
+  };
 
   return (
     <div className="sidebar-menu sidebar-menu-container">
@@ -104,21 +121,28 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
             )}
           </div>
           <div className="sidebar-user-info">
-            <h2>{user?.name || 'Guest'}</h2> {/* Display user's name or 'Guest' */}
-            <p className="sidebar-username sidebar-username-text">{user?.email || 'N/A'}</p> {/* Display user's email or 'N/A' */}
+            <h2>{user?.name || t('sidebar.guest')}</h2> {/* Display user's name or 'Guest' */}
+            <p className="sidebar-username sidebar-username-text">{user?.email || t('sidebar.na')}</p> {/* Display user's email or 'N/A' */}
           </div>
         </div>
         {/* Settings Options List */}
         <div className="sidebar-options-list sidebar-options-list-wrapper">
-          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.settings && <Image src={ICONS.settings} alt="Settings" className="icon" width={24} height={24} />}Settings</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={handleOpenCreateChannelModal} ><span>{ICONS.channel && <Image src={ICONS.channel} alt="Fresh channel" className="icon" width={24} height={24} />}Fresh channel</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={handleOpenCreateGroupModal} ><span>{ICONS.group && <Image src={ICONS.group} alt="Fresh group" className="icon" width={24} height={24} />}Fresh group</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={onToggleTheme} ><span>{ICONS.night && <Image src={ICONS.night} alt="Night Mode" className="icon" width={24} height={24} />}Night Mode</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={onToggleNotification} ><span>{ICONS.bell && <Image src={ICONS.bell} alt="Notifications" className="icon" width={24} height={24} />}Notifications</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.support && <Image src={ICONS.support} alt="Support" className="icon" width={24} height={24} />}Support</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.settings && <Image src={ICONS.settings} alt={t('sidebar.settings')} className="icon" width={24} height={24} />} {t('sidebar.settings')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={handleOpenCreateChannelModal} ><span>{ICONS.channel && <Image src={ICONS.channel} alt={t('sidebar.createChannel')} className="icon" width={24} height={24} />} {t('sidebar.createChannel')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={handleOpenCreateGroupModal} ><span>{ICONS.group && <Image src={ICONS.group} alt={t('sidebar.createGroup')} className="icon" width={24} height={24} />} {t('sidebar.createGroup')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={onToggleTheme} ><span>{ICONS.night && <Image src={ICONS.night} alt={t('sidebar.nightMode')} className="icon" width={24} height={24} />} {t('sidebar.nightMode')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={() => setIsAllNotificationsModalOpen(true)} ><span>{ICONS.bell && <Image src={ICONS.bell} alt={t('sidebar.allNotifications')} className="icon" width={24} height={24} />} {t('sidebar.allNotifications')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.support && <Image src={ICONS.support} alt={t('sidebar.support')} className="icon" width={24} height={24} />} {t('sidebar.support')}</span></Button> {/* Using ListItem */}
           {/* ... more settings options */}
         </div>
       </div>
+
+      {/* All Notifications Modal */}
+      <AllNotificationsModal
+        isOpen={isAllNotificationsModalOpen}
+        onClose={() => setIsAllNotificationsModalOpen(false)}
+        notifications={allNotifications}
+      />
 
       {/* Create Channel Modal */}
       <CreateChannelModal

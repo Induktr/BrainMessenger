@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Input from '@/shared/ui/Input/Input';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
@@ -20,6 +21,7 @@ interface HeaderProps {
 }
 
 const HeaderWidget: React.FC<HeaderProps> = ({ title, status, leftIcon, rightIcons, chatId, avatar }) => {
+  const { t } = useTranslation();
   const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
 
   const { data, error } = useSubscription(TYPING_STATUS_SUBSCRIPTION, {
@@ -29,7 +31,7 @@ const HeaderWidget: React.FC<HeaderProps> = ({ title, status, leftIcon, rightIco
 
   useEffect(() => {
     if (error) {
-      console.error('Typing subscription error:', error);
+            console.error(t('typingSubscriptionError'), error);
       return;
     }
     if (data?.typingStatus) {
@@ -52,9 +54,12 @@ const HeaderWidget: React.FC<HeaderProps> = ({ title, status, leftIcon, rightIco
       return status; // Return original status if no one is typing
     }
     const names = typingUsers.map((u) => u.name).join(', ');
-    return typingUsers.length > 2
-      ? `${typingUsers.length} people are typing...`
-      : `${names} ${typingUsers.length > 1 ? 'are' : 'is'} typing...`;
+    const count = typingUsers.length;
+    if (count > 2) {
+      return t('peopleTyping', { count });
+    }
+    const namesString = names;
+    return t('userTyping', { name: namesString, count });
   };
 
   const dynamicStatus = getTypingStatus();

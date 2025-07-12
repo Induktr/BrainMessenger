@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import './ui.css';
+import './admin/admin.css';
 
 import ApolloWrapper from '@/app/providers/ApolloWrapper';
 import BodyClassNameUpdater from '@/shared/ui/BodyClassNameUpdater/BodyClassNameUpdater';
@@ -19,6 +20,12 @@ import UserStatusUpdater from '@/features/update-user-status/ui/UserStatusUpdate
 
 // Import Roboto font
 import { Roboto } from 'next/font/google';
+
+// Import i18n configuration
+import '../i18n';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../i18n';
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,28 +53,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang={i18n.language}>
       <body className="antialiased bg-background-dark text-textPrimary-dark font-roboto"> {/* Use a static base class name */}
-        <ApolloWrapper> {/* ApolloWrapper (containing ApolloProvider) must wrap AuthProvider */}
-          <DeepWorkProvider>
-            <BodyClassNameUpdater /> {/* Add the component to update body class on client */}
-            <GlobalAudioProvider> {/* Wrap the entire application with GlobalAudioProvider */}
-              <NetworkStatusProvider>
-                <AuthProvider>
-                  <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
-                    <NotificationProvider>
-                      <ImageGalleryProvider>
-                        <UserStatusUpdater />
-                        {children}
-                        <ImageGallery />
-                      </ImageGalleryProvider>
-                    </NotificationProvider>
-                  </ChatIdProvider>
-                </AuthProvider>
-              </NetworkStatusProvider>
-            </GlobalAudioProvider>
-          </DeepWorkProvider>
-        </ApolloWrapper>
+        <I18nextProvider i18n={i18n}>
+          <ApolloWrapper> {/* ApolloWrapper (containing ApolloProvider) must wrap AuthProvider */}
+            <DeepWorkProvider>
+              <BodyClassNameUpdater /> {/* Add the component to update body class on client */}
+              <GlobalAudioProvider> {/* Wrap the entire application with GlobalAudioProvider */}
+                <NetworkStatusProvider>
+                  <AuthProvider>
+                    <ChatIdProvider> {/* Wrap children and GlobalNotificationHandler with ChatIdProvider */}
+                      <NotificationProvider>
+                        <ImageGalleryProvider>
+                          <UserStatusUpdater />
+                          {children}
+                          <ImageGallery />
+                        </ImageGalleryProvider>
+                      </NotificationProvider>
+                    </ChatIdProvider>
+                  </AuthProvider>
+                </NetworkStatusProvider>
+              </GlobalAudioProvider>
+            </DeepWorkProvider>
+          </ApolloWrapper>
+        </I18nextProvider>
       </body>
     </html>
   );

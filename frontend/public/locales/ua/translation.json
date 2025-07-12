@@ -1,0 +1,404 @@
+{
+  "language": {
+    "header_title": "Мова",
+    "interface_label": "Мова інтерфейсу",
+    "english": "Англійська",
+    "ukrainian": "Українська",
+    "russian": "Російська"
+  },
+  "sidebar": {
+    "guest": "Гість",
+    "na": "Н/Д",
+    "settings": "Налаштування",
+    "createChannel": "Створити канал",
+    "createGroup": "Створити групу",
+    "nightMode": "Нічний режим",
+    "allNotifications": "Всі сповіщення",
+    "support": "Підтримка",
+    "myAccount": "Мій акаунт",
+    "toggleTheme": "Змінити тему",
+    "notifications": "Сповіщення",
+    "logout": "Вийти"
+  },
+  "myAccount": {
+    "headerTitle": "Інформація",
+    "uploadPhoto": "Завантажити нове фото",
+    "uploading": "Завантаження...",
+    "uploadFailed": "Помилка завантаження: {{message}}",
+    "guest": "Гість",
+    "bioPlaceholder": "Введіть вашу біографію тут...",
+    "notAvailable": "Н/Д",
+    "logout": "Вийти",
+    "alt": {
+      "back": "Назад",
+      "close": "Закрити",
+      "uploadAvatar": "Завантажити аватар",
+      "logout": "Вийти з акаунту",
+      "account": "Акаунт",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта"
+    },
+    "status": {
+      "online": "в мережі",
+      "offline": "не в мережі"
+    },
+    "labels": {
+      "name": "Ім'я",
+      "username": "Ім'я користувача",
+      "email": "Електронна пошта"
+    },
+    "buttons": {
+      "save": "Зберегти",
+      "cancel": "Скасувати",
+      "verify": "Перевірити"
+    },
+    "editModal": {
+      "title": "Редагувати {{field}}",
+      "statusLabel": "Статус:",
+      "verified": "Перевірено",
+      "notVerified": "Не перевірено",
+      "sending": "Надсилання...",
+      "resendButton": "Надіслати лист для перевірки ще раз",
+      "resendSuccess": "Лист для перевірки надіслано!"
+    },
+    "verifyModal": {
+      "title": "Перевірте вашу електронну пошту",
+      "instruction": "Будь ласка, введіть код перевірки, надісланий на {{email}}.",
+      "placeholder": "Введіть код",
+      "resendButton": "Надіслати код ще раз"
+    },
+    "cropModal": {
+      "title": "Обрізати аватар",
+      "alt": {
+        "crop": "Обріж мене"
+      }
+    }
+  },
+  "linkPreview": {
+    "loading": "Завантаження предпросмотра..."
+  },
+  "imageGallery": {
+    "alt": {
+      "rotate": "Повернути зображення",
+      "download": "Завантажити зображення",
+      "close": "Закрити галерею",
+      "previous": "Попереднє зображення",
+      "next": "Наступне зображення"
+    },
+    "downloadedImageName": "завантажене-зображення"
+  },
+  "createChannelModal": {
+    "title": "Створити новий канал",
+    "alt": {
+      "close": "Закрити"
+    },
+    "nameLabel": "Назва каналу",
+    "namePlaceholder": "Введіть назву...",
+    "descriptionLabel": "Опис (необов'язково)",
+    "descriptionPlaceholder": "Розкажіть, про що ваш канал...",
+    "createButton": "Створити канал",
+    "creatingButton": "Створення...",
+    "errorMessage": "Помилка: {{message}}"
+  },
+  "channelDetailsModal": {
+    "title": "Деталі каналу",
+    "public": "публічним",
+    "private": "приватним",
+    "nameLabel": "Назва:",
+    "descriptionLabel": "Опис:",
+    "subscribersLabel": "Підписники:",
+    "ownerLabel": "Власник:",
+    "publicToggleLabel": "Публічний канал:",
+    "deleteButton": "Видалити канал",
+    "alt": {
+      "close": "Закрити",
+      "avatar": "Аватар каналу"
+    },
+    "notifications": {
+      "privacySet": "Канал тепер {{status}}.",
+      "privacyError": "Не вдалося оновити приватність каналу: {{message}}",
+      "deletedSuccess": "Канал успішно видалено!",
+      "deletedError": "Не вдалося видалити канал: {{message}}"
+    },
+    "confirmDelete": {
+      "title": "Підтвердьте видалення каналу",
+      "message": "Ви впевнені, що хочете видалити канал \"{{channelName}}\"? Ця дія незворотня.",
+      "confirmText": "Видалити канал",
+      "cancelText": "Скасувати"
+    }
+  },
+  "languageModal": {
+    "headerTitle": "Мова",
+    "interfaceLabel": "Мова інтерфейсу",
+    "alt": {
+      "back": "Назад",
+      "close": "Закрити"
+    }
+  },
+  "userStats": {
+    "title": "Статистика користувачів",
+    "activeUsers": "Активні користувачі",
+    "newUsersToday": "Нові сьогодні",
+    "inactiveUsers": "Неактивні користувачі",
+    "totalUsers": "Всього користувачів:"
+  },
+  "languageSwitcherAdmin": {
+    "title": "Мова інтерфейсу",
+    "alt": {
+      "en": "Англійська",
+      "ua": "Українська",
+      "ru": "Російська"
+    }
+  },
+  "feedbackFeed": {
+    "title": "Стрічка зворотного зв'язку",
+    "noFeedback": "Немає відгуків для відображення."
+  },
+  "complaintFeed": {
+    "title": "Стрічка скарг",
+    "noComplaints": "Немає скарг для відображення.",
+    "userLabel": "Користувач:",
+    "messageLabel": "Повідомлення:",
+    "complaintLabel": "Скарга:",
+    "statusLabel": "Статус:",
+    "createdAtLabel": "Створено:",
+    "banUserButton": "Забанити користувача",
+    "deleteMessageButton": "Видалити повідомлення",
+    "banError": "Помилка під час блокування користувача:",
+    "deleteError": "Помилка під час видалення повідомлення:",
+    "statuses": {
+      "NEW": "Нова",
+      "IN_PROGRESS": "В обробці",
+      "RESOLVED": "Вирішена",
+      "REJECTED": "Відхилена"
+    }
+  },
+  "chatWindow": {
+    "loadError": "Помилка завантаження повідомлень: {{message}}",
+    "selectChatPrompt": "Виберіть чат, щоб почати спілкування",
+    "subscribePrompt": "Ви не підписані на цей канал. Підпишіться, щоб бачити повідомлення та брати участь.",
+    "subscribeButton": "Підписатися",
+    "unsubscribeButton": "Відписатися"
+  },
+  "chatList": {
+    "findOrCreateError": "Помилка під час пошуку або створення приватного чату:",
+    "loadError": "Помилка завантаження чатів.",
+    "searchError": "Помилка під час пошуку.",
+    "users": "Користувачі",
+    "channels": "Канали",
+    "groups": "Групи",
+    "noUsersFound": "Користувачів не знайдено.",
+    "noChannelsFound": "Каналів не знайдено.",
+    "noGroupsFound": "Груп не знайдено.",
+    "noChatsYet": "Чатів ще немає."
+  },
+  "search": {
+    "placeholder": "Пошук..."
+  },
+  "header_widget": {
+    "typingSubscriptionError": "Помилка підписки на статус набору тексту:",
+    "peopleTyping_one": "{{count}} людина друкує...",
+    "peopleTyping_few": "{{count}} людини друкують...",
+    "peopleTyping_many": "{{count}} людей друкують...",
+    "userTyping_one": "{{name}} друкує...",
+    "userTyping_other": "{{name}} друкують..."
+  },
+  "welcome_page": {
+    "slide1_title": "Ласкаво просимо до BrainMessenger",
+    "slide1_description": "Ваша безпечна та приватна платформа для спілкування.",
+    "slide2_title": "Безпечно та приватно",
+    "slide2_description": "Ваші розмови зашифровані, і ваша конфіденційність є нашим пріоритетом.",
+    "slide3_title": "Групові чати та канали",
+    "slide3_description": "Спілкуйтеся з друзями, родиною або спільнотами через групові чати та публічні канали.",
+    "slide4_title": "Розширена безпека",
+    "slide4_description": "Сучасні функції шифрування та безпеки для захисту ваших даних.",
+    "slide5_title": "Масштабованість та надійність",
+    "slide5_description": "Створено для мільйонів користувачів з високою доступністю та продуктивністю.",
+    "loading_text": "Завантаження BrainMessenger...",
+    "burger_menu_alt": "Бургер меню",
+    "arrow_left_alt": "Попередній слайд",
+    "arrow_right_alt": "Наступний слайд",
+    "get_started_button": "Почати",
+    "logo_alt": "Логотип BrainMessenger",
+    "shield_alt": "Щит",
+    "group_alt": "Група",
+    "castle_alt": "Замок",
+    "increase_alt": "Збільшення",
+    "next_button_alt": "Далі",
+    "back_button_alt": "Назад",
+    "already_have_account": "Вже маєте обліковий запис?",
+    "login_link": "Увійти"
+  },
+  "files_page": {
+    "title": "Файли",
+    "description": "Ваші файли з'являться тут."
+  },
+  "admin_dashboard": {
+    "feedback_great_app": "Чудовий додаток!",
+    "feedback_needs_features": "Потрібно більше функцій.",
+    "complaint_toxic_content": "Токсичний контент",
+    "complaint_source_gmail": "Gmail",
+    "complaint_message_text_1": "Це приклад токсичного контенту.",
+    "complaint_spamming_users": "Спам користувачів",
+    "complaint_source_in_app": "У додатку",
+    "complaint_message_text_2": "Цей користувач спамить мене повідомленнями.",
+    "logo_alt": "Логотип BrainMessenger",
+    "error_title": "Помилка",
+    "error_loading_data": "Не вдалося завантажити дані панелі керування.",
+    "user_stats_error": "Помилка статистики користувачів:",
+    "complaints_error": "Помилка скарг:",
+    "search_placeholder": "Пошук...",
+    "toggle_focus_mode_alt": "Перемкнути режим фокусування",
+    "toggle_roles_alt": "Перемкнути ролі",
+    "toggle_theme_alt": "Перемкнути тему",
+    "toggle_language_alt": "Перемкнути мову",
+    "user_avatar_alt": "Аватар користувача",
+    "welcome_message": "Ласкаво просимо до вашої панелі адміністратора!",
+    "dashboard_title": "Панель адміністратора",
+    "handbook_title": "Посібник модератора",
+    "handbook_mission_tab": "Місія",
+    "handbook_responsibilities_tab": "Обов'язки",
+    "handbook_rules_tab": "Правила",
+    "handbook_accountability_tab": "Підзвітність",
+    "mission_section_title": "Наша місія",
+    "mission_description": "Створити безпечну, шанобливу та привабливу спільноту для всіх користувачів BrainMessenger.",
+    "core_principles_title": "Основні принципи:",
+    "fairness_principle": "Справедливість: Застосовуйте правила послідовно та неупереджено.",
+    "accountability_principle": "Підзвітність: Несіть відповідальність за дії та рішення.",
+    "empathy_principle": "Емпатія: Розумійте та вирішуйте проблеми користувачів зі співчуттям.",
+    "responsibilities_section_title": "Ключові обов'язки",
+    "responsibilities_description": "Як модератор, ваші обов'язки включають:",
+    "responsibility_monitor_channels": "Моніторинг каналів та чатів на предмет порушень правил.",
+    "responsibility_respond_reports": "Оперативне реагування на звіти та скарги користувачів.",
+    "responsibility_enforce_guidelines": "Застосування правил спільноти та умов обслуговування.",
+    "responsibility_issue_bans": "Видача попереджень, тимчасових або постійних блокувань за необхідності.",
+    "responsibility_collaborate": "Співпраця з іншими модераторами та адміністраторами.",
+    "rules_section_title": "Правила спільноти",
+    "rules_description": "Для забезпечення позитивного середовища всі користувачі повинні дотримуватися наступних правил:",
+    "rule_no_personal_attacks": "Без особистих нападів або переслідувань.",
+    "rule_no_hate_speech": "Без розпалювання ненависті або дискримінації.",
+    "rule_no_spamming": "Без спаму або надмірної самореклами.",
+    "rule_no_illegal_content": "Без незаконного або забороненого контенту.",
+    "rule_respect_privacy": "Поважайте конфіденційність інших.",
+    "accountability_section_title": "Підзвітність",
+    "accountability_description": "Модератори дотримуються високих стандартів поведінки:",
+    "accountability_transparent": "Будьте прозорими в діях модерації, де це доречно.",
+    "accountability_consistent": "Забезпечте послідовне застосування правил.",
+    "accountability_documented": "Документуйте всі значущі рішення щодо модерації.",
+    "accountability_reviewable": "Дії підлягають перегляду адміністраторами.",
+    "complaint_feed_title": "Стрічка скарг",
+    "no_complaints_yet": "Поки що немає скарг.",
+    "complaint_against": "Скарга на:",
+    "not_available_short": "Н/Д",
+    "reason_label": "Причина:",
+    "associated_message_label": "Пов'язане повідомлення:",
+    "ban_user_button": "Заблокувати користувача",
+    "delete_message_button": "Видалити повідомлення",
+    "feedback_feed_title": "Стрічка відгуків",
+    "no_feedback_yet": "Поки що немає відгуків.",
+    "user_statistics_title": "Статистика користувачів",
+    "active_users_label": "Активні користувачі:",
+    "new_users_today_label": "Нові користувачі сьогодні:",
+    "total_users_label": "Всього користувачів:",
+    "online_status": "онлайн",
+    "last_seen_prefix": "був(ла) в мережі",
+    "offline_status": "оффлайн",
+    "members_count": "{{count}} учасників",
+    "chat_title": "Чат",
+    "typing_status_multiple": "{{count}} людей друкують...",
+    "typing_status_single": "{{name}} друкує...",
+    "search_placeholder_header": "Пошук",
+    "settings_button": "Налаштування",
+    "fresh_channel_button": "Новий канал",
+    "fresh_group_button": "Нова група",
+    "night_mode_button": "Нічний режим",
+    "notifications_button": "Сповіщення",
+    "support_button": "Підтримка"
+  },
+  "chat_page": {
+    "burger_menu_alt": "Бургер меню",
+    "search_placeholder": "Пошук чатів або користувачів...",
+    "welcome_message": "Виберіть чат, щоб почати спілкування!",
+    "context_menu_delete_history": "Видалити історію чату",
+    "context_menu_delete_user_chat": "Видалити користувача та чат",
+    "confirm_delete_history_title": "Підтвердити видалення",
+    "confirm_delete_history_message": "Ви впевнені, що хочете видалити історію цього чату? Цю дію не можна скасувати.",
+    "confirm_delete_history_button": "Видалити історію",
+    "cancel_button": "Скасувати",
+    "confirm_delete_user_chat_title": "Підтвердити видалення",
+    "confirm_delete_user_chat_message": "Ви впевнені, що хочете видалити цього користувача та всю пов'язану історію чату? Цю дію не можна скасувати.",
+    "confirm_delete_user_chat_button": "Видалити користувача та чат",
+    "error_loading_chats": "Помилка завантаження чатів",
+    "error_searching": "Помилка пошуку",
+    "users_label": "Користувачі",
+    "chats_label": "Чати",
+    "online_status": "онлайн",
+    "last_seen_prefix": "був(ла) в мережі",
+    "offline_status": "оффлайн",
+    "members_count": "{{count}} учасників",
+    "chat_title": "Чат",
+    "error_loading_messages": "Помилка завантаження повідомлень"
+  },
+  "login_page": {
+    "burger_menu_alt": "Бургер меню",
+    "logo_alt": "Логотип BrainMessenger",
+    "title": "Увійти до BrainMessenger",
+    "email_label": "Електронна пошта",
+    "password_label": "Пароль",
+    "email_required": "Електронна пошта обов'язкова",
+    "password_required": "Пароль обов'язковий",
+    "logging_in": "Вхід...",
+    "login_button": "Увійти",
+    "failed_prefix": "Помилка входу",
+    "no_account_prompt": "Не маєте облікового запису?",
+    "register_link": "Зареєструватися",
+    "resend_email_failed": "Не вдалося повторно надіслати електронний лист із підтвердженням.",
+    "verification_error": "Недійсний код підтвердження або електронна пошта."
+  },
+  "verification": {
+    "title": "Підтвердження електронної пошти",
+    "prompt": "Будь ласка, введіть 8-значний код, надісланий на {{email}}, щоб підтвердити свій обліковий запис.",
+    "placeholder": "Введіть код",
+    "verifying": "Перевірка...",
+    "verify_button": "Підтвердити",
+    "sending": "Надсилання...",
+    "resend_button": "Надіслати код повторно",
+    "sent_success": "Код підтвердження успішно надіслано!"
+  },
+  "register_page": {
+    "resend_code_unavailable": "Неможливо повторно надіслати код: електронна пошта недоступна.",
+    "code_resent_success": "Код підтвердження надіслано повторно. Будь ласка, перевірте свою електронну пошту.",
+    "resend_code_failed_generic": "Не вдалося повторно надіслати код підтвердження.",
+    "resend_code_failed_with_error": "Не вдалося повторно надіслати код підтвердження: {{error}}",
+    "registration_success": "Реєстрація успішна:",
+    "registration_error": "Помилка реєстрації:",
+    "enter_complete_code": "Будь ласка, введіть повний 8-значний код.",
+    "verification_failed_generic": "Перевірка не вдалася: недійсний код або перевірка повернула false.",
+    "verification_error_prefix": "Перевірка не вдалася:",
+    "resend_error_prefix": "Повторна відправка не вдалася:",
+    "verification_success_redirect": "Перевірка успішна! Перенаправлення до чату...",
+    "sending_button": "Надсилання...",
+    "get_code_again_button": "Отримати код знову",
+    "already_have_account": "Вже маєте обліковий запис?",
+    "login_link": "Увійти",
+    "step_prefix": "Крок",
+    "create_password_placeholder": "Пароль",
+    "input_field_empty": "Поле введення порожнє",
+    "password_too_short": "Пароль занадто короткий",
+    "password_too_long": "Пароль занадто довгий",
+    "password_requirements": "Пароль повинен містити велику літеру та спеціальний символ",
+    "your_name_placeholder": "Ваше ім'я",
+    "name_too_short": "Ім'я занадто коротке",
+    "name_too_long": "Ім'я занадто довге",
+    "username_placeholder": "Ім'я користувача",
+    "username_too_short": "Ім'я користувача занадто коротке",
+    "username_too_long": "Ім'я користувача занадто довге",
+    "email_placeholder": "Електронна пошта",
+    "invalid_email_format": "Недійсний формат електронної пошти",
+    "verifying_button": "Перевірка...",
+    "confirm_button": "Підтвердити",
+    "welcome_prompt": "Ласкаво просимо, {{email}}! Щоб завершити процес реєстрації, будь ласка, введіть код, який ми надіслали вам електронною поштою.",
+    "next_button_alt": "Далі",
+    "back_button_alt": "Назад"
+  }
+}

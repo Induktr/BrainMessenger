@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, split, from } from '@apollo/client';
+import { OperationDefinitionNode } from 'graphql';
 import { setContext } from '@apollo/client/link/context';
 import { HttpLink } from '@apollo/client/link/http';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
@@ -74,25 +75,47 @@ const createNewWsClient = () => {
     url: getBackendUrl('ws'),
     connectionParams: () => {
       const currentToken = tokenRef.currentAccessToken;
-      console.log('[ApolloClient] WebSocket connectionParams: Token', currentToken ? 'Present' : 'Missing');
-      return {
-        Authorization: currentToken ? `Bearer ${currentToken}` : '',
-      };
+      console.log(
+        '[ApolloClient] WebSocket connectionParams: Token',
+        currentToken
+          ? `Present (first 10 chars: ${currentToken.substring(0, 10)}...)`
+          : 'Missing',
+      );
+      // Only include the Authorization header if the token exists.
+      if (currentToken) {
+        return {
+          Authorization: `Bearer ${currentToken}`,
+        };
+      }
+      // Otherwise, connect without authentication headers.
+      return {};
     },
     // Defer the connection until the first subscription is made
     lazy: true,
+    retryAttempts: 5, // Number of times to retry connection
   });
-  client.on('connected', () => console.log('[ApolloClient] WebSocket connected!'));
-  client.on('closed', (event: any) => { // Revert to 'any' type for compatibility
-    const closeEvent = event as CloseEvent; // Explicitly cast to CloseEvent for properties
-    console.log(`[ApolloClient] WebSocket closed: Code=${closeEvent.code}, Reason=${closeEvent.reason}, WasClean=${closeEvent.wasClean}`);
+  client.on('connected', () =>
+    console.log('[ApolloClient] WebSocket connected!'),
+  );
+  client.on('closed', (event: any) => {
+    console.log(
+      `[ApolloClient] WebSocket closed. Code: ${event.code}, Reason: ${event.reason}`,
+    );
   });
-  client.on('error', (error: any) => console.error('[ApolloClient] WebSocket error:', error));
+  client.on('error', (err: any) => {
+    console.error('[ApolloClient] WebSocket error:', err);
+  });
   return client;
 };
 
 // A mutable object to hold the WebSocket client instance
-let wsClientRef: any | null = typeof window !== 'undefined' && tokenRef.currentAccessToken ? createNewWsClient() : null;
+let wsClientRef: any | null = null; // Initialize as null, will be created on first token or subscription
+
+// Initialize wsClientRef if token is already present on load
+if (typeof window !== 'undefined' && tokenRef.currentAccessToken) {
+  console.log('[ApolloClient] Initializing WebSocket client on load with existing token.');
+  wsClientRef = createNewWsClient();
+}
 
 
 // Configure the HTTP link for standard queries and mutations
@@ -270,15 +293,13 @@ const createSplitLink = (wsLink: GraphQLWsLink | null) => {
   return isBrowser && wsLink ? split(
     ({ query }) => {
       const definition = getMainDefinition(query);
-      return (
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription'
-      );
+      const isSubscription = definition.kind === 'OperationDefinition' && (definition as OperationDefinitionNode).operation === 'subscription';
+      console.log(`[ApolloClient] Split Link - Operation: ${definition.kind === 'OperationDefinition' ? (definition as OperationDefinitionNode).operation : 'N/A'}, Kind: ${definition.kind}, Is Subscription: ${isSubscription}`);
+      return isSubscription;
     },
-    wsLink,
-    // Route all requests to uploadLink
-    uploadLink,
-  ) : uploadLink; // Use only uploadLink on the server or if wsLink is not defined
+    wsLink, // WebSocket link for subscriptions
+    from([authLink, uploadLink, httpLink]), // Chain authLink, uploadLink, and httpLink for queries and mutations
+  ) : from([authLink.concat(uploadLink).concat(httpLink)]); // Use chained links on the server or if wsLink is not defined
 };
 
 let splitLink = createSplitLink(currentWsLink);
@@ -287,16 +308,7 @@ let splitLink = createSplitLink(currentWsLink);
 let link = from(
   [
     errorLink, // Handle errors first
-    new ApolloLink((operation, forward) => {
-      // If the operation is 'verifyEmail', bypass the authLink
-      if (operation.operationName === 'verifyEmail') {
-        console.log('[ApolloClient] Bypassing AuthLink for verifyEmail operation.');
-        return forward(operation);
-      }
-      // Otherwise, proceed to the next link (authLink)
-      return authLink.request(operation, forward);
-    }),
-    splitLink, // Route to HTTP/WS
+    splitLink, // Route to HTTP/WS first
   ]
 );
 
@@ -312,19 +324,21 @@ export const setAccessTokenForApollo = (token: string | null) => {
   tokenRef.currentAccessToken = token;
 
   if (isBrowser) {
+    console.log('[ApolloClient] setAccessTokenForApollo - isBrowser is true.');
     // Dispose of the old WebSocket client if it exists
     if (wsClientRef) {
-      console.log('[ApolloClient] Disposing existing WebSocket client.');
+      console.log('[ApolloClient] setAccessTokenForApollo - Disposing existing WebSocket client.');
       wsClientRef.dispose();
+      wsClientRef = null; // Ensure it's nullified after dispose
     }
 
     // Create a new WebSocket client with the updated token, only if token is present
     if (token) {
-      console.log('[ApolloClient] Re-initializing WebSocket client with new token.');
+      console.log('[ApolloClient] setAccessTokenForApollo - Re-initializing WebSocket client with new token.');
       wsClientRef = createNewWsClient();
       currentWsLink = new GraphQLWsLink(wsClientRef);
     } else {
-      console.log('[ApolloClient] Clearing WebSocket client (no token).');
+      console.log('[ApolloClient] setAccessTokenForApollo - Clearing WebSocket client (no token).');
       wsClientRef = null;
       currentWsLink = null;
     }

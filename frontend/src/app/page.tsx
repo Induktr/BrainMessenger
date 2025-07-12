@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useLayoutEffect } from 'react'; // Import useLayoutEffect
 import { useRouter } from 'next/navigation'; // Import useRouter
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth
 import { ICONS } from '@/shared/assets/Icons/icons';
 import { IMAGES } from '@/shared/assets/Images/images';
@@ -9,42 +10,13 @@ import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image';
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 
-const slides = [
-  {
-    image: <Image src={IMAGES.logoBrainMessenger} alt="logoBrainMessenger" className="logo-container-size" width={175} height={175}></Image>, // Temporarily commented out for debugging
-    title: 'Welcome to BrainMessenger - let\'s get started!',
-    description: 'Brain Messenger helps you stay connected.',
-    // Add more slides as needed based on the mockup/requirements
-  },
-  {
-    icon: <Image src={ICONS.shield} alt="Shield" className="icon-container-size" width={120} height={120}></Image>,
-    title: 'Secure Communication', // Example from mockup
-    description: 'End-to-end encryption ensures your messages stay private and secure.', // Example from mockup
-  },
-  {
-    icon: <Image src={ICONS.channel} alt="Group" className="icon-container-size" width={120} height={120}></Image>,
-    title: 'Main features', // Example from mockup
-    description: 'Create private and group chats, send messages and receive real-time notifications.', // Example from mockup
-  },
-  {
-    icon: <Image src={ICONS.castle} alt="Castle" className="icon-container-size" width={120} height={120}></Image>,
-    title: 'Safety first', // Example from mockup
-    description: 'Your data is protected by end-to-end encryption and state-of-the-art security protocols.', // Example from mockup
-  },
-  {
-    icon: <Image src={ICONS.increase} alt="Increase" className="icon-container-size" width={120} height={120}></Image>,
-    title: 'The future of BrainMessenger', // Example from mockup
-    description: 'Coming soon: AI assistant, CRM integrations and blockchain transaction support!', // Example from mockup
-  },
-];
-
-
 const WelcomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter(); // Get router instance
+  const { t } = useTranslation(); // Initialize useTranslation
   const { user, queryLoading } = useAuth(); // Use useAuth hook
   const [currentView, setCurrentView] = useState('');
-  
+
   // Redirect authenticated users to the chat page
   useLayoutEffect(() => { // Use useLayoutEffect
     console.log('WelcomePage useLayoutEffect - user:', user, 'loading:', queryLoading); // Debug log inside effect
@@ -55,6 +27,35 @@ const WelcomePage = () => {
   }, [user, queryLoading, router]); // Depend on user, loading, and router
 
   console.log('WelcomePage - user:', user, 'loading:', queryLoading); // Debug log
+
+  const slides = [
+    {
+      image: <Image src={IMAGES.logoBrainMessenger} alt={t('welcome_page.logo_alt')} className="logo-container-size" width={175} height={175}></Image>, // Temporarily commented out for debugging
+      title: t('welcome_page.slide1_title'),
+      description: t('welcome_page.slide1_description'),
+      // Add more slides as needed based on the mockup/requirements
+    },
+    {
+      icon: <Image src={ICONS.shield} alt={t('welcome_page.shield_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      title: t('welcome_page.slide2_title'),
+      description: t('welcome_page.slide2_description'),
+    },
+    {
+      icon: <Image src={ICONS.channel} alt={t('welcome_page.group_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      title: t('welcome_page.slide3_title'),
+      description: t('welcome_page.slide3_description'),
+    },
+    {
+      icon: <Image src={ICONS.castle} alt={t('welcome_page.castle_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      title: t('welcome_page.slide4_title'),
+      description: t('welcome_page.slide4_description'),
+    },
+    {
+      icon: <Image src={ICONS.increase} alt={t('welcome_page.increase_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      title: t('welcome_page.slide5_title'),
+      description: t('welcome_page.slide5_description'),
+    },
+  ];
 
   const nextSlide = () => {
     setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
@@ -90,7 +91,7 @@ const WelcomePage = () => {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Image
           src="/images/logo.png" // Path to your logo
-          alt="Loading..."
+          alt={t('welcome_page.loading_text')}
           width={175}
           height={175}
           style={{ borderRadius: '100%' }} // Make the image round
@@ -112,7 +113,7 @@ const WelcomePage = () => {
       <header className="welcome-header">
         {/* Right side: Burger Menu Icon */}
         <div className="burger-menu-container">
-            <Image src={ICONS.burgerMenu} alt="Burger menu" onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
+            <Image src={ICONS.burgerMenu} alt={t('welcome_page.burger_menu_alt')} onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
         </div>
       </header>
 
@@ -135,7 +136,7 @@ const WelcomePage = () => {
           >
             {/* Left Arrow SVG */}
               {/* Left Arrow SVG */}
-              <Image src={ICONS.arrowLeft} alt="Arrow Left" className="icon" width={24} height={24}></Image>
+              <Image src={ICONS.arrowLeft} alt={t('welcome_page.back_button_alt')} className="icon" width={24} height={24}></Image>
           </Button>
           {/* Placeholder for slider indicators if needed */}
           <div className="slider-indicators">
@@ -152,14 +153,14 @@ const WelcomePage = () => {
             className="slider-button next-button"
           >
             {/* Right Arrow SVG */}
-            <Image src={ICONS.arrowRight} alt="Arrow Right" className="icon" width={24} height={24}></Image>
+            <Image src={ICONS.arrowRight} alt={t('welcome_page.next_button_alt')} className="icon" width={24} height={24}></Image>
           </Button>
         </div>
 
 
         {/* Get Started Button */}
         <Button className="get-started-button" onClick={() => router.push('/register')}>
-          Get started
+          {t('welcome_page.get_started_button')}
         </Button>
       </div>
     </div>

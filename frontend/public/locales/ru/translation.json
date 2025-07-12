@@ -1,0 +1,404 @@
+{
+  "language": {
+    "header_title": "Язык",
+    "interface_label": "Язык интерфейса",
+    "english": "Английский",
+    "ukrainian": "Украинский",
+    "russian": "Русский"
+  },
+  "sidebar": {
+    "guest": "Гость",
+    "na": "Н/Д",
+    "settings": "Настройки",
+    "createChannel": "Создать канал",
+    "createGroup": "Создать группу",
+    "nightMode": "Ночной режим",
+    "allNotifications": "Все уведомления",
+    "support": "Поддержка",
+    "myAccount": "Мой аккаунт",
+    "toggleTheme": "Сменить тему",
+    "notifications": "Уведомления",
+    "logout": "Выйти"
+  },
+  "myAccount": {
+    "headerTitle": "Информация",
+    "uploadPhoto": "Загрузить новое фото",
+    "uploading": "Загрузка...",
+    "uploadFailed": "Ошибка загрузки: {{message}}",
+    "guest": "Гость",
+    "bioPlaceholder": "Введите вашу биографию здесь...",
+    "notAvailable": "Н/Д",
+    "logout": "Выйти",
+    "alt": {
+      "back": "Назад",
+      "close": "Закрыть",
+      "uploadAvatar": "Загрузить аватар",
+      "logout": "Выйти из аккаунта",
+      "account": "Аккаунт",
+      "username": "Имя пользователя",
+      "email": "Электронная почта"
+    },
+    "status": {
+      "online": "в сети",
+      "offline": "не в сети"
+    },
+    "labels": {
+      "name": "Имя",
+      "username": "Имя пользователя",
+      "email": "Электронная почта"
+    },
+    "buttons": {
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "verify": "Проверить"
+    },
+    "editModal": {
+      "title": "Редактировать {{field}}",
+      "statusLabel": "Статус:",
+      "verified": "Проверено",
+      "notVerified": "Не проверено",
+      "sending": "Отправка...",
+      "resendButton": "Отправить письмо для проверки еще раз",
+      "resendSuccess": "Письмо для проверки отправлено!"
+    },
+    "verifyModal": {
+      "title": "Проверьте вашу электронную почту",
+      "instruction": "Пожалуйста, введите код проверки, отправленный на {{email}}.",
+      "placeholder": "Введите код",
+      "resendButton": "Отправить код еще раз"
+    },
+    "cropModal": {
+      "title": "Обрезать аватар",
+      "alt": {
+        "crop": "Обрежь меня"
+      }
+    }
+  },
+  "linkPreview": {
+    "loading": "Загрузка предпросмотра..."
+  },
+  "imageGallery": {
+    "alt": {
+      "rotate": "Повернуть изображение",
+      "download": "Скачать изображение",
+      "close": "Закрыть галерею",
+      "previous": "Предыдущее изображение",
+      "next": "Следующее изображение"
+    },
+    "downloadedImageName": "скачанное-изображение"
+  },
+  "createChannelModal": {
+    "title": "Создать новый канал",
+    "alt": {
+      "close": "Закрыть"
+    },
+    "nameLabel": "Название канала",
+    "namePlaceholder": "Введите название...",
+    "descriptionLabel": "Описание (необязательно)",
+    "descriptionPlaceholder": "Расскажите, о чем ваш канал...",
+    "createButton": "Создать канал",
+    "creatingButton": "Создание...",
+    "errorMessage": "Ошибка: {{message}}"
+  },
+  "channelDetailsModal": {
+    "title": "Детали канала",
+    "public": "публичным",
+    "private": "приватным",
+    "nameLabel": "Название:",
+    "descriptionLabel": "Описание:",
+    "subscribersLabel": "Подписчики:",
+    "ownerLabel": "Владелец:",
+    "publicToggleLabel": "Публичный канал:",
+    "deleteButton": "Удалить канал",
+    "alt": {
+      "close": "Закрыть",
+      "avatar": "Аватар канала"
+    },
+    "notifications": {
+      "privacySet": "Канал теперь {{status}}.",
+      "privacyError": "Не удалось обновить приватность канала: {{message}}",
+      "deletedSuccess": "Канал успешно удален!",
+      "deletedError": "Не удалось удалить канал: {{message}}"
+    },
+    "confirmDelete": {
+      "title": "Подтвердите удаление канала",
+      "message": "Вы уверены, что хотите удалить канал \"{{channelName}}\"? Это действие необратимо.",
+      "confirmText": "Удалить канал",
+      "cancelText": "Отмена"
+    }
+  },
+  "languageModal": {
+    "headerTitle": "Язык",
+    "interfaceLabel": "Язык интерфейса",
+    "alt": {
+      "back": "Назад",
+      "close": "Закрыть"
+    }
+  },
+  "userStats": {
+    "title": "Статистика пользователей",
+    "activeUsers": "Активные пользователи",
+    "newUsersToday": "Новые сегодня",
+    "inactiveUsers": "Неактивные пользователи",
+    "totalUsers": "Всего пользователей:"
+  },
+  "languageSwitcherAdmin": {
+    "title": "Язык интерфейса",
+    "alt": {
+      "en": "Английский",
+      "ua": "Украинский",
+      "ru": "Русский"
+    }
+  },
+  "feedbackFeed": {
+    "title": "Лента обратной связи",
+    "noFeedback": "Нет отзывов для отображения."
+  },
+  "complaintFeed": {
+    "title": "Лента жалоб",
+    "noComplaints": "Нет жалоб для отображения.",
+    "userLabel": "Пользователь:",
+    "messageLabel": "Сообщение:",
+    "complaintLabel": "Жалоба:",
+    "statusLabel": "Статус:",
+    "createdAtLabel": "Создано:",
+    "banUserButton": "Забанить пользователя",
+    "deleteMessageButton": "Удалить сообщение",
+    "banError": "Ошибка при блокировке пользователя:",
+    "deleteError": "Ошибка при удалении сообщения:",
+    "statuses": {
+      "NEW": "Новая",
+      "IN_PROGRESS": "В обработке",
+      "RESOLVED": "Решена",
+      "REJECTED": "Отклонена"
+    }
+  },
+  "chatWindow": {
+    "loadError": "Ошибка загрузки сообщений: {{message}}",
+    "selectChatPrompt": "Выберите чат, чтобы начать общение",
+    "subscribePrompt": "Вы не подписаны на этот канал. Подпишитесь, чтобы видеть сообщения и участвовать.",
+    "subscribeButton": "Подписаться",
+    "unsubscribeButton": "Отписаться"
+  },
+  "chatList": {
+    "findOrCreateError": "Ошибка при поиске или создании личного чата:",
+    "loadError": "Ошибка загрузки чатов.",
+    "searchError": "Ошибка во время поиска.",
+    "users": "Пользователи",
+    "channels": "Каналы",
+    "groups": "Группы",
+    "noUsersFound": "Пользователи не найдены.",
+    "noChannelsFound": "Каналы не найдены.",
+    "noGroupsFound": "Группы не найдены.",
+    "noChatsYet": "Чатов пока нет."
+  },
+  "search": {
+    "placeholder": "Поиск..."
+  },
+  "header_widget": {
+    "typingSubscriptionError": "Ошибка подписки на статус набора текста:",
+    "peopleTyping_one": "{{count}} человек печатает...",
+    "peopleTyping_few": "{{count}} человека печатают...",
+    "peopleTyping_many": "{{count}} человек печатают...",
+    "userTyping_one": "{{name}} печатает...",
+    "userTyping_other": "{{name}} печатают..."
+  },
+  "welcome_page": {
+    "slide1_title": "Добро пожаловать в BrainMessenger",
+    "slide1_description": "Ваша безопасная и приватная платформа для общения.",
+    "slide2_title": "Безопасно и приватно",
+    "slide2_description": "Ваши разговоры зашифрованы, и ваша конфиденциальность является нашим приоритетом.",
+    "slide3_title": "Групповые чаты и каналы",
+    "slide3_description": "Общайтесь с друзьями, семьей или сообществами через групповые чаты и публичные каналы.",
+    "slide4_title": "Расширенная безопасность",
+    "slide4_description": "Современные функции шифрования и безопасности для защиты ваших данных.",
+    "slide5_title": "Масштабируемость и надежность",
+    "slide5_description": "Создан для миллионов пользователей с высокой доступностью и производительностью.",
+    "loading_text": "Загрузка BrainMessenger...",
+    "burger_menu_alt": "Бургер меню",
+    "arrow_left_alt": "Предыдущий слайд",
+    "arrow_right_alt": "Следующий слайд",
+    "get_started_button": "Начать",
+    "logo_alt": "Логотип BrainMessenger",
+    "shield_alt": "Щит",
+    "group_alt": "Группа",
+    "castle_alt": "Замок",
+    "increase_alt": "Увеличение",
+    "next_button_alt": "Далее",
+    "back_button_alt": "Назад",
+    "already_have_account": "Уже есть аккаунт?",
+    "login_link": "Войти"
+  },
+  "files_page": {
+    "title": "Файлы",
+    "description": "Ваши файлы появятся здесь."
+  },
+  "admin_dashboard": {
+    "feedback_great_app": "Отличное приложение!",
+    "feedback_needs_features": "Нужны дополнительные функции.",
+    "complaint_toxic_content": "Токсичный контент",
+    "complaint_source_gmail": "Gmail",
+    "complaint_message_text_1": "Это пример токсичного контента.",
+    "complaint_spamming_users": "Спам пользователей",
+    "complaint_source_in_app": "В приложении",
+    "complaint_message_text_2": "Этот пользователь спамит меня сообщениями.",
+    "logo_alt": "Логотип BrainMessenger",
+    "error_title": "Ошибка",
+    "error_loading_data": "Не удалось загрузить данные панели управления.",
+    "user_stats_error": "Ошибка статистики пользователей:",
+    "complaints_error": "Ошибка жалоб:",
+    "search_placeholder": "Поиск...",
+    "toggle_focus_mode_alt": "Переключить режим фокусировки",
+    "toggle_roles_alt": "Переключить роли",
+    "toggle_theme_alt": "Переключить тему",
+    "toggle_language_alt": "Переключить язык",
+    "user_avatar_alt": "Аватар пользователя",
+    "welcome_message": "Добро пожаловать на панель администратора!",
+    "dashboard_title": "Панель администратора",
+    "handbook_title": "Руководство модератора",
+    "handbook_mission_tab": "Миссия",
+    "handbook_responsibilities_tab": "Обязанности",
+    "handbook_rules_tab": "Правила",
+    "handbook_accountability_tab": "Подотчетность",
+    "mission_section_title": "Наша миссия",
+    "mission_description": "Создать безопасное, уважительное и привлекательное сообщество для всех пользователей BrainMessenger.",
+    "core_principles_title": "Основные принципы:",
+    "fairness_principle": "Справедливость: Применяйте правила последовательно и беспристрастно.",
+    "accountability_principle": "Подотчетность: Несите ответственность за действия и решения.",
+    "empathy_principle": "Эмпатия: Понимайте и решайте проблемы пользователей с состраданием.",
+    "responsibilities_section_title": "Ключевые обязанности",
+    "responsibilities_description": "В качестве модератора ваши обязанности включают:",
+    "responsibility_monitor_channels": "Мониторинг каналов и чатов на предмет нарушений правил.",
+    "responsibility_respond_reports": "Оперативное реагирование на отчеты и жалобы пользователей.",
+    "responsibility_enforce_guidelines": "Применение правил сообщества и условий обслуживания.",
+    "responsibility_issue_bans": "Выдача предупреждений, временных или постоянных банов по мере необходимости.",
+    "responsibility_collaborate": "Сотрудничество с другими модераторами и администраторами.",
+    "rules_section_title": "Правила сообщества",
+    "rules_description": "Для обеспечения позитивной среды все пользователи должны соблюдать следующие правила:",
+    "rule_no_personal_attacks": "Без личных нападок или преследований.",
+    "rule_no_hate_speech": "Без разжигания ненависти или дискриминации.",
+    "rule_no_spamming": "Без спама или чрезмерной саморекламы.",
+    "rule_no_illegal_content": "Без незаконного или запрещенного контента.",
+    "rule_respect_privacy": "Уважайте конфиденциальность других.",
+    "accountability_section_title": "Подотчетность",
+    "accountability_description": "Модераторы придерживаются высоких стандартов поведения:",
+    "accountability_transparent": "Будьте прозрачны в действиях по модерации, где это уместно.",
+    "accountability_consistent": "Обеспечьте последовательное применение правил.",
+    "accountability_documented": "Документируйте все значимые решения по модерации.",
+    "accountability_reviewable": "Действия подлежат проверке администраторами.",
+    "complaint_feed_title": "Лента жалоб",
+    "no_complaints_yet": "Пока нет жалоб.",
+    "complaint_against": "Жалоба на:",
+    "not_available_short": "Н/Д",
+    "reason_label": "Причина:",
+    "associated_message_label": "Связанное сообщение:",
+    "ban_user_button": "Заблокировать пользователя",
+    "delete_message_button": "Удалить сообщение",
+    "feedback_feed_title": "Лента отзывов",
+    "no_feedback_yet": "Пока нет отзывов.",
+    "user_statistics_title": "Статистика пользователей",
+    "active_users_label": "Активные пользователи:",
+    "new_users_today_label": "Новые пользователи сегодня:",
+    "total_users_label": "Всего пользователей:",
+    "online_status": "онлайн",
+    "last_seen_prefix": "был(а) в сети",
+    "offline_status": "оффлайн",
+    "members_count": "{{count}} участников",
+    "chat_title": "Чат",
+    "typing_status_multiple": "{{count}} человек печатают...",
+    "typing_status_single": "{{name}} печатает...",
+    "search_placeholder_header": "Поиск",
+    "settings_button": "Настройки",
+    "fresh_channel_button": "Новый канал",
+    "fresh_group_button": "Новая группа",
+    "night_mode_button": "Ночной режим",
+    "notifications_button": "Уведомления",
+    "support_button": "Поддержка"
+  },
+  "chat_page": {
+    "burger_menu_alt": "Бургер меню",
+    "search_placeholder": "Поиск чатов или пользователей...",
+    "welcome_message": "Выберите чат, чтобы начать общение!",
+    "context_menu_delete_history": "Удалить историю чата",
+    "context_menu_delete_user_chat": "Удалить пользователя и чат",
+    "confirm_delete_history_title": "Подтвердить удаление",
+    "confirm_delete_history_message": "Вы уверены, что хотите удалить историю этого чата? Это действие нельзя отменить.",
+    "confirm_delete_history_button": "Удалить историю",
+    "cancel_button": "Отмена",
+    "confirm_delete_user_chat_title": "Подтвердить удаление",
+    "confirm_delete_user_chat_message": "Вы уверены, что хотите удалить этого пользователя и всю связанную историю чата? Это действие нельзя отменить.",
+    "confirm_delete_user_chat_button": "Удалить пользователя и чат",
+    "error_loading_chats": "Ошибка загрузки чатов",
+    "error_searching": "Ошибка поиска",
+    "users_label": "Пользователи",
+    "chats_label": "Чаты",
+    "online_status": "онлайн",
+    "last_seen_prefix": "был(а) в сети",
+    "offline_status": "оффлайн",
+    "members_count": "{{count}} участников",
+    "chat_title": "Чат",
+    "error_loading_messages": "Ошибка загрузки сообщений"
+  },
+  "login_page": {
+    "burger_menu_alt": "Бургер меню",
+    "logo_alt": "Логотип BrainMessenger",
+    "title": "Войти в BrainMessenger",
+    "email_label": "Электронная почта",
+    "password_label": "Пароль",
+    "email_required": "Электронная почта обязательна",
+    "password_required": "Пароль обязателен",
+    "logging_in": "Вход...",
+    "login_button": "Войти",
+    "failed_prefix": "Ошибка входа",
+    "no_account_prompt": "Нет аккаунта?",
+    "register_link": "Зарегистрироваться",
+    "resend_email_failed": "Не удалось повторно отправить письмо с подтверждением.",
+    "verification_error": "Неверный код подтверждения или адрес электронной почты."
+  },
+  "verification": {
+    "title": "Подтверждение электронной почты",
+    "prompt": "Пожалуйста, введите 8-значный код, отправленный на {{email}}, чтобы подтвердить свою учетную запись.",
+    "placeholder": "Введите код",
+    "verifying": "Проверка...",
+    "verify_button": "Подтвердить",
+    "sending": "Отправка...",
+    "resend_button": "Отправить код повторно",
+    "sent_success": "Код подтверждения успешно отправлен!"
+  },
+  "register_page": {
+    "resend_code_unavailable": "Невозможно повторно отправить код: электронная почта недоступна.",
+    "code_resent_success": "Код подтверждения отправлен повторно. Пожалуйста, проверьте свою электронную почту.",
+    "resend_code_failed_generic": "Не удалось повторно отправить код подтверждения.",
+    "resend_code_failed_with_error": "Не удалось повторно отправить код подтверждения: {{error}}",
+    "registration_success": "Регистрация успешна:",
+    "registration_error": "Ошибка регистрации:",
+    "enter_complete_code": "Пожалуйста, введите полный 8-значный код.",
+    "verification_failed_generic": "Проверка не удалась: неверный код или проверка вернула false.",
+    "verification_error_prefix": "Проверка не удалась:",
+    "resend_error_prefix": "Повторная отправка не удалась:",
+    "verification_success_redirect": "Проверка успешна! Перенаправление в чат...",
+    "sending_button": "Отправка...",
+    "get_code_again_button": "Получить код снова",
+    "already_have_account": "Уже есть аккаунт?",
+    "login_link": "Войти",
+    "step_prefix": "Шаг",
+    "create_password_placeholder": "Пароль",
+    "input_field_empty": "Поле ввода пустое",
+    "password_too_short": "Пароль слишком короткий",
+    "password_too_long": "Пароль слишком длинный",
+    "password_requirements": "Пароль должен содержать заглавную букву и специальный символ",
+    "your_name_placeholder": "Ваше имя",
+    "name_too_short": "Имя слишком короткое",
+    "name_too_long": "Имя слишком длинное",
+    "username_placeholder": "Имя пользователя",
+    "username_too_short": "Имя пользователя слишком короткое",
+    "username_too_long": "Имя пользователя слишком длинное",
+    "email_placeholder": "Электронная почта",
+    "invalid_email_format": "Неверный формат электронной почты",
+    "verifying_button": "Проверка...",
+    "confirm_button": "Подтвердить",
+    "welcome_prompt": "Добро пожаловать, {{email}}! Чтобы завершить процесс регистрации, пожалуйста, введите код, который мы отправили вам по электронной почте.",
+    "next_button_alt": "Далее",
+    "back_button_alt": "Назад"
+  }
+}

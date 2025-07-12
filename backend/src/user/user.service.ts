@@ -17,6 +17,9 @@ import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { addHours } from 'date-fns';
+import { User, UserRole } from '@prisma/client'; // Import User and UserRole
+import { UserStats } from './dto/user-stats.dto';
+import { BanUserInput } from './dto/ban-user.input';
 
 @Injectable()
 export class UserService {
@@ -48,7 +51,7 @@ export class UserService {
         bio: true,
         username: true,
         lastActiveAt: true, // Include lastActiveAt
-        roles: true, // Include roles
+        role: true, // Include role
       },
     });
     // console.log(`UserService - findOne: Prisma returned user for ID ${id}:`, JSON.stringify(user, null, 2)); // Removed excessive log
@@ -90,7 +93,7 @@ export class UserService {
         bio: true,
         username: true,
         lastActiveAt: true, // Include lastActiveAt
-        roles: true, // Include roles
+        role: true, // Include role
       },
     });
     return users;
@@ -186,7 +189,7 @@ export class UserService {
          avatarUrl: true,
          bio: true,
          username: true,
-         roles: true, // Include roles
+         role: true, // Include role
          // lastActiveAt: true, // Include lastActiveAt - not needed for update return type
        },
      });
@@ -221,7 +224,7 @@ export class UserService {
          bio: true,
          username: true,
          lastActiveAt: true,
-         roles: true, // Include roles
+         role: true, // Include role
        },
      });
      // this.logger.log(`updateLastActive: User ${userId} last active timestamp updated successfully.`); // Removed excessive log
@@ -342,7 +345,7 @@ export class UserService {
         avatarUrl: user.avatarUrl,
         bio: user.bio,
         username: user.username,
-        roles: user.roles,
+        role: user.role,
       },
     };
   }
@@ -377,7 +380,7 @@ export class UserService {
         bio: true,
         username: true,
         lastActiveAt: true, // Include lastActiveAt
-        roles: true, // Include roles
+        role: true, // Include role
       },
     });
     return users;
@@ -462,7 +465,7 @@ export class UserService {
           avatarUrl: true,
           bio: true,
           username: true,
-          roles: true, // Include roles
+          role: true, // Include role
         },
       });
       // console.log(`UserService - uploadAvatar: prisma.user.update successful for user ${userId}.`); // Removed excessive log
@@ -572,10 +575,102 @@ export class UserService {
         avatarUrl: true,
         bio: true,
         username: true,
-        roles: true, // Include roles
+        role: true, // Include role
       },
     });
     // this.logger.log(`verifyEmail: User ${userId} successfully verified.`); // Removed excessive log
     return updatedUser;
+  }
+  async assignRole(userId: string, role: UserRole): Promise<UserDto> {
+    const user = await this.prisma.user.update({
+      where: { id: userId },
+      data: { role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        username: true,
+        isVerified: true,
+        twoFactorEnabled: true,
+        twoFactorMethod: true,
+        recoveryEmail: true,
+        avatarUrl: true,
+        bio: true,
+        lastActiveAt: true,
+        role: true,
+      },
+    });
+    return user;
+  }
+
+  async getUserStats(): Promise<UserStats> {
+    const totalUsers = await this.prisma.user.count();
+
+    const now = new Date();
+    const twentySecondsAgo = new Date(now.getTime() - 20 * 1000); // Users active in the last 20 seconds
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    const activeUsers = await this.prisma.user.count({
+      where: {
+        lastActiveAt: {
+          gte: twentySecondsAgo,
+        },
+      },
+    });
+
+    const newUsersToday = await this.prisma.user.count({
+      where: {
+        createdAt: {
+          gte: startOfToday,
+        },
+      },
+    });
+
+    return {
+      totalUsers,
+      activeUsers,
+      newUsersToday,
+    };
+  }
+
+  async banUser(banUserInput: BanUserInput): Promise<User> {
+    const { userId, reason, bannedUntil } = banUserInput;
+    this.logger.log(`banUser: Attempting to ban user ID: ${userId} until ${bannedUntil} for reason: ${reason}`);
+
+    try {
+      const user = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isBanned: true,
+          bannedUntil: bannedUntil || null, // Set to null if no specific end date
+          banReason: reason,
+        },
+      });
+      this.logger.log(`banUser: User ${userId} successfully banned.`);
+      return user;
+    } catch (error) {
+      this.logger.error(`banUser: Error banning user ${userId}:`, error.stack);
+      throw new InternalServerErrorException(`Failed to ban user with ID ${userId}.`);
+    }
+  }
+
+  async unbanUser(userId: string): Promise<User> {
+    this.logger.log(`unbanUser: Attempting to unban user ID: ${userId}`);
+
+    try {
+      const user = await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          isBanned: false,
+          bannedUntil: null,
+          banReason: null,
+        },
+      });
+      this.logger.log(`unbanUser: User ${userId} successfully unbanned.`);
+      return user;
+    } catch (error) {
+      this.logger.error(`unbanUser: Error unbanning user ${userId}:`, error.stack);
+      throw new InternalServerErrorException(`Failed to unban user with ID ${userId}.`);
+    }
   }
 }

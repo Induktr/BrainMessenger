@@ -54,14 +54,35 @@ export class MessageService {
     }
   }
 
-  async deleteMessage(id: string): Promise<void> {
+  async softDeleteMessage(messageId: string): Promise<any> {
     try {
-      await this.prisma.message.delete({ where: { id } });
+      const message = await this.prisma.message.update({
+        where: { id: messageId },
+        data: { isDeleted: true },
+      });
+      this.logger.log(`softDeleteMessage: Message ${messageId} soft-deleted successfully.`);
+      return message;
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
-        this.logger.warn(`Message with ID ${id} not found for deletion.`);
+        this.logger.warn(`softDeleteMessage: Message with ID ${messageId} not found for soft deletion.`);
+        return null;
+      }
+      this.logger.error(`softDeleteMessage: Error soft-deleting message ${messageId}:`, error.stack);
+      throw error;
+    }
+  }
+
+  // This method will now perform a hard delete, primarily for admin tools or cleanup
+  async hardDeleteMessage(id: string): Promise<void> {
+    try {
+      await this.prisma.message.delete({ where: { id } });
+      this.logger.log(`hardDeleteMessage: Message ${id} hard-deleted successfully.`);
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2025') {
+        this.logger.warn(`hardDeleteMessage: Message with ID ${id} not found for hard deletion.`);
         return;
       }
+      this.logger.error(`hardDeleteMessage: Error hard-deleting message ${id}:`, error.stack);
       throw error; // Re-throw other errors
     }
   }
@@ -108,7 +129,10 @@ export class MessageService {
 
   async getMessagesByChatId(chatId: string, limit?: number, offset?: number) {
     return this.prisma.message.findMany({
-      where: { chatId },
+      where: {
+        chatId,
+        isDeleted: false, // Only retrieve messages that are not soft-deleted
+      },
       take: limit,
       skip: offset,
       include: { sender: true, attachments: true, reactions: true }, // Include sender, attachments, and reactions

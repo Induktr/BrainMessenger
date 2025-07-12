@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import Input from '@/shared/ui/Input/Input';
 
 interface SearchWidgetProps {
@@ -12,13 +13,14 @@ interface SearchWidgetProps {
 const SearchWidget: React.FC<SearchWidgetProps> = ({
   searchQuery,
   setSearchQuery,
-  placeholder = 'Search...',
+  placeholder,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="search-input-container">
       <Input
         type="text"
-        placeholder={placeholder}
+        placeholder={placeholder || t('search.placeholder')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className="search-input"

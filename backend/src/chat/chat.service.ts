@@ -20,7 +20,7 @@ const userSelect = {
   recoveryEmail: true,
   avatarUrl: true,
   bio: true,
-  roles: true,
+  role: true,
   lastActiveAt: true,
 };
 
