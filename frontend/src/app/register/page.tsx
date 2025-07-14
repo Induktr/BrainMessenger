@@ -446,8 +446,8 @@ const RegisterPage = () => {
 
         <Button
           type="button"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2 mt-4" // Added mt-4 for margin-top
-          onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'} // TODO: Use config service for backend URL
+          className="sign-with-google-button" // Added mt-4 for margin-top
+          onClick={() => window.location.href = 'http://localhost:4000/auth/google'} // Removed /api/ prefix
         >
           <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
           <span>{t('register_page.sign_up_with_google')}</span>

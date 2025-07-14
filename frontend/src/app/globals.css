@@ -1573,3 +1573,24 @@ html {
   margin-top: 0.25rem;
   padding-left: 0.25rem;
 }
+
+.sign-with-google-button {
+  display: flex;
+  gap: 20px;
+  cursor: pointer;
+  color: var(--text-color);
+  background-color: var(--light-dark-background);
+  border: var(--border-color);
+  height: 70px;
+  width: 220px;
+  padding: 1rem;
+  font-size: 16px;
+  align-items: center;
+  border-radius: 10px;
+  transition: 0.1s ease-in-out;
+}
+
+.sign-with-google-button:hover {
+  background-color: var(--even-lighter-dark-background);
+  transition: 0.1s ease-in-out;
+}

@@ -87,9 +87,22 @@ const ChatPage = () => {
     );
   }
 
+  useEffect(() => {
+    if (!currentUser && !authLoading && !isInitializing) {
+      router.push('/');
+    }
+  }, [currentUser, authLoading, isInitializing, router]);
+
+  if (authLoading || isInitializing) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
+        <Spinner className="spinner-logo-container"/>
+      </div>
+    );
+  }
+
   if (!currentUser) {
-    router.push('/');
-    return null;
+    return null; // Return null while redirecting
   }
 
   const handleSelectChat = (chatId: string, chatType: 'PRIVATE' | 'GROUP' | 'CHANNEL', chatName: string) => {

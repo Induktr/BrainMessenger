@@ -381,7 +381,7 @@ export class AuthService {
             email,
             name: displayName || '', // Provide empty string if null
             avatarUrl: avatarUrl || '', // Provide empty string if null
-            isVerified: true, // Google аутентификация подразумевает верификацию email
+            isVerified: false, // Google аутентификация теперь требует дополнительной верификации email
             role: 'USER', // Дефолтная роль
             // Пароль не требуется для OAuth пользователей, но Prisma schema может требовать.
             // Если password в schema.prisma не nullable, нужно будет сгенерировать заглушку или изменить схему.

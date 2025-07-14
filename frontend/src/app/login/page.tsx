@@ -186,8 +186,8 @@ const LoginPage = () => {
           </form>
           <Button
             type="button"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
-            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'} // TODO: Use config service for backend URL
+            className="sign-with-google-button"
+            onClick={() => window.location.href = 'http://localhost:4000/auth/google'} // Removed /api/ prefix
           >
             <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
             <span>{t('login_page.sign_in_with_google')}</span>

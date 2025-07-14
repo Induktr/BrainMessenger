@@ -8,7 +8,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(private authService: AuthService) {
     const clientID = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const callbackURL = process.env.GOOGLE_CALLBACK_URL_LOCAL || process.env.GOOGLE_CALLBACK_URL_PROD
+    const callbackURL = "http://localhost:4000/auth/google/callback"
+
+    if (callbackURL !== "http://localhost:4000/auth/google/callback") {
+      callbackURL === "https://brainmessenger.onrender.com/api/auth/google/callback"
+    } else {
+      console.log(`[GoogleStrategy]: Error endpoint prod/local current URL: ${callbackURL}`)
+    }
 
     if (!clientID || !clientSecret) {
       throw new Error('Google Client ID and Client Secret must be defined in environment variables.');

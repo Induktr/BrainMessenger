@@ -21,8 +21,11 @@ export class AuthController {
     const user = req.user;
     const { access_token, refresh_token } = await this.authService.login(user);
 
-    // Перенаправляем пользователя на фронтенд с токенами
+    // Сериализуем объект пользователя и URL-кодируем его
+    const userDataString = encodeURIComponent(JSON.stringify(user));
+
+    // Перенаправляем пользователя на фронтенд с токенами и данными пользователя
     // TODO: Использовать конфигурацию для URL фронтенда
-    res.redirect(`http://localhost:3000/auth/success?access_token=${access_token}&refresh_token=${refresh_token}`);
+    res.redirect(`http://localhost:3000/auth/success?access_token=${access_token}&refresh_token=${refresh_token}&user=${userDataString}`);
   }
 }
