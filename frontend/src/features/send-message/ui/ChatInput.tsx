@@ -11,6 +11,7 @@ import { ICONS } from '@/shared/assets/Icons/icons'; // Import icons
 import AttachmentPreview from '@/shared/ui/AttachmentPreview/AttachmentPreview'; // Import the new AttachmentPreview component
 import { isCodeSnippet } from '@/features/code-detector/model/codeDetector';
 import { ChatInputProps } from '@/features/send-message/model/send-message.types';
+import { useTranslation } from 'react-i18next';
 
 const ChatInput: React.FC<ChatInputProps> = ({
   chatId,
@@ -23,6 +24,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   onSubscribe,
   onUnsubscribe,
 }) => {
+  const { t } = useTranslation();
   const [messageContent, setMessageContent] = useState('');
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -147,7 +149,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       {isDragging && (
         <div className="drag-drop-overlay">
           <Image src={ICONS.uploadImage} alt="Upload File" width={64} height={64} />
-          <span>Release to upload</span>
+          <span>{t('chat_input.release_to_upload')}</span>
         </div>
       )}
       {attachedFiles.length > 0 && (
@@ -160,11 +162,11 @@ const ChatInput: React.FC<ChatInputProps> = ({
         {isChannel && !isChannelOwner ? (
           isSubscribedToChannel ? (
             <Button className="unsubscribe-button" onClick={onUnsubscribe}>
-              Unsubscribe
+              {t('chat_input.unsubscribe')}
             </Button>
           ) : (
             <Button className="subscribe-button" onClick={onSubscribe}>
-              Subscribe
+              {t('chat_input.subscribe')}
             </Button>
           )
         ) : (
@@ -187,7 +189,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             />
             <Input
               type="text"
-              placeholder="Enter message..."
+              placeholder={t('chat_input.placeholder')}
               value={messageContent}
               onChange={onInputChange}
               onKeyPress={handleKeyPress}
@@ -201,14 +203,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
             >
               <Image
                 src={editingMessage ? ICONS.checkmark : ICONS.sendButton}
-                alt={editingMessage ? 'Confirm Edit' : 'Send'}
+                alt={editingMessage ? t('chat_input.confirm_edit') : t('chat_input.send')}
                 width={24}
                 height={24}
               />
             </Button>
           </>
         )}
-        {error && <p>Error sending message: {error.message}</p>}
+        {error && <p>{t('chat_input.error')}</p>}
       </div>
     </div>
   );

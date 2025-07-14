@@ -7,12 +7,15 @@ import Button from '@/shared/ui/Button/Button';
 import { LanguageProps } from '@/features/change-language/model/change-language.types';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../../i18n'; // Adjust path as needed
+import { useLanguage } from '@/app/providers/LanguageProvider/LanguageСontext';
 
 const Language: React.FC<LanguageProps> = ({ isOpen, onClose, onBack }) => {
   const { t } = useTranslation();
+  const { toggleLanguage } = useLanguage();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    toggleLanguage();
   };
 
   return (

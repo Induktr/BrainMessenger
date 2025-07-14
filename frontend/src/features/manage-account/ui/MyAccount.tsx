@@ -16,7 +16,7 @@ import { MyAccountProps } from '@/features/manage-account/model/manage-account.t
 import { useTranslation } from 'react-i18next';
 
 const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
-  const { t } = useTranslation('myAccount');
+  const { t } = useTranslation();
   const { user, queryLoading, refetchUser, setUserState, logout } = useAuth();
   const [uploadAvatarMutation, { loading: uploading, error: uploadError }] = useMutation(UPLOAD_AVATAR);
   const [updateUserProfileMutation, { loading: isUpdatingProfile, error: updateProfileError }] = useMutation(UPDATE_USER_PROFILE);
@@ -306,7 +306,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
             <Button className="myaccount-back-button" onClick={onBack}>
               <Image width={24} height={24} src={ICONS.arrowLeft} alt={t('myAccount.alt.back')} className="icon" />
             </Button>
-            <h2 className="myaccount-header-title">{t('myAccount.headerTitle')}</h2>
+            <h2 className="myaccount-header-title">{t('myAccount.userLabel.headerTitle')}</h2>
             <Button className="myaccount-close-button" onClick={onClose}>
               <Image width={24} height={24} src={ICONS.closeModal} alt={t('myAccount.alt.close')} className="icon" />
             </Button>
@@ -351,7 +351,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
             <Button className="myaccount-back-button" onClick={onBack}>
               <Image width={24} height={24} src={ICONS.arrowLeft} alt={t('myAccount.alt.back')} className="icon" />
             </Button>
-            <h2 className="myaccount-header-title">{t('myAccount.headerTitle')}</h2>
+            <h2 className="myaccount-header-title">{t('myAccount.userLabel.headerTitle')}</h2>
             <Button className="myaccount-close-button" onClick={onClose}>
               <Image width={24} height={24} src={ICONS.closeModal} alt={t('myAccount.alt.close')} className="icon" />
             </Button>
@@ -372,7 +372,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   <>
                     <span className="myaccount-avatar-letter">{avatarData.letter}</span>
                     <div className="myaccount-avatar-overlay">
-                      <span className="myaccount-avatar-upload-text">{t('myAccount.uploadPhoto')}</span>
+                      <span className="myaccount-avatar-upload-text">{t('myAccount.userLabel.uploadPhoto')}</span>
                     </div>
                   </>
                 )}
@@ -391,7 +391,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                     style={{ padding: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                   >
                     <Image width={24} height={24} className="myaccount-dropdown-icon" alt={t('myAccount.alt.uploadAvatar')} src={ICONS.uploadImage}></Image>
-                    Upload Avatar
+                    {t('myAccount.userLabel.uploadPhoto')}
                   </div>
                   {/* Logout Option */}
                   <div
@@ -403,7 +403,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                     style={{ padding: '10px', cursor: 'pointer' }}
                   >
                     <Image width={24} height={24} className="myaccount-dropdown-icon" alt={t('myAccount.alt.logout')} src={ICONS.logout}></Image>
-                    Logout
+                    {t('myAccount.userLabel.logout')}
                   </div>
                 </div>
               )}
@@ -417,16 +417,16 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
               onChange={handleFileChange}
             />
             {/* Upload status indicators */}
-            {uploading && <p className="myaccount-upload-status">{t('uploading')}</p>}
+            {uploading && <p className="myaccount-upload-status">{t('myAccount.userLabel.uploading')}</p>}
             {uploadError && (
               <p className="myaccount-upload-error">
-                {t('uploadFailed', { message: uploadError.message })}
+                {t('myAccount.userLabel.uploadFailed', { message: uploadError.message })}
               </p>
             )}
             <div className="myaccount-name-status">
               <h2 className="myaccount-user-name">{user.name || t('guest')}</h2>
               <p className={`myaccount-user-status ${user.status === 'online' ? 'online' : 'offline'}`}>
-                {user.status === 'online' ? t('status.online') : t('status.offline')}
+                {user.status === 'online' ? t('myAccount.status.online') : t('myAccount.status.offline')}
               </p>
             </div>
             {/* Replace placeholder p with textarea for biography */}
@@ -434,7 +434,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
               className="myaccount-bio-textarea"
               value={biography}
               onChange={(e) => setBiography(e.target.value)}
-              placeholder={t('bioPlaceholder')}
+              placeholder={t('myAccount.userLabel.bioPlaceholder')}
               rows={4}
             />
           </div>
@@ -446,25 +446,25 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
           <div className="myaccount-detailed-info">
             <div className="myaccount-name-username-group">
               <div className="myaccount-info-item" onClick={() => handleEditClick('name')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.account} alt={t('alt.account')} /></div>
+                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.account} alt={t('myAccount.alt.account')} /></div>
                 <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">{t('labels.name')}</p>
-                  <p className="myaccount-info-value">{user.name || t('notAvailable')}</p>
+                  <p className="myaccount-info-label">{t('myAccount.labels.name')}</p>
+                  <p className="myaccount-info-value">{user.name || t('myAccount.notAvailable')}</p>
                 </div>
               </div>
               <div className="myaccount-info-item" onClick={() => handleEditClick('username')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.usernameDog} alt={t('alt.username')} /></div>
+                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.usernameDog} alt={t('myAccount.alt.username')} /></div>
                 <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">{t('labels.username')}</p>
-                  <p className="myaccount-info-value myaccount-info-value-green">@{user.username || t('notAvailable')}</p>
+                  <p className="myaccount-info-label">{t('myAccount.labels.username')}</p>
+                  <p className="myaccount-info-value myaccount-info-value-green">@{user.username || t('myAccount.notAvailable')}</p>
                 </div>
               </div>
             </div>
             <div className="myaccount-info-item myaccount-info-item-centered" onClick={() => handleEditClick('email')} style={{ cursor: 'pointer' }}>
-              <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.mail} alt={t('alt.email')} /></div>
+              <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.mail} alt={t('myAccount.alt.email')} /></div>
               <div className="myaccount-info-text">
-                <p className="myaccount-info-label">{t('labels.email')}</p>
-                <p className="myaccount-info-value">{user.email || t('notAvailable')}</p>
+                <p className="myaccount-info-label">{t('myAccount.labels.email')}</p>
+                <p className="myaccount-info-value">{user.email || t('myAccount.notAvailable')}</p>
               </div>
             </div>
           </div>
@@ -475,7 +475,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       {editModalOpen && (
         <Modal onClose={handleEditModalClose} isOpen={editModalOpen}>
           <div className="edit-modal-content">
-            <h3>{t('editModal.title', { field: editingField })}</h3>
+            <h3>{t('myAccount.editModal.title', { field: editingField })}</h3>
             <input
               type={editingField === 'email' ? 'email' : 'text'}
               value={editValue}
@@ -484,19 +484,19 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
             />
             {editingField === 'email' && (
               <div className="email-verification-section">
-                <p>{t('editModal.statusLabel')} {user.isVerified ? t('editModal.verified') : t('editModal.notVerified')}</p>
+                <p>{t('myAccount.editModal.statusLabel')} {user.isVerified ? t('myAccount.editModal.verified') : t('myAccount.editModal.notVerified')}</p>
                 {!user.isVerified && (
                   <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-                    {isResendingCode ? t('editModal.sending') : t('editModal.resendButton')}
+                    {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.editModal.resendButton')}
                   </Button>
                 )}
-                {resendSuccess && <p className="success-message">Verification email sent!</p>}
+                {resendSuccess && <p className="success-message">{t('myAccount.verifyModal.resendSuccess')}</p>}
 
                 {editError && <p className="error-message">{editError}</p>} {/* Display editError here */}
               </div>
             )}
-            <Button onClick={handleSaveEdit}>{t('buttons.save')}</Button>
-            <Button onClick={handleEditModalClose}>{t('buttons.cancel')}</Button>
+            <Button onClick={handleSaveEdit}>{t('myAccount.buttons.save')}</Button>
+            <Button onClick={handleEditModalClose}>{t('myAccount.buttons.cancel')}</Button>
           </div>
         </Modal>
       )}
@@ -505,21 +505,21 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       {emailVerificationModalOpen && (
         <Modal onClose={handleEmailVerificationModalClose} isOpen={emailVerificationModalOpen}>
           <div className="verification-modal-content">
-            <h3>{t('verifyModal.title')}</h3>
-            <p>{t('verifyModal.instruction', { email: user.email })}</p>
+            <h3>{t('myAccount.verifyModal.title')}</h3>
+            <p>{t('myAccount.verifyModal.instruction', { email: user.email })}</p>
             <input
               type="text"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder={t('bioPlaceholder')}
+              placeholder={t('myAccount.editModal.placeholder')}
               className="verification-modal-input"
             />
             {verificationError && <p className="error-message">{verificationError}</p>}
-            <Button onClick={handleVerifyEmail}>{t('buttons.verify')}</Button>
+            <Button onClick={handleVerifyEmail}>{t('myAccount.buttons.verify')}</Button>
             <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-              {isResendingCode ? t('editModal.sending') : t('verifyModal.resendButton')}
+              {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.verifyModal.resendButton')}
             </Button>
-            {resendSuccess && <p className="success-message">Verification email sent!</p>}
+            {resendSuccess && <p className="success-message">{t('myAccount.editModal.resendSuccess')}</p>}
           </div>
         </Modal>
       )}
@@ -637,13 +637,13 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   console.error('Error cropping or uploading avatar:', error);
                   // Handle error, maybe show a message to the user
                 }
-              }}>Save</Button>
+              }}>{t('myAccount.buttons.save')}</Button>
               <Button onClick={() => {
                 setCropModalOpen(false);
                 setImageSrc(null); // Clear the image source when cancelling
                 setCrop(undefined); // Reset crop state
                 setCompletedCrop(undefined); // Reset completed crop state
-              }}>Cancel</Button>
+              }}>{t('myAccount.buttons.cancel')}</Button>
             </div>
           </div>
         </Modal>

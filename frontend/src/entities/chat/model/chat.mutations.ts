@@ -13,7 +13,7 @@ export const CREATE_CHAT = gql`
         username
         status
         bio
-        roles
+        role
       }
     }
   }
@@ -32,7 +32,7 @@ export const FIND_OR_CREATE_PRIVATE_CHAT = gql`
         username
         status
         bio
-        roles
+        role
       }
     }
   }

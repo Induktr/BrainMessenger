@@ -7,13 +7,15 @@ import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now
 import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image';
 import Language from '@/features/change-language/ui/Language';
-import Support from '@/features/manage-settings/ui/Support'
-import { SmallSettingsProps } from '@/features/manage-settings/model/settings.types'
+import Support from '@/features/manage-settings/ui/Support';
+import { SmallSettingsProps } from '@/features/manage-settings/model/settings.types';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/app/providers/ThemeProvider/ThemeContext';
 
 const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
   const [currentView, setCurrentView] = useState('smallSettings');
   // 'smallSettings', 'support', 'language'
-
+  const { t } = useTranslation();
   // Reset view when modal is closed
   useEffect(() => {
     if (!isOpen) {
@@ -34,9 +36,12 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
     setCurrentView('language');
   };
 
-  const handleThemeChange = (theme: 'dark' | 'light') => {
-    // Placeholder for theme change logic
-    console.log(`Theme set to: ${theme}`);
+  const { theme, toggleTheme } = useTheme();
+
+  const handleThemeChange = (selectedTheme: 'dark' | 'light') => {
+    if (theme !== selectedTheme) {
+      toggleTheme();
+    }
   };
 
   const handleBackToSettings = () => {
@@ -55,7 +60,7 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
         <div className="settings-small-modal-content">
           {/* Settings Header */}
           <div className="settings-small-header">
-            <h2 className="settings-small-title">Settings</h2>
+            <h2 className="settings-small-title">{t('smallSettings.headerTitle')}</h2>
             <Button className="settings-small-close-button" onClick={handleCloseModal}>
               <img src={ICONS.closeModal} alt="Close" className="icon" />
             </Button>
@@ -65,13 +70,19 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
           <div className="settings-small-options-list">
             {/* Theme Setting */}
             <div className="settings-option-item theme-option">
-              <label className="settings-option-label">Theme</label>
+              <label className="settings-option-label">{t('smallSettings.theme.headerTitle')}</label>
               <div className="theme-buttons-container">
-                <button className="theme-button dark-mode" onClick={() => handleThemeChange('dark')}>
-                  Dark Mode
+                <button
+                  className={`theme-button ${theme === 'dark' ? 'dark-mode active' : 'dark-mode'}`}
+                  onClick={() => handleThemeChange('dark')}
+                >
+                  {t('smallSettings.theme.dark')}
                 </button>
-                <button className="theme-button light-mode" onClick={() => handleThemeChange('light')}>
-                  Light Mode
+                <button
+                  className={`theme-button ${theme === 'light' ? 'light-mode active' : 'light-mode'}`}
+                  onClick={() => handleThemeChange('light')}
+                >
+                  {t('smallSettings.theme.light')}
                 </button>
               </div>
             </div>
@@ -80,21 +91,21 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
             <div className="settings-option-item">
                 <div className="settings-option-item-row">
                 <button className="settings-action-button" onClick={handleLanguageClick}>
-                    Language
+                    {t('smallSettings.language')}
                 </button>
                 <button className="settings-action-button" onClick={handleSupportClick}>
-                    Support
+                    {t('smallSettings.support')}
                 </button>
                 </div>
             </div>
             <div className="support-description">
-                <p>Have questions? Contact our support team.</p>
+                <p>{t('smallSettings.descriptionFaq')}</p>
             </div>
           </div>
         </div>
       )}
       {currentView === 'support' && (
-        <Support onBack={handleBackToSettings} onClose={handleCloseModal} />
+        <Support isOpen={true} onBack={handleBackToSettings} onClose={handleCloseModal} />
       )}
       {currentView === 'language' && (
         <div>

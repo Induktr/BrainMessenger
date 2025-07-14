@@ -72,24 +72,28 @@ const ChatListWidget: React.FC<ChatListWidgetProps> = ({ onSelectChat, activeCha
                 />
               ))}
               <h3>{t('chatList.groups')}</h3>
-              {searchData.globalSearch.groups.length === 0 && <p>{t('chatList.noGroupsFound')}</p>}
-              {searchData.globalSearch.groups.map((chat: Chat) => (
-                <ChatListItem
-                  key={chat.id}
-                  chat={chat}
-                  isActive={chat.id === activeChatId}
-                  onClick={() => onSelectChat(chat.id, chat.type, chat.name)}
-                />
+              {searchData.globalSearch.chats.filter((c: Chat) => c.type === 'GROUP').length === 0 && <p>{t('chatList.noGroupsFound')}</p>}
+              {searchData.globalSearch.chats
+                .filter((chat: Chat) => chat.type === 'GROUP')
+                .map((chat: Chat) => (
+                  <ChatListItem
+                    key={chat.id}
+                    chat={chat}
+                    isActive={chat.id === activeChatId}
+                    onClick={() => onSelectChat(chat.id, chat.type, chat.name)}
+                  />
               ))}
               <h3>{t('chatList.channels')}</h3>
-              {searchData.globalSearch.channels.length === 0 && <p>{t('chatList.noChannelsFound')}</p>}
-              {searchData.globalSearch.channels.map((chat: Chat) => (
-                <ChatListItem
-                  key={chat.id}
-                  chat={chat}
-                  isActive={chat.id === activeChatId}
-                  onClick={() => onSelectChat(chat.id, chat.type, chat.name)}
-                />
+              {searchData.globalSearch.chats.filter((c: Chat) => c.type === 'CHANNEL').length === 0 && <p>{t('chatList.noChannelsFound')}</p>}
+              {searchData.globalSearch.chats
+                .filter((chat: Chat) => chat.type === 'CHANNEL')
+                .map((chat: Chat) => (
+                  <ChatListItem
+                    key={chat.id}
+                    chat={chat}
+                    isActive={chat.id === activeChatId}
+                    onClick={() => onSelectChat(chat.id, chat.type, chat.name)}
+                  />
               ))}
             </div>
           ) : (

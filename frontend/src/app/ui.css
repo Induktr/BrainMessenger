@@ -132,7 +132,7 @@
 /* Styles for Settings Component */
 .settings-modal-content {
     padding: 0; /* Remove padding from the modal content wrapper */
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     width: 456px; /* Adjusted width based on Figma */
     border-radius: 8px; /* Rounded corners */
     overflow: hidden; /* Hide overflow */
@@ -141,7 +141,7 @@
 .settings-section {
     margin-bottom: 0;
     padding: 15px 20px;
-    border-bottom: 3px solid #96C93D; /* Darker separator line */
+    border-bottom: 3px solid var(--primary-gradient-to); /* Darker separator line */
 }
 
 .settings-option {
@@ -152,7 +152,7 @@
 }
 
 .settings-option:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .settings-option-icon {
@@ -165,12 +165,12 @@
 }
 
 .settings-option-icon svg {
-    fill: #f0f0f0;
+    fill: var(--text-color);
 }
 
 .settings-option-text {
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
     text-align: start;
     flex-grow: 1; /* Allow text to take available space */
 }
@@ -190,13 +190,13 @@
 .settings-header h2 {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .settings-close-button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
 }
@@ -243,8 +243,8 @@
 /* Styles for SidebarMenu Component */
 .sidebar-menu-container {
     width: 350px; /* Adjusted width based on common sidebar designs */
-    background-color: #2B2B2B; /* Dark background color from Figma */
-    color: #f0f0f0; /* Light text color */
+    background-color: var(--light-dark-background); /* Dark background color from Figma */
+    color: var(--text-color); /* Light text color */
     padding: 15px; /* Adjusted padding */
     height: 100%;
     box-sizing: border-box;
@@ -263,7 +263,7 @@
     align-items: center; /* Align items to the center */
     margin-bottom: 20px; /* Adjusted margin */
     padding-bottom: 20px; /* Add padding at the bottom */
-    border-bottom: 3px solid #96C93D; /* Separator line */
+    border-bottom: 3px solid var(--primary-gradient-to); /* Separator line */
 }
 
 .sidebar-avatar {
@@ -285,13 +285,13 @@
 .sidebar-user-info h2 {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     font-weight: 500; /* Adjusted font weight */
-    color: #f0f0f0; /* Ensure text color is light */
+    color: var(--text-color); /* Ensure text color is light */
     margin-bottom: 10px;
 }
 
 .sidebar-username-text {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #B0B0B0; /* Slightly darker text color for username */
+    color: var(--text-secondary-color); /* Slightly darker text color for username */
     margin-top: 15px;
 }
 
@@ -304,7 +304,7 @@
 .sidebar-option-button {
     background: none;
     border: none;
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     padding: clamp(8px, 2vw, 10px) clamp(10px, 3vw, 15px); /* Fluid padding */
     text-align: left;
     cursor: pointer;
@@ -320,7 +320,7 @@
 
 .sidebar-option-button svg {
     margin-right: clamp(5px, 1.5vw, 10px); /* Fluid margin */
-    fill: #f0f0f0; /* Ensure icons are light */
+    fill: var(--text-color); /* Ensure icons are light */
 }
 /* Styles for Channel Component */
 .channel-container {
@@ -328,12 +328,12 @@
     flex-direction: column;
     height: 100%;
     background-color: #36393f; /* Example background color */
-    color: #f0f0f0; /* Example text color */
+    color: var(--text-color); /* Example text color */
 }
 
 .channel-header {
     padding: 15px;
-    border-bottom: 1px solid #4f545c; /* Example border */
+    border-bottom: 1px solid var(--border-color); /* Example border */
 }
 
 .channel-header h2 {
@@ -352,12 +352,12 @@
     flex-direction: column;
     height: 100%;
     background-color: #36393f; /* Example background color */
-    color: #f0f0f0; /* Example text color */
+    color: var(--text-color); /* Example text color */
 }
 
 .group-header {
     padding: 15px;
-    border-bottom: 1px solid #4f545c; /* Example border */
+    border-bottom: 1px solid var(--border-color); /* Example border */
 }
 
 .group-header h2 {
@@ -374,7 +374,7 @@
 /* Styles for SmallSettings Modal */
 .settings-small-modal-content {
     padding: 20px;
-    color: #f0f0f0;
+    color: var(--text-color);
     width: 100%;
     border-radius: 8px;
     overflow: hidden;
@@ -391,7 +391,7 @@
 .settings-small-title {
     margin: 0;
     font-size: 22px;
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .settings-small-close-button {
@@ -418,7 +418,7 @@
 
 .settings-option-label {
     font-size: 16px;
-    color: #B0B0B0;
+    color: var(--text-secondary-color);
 }
 
 .theme-buttons-container {
@@ -431,8 +431,8 @@
     flex-grow: 1; /* Allow buttons to share space */
     padding: 12px;
     border: 1px solid #4f4f4f;
-    background-color: #3a3a3a;
-    color: #f0f0f0;
+    background-color: var(--surface-color);
+    color: var(--text-color);
     border-radius: 8px;
     cursor: pointer;
     text-align: center;
@@ -444,13 +444,6 @@
     background-color: #4f4f4f;
 }
 
-.theme-button.dark-mode {
-    /* Specific styles for dark mode button if needed */
-}
-
-.theme-button.light-mode {
-    /* Specific styles for light mode button if needed */
-}
 
 .settings-option-item-row {
     display: flex;
@@ -461,9 +454,9 @@
 .settings-action-button {
     flex-grow: 1;
     padding: 12px;
-    background-color: #3a3a3a;
+    background-color: var(--surface-color);
     border: 1px solid #4f4f4f;
-    color: #f0f0f0;
+    color: var(--text-color);
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
@@ -485,7 +478,7 @@
 /* Styles for MyAccount Component */
 .myaccount-modal-content {
     padding: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
     width: 456px; /* Match Settings modal width */
     border-radius: 8px;
     overflow: hidden;
@@ -502,7 +495,7 @@
 .myaccount-close-button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
@@ -513,7 +506,7 @@
 .myaccount-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .myaccount-user-info-section {
@@ -557,7 +550,7 @@
 }
 
 .myaccount-avatar-upload-text {
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     text-align: center;
 }
@@ -566,7 +559,7 @@
     /* Existing styles */
     position: relative; /* Ensure letter is above the overlay */
     z-index: 1; /* Bring letter to front */
-    color: #1a1a1a; /* Dark color for the letter for contrast */
+    color: var(--dark-background); /* Dark color for the letter for contrast */
     font-size: 48px; /* Adjust size as needed */
     font-weight: bold;
     display: flex;
@@ -587,7 +580,7 @@
 
 .myaccount-upload-status {
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
-    color: #96C93D; /* Green color for success/loading */
+    color: var(--primary-gradient-to); /* Green color for success/loading */
     margin-top: 10px;
 }
  
@@ -600,17 +593,17 @@
 .myaccount-user-name {
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     font-weight: 500;
-    color: #f0f0f0;
+    color: var(--text-color);
     margin-bottom: -12px; /* Keep some space below the main name */
 }
 
 .myaccount-user-status {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #96C93D; /* Online status color */
+    color: var(--primary-gradient-to); /* Online status color */
 }
 
 .myaccount-user-status.offline {
-    color: #B0B0B0; /* Grey color for offline status */
+    color: var(--text-secondary-color); /* Grey color for offline status */
 }
 
 .myaccount-name-status {
@@ -627,13 +620,13 @@
 
 .myaccount-user-description {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
     text-align: center;
     margin-bottom: 5px; /* Reduced space between biography and separator */
 }
 
 .myaccount-separator {
-    border-bottom: 3px solid #96C93D;
+    border-bottom: 3px solid var(--primary-gradient-to);
     width: 100%; /* Full width separator */
     
 }
@@ -678,8 +671,8 @@
     top: 100%; /* Position below the avatar */
     left: 0;
     z-index: 10;
-    background-color: #2B2B2B; /* Dark background color */
-    border: 1px solid #4f545c; /* Subtle border */
+    background-color: var(--light-dark-background); /* Dark background color */
+    border: 1px solid var(--border-color); /* Subtle border */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Darker shadow */
     border-radius: 8px; /* Rounded corners */
     min-width: 150px; /* Minimum width */
@@ -690,19 +683,19 @@
 .myaccount-dropdown-item {
     padding: 10px 15px; /* Padding inside dropdown items */
     cursor: pointer;
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     transition: background-color 0.2s ease; /* Smooth hover effect */
 }
 
 .myaccount-dropdown-item:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .myaccount-dropdown-icon {
     width: 32px;
     height: 32px;
-    filter: brightness(0) invert(1); /* Make SVG white */
+    filter: var(--icon-filter); /* Make SVG white */
     margin-right: 10px; /* Add some space between icon and text */
 }
 
@@ -712,18 +705,18 @@
     align-items: center;
     padding: 12px 15px; /* Adjusted padding based on screenshot */
     cursor: pointer;
-    background-color: #2B2B2B; /* Dark background */
-    border-bottom: 1px solid #3a3a3a; /* Separator line */
+    background-color: var(--light-dark-background); /* Dark background */
+    border-bottom: 1px solid var(--surface-color); /* Separator line */
     transition: background-color 0.2s ease;
 }
 
 .chat-list-item:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .chat-list-item.active {
-    background-color: #96C93D; /* Green background for active item */
-    color: #1a1a1a; /* Dark text for active item */
+    background-color: var(--primary-gradient-to); /* Green background for active item */
+    color: var(--dark-background); /* Dark text for active item */
 }
 
 .chat-list-item-avatar {
@@ -758,12 +751,12 @@
 
 .chat-list-item-timestamp {
     font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
-    color: #B0B0B0; /* Lighter color for timestamp */
+    color: var(--text-secondary-color); /* Lighter color for timestamp */
     flex-shrink: 0; /* Prevent shrinking */
 }
 
 .chat-list-item.active .chat-list-item-timestamp {
-    color: #1a1a1a; /* Dark text for active item timestamp */
+    color: var(--dark-background); /* Dark text for active item timestamp */
 }
 
 .chat-list-item-snippet {
@@ -776,7 +769,7 @@
 }
 
 .chat-list-item.active .chat-list-item-snippet {
-    color: #1a1a1a; /* Dark text for active item snippet */
+    color: var(--dark-background); /* Dark text for active item snippet */
 }
 
 /* Styles for Chat Messages */
@@ -805,13 +798,13 @@
 }
 
 .chat-message.current-user .chat-message-content {
-    background-color: #96C93D; /* Green background for current user messages */
-    color: #1a1a1a; /* Dark text for current user messages */
+    background-color: var(--primary-gradient-to); /* Green background for current user messages */
+    color: var(--dark-background); /* Dark text for current user messages */
 }
 
 .chat-message:not(.current-user) .chat-message-content {
-    background-color: #4f545c; /* Darker background for other user messages */
-    color: #f0f0f0; /* Light text for other user messages */
+    background-color: var(--border-color); /* Darker background for other user messages */
+    color: var(--text-color); /* Light text for other user messages */
 }
 
 .chat-message-sender {
@@ -827,7 +820,7 @@
 .chat-input-container {
     display: flex;
     align-items: flex-end; /* Align items to the bottom */
-    background-color: #2B2B2B;
+    background-color: var(--light-dark-background);
     width: 100%;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1;
@@ -850,7 +843,7 @@
 }
 
 .folder-button img {
-    filter: brightness(0) invert(1); /* Make the icon white */
+    filter: var(--icon-filter); /* Make the icon white */
 }
 
 /* Adjusting the Input component's container within ChatInput */
@@ -868,12 +861,12 @@
 }
 
 .chat-input-container .input-field::placeholder {
-    color: #B0B0B0; /* Lighter placeholder text */
+    color: var(--text-secondary-color); /* Lighter placeholder text */
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
 }
 
 .send-button {
-    background: #96C93D;
+    background: var(--primary-gradient-to);
     border: none;
     border-radius: 10px 0px 10px 0px; /* Rounded button */
     width: 44px; /* Adjusted button size */
@@ -890,7 +883,7 @@
 }
 
 .send-button img {
-    filter: brightness(0) invert(1); /* Make the icon white */
+    filter: var(--icon-filter); /* Make the icon white */
 }
 
 /* Styles for Chat Welcome Message */
@@ -900,7 +893,7 @@
     justify-content: center;
     align-items: center;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #B0B0B0; /* Lighter color */
+    color: var(--text-secondary-color); /* Lighter color */
     text-align: center;
 }
 
@@ -935,13 +928,13 @@
 .chat-header-name {
     font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
     font-weight: 500;
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     margin: 0; /* Remove default margin */
 }
 
 .chat-header-status {
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
-    color: #96C93D; /* Green color for online status */
+    color: var(--primary-gradient-to); /* Green color for online status */
     margin-top: 2px; /* Space above status */
 }
 
@@ -957,7 +950,7 @@
 }
 
 .chat-header-options img {
-    filter: brightness(0) invert(1); /* Make the icon white */
+    filter: var(--icon-filter); /* Make the icon white */
 }
 
 .back-button {
@@ -972,7 +965,7 @@
 }
 
 .back-button .icon {
-    filter: brightness(0) invert(1); /* Make icon white */
+    filter: var(--icon-filter); /* Make icon white */
 }
 
 /* Styles for the main chat container layout */
@@ -992,18 +985,18 @@
     flex-grow: 1; /* Allow main content to take available space */
     display: flex;
     flex-direction: column;
-    background-color: #1a1a1a; /* Dark background for main content */
+    background-color: var(--dark-background); /* Dark background for main content */
 }
 
 .search-input::placeholder {
-    color: #B0B0B0;
+    color: var(--text-secondary-color);
 }
 
 .sidebar-header {
     display: flex;
     align-items: center;
     padding: 10px 15px;
-    border-bottom: 1px solid #4f545c;
+    border-bottom: 1px solid var(--border-color);
     flex-shrink: 0; /* Prevent shrinking */
 }
 
@@ -1018,7 +1011,7 @@
 }
 
 .burger-icon img {
-    filter: brightness(0) invert(1); /* Make the icon white */
+    filter: var(--icon-filter); /* Make the icon white */
 }
 
 /* Overlay for sidebar menu */
@@ -1045,7 +1038,7 @@
 }
 
 .chat-list-item.active .chat-list-item-snippet p {
-    color: #1a1a1a; /* Darker color for snippet in active item */
+    color: var(--dark-background); /* Darker color for snippet in active item */
 }
 
 .chat-list-item-unread-count {
@@ -1088,13 +1081,13 @@
 }
  
 .chat-message-bubble.current-user {
-    background-color: #96C93D; /* Green background for current user messages */
-    color: #1a1a1a; /* Dark text for current user messages */
+    background-color: var(--primary-gradient-to); /* Green background for current user messages */
+    color: var(--dark-background); /* Dark text for current user messages */
 }
  
 .chat-message-bubble.other-user {
-    background-color: #3a3a3a; /* Darker background for other user messages */
-    color: #f0f0f0; /* Light text for other user messages */
+    background-color: var(--surface-color); /* Darker background for other user messages */
+    color: var(--text-color); /* Light text for other user messages */
 }
  
 .chat-message-bubble.selected-bubble {
@@ -1136,7 +1129,7 @@
 .chat-message-timestamp {
     font-size: clamp(8px, 1.5vw, 10px); /* Fluid font size */
     text-align: right; /* Align timestamp to the right */
-    color: #B0B0B0; /* Lighter color for timestamp */
+    color: var(--text-secondary-color); /* Lighter color for timestamp */
     position: absolute; /* Position absolutely */
     bottom: 5px; /* Position from the bottom */
     right: 5px; /* Position from the right */
@@ -1243,7 +1236,7 @@
 .link-preview-title {
   font-size: 0.9rem;
   font-weight: bold;
-  color: var(--text-color, #f0f0f0);
+  color: var(--text-color, var(--text-color));
   margin: 4px 0;
   white-space: nowrap;
   overflow: hidden;
@@ -1263,7 +1256,7 @@
 }
 
 .chat-message-bubble.current-user .chat-message-timestamp {
-    color: #1a1a1a; /* Darker color for timestamp in current user messages */
+    color: var(--dark-background); /* Darker color for timestamp in current user messages */
 }
 
 .myaccount-bio-textarea {
@@ -1271,7 +1264,7 @@
     border: none;
     border-radius: 8px; /* Slightly less rounded than channel textarea */
     padding: 10px;
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     resize: vertical; /* Allow vertical resizing */
     width: 100%; /* Take full width of container */
@@ -1351,7 +1344,7 @@
 }
 
 .myaccount-info-icon svg {
-    fill: #f0f0f0;
+    fill: var(--text-color);
 }
 
 .myaccount-info-text {
@@ -1368,18 +1361,18 @@
 
 .myaccount-info-value {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #96C93D; /* Value color */
+    color: var(--primary-gradient-to); /* Value color */
 }
 
 .myaccount-info-value-green {
-    color: #96C93D; /* Green color for specific values */
+    color: var(--primary-gradient-to); /* Green color for specific values */
 }
 
 
 /* Styles for Language Component */
 .language-modal-content {
     padding: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
     max-width: 456px; /* Maintain design on large screens */
     width: 95vw; /* Use viewport width for responsiveness */
     border-radius: 8px;
@@ -1391,7 +1384,7 @@
     align-items: center;
     justify-content: center; /* Center the title block by default */
     padding: 20px;
-    border-bottom: 3px solid #96C93D;
+    border-bottom: 3px solid var(--primary-gradient-to);
     position: relative; /* Make it a positioning context */
 }
 
@@ -1410,7 +1403,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
@@ -1420,19 +1413,19 @@
 .language-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
     /* No flex-grow needed with absolute positioning of siblings */
     text-align: center; /* Center the title text */
 }
 
 .language-separator {
-    border-bottom: 1px solid #96C93D;
+    border-bottom: 1px solid var(--primary-gradient-to);
     width: 100%; /* Full width separator */
 }
 
 .language-interface-label {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #B0B0B0;
+    color: var(--text-secondary-color);
     padding: 15px 20px 0; /* Use padding for alignment */
     margin: 0;
 }
@@ -1442,13 +1435,13 @@
     align-items: center;
     padding: 15px 20px; /* Add horizontal padding here */
     cursor: pointer;
-    border-bottom: 1px solid #3a3a3a;
+    border-bottom: 1px solid var(--surface-color);
     transition: background-color 0.2s ease;
     box-sizing: border-box; /* Crucial for correct width calculation */
 }
 
 .language-option:hover {
-    background-color: #3a3a3a;
+    background-color: var(--surface-color);
 }
 
 .language-option-icon {
@@ -1461,12 +1454,12 @@
 }
 
 .language-option-icon svg {
-    fill: #f0f0f0;
+    fill: var(--text-color);
 }
 
 .language-option-text {
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #f0f0f0; /* Specified color */
+    color: var(--text-color); /* Specified color */
     flex-grow: 1;
 }
 
@@ -1522,7 +1515,7 @@
 /* Styles for Advanced Settings Component */
 .advanced-settings-modal-content {
     padding: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
     max-width: 456px; /* Match Settings modal width */
     width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px;
@@ -1534,14 +1527,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    border-bottom: 1px solid #96C93D;
+    border-bottom: 1px solid var(--primary-gradient-to);
 }
 
 .advanced-settings-back-button,
 .advanced-settings-close-button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
@@ -1552,30 +1545,30 @@
 .advanced-settings-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
     flex-grow: 1; /* Allow title to take available space */
 }
 
 .advanced-settings-separator {
-    border-bottom: 1px solid #96C93D;
+    border-bottom: 1px solid var(--primary-gradient-to);
     width: 100%; /* Full width separator */
 }
 
 .advanced-settings-content {
     padding: 20px; /* Add some padding to the content area */
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 /* Styles for CreateChannelModal Component */
 .create-channel-modal-content {
     padding: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
     max-width: 456px; /* Match other modals */
     width: 90%; /* Make it flexible on smaller screens */
     border-radius: 10px;
     overflow: hidden;
-    background-color: #2B2B2B; /* Dark background */
+    background-color: var(--light-dark-background); /* Dark background */
 }
 
 .create-channel-header {
@@ -1588,13 +1581,13 @@
 .create-channel-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .create-channel-close-button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
@@ -1625,7 +1618,7 @@
     border: none;
     border-radius: 10px;
     padding: 10px;
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     resize: vertical; /* Allow vertical resizing */
     min-height: 131px; /* Minimum height */
@@ -1656,7 +1649,7 @@
 /* Styles for CreateGroupModal Component */
 .create-group-modal-content {
     padding: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
     max-width: 456px; /* Match other modals */
     width: 90%; /* Make it flexible on smaller screens */
     border-radius: 8px;
@@ -1669,19 +1662,19 @@
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    border-bottom: 1px solid #96C93D;
+    border-bottom: 1px solid var(--primary-gradient-to);
 }
 
 .create-group-header-title {
     margin: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .create-group-close-button {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     cursor: pointer;
     font-size: clamp(16px, 4vw, 20px); /* Fluid font size */
     display: flex;
@@ -1744,7 +1737,7 @@
 .create-group-participant-input input {
     background: none;
     border: none;
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     flex-grow: 1; /* Allow input to take available space */
     outline: none; /* Remove outline */
@@ -1761,7 +1754,7 @@
 
 .create-group-participant-item {
     background-color: #555; /* Example background for participant item */
-    color: #f0f0f0;
+    color: var(--text-color);
     padding: 5px 10px;
     border-radius: 4px;
     margin-bottom: 5px;
@@ -1785,14 +1778,14 @@
     background-color: #2b2b2b; /* Darker background for the sidebar */
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #3a3a3a; /* Separator line */
+    border-right: 1px solid var(--surface-color); /* Separator line */
 }
 
 .chat-main-content {
     flex-grow: 1; /* Take up remaining space */
     display: flex;
     flex-direction: column;
-    background-color: #1a1a1a; /* Main content background */
+    background-color: var(--dark-background); /* Main content background */
 }
 
 .chat-list {
@@ -1805,13 +1798,13 @@
     display: flex;
     align-items: center;
     padding: 10px 15px;
-    border-bottom: 1px solid #3a3a3a; /* Separator below header */
+    border-bottom: 1px solid var(--surface-color); /* Separator below header */
     flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .search-input-container {
     padding: 10px 15px;
-    border-bottom: 1px solid #3a3a3a; /* Separator below search */
+    border-bottom: 1px solid var(--surface-color); /* Separator below search */
     flex-shrink: 0; /* Prevent search from shrinking */
     width: 100%; /* Ensure container takes full width */
     box-sizing: border-box; /* Include padding in width */
@@ -1822,13 +1815,13 @@
     padding: 8px 12px;
     border: 1px solid #555;
     border-radius: 4px;
-    background-color: #3a3a3a;
-    color: #f0f0f0;
+    background-color: var(--surface-color);
+    color: var(--text-color);
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
 }
 
 .search-input::placeholder {
-    color: #b0b0b0;
+    color: var(--text-secondary-color);
 }
 
 .burger-icon {
@@ -1842,7 +1835,7 @@
 }
 
 .burger-icon .icon {
-    filter: brightness(0) invert(1); /* Make icon white */
+    filter: var(--icon-filter); /* Make icon white */
 }
 
 
@@ -1851,9 +1844,9 @@
     align-items: center;
     padding: 10px 20px;
     background-color: #2b2b2b; /* Header background */
-    border-bottom: 1px solid #3a3a3a; /* Separator below header */
+    border-bottom: 1px solid var(--surface-color); /* Separator below header */
     flex-shrink: 0; /* Prevent header from shrinking */
-    color: #f0f0f0; /* Header text color */
+    color: var(--text-color); /* Header text color */
     width: 100%; /* Ensure it takes full width of its parent */
     box-sizing: border-box; /* Include padding in the width calculation */
 }
@@ -1894,12 +1887,12 @@
     font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
     font-weight: 500;
     margin: 0;
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .chat-header-status {
     font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
-    color: #96C93D; /* Online status color */
+    color: var(--primary-gradient-to); /* Online status color */
     margin: 0;
 }
 
@@ -1909,7 +1902,7 @@
 }
 
 .chat-header-options .icon {
-     /* Change filter to achieve #96C93D color */
+     /* Change filter to achieve var(--primary-gradient-to) color */
      filter: invert(60%) sepia(80%) saturate(300%) hue-rotate(70deg) brightness(90%) contrast(80%);
 }
 
@@ -1923,9 +1916,9 @@
 }
  
 .global-audio-options-panel {
-    background-color: #2B2B2B; /* Dark background, similar to chat header */
+    background-color: var(--light-dark-background); /* Dark background, similar to chat header */
     padding: 10px 20px;
-    border-bottom: 1px solid #3a3a3a; /* Separator */
+    border-bottom: 1px solid var(--surface-color); /* Separator */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1948,7 +1941,7 @@
     justify-content: center;
     align-items: center;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #b0b0b0; /* Lighter color for welcome message */
+    color: var(--text-secondary-color); /* Lighter color for welcome message */
 }
 
 /* Overlay for SidebarMenu */
@@ -1972,10 +1965,10 @@
 .edit-modal-content,
 .verification-modal-content {
     padding: 20px;
-    color: #f0f0f0;
+    color: var(--text-color);
     width: 400px;
     border-radius: 8px;
-    background-color: #2B2B2B; /* Dark background */
+    background-color: var(--light-dark-background); /* Dark background */
     display: flex;
     flex-direction: column;
     gap: 15px; /* Space between elements */
@@ -1985,7 +1978,7 @@
 .verification-modal-content h3 {
     margin-top: 0;
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-    color: #f0f0f0;
+    color: var(--text-color);
     text-align: center;
 }
 
@@ -1996,7 +1989,7 @@
     border: 1px solid #555;
     border-radius: 8px;
     background-color: #1A1A1A; /* Darker input background */
-    color: #f0f0f0;
+    color: var(--text-color);
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     outline: none;
     box-sizing: border-box;
@@ -2004,7 +1997,7 @@
 
 .edit-modal-input::placeholder,
 .verification-modal-input::placeholder {
-    color: #B0B0B0;
+    color: var(--text-secondary-color);
 }
 
 .edit-modal-content button,
@@ -2025,7 +2018,7 @@
 
 .edit-modal-content button:last-of-type, /* Cancel button */
 .verification-modal-content button:last-of-type /* Resend button */ {
-    background-color: #4f545c; /* Darker grey for secondary actions */
+    background-color: var(--border-color); /* Darker grey for secondary actions */
 }
 
 .edit-modal-content button:hover:first-of-type,
@@ -2051,7 +2044,7 @@
     gap: 10px;
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid #3a3a3a; /* Separator */
+    border-top: 1px solid var(--surface-color); /* Separator */
 }
 
 .email-verification-section p {
@@ -2061,7 +2054,7 @@
 }
 
 .success-message {
-    color: #96C93D; /* Green for success */
+    color: var(--primary-gradient-to); /* Green for success */
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
     text-align: center;
 }
@@ -2092,7 +2085,7 @@
     align-items: center;
     gap: 8px; /* space-x-2 */
     padding: 8px; /* p-2 */
-    background-color: #2B2B2B; /* bg-gray-800 */
+    background-color: var(--light-dark-background); /* bg-gray-800 */
     border-radius: 8px; /* rounded-lg */
     position: relative; /* For dropdown positioning */
 }
@@ -2100,7 +2093,7 @@
 .audio-player-play-pause-button {
     padding: 4px; /* p-1 */
     border-radius: 9999px; /* rounded-full */
-    background-color: #96C93D; /* bg-blue-500 */
+    background-color: var(--primary-gradient-to); /* bg-blue-500 */
     color: #FFFFFF; /* text-white */
     border: none;
     cursor: pointer;
@@ -2124,7 +2117,7 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #96C93D; /* Match the gradient start color */
+    background: var(--primary-gradient-to); /* Match the gradient start color */
     cursor: pointer;
     margin-top: -4px; /* Center the thumb vertically */
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
@@ -2135,14 +2128,14 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #96C93D; /* Match the gradient start color */
+    background: var(--primary-gradient-to); /* Match the gradient start color */
     cursor: pointer;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
  
 .audio-player-time-display {
     font-size: clamp(0.75rem, 2vw, 0.875rem); /* Fluid font size */
-    color: #B0B0B0; /* text-gray-300 */
+    color: var(--text-secondary-color); /* text-gray-300 */
     min-width: 70px; /* Ensure enough space for time display */
     text-align: right;
 }
@@ -2165,7 +2158,7 @@
     bottom: 100%; /* Position above the player */
     left: 0;
     right: 0;
-    background-color: #2B2B2B; /* Dark background */
+    background-color: var(--light-dark-background); /* Dark background */
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
@@ -2182,7 +2175,7 @@
 .audio-player-play-pause-button-dropdown {
     padding: 4px;
     border-radius: 9999px;
-    background-color: #96C93D;
+    background-color: var(--primary-gradient-to);
     border: none;
     cursor: pointer;
     display: flex;
@@ -2205,7 +2198,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #96C93D;
+    background: var(--primary-gradient-to);
     cursor: pointer;
     margin-top: -4px;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
@@ -2215,7 +2208,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #96C93D;
+    background: var(--primary-gradient-to);
     cursor: pointer;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
@@ -2226,7 +2219,7 @@
     cursor: pointer;
     padding: 0;
     display: flex;
-    filter: brightness(0) invert(1); /* Ensure icon is white */
+    filter: var(--icon-filter); /* Ensure icon is white */
     align-items: center;
     justify-content: center;
     width: 24px;
@@ -2238,7 +2231,7 @@
  
 .audio-player-loop-button.active {
     opacity: 1; /* Full opacity when active */
-    filter: brightness(0) invert(1); /* Ensure icon is white */ /* Green tint when active */
+    filter: var(--icon-filter); /* Ensure icon is white */ /* Green tint when active */
 }
  
 .attachment-preview-container {
@@ -2304,11 +2297,11 @@
 }
 
 .audio-player-icon-volume :hover {
-    filter: brightness(0) invert(1); /* Ensure icon is white */
+    filter: var(--icon-filter); /* Ensure icon is white */
 }
 
 .audio-player-icon-loop {
-    filter: brightness(0) invert(1); /* Ensure icon is white */
+    filter: var(--icon-filter); /* Ensure icon is white */
 }
 
 .audio-player-volume-control {
@@ -2343,7 +2336,7 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #96C93D; /* Match the gradient start color */
+    background: var(--primary-gradient-to); /* Match the gradient start color */
     cursor: pointer;
     /* margin-top: -4px; */ /* Not needed for vertical slider */
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
@@ -2354,7 +2347,7 @@
     width: 16px; /* Adjust as needed */
     height: 16px; /* Adjust as needed */
     border-radius: 50%;
-    background: #96C93D; /* Match the gradient start color */
+    background: var(--primary-gradient-to); /* Match the gradient start color */
     cursor: pointer;
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
@@ -2368,7 +2361,7 @@
   transform: translateX(-50%);
   width: 90%;
   max-width: 400px;
-  background-color: #2B2B2B; /* Dark background */
+  background-color: var(--light-dark-background); /* Dark background */
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Darker shadow */
   padding: 15px 20px;
@@ -2417,7 +2410,7 @@
   font-weight: bold;
   font-size: clamp(14px, 3vw, 16px); /* Fluid font size */
   font-size: clamp(14px, 3vw, 16px); /* Fluid font size */
-  color: #f0f0f0; /* Light text color */
+  color: var(--text-color); /* Light text color */
 }
 
 .notification-close-button {
@@ -2431,12 +2424,12 @@
 }
 
 .notification-close-button img {
-  filter: brightness(0) invert(1); /* Make icon white */
+  filter: var(--icon-filter); /* Make icon white */
 }
 
 .notification-message-content {
   font-size: clamp(0.8em, 2.5vw, 0.95em); /* Fluid font size */
-  color: #b0b0b0; /* Lighter text color */
+  color: var(--text-secondary-color); /* Lighter text color */
   word-wrap: break-word;
 }
 /* Lazy Loading Animation */
@@ -2483,7 +2476,7 @@
   height: 120px; /* Adjust size as needed for the logo */
   border-radius: 50%; /* Make it circular */
   overflow: hidden; /* Hide overflow for the circular shape */
-  background-color: #3a3a3a; /* A darker background for the silhouette */
+  background-color: var(--surface-color); /* A darker background for the silhouette */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2500,7 +2493,7 @@
 /* Lazy Loading Placeholder Styles for text and blocks */
 .spinner-text-line {
   height: 1em; /* Approximate line height */
-  background-color: #4f545c; /* Darker background for text placeholder */
+  background-color: var(--border-color); /* Darker background for text placeholder */
   border-radius: 4px;
   margin-bottom: 0.5em; /* Space between lines */
   overflow: hidden; /* For shimmer effect */
@@ -2508,7 +2501,7 @@
 }
 
 .spinner-block {
-  background-color: #4f545c; /* Darker background for block placeholder */
+  background-color: var(--border-color); /* Darker background for block placeholder */
   border-radius: 8px;
   overflow: hidden; /* For shimmer effect */
   position: relative; /* For shimmer effect */
@@ -2563,8 +2556,8 @@
 .context-menu {
     position: absolute;
     z-index: 100000;
-    background-color: #2B2B2B; /* Dark background */
-    border: 1px solid #3a3a3a; /* Subtle border */
+    background-color: var(--light-dark-background); /* Dark background */
+    border: 1px solid var(--surface-color); /* Subtle border */
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
     padding: 5px 0; /* Padding top and bottom */
@@ -2579,13 +2572,13 @@
 .context-menu-item {
     padding: 8px 15px; /* Padding inside menu items */
     cursor: pointer;
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     font-size: clamp(13px, 3vw, 16px); /* Fluid font size */
     transition: background-color 0.2s ease; /* Smooth hover effect */
 }
 
 .context-menu-item:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .context-menu-item.disabled {
@@ -2611,13 +2604,13 @@
 }
 
 .confirmation-modal-button.cancel {
-    background-color: #4f545c; /* Darker grey for cancel */
-    color: #f0f0f0; /* Light text */
+    background-color: var(--border-color); /* Darker grey for cancel */
+    color: var(--text-color); /* Light text */
 }
 
 .confirmation-modal-button.confirm {
     background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient for confirm */
-    color: #1a1a1a; /* Dark text */
+    color: var(--dark-background); /* Dark text */
 }
 
 .confirmation-modal-button:hover {
@@ -2839,11 +2832,11 @@
 /* Styles for Image Cropping Modal */
 .crop-modal-content {
   padding: 20px;
-  color: #f0f0f0;
+  color: var(--text-color);
   width: 90%; /* Make it flexible */
   max-width: 500px; /* Max width for larger screens */
   border-radius: 8px;
-  background-color: #2B2B2B; /* Dark background */
+  background-color: var(--light-dark-background); /* Dark background */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2853,14 +2846,14 @@
 .crop-modal-content h3 {
   margin-top: 0;
   font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
-  color: #f0f0f0;
+  color: var(--text-color);
   text-align: center;
 }
 
 .ReactCrop {
   max-width: 100%; /* Ensure crop container is responsive */
   max-height: 400px; /* Limit height */
-  background-color: #1a1a1a; /* Dark background for the crop area */
+  background-color: var(--dark-background); /* Dark background for the crop area */
 }
 
 .ReactCrop img {
@@ -2899,11 +2892,11 @@
 
 .crop-buttons button:first-of-type { /* Save button */
   background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient */
-  color: #1a1a1a; /* Dark text for contrast */
+  color: var(--dark-background); /* Dark text for contrast */
 }
 
 .crop-buttons button:last-of-type { /* Cancel button */
-  background-color: #4f545c; /* Darker grey for secondary actions */
+  background-color: var(--border-color); /* Darker grey for secondary actions */
 }
 
 .crop-buttons button:hover:first-of-type {
@@ -2948,23 +2941,23 @@
     gap: 5px; /* Space between reaction items */
     margin-top: 5px; /* Space above the reactions */
     padding-top: 5px; /* Add some padding at the top */
-    border-top: 1px solid #3a3a3a; /* Subtle separator above reactions */
+    border-top: 1px solid var(--surface-color); /* Subtle separator above reactions */
 }
 
 .message-reaction-item {
     display: flex;
     align-items: center;
-    background-color: #3a3a3a; /* Darker background for reaction items */
+    background-color: var(--surface-color); /* Darker background for reaction items */
     border-radius: 12px; /* Rounded corners for reaction items */
     padding: 3px 8px; /* Adjusted padding */
     font-size: 14px; /* Font size for the emoji and count */
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     cursor: pointer; /* Indicate clickable */
     transition: background-color 0.2s ease;
 }
 
 .message-reaction-item:hover {
-    background-color: #4f545c; /* Slightly lighter background on hover */
+    background-color: var(--border-color); /* Slightly lighter background on hover */
 }
 
 .message-reaction-item .reaction-count {
@@ -2974,19 +2967,19 @@
 }
 
 .message-reaction-item.current-user-reacted {
-    background-color: #96C93D; /* Green background for current user's reaction */
-    color: #1a1a1a; /* Dark text for contrast */
+    background-color: var(--primary-gradient-to); /* Green background for current user's reaction */
+    color: var(--dark-background); /* Dark text for contrast */
 }
 
 .message-reaction-item.current-user-reacted .reaction-count {
-    color: #1a1a1a; /* Dark text for the count as well */
+    color: var(--dark-background); /* Dark text for the count as well */
 }
 /* Styles for Notification Feature */
 
 .notification-badge {
   display: inline-block;
-  background-color: #96C93D; /* Green accent color */
-  color: #1a1a1a; /* Dark text for contrast */
+  background-color: var(--primary-gradient-to); /* Green accent color */
+  color: var(--dark-background); /* Dark text for contrast */
   border-radius: 50%;
   padding: 2px 6px;
   font-size: 0.7em;
@@ -3010,7 +3003,7 @@
 }
 
 .notification-modal-content {
-  background-color: #2B2B2B; /* Dark background */
+  background-color: var(--light-dark-background); /* Dark background */
   padding: 20px;
   border-radius: 8px; /* Match other modals */
   max-width: 400px; /* Example max width */
@@ -3018,7 +3011,7 @@
   max-height: 80vh; /* Example max height */
   overflow-y: auto; /* Enable scrolling if content overflows */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Darker shadow */
-  color: #f0f0f0; /* Light text color */
+  color: var(--text-color); /* Light text color */
 }
 
 .notification-modal-content h2 {
@@ -3026,7 +3019,7 @@
     margin-bottom: 15px; /* Space below title */
     font-size: clamp(18px, 5vw, 24px); /* Fluid font size */
     text-align: center;
-    color: #f0f0f0;
+    color: var(--text-color);
 }
 
 .notification-list {
@@ -3037,7 +3030,7 @@
   display: flex;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #3a3a3a; /* Darker separator */
+  border-bottom: 1px solid var(--surface-color); /* Darker separator */
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
@@ -3047,13 +3040,13 @@
 }
 
 .notification-list-item:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .notification-sender-avatar {
   width: 40px;
   height: 40px;
-  background-color: #4f545c; /* Darker placeholder color */
+  background-color: var(--border-color); /* Darker placeholder color */
   border-radius: 50%;
   margin-right: 10px;
   display: flex;
@@ -3077,18 +3070,18 @@
 
 .notification-sender-name {
   margin-right: 5px;
-  color: #f0f0f0; /* Light text color */
+  color: var(--text-color); /* Light text color */
 }
 
 .notification-sender-status {
   font-size: 0.8em;
-  color: #b0b0b0; /* Lighter color for status */
+  color: var(--text-secondary-color); /* Lighter color for status */
   font-weight: normal;
 }
 
 .notification-message-preview {
   font-size: 0.9em;
-  color: #b0b0b0; /* Lighter color for message preview */
+  color: var(--text-secondary-color); /* Lighter color for message preview */
   margin-bottom: 4px;
 }
 
@@ -3100,14 +3093,14 @@
 .notification-unread-indicator {
   width: 8px;
   height: 8px;
-  background-color: #96C93D; /* Green accent color */
+  background-color: var(--primary-gradient-to); /* Green accent color */
   border-radius: 50%;
   margin-left: 10px;
   flex-shrink: 0; /* Prevent shrinking */
 }
 .notification-modal-close-button {
-  background-color: #4f545c; /* Darker grey background */
-  color: #f0f0f0; /* Light text color */
+  background-color: var(--border-color); /* Darker grey background */
+  color: var(--text-color); /* Light text color */
   border: none;
   padding: 10px 20px; /* Padding */
   border-radius: 8px; /* Rounded corners */
@@ -3122,7 +3115,7 @@
 }
 .notification-modal-mark-read-button {
   background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* Green gradient */
-  color: #1a1a1a; /* Dark text for contrast */
+  color: var(--dark-background); /* Dark text for contrast */
   border: none;
   padding: 10px 20px; /* Padding */
   border-radius: 8px; /* Rounded corners */
@@ -3174,15 +3167,15 @@
   flex-shrink: 0; /* Запрещает контейнеру сжиматься */
   padding: 15px;
   background-color: #2b2b2b; /* Цвет фона панели ввода */
-  border-top: 1px solid #3a3a3a;
+  border-top: 1px solid var(--surface-color);
   box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
 }
 
 /* Styles for Chat Header - Consolidated and updated */
 .chat-header {
     padding: 12px 20px; /* Re-introduced horizontal padding */
-    border-bottom: 1px solid #3a3a3a; /* Darker separator line */
-    background-color: #2B2B2B; /* Dark background */
+    border-bottom: 1px solid var(--surface-color); /* Darker separator line */
+    background-color: var(--light-dark-background); /* Dark background */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3190,7 +3183,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
     z-index: 1; /* Ensure it's above chat messages */
     flex-shrink: 0; /* Prevent header from shrinking */
-    color: #f0f0f0; /* Header text color */
+    color: var(--text-color); /* Header text color */
     width: 100%; /* Ensure it takes full width of its parent */
     box-sizing: border-box; /* Include padding in the width calculation */
 }
@@ -3201,18 +3194,18 @@
     align-items: center;
     padding: 12px 15px; /* Adjusted padding based on screenshot */
     cursor: pointer;
-    background-color: #2B2B2B; /* Dark background */
-    border-bottom: 1px solid #3a3a3a; /* Separator line */
+    background-color: var(--light-dark-background); /* Dark background */
+    border-bottom: 1px solid var(--surface-color); /* Separator line */
     transition: background-color 0.2s ease;
 }
 
 .chat-list-item:hover {
-    background-color: #3a3a3a; /* Darker background on hover */
+    background-color: var(--surface-color); /* Darker background on hover */
 }
 
 .chat-list-item.active {
-    background-color: #96C93D; /* Green background for active item */
-    color: #1a1a1a; /* Dark text for active item */
+    background-color: var(--primary-gradient-to); /* Green background for active item */
+    color: var(--dark-background); /* Dark text for active item */
 }
 
 .chat-list-item-avatar {
@@ -3246,12 +3239,12 @@
 
 .chat-list-item-timestamp {
     font-size: clamp(10px, 2vw, 12px); /* Fluid font size */
-    color: #B0B0B0; /* Lighter color for timestamp */
+    color: var(--text-secondary-color); /* Lighter color for timestamp */
     flex-shrink: 0; /* Prevent shrinking */
 }
 
 .chat-list-item.active .chat-list-item-timestamp {
-    color: #1a1a1a; /* Dark text for active item timestamp */
+    color: var(--dark-background); /* Dark text for active item timestamp */
 }
 
 .chat-list-item-snippet {
@@ -3264,13 +3257,13 @@
 }
 
 .chat-list-item.active .chat-list-item-snippet {
-    color: #1a1a1a; /* Dark text for active item snippet */
+    color: var(--dark-background); /* Dark text for active item snippet */
 }
 /* Styles for Chat Header */
 .chat-header {
     padding: 12px 20px; /* Re-introduced horizontal padding */
-    border-bottom: 1px solid #3a3a3a; /* Darker separator line */
-    background-color: #2B2B2B; /* Dark background */
+    border-bottom: 1px solid var(--surface-color); /* Darker separator line */
+    background-color: var(--light-dark-background); /* Dark background */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -3309,13 +3302,13 @@
 .chat-header-name {
     font-size: clamp(14px, 3.5vw, 18px); /* Fluid font size */
     font-weight: 500;
-    color: #f0f0f0; /* Light text color */
+    color: var(--text-color); /* Light text color */
     margin: 0; /* Remove default margin */
 }
 
 .chat-header-status {
     font-size: clamp(12px, 2.5vw, 14px); /* Fluid font size */
-    color: #96C93D; /* Green color for online status */
+    color: var(--primary-gradient-to); /* Green color for online status */
     margin-top: 2px; /* Space above status */
 }
 
@@ -3331,20 +3324,20 @@
 }
 
 .chat-header-options img {
-    filter: brightness(0) invert(1); /* Make the icon white */
+    filter: var(--icon-filter); /* Make the icon white */
 }
 /* Header Component Styles */
 .app-header {
   padding: 12px 20px;
-  border-bottom: 1px solid #3a3a3a;
-  background-color: #2B2B2B;
+  border-bottom: 1px solid var(--surface-color);
+  background-color: var(--light-dark-background);
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 64px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  color: #f0f0f0;
+  color: var(--text-color);
 }
 
 .header-left-section, .header-right-section {
@@ -3372,7 +3365,7 @@
 .header-title {
   font-size: 1.125rem; /* 18px */
   font-weight: 500;
-  color: #f0f0f0;
+  color: var(--text-color);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -3381,7 +3374,7 @@
 
 .header-status {
   font-size: 0.875rem; /* 14px */
-  color: #96C93D;
+  color: var(--primary-gradient-to);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -3391,10 +3384,10 @@
 .header-search-input {
   width: 100%;
   max-width: 400px;
-  background-color: #3a3a3a;
+  background-color: var(--surface-color);
   border: 1px solid #555;
   border-radius: 8px;
-  color: #f0f0f0;
+  color: var(--text-color);
   padding: 8px 12px;
   font-size: 1rem;
 }
@@ -3407,7 +3400,7 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
-  filter: brightness(0) invert(1); /* Basic white icon */
+  filter: var(--icon-filter); /* Basic white icon */
   transition: opacity 0.2s ease;
 }
 
@@ -3423,8 +3416,8 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #2B2B2B;
-  border: 1px solid #3a3a3a;
+  background-color: var(--light-dark-background);
+  border: 1px solid var(--surface-color);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   padding: 5px 0;
@@ -3441,13 +3434,13 @@
 .header-dropdown .dropdown-list li {
   padding: 8px 15px;
   cursor: pointer;
-  color: #f0f0f0;
+  color: var(--text-color);
   font-size: 1rem;
   transition: background-color 0.2s ease;
 }
 
 .header-dropdown .dropdown-list li:hover {
-  background-color: #3a3a3a;
+  background-color: var(--surface-color);
 }
 
 /* Updated Header Styles */
@@ -3483,7 +3476,7 @@
     font-weight: 500;
     text-align: center;
     padding: 16px;
-    background-color: #2B2B2B;
+    background-color: var(--light-dark-background);
     border-radius: 8px;
 }
 
@@ -3493,7 +3486,7 @@
     font-weight: 500;
     text-align: center;
     padding: 16px;
-    background-color: #2B2B2B;
+    background-color: var(--light-dark-background);
     border-radius: 8px;
 }
 

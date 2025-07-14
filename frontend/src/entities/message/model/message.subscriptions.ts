@@ -50,7 +50,7 @@ export const NEW_MESSAGE_SUBSCRIPTION = gql`
         username
         status
         bio
-        roles
+        role
       }
       attachments {
         id
@@ -84,7 +84,7 @@ export const MESSAGE_REACTION_ADDED_OR_REMOVED_SUBSCRIPTION = gql`
         username
         status
         bio
-        roles
+        role
       }
       attachments {
         id

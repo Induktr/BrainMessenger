@@ -3,6 +3,7 @@
 // frontend/src/ui/SidebarMenu.tsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/app/providers/ThemeProvider';
 import Button from '@/shared/ui/Button/Button';
 import CreateChannelModal from '@/features/create-chat/ui/CreateChannelModal';
 import CreateGroupModal from '@/features/create-chat/ui/CreateGroupModal';
@@ -14,6 +15,8 @@ import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
 import AllNotificationsModal from '@/features/manage-notifications/ui/AllNotificationsModal'; // Import AllNotificationsModal
 import { useNotification } from '@/features/manage-notifications/ui/NotificationContext'; // Import useNotification hook
 import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
+import Support from '@/features/manage-settings/ui/Support';
+import Settings from '@/features/manage-settings/ui/Settings';
  
 interface SidebarMenuWidgetProps {
   onOpenSettings: () => void;
@@ -21,12 +24,14 @@ interface SidebarMenuWidgetProps {
   onToggleNotification: () => void;
 }
 
-const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, onToggleTheme, onToggleNotification }) => {
+const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, onToggleNotification }) => {
   const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const [isCreateChannelModalOpen, setIsCreateChannelModalOpen] = useState(false);
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
   const [isAllNotificationsModalOpen, setIsAllNotificationsModalOpen] = useState(false); // State for AllNotificationsModal
   const [allNotifications, setAllNotifications] = useState<Notification[]>([]); // State to store all notifications
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false); // State for SupportModal
 
   const { user, queryLoading, logout } = useAuth(); // Get user, queryLoading, and logout from context
   const { notification, clearNotification } = useNotification(); // Get notification and clearNotification from context
@@ -79,6 +84,14 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
     setIsCreateChannelModalOpen(false);
   };
 
+  const handleCloseSupportModal = () => {
+    setIsSupportModalOpen(false);
+  };
+
+  const handleBackSupportModal = () => {
+    setIsSupportModalOpen(false);
+  };
+
   const handleCreateChannel = (channelName: string, channelDescription: string) => {
     // Placeholder for channel creation logic
     // Placeholder for channel creation logic
@@ -94,10 +107,6 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
 
   const handleCloseCreateGroupModal = () => {
     setIsCreateGroupModalOpen(false);
-  };
-
-  const handleReload = () => {
-    window.location.reload();
   };
 
   return (
@@ -130,12 +139,20 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
           <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.settings && <Image src={ICONS.settings} alt={t('sidebar.settings')} className="icon" width={24} height={24} />} {t('sidebar.settings')}</span></Button> {/* Using ListItem */}
           <Button className="sidebar-option-button" onClick={handleOpenCreateChannelModal} ><span>{ICONS.channel && <Image src={ICONS.channel} alt={t('sidebar.createChannel')} className="icon" width={24} height={24} />} {t('sidebar.createChannel')}</span></Button> {/* Using ListItem */}
           <Button className="sidebar-option-button" onClick={handleOpenCreateGroupModal} ><span>{ICONS.group && <Image src={ICONS.group} alt={t('sidebar.createGroup')} className="icon" width={24} height={24} />} {t('sidebar.createGroup')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={onToggleTheme} ><span>{ICONS.night && <Image src={ICONS.night} alt={t('sidebar.nightMode')} className="icon" width={24} height={24} />} {t('sidebar.nightMode')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={toggleTheme} ><span>{ICONS.night && <Image src={ICONS.night} alt={t('sidebar.nightMode')} className="icon" width={24} height={24} />} {theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.nightMode')}</span></Button> {/* Using ListItem */}
           <Button className="sidebar-option-button" onClick={() => setIsAllNotificationsModalOpen(true)} ><span>{ICONS.bell && <Image src={ICONS.bell} alt={t('sidebar.allNotifications')} className="icon" width={24} height={24} />} {t('sidebar.allNotifications')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.support && <Image src={ICONS.support} alt={t('sidebar.support')} className="icon" width={24} height={24} />} {t('sidebar.support')}</span></Button> {/* Using ListItem */}
+          <Button className="sidebar-option-button" onClick={() => setIsSupportModalOpen(true)} ><span>{ICONS.support && <Image src={ICONS.support} alt={t('sidebar.support')} className="icon" width={24} height={24} />} {t('sidebar.support')}</span></Button> {/* Using ListItem */}
           {/* ... more settings options */}
         </div>
       </div>
+
+      {isSupportModalOpen && (
+        <Support
+          onBack={handleBackSupportModal}
+          onClose={handleCloseSupportModal}
+          isOpen={isSupportModalOpen}
+        />
+      )}
 
       {/* All Notifications Modal */}
       <AllNotificationsModal

@@ -9,6 +9,7 @@ import { ICONS } from '@/shared/assets/Icons/icons';
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // To check if it's the current user
 import { UserProfileModalProps } from '@/entities/user/model/user.types';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
+import { useTranslation } from 'react-i18next';
 
 import type { User } from '@/entities/user/model/user.types';
 
@@ -21,6 +22,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
   const user = data?.getUser;
   const isCurrentUserProfile = currentUser?.id === userId; // Check if viewing own profile
+
+  const { t } = useTranslation();
 
   const { dynamicStatus } = useStatusTyping(userId, status || 'offline' || 'online');
 
@@ -35,7 +38,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
           <button className="myaccount-close-button" onClick={onClose}>
             <Image src={ICONS.closeModal} alt="Close" width={24} height={24} className="icon" />
           </button>
-          <h2 className="myaccount-header-title">User Profile</h2>
+          <h2 className="myaccount-header-title">{t('user_profile.header_title')}</h2>
           {/* Placeholder for options icon - hidden if not current user */}
           {isCurrentUserProfile && (
             <div className="myaccount-header-options">
@@ -71,7 +74,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
               <Image src={ICONS.mail} alt="Email" width={24} height={24} className="icon" />
             </div>
             <div className="myaccount-info-text">
-              <span className="myaccount-info-label">Email:</span>
+              <span className="myaccount-info-label">{t('user_profile.email_label')}:</span>
               <span className="myaccount-info-value">{user.email}</span>
             </div>
           </div>
@@ -82,7 +85,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
                 <Image src={ICONS.usernameDog} alt="Username" width={24} height={24} className="icon" />
               </div>
               <div className="myaccount-info-text">
-                <span className="myaccount-info-label">Username:</span>
+                <span className="myaccount-info-label">{t('user_profile.user_name_label')}:</span>
                 <span className="myaccount-info-value">{user.username}</span>
               </div>
             </div>
@@ -94,9 +97,9 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
               <Image src={ICONS.shield} alt="Verified" width={24} height={24} className="icon" />
             </div>
             <div className="myaccount-info-text">
-              <span className="myaccount-info-label">Verified:</span>
+              <span className="myaccount-info-label">{t('user_profile.verified_label')}:</span>
               <span className={`myaccount-info-value ${user.isVerified ? 'myaccount-info-value-green' : ''}`}>
-                {user.isVerified ? 'Yes' : 'No'}
+                {user.isVerified ? t('user_profile.yes') : t('user_profile.no')}
               </span>
             </div>
           </div>

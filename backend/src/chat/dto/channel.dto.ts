@@ -8,6 +8,9 @@ export class ChannelDto {
   id: string;
 
   @Field(() => String)
+  name: string;
+
+  @Field(() => String)
   chatId: string;
 
   @Field(() => BaseChatDto)

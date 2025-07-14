@@ -17,4 +17,5 @@ export interface SmallSettingsProps {
 export interface SupportProps {
     onBack: () => void;
     onClose: () => void;
+    isOpen: boolean;
 }

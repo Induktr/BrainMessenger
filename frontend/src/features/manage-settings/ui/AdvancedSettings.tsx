@@ -5,8 +5,10 @@ import Modal from '@/shared/ui/Modal/Modal';
 import { ICONS } from '@/shared/assets/Icons/icons';
 import Button from '@/shared/ui/Button/Button';
 import { AdvancedSettingsProps } from '@/features/manage-settings/model/settings.types';
+import { useTranslation } from 'react-i18next';
 
 const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isOpen, onClose, onBack }) => {
+  const { t } = useTranslation();
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="advanced-settings-modal-content">
@@ -16,7 +18,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isOpen, onClose, on
             {/* Rotated arrow icon */}
             <img src={ICONS.arrowLeft} alt="Back" className="icon" /> {/* Use img tag */}
           </Button>
-          <h2 className="advanced-settings-header-title">Advanced Settings</h2> {/* Title based on option text */}
+          <h2 className="advanced-settings-header-title">{t('advancedSettings.headerTitle')}</h2> {/* Title based on option text */}
           <Button className="advanced-settings-close-button" onClick={onClose}>
             <img src={ICONS.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
           </Button>
@@ -27,7 +29,7 @@ const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ isOpen, onClose, on
 
         {/* Advanced Settings Content (Placeholder) */}
         <div className="advanced-settings-content">
-          <p>Advanced Settings features will be displayed here.</p>
+          <p>{t('advancedSettings.description')}</p>
         </div>
       </div>
     </Modal>

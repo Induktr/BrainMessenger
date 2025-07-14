@@ -15,7 +15,7 @@ export const UPLOAD_FILE = gql`
         username
         status
         bio
-        roles
+        role
       }
       createdAt
     }

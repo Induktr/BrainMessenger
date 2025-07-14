@@ -12,10 +12,14 @@ import Image from 'next/image';
 import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
 import { SettingsProps } from '@/features/manage-settings/model/settings.types';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/app/providers/ThemeProvider';
 
 const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
   const [currentView, setCurrentView] = useState('settings'); // 'settings', 'myaccount', 'language', 'premium'
   const { user, queryLoading } = useAuth(); // Get user and loading state from context
+  const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
  
   // Generate avatar data
   const avatarData = generateAvatarData(user?.name);
@@ -54,7 +58,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
         <div className="settings-modal-content">
           {/* Settings Header */}
           <div className="settings-header">
-            <h2 className="settings-header">Settings</h2>
+            <h2 className="settings-header">{t('settings.headerTitle')}</h2>
             <Button className="settings-close-button" onClick={handleCloseModal}>
               <img src={ICONS.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
             </Button>
@@ -86,15 +90,15 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
           <div className="settings-options-list">
             <div className="settings-option" onClick={handleMyAccountClick}>
               <div className="settings-option-icon"><Image src={ICONS.account} alt="My account" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">My account</p>
+              <p className="settings-option-text">{t('settings.myAccount')}</p>
             </div>
             <div className="settings-option" onClick={handleLanguageClick}>
               <div className="settings-option-icon"><Image src={ICONS.language} alt="Language" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">Language</p>
+              <p className="settings-option-text">{t('settings.language')}</p>
             </div>
             <div className="settings-option" onClick={handlePremiumClick}>
               <div className="settings-option-icon"><Image src={ICONS.settings} alt="Settings" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">Advanced settings</p>
+              <p className="settings-option-text">{t('settings.advancedSettings')}</p>
             </div>
           </div>
         </div>

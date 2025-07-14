@@ -9,7 +9,9 @@ import { UPDATE_CHANNEL_PRIVACY, DELETE_CHANNEL } from '@/entities/channel/model
 import { useNotification } from '@/features/manage-notifications/ui/NotificationContext';
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
-import { ChannelDetailsModalProps, ChannelDto, UserDto } from '@/features/create-chat/model/create-chat.types';
+import { ChannelDetailsModalProps } from '@/features/create-chat/model/create-chat.types';
+import { ChannelDto } from '@/entities/channel/model/channel.types';
+import { UserDto } from '@/entities/user/model/user.types';
 
 const ChannelDetailsModal: React.FC<ChannelDetailsModalProps> = ({
   isOpen,

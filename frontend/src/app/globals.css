@@ -1,3 +1,50 @@
+:root {
+  --background-color: var(--background-color);
+  --text-color: var(--text-color);
+  --primary-color: var(--primary-color);
+  --surface-color: var(--surface-color);
+  --border-color: var(--border-color);
+  --error-color: var(--error-color);
+  --primary-gradient-from: var(--primary-gradient-from);
+  --primary-gradient-to: var(--primary-gradient-to);
+  --text-secondary-color: var(--text-secondary-color);
+  --dark-background: var(--dark-background);
+  --light-dark-background: var(--light-dark-background);
+  --even-lighter-dark-background: var(--even-lighter-dark-background);
+  --icon-filter: var(--icon-filter);
+}
+
+[data-theme="light"] {
+  --background-color: #FFFFFF;
+  --text-color: #333333;
+  --primary-color: #1ED94F; /* This value is not explicitly in DocDesign.md for Light Mode Primary, but the gradient is. Keeping it for now. */
+  --surface-color: #F0F0F0;
+  --border-color: #E8E8D9;
+  --error-color: #FF6347; /* From DocDesign.md Accent */
+  --primary-gradient-from: #A7F43A;
+  --primary-gradient-to: #00C853;
+  --text-secondary-color: #4D4D4D;
+  --dark-background: #f0f0f0;
+  --light-dark-background: #f0f0f0;
+  --even-lighter-dark-background: #e0e0e0;
+  --icon-filter: invert(0); /* No filter for black icons on light background */
+}
+
+[data-theme="dark"] {
+  --background-color: #1A1A1A;
+  --text-color: #FFFFFF;
+  --primary-color: #1ED94F; /* This value is not explicitly in DocDesign.md for Light Mode Primary, but the gradient is. Keeping it for now. */
+  --surface-color: #F0F0F0;
+  --border-color: #E8E8D9;
+  --error-color: #FF6347; /* From DocDesign.md Accent */
+  --primary-gradient-from: #F2F047;
+  --primary-gradient-to: #1ED94F;
+  --text-secondary-color: #D9E8D9;
+  --dark-background: #1A1A1A;
+  --light-dark-background: #333333;
+  --even-lighter-dark-background: #B0B0B0;
+  --icon-filter: invert(0); /* No filter for black icons on light background */
+}
 /* General styles */
 
 /* Deep Work Mode Styles - Symmetric Animations */
@@ -86,7 +133,7 @@ body.deep-work-active::after {
 body {
   margin: 0;
   padding: 0;
-  background-color: #1A1A1A; /* Dark background */
+  background-color: var(--dark-background); /* Dark background */
   font-family: Arial, Helvetica, sans-serif;
   min-height: 100vh;
   display: flex;
@@ -94,11 +141,11 @@ body {
 }
 
 svg {
-  fill: #1A1A1A;
+  fill: var(--dark-background);
 }
 
 .input-icon img {
-  filter: brightness(0) invert(1); /* Filter to make the green icon white */
+  filter: var(--icon-filter); /* Filter to make the green icon white */
 }
 
 .icon {
@@ -111,16 +158,16 @@ svg {
  
 .p {
   font-size: 1rem; /* Use rem (16px = 1rem) */
-  color: #B0B0B0;
+  color: var(--text-color);
 }
 
 .h1 {
   font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
-  color: #FFFFFF;
+  color: var(--text-color);
 }
 
 .step-description {
-  color: #F0F0F0;
+  color: var(--text-color);
   text-wrap: wrap;
   max-width: 515px; /* Use max-width */
   width: 95%; /* Add percentage width for flexibility */
@@ -143,7 +190,7 @@ svg {
   position: absolute; /* Position absolutely within the welcome-container */
   top: 1rem; /* Adjust as needed for spacing from the top */
   right: 1rem; /* Adjust as needed for spacing from the right */
-  color: #B0B0B0; /* Color for the burger menu icon */
+  color: var(--text-secondary-color); /* Color for the burger menu icon */
 }
 
 /* Main Content Area */
@@ -164,7 +211,7 @@ svg {
 }
 
 .slide-description {
-  color: #B0B0B0; /* text-textPrimary-dark */
+  color: var(--text-secondary-color); /* text-textPrimary-dark */
   margin-bottom: 2rem; /* mb-8 */
   text-align: center;
 }
@@ -189,20 +236,20 @@ svg {
 }
 
 .slider-button:disabled {
-  color: #4D4D4D; /* text-gray-600 */
+  color: var(--border-color); /* text-gray-600 */
   cursor: not-allowed;
 }
 
 .slider-button:not(:disabled):hover {
-  background-color: #333333; /* hover:bg-surface-dark */
+  background-color: var(--surface-color); /* hover:bg-surface-dark */
 }
 
 .prev-button {
-  color: #1ED94F; /* text-primary-DEFAULT */
+  color: var(--primary-gradient-to); /* text-primary-DEFAULT */
 }
 
 .next-button {
-   color: #B0B0B0; /* Default color, adjust if needed */
+   color: var(--text-secondary-color); /* Default color, adjust if needed */
 }
 .logo-container-size-lg {
   height: 11rem; /* Use rem (175px approx 11rem) */
@@ -229,7 +276,7 @@ svg {
 }
 
 .slider-indicator.active {
-  background-color: #1ED94F; /* bg-primary-DEFAULT */
+  background-color: var(--primary-gradient-to); /* bg-primary-DEFAULT */
 }
 
 
@@ -241,9 +288,9 @@ svg {
   min-height: 70px; /* Use min-height */
   font-size: 1.5rem; /* Use rem for font size (24px = 1.5rem assuming base 16px) */
   font-weight: 600; /* font-semibold */
-  color: #1A1A1A; /* text-white */
+  color: var(--dark-background); /* text-white */
   border-radius: 10px; /* rounded-[10px] */
-  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+  background-image: linear-gradient(90deg, #F2F047, var(--primary-gradient-to)); /* bg-primary-gradient */
   border: none;
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
@@ -303,7 +350,7 @@ svg {
 .step-text {
   /* Removed absolute positioning */
   font-size: 1rem;
-  color: #B0B0B0; /* Light grey text */
+  color: var(--text-color); /* Light grey text */
   z-index: 1; /* Ensure text is above the circle */
 }
 
@@ -335,7 +382,7 @@ svg {
   display: block; /* block */
   font-size: 0.875rem; /* text-sm */
   font-weight: 500; /* font-medium */
-  color: #4D4D4D; /* text-textSecondary-dark (assuming dark mode based on previous context) */
+  color: var(--border-color); /* text-textSecondary-dark (assuming dark mode based on previous context) */
 }
 
 .confirmation-code-input-container {
@@ -344,14 +391,14 @@ svg {
 
 .confirmation-code-input {
   display: flex;
-  background-color: #2E2E2E;
+  background-color: var(--even-lighter-dark-background);
   width: 3rem; /* Use rem for width (50px approx 3rem) */
   height: 4rem; /* Use rem for height (70px approx 4rem) */
   border: none;
   border-radius: 10px;
   margin: auto;
   text-align: center;
-  color: #F0F0F0; /* text-textPrimary-dark */
+  color: var(--text-color);
   font-size: 1.5rem; /* Use rem for font size */
 }
 
@@ -362,7 +409,7 @@ svg {
   max-width: 350px; /* Use max-width */
   width: 95%; /* Add percentage width for flexibility */
   min-height: 70px; /* Use min-height */
-  background-color: #1A1A1A; /* bg-background-dark */
+  background-color: var(--dark-background); /* bg-background-dark */
   border: 1px solid; /* border */
   border-color: transparent; /* border-border-dark (default) */
   border-radius: 0.375rem; /* rounded-md */
@@ -378,7 +425,7 @@ svg {
   display: flex;
   align-items: center;
   margin-right: 0.5rem; /* Space between icon and input */
-  color: #B0B0B0; /* Icon color */
+  color: var(--text-secondary-color); /* Icon color */
   /* Explicitly set icon size if needed for consistent alignment */
   width: 1.5rem; /* Use rem (24px = 1.5rem) */
   height: 1.5rem; /* Use rem */
@@ -392,7 +439,7 @@ svg {
   padding: 0; /* Remove padding from input field */
   background-color: transparent; /* Make input background transparent */
   border: none; /* Remove border from input field */
-  color: #B0B0B0; /* text-textPrimary-dark */
+  color: var(--text-color);
   outline: none; /* focus:outline-none */
   /* Remove default input field appearance */
   -webkit-appearance: none;
@@ -405,20 +452,20 @@ svg {
 /* Remove focus styles from the input field itself as they are on the container */
 /*
 .input-field:focus {
-  border-color: #1ED94F;
+  border-color: var(--primary-gradient-to);
   box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5);
 }
 */
 
 /* Apply error styles to the container */
 .input-container.input-field-error {
-  border-color: #F44336; /* border-error-text */
+  border-color: var(--error-color); /* border-error-text */
 }
 
 .input-error-message {
   margin-top: 0.25rem; /* mt-1 */
   font-size: 0.875rem; /* text-sm */
-  color: #F44336; /* text-error-text */
+  color: var(--error-color); /* text-error-text */
 }
 
 /* Button Component Styles */
@@ -429,8 +476,8 @@ svg {
   padding: 0.75rem 2rem; /* Use rem for padding */
   font-size: 1.5rem; /* Use rem for font size */
   font-weight: 600; /* font-semibold */
-  color: #1A1A1A; /* text-white */
-  background-image: linear-gradient(to right, #F2F047, #1ED94F); /* bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to */
+  color: var(--dark-background); /* text-white */
+  background-image: linear-gradient(to right, #F2F047, var(--primary-gradient-to)); /* bg-gradient-to-r from-primary-gradient-from to-primary-gradient-to */
   border-radius: 10px; /* rounded-md */
   transition: opacity 0.2s ease-in-out; /* transition-opacity */
   cursor: pointer;
@@ -443,7 +490,7 @@ svg {
 
 .custom-button:focus {
   outline: none; /* focus:outline-none */
-  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5), 0 0 0 4px #333333; /* focus:ring-2 focus:ring-primary-DEFAULT focus:ring-offset-2 focus:ring-offset-surface-dark (approximated) */
+  box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5), 0 0 0 4px var(--surface-color); /* focus:ring-2 focus:ring-primary-DEFAULT focus:ring-offset-2 focus:ring-offset-surface-dark (approximated) */
 }
 
 /* Icon Component Styles */
@@ -465,7 +512,7 @@ svg {
 }
 
 .list-item.clickable:hover {
-  background-color: #1A1A1A; /* hover:bg-background-dark */
+  background-color: var(--dark-background); /* hover:bg-background-dark */
 }
 
 .list-item-icon {
@@ -481,7 +528,7 @@ svg {
   left: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  background-color: #1A1A1A; /* Black background with opacity */
+  background-color: var(--dark-background); /* Black background with opacity */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -490,10 +537,10 @@ svg {
 
 
 .modal-content {
-  background-color: #2B2B2B; /* Dark surface color */
+  background-color: var(--light-dark-background); /* Dark surface color */
   padding: 1.5rem; /* p-6 */
   border-radius: 0.5rem; /* rounded-lg */
-  box-shadow: 0 4px 6px #1A1A1A; /* shadow-lg */
+  box-shadow: 0 4px 6px var(--dark-background); /* shadow-lg */
   max-width: 90%; /* max-w-sm */
   width: auto; /* Adjust width based on content */
   text-align: center;
@@ -505,7 +552,7 @@ svg {
   align-items: center;
   font-size: 1.125rem; /* text-lg */
   font-weight: 600; /* font-semibold */
-  color: #B0B0B0; /* text-textPrimary-dark */
+  color: var(--text-secondary-color); /* text-textPrimary-dark */
   margin-bottom: 1rem; /* mb-4 */
 }
 
@@ -520,7 +567,7 @@ svg {
 }
 
 .modal-close-button img {
-  filter: brightness(0) invert(1); /* Make the close icon white */
+  filter: var(--icon-filter); /* Make the close icon white */
 }
 
 /* Channel Details Modal Specific Styles */
@@ -539,31 +586,31 @@ svg {
   width: 6rem; /* Use rem for width (100px approx 6rem) */
   height: 6rem; /* Use rem for height */
   border-radius: 50%;
-  background-color: #4D4D4D; /* Placeholder background */
+  background-color: var(--border-color); /* Placeholder background */
   overflow: hidden;
 }
 
 .channel-avatar-section img {
   width: 80px;
   height: 80px;
-  filter: brightness(0) invert(1); /* Make the channel icon white */
+  filter: var(--icon-filter); /* Make the channel icon white */
 }
 
 .channel-info-section {
   text-align: center;
-  color: #F0F0F0;
+  color: var(--text-color);
 }
 
 .channel-info-section h3 {
   font-size: 1.25rem; /* text-xl */
   font-weight: 700; /* font-bold */
   margin-bottom: 0.5rem;
-  color: #F0F0F0;
+  color: var(--text-color);
 }
 
 .channel-info-section p {
   font-size: 1rem; /* text-base */
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
   margin-bottom: 0.25rem;
 }
 
@@ -579,7 +626,7 @@ svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
   font-size: 1rem;
 }
 
@@ -588,7 +635,7 @@ svg {
   display: inline-block;
   width: 40px;
   height: 24px;
-  background-color: #4D4D4D; /* Off state color */
+  background-color: var(--border-color); /* Off state color */
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -599,7 +646,7 @@ svg {
 }
 
 .toggle-switch:checked {
-  background-color: #1ED94F; /* On state color (primary green) */
+  background-color: var(--primary-gradient-to); /* On state color (primary green) */
 }
 
 .toggle-switch::before {
@@ -608,7 +655,7 @@ svg {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: #FFFFFF; /* Handle color */
+  background-color: var(--text-color); /* Handle color */
   top: 2px;
   left: 2px;
   transition: transform 0.3s;
@@ -619,8 +666,8 @@ svg {
 }
 
 .delete-channel-button {
-  background-color: #F44336; /* Error/Danger color */
-  color: #FFFFFF;
+  background-color: var(--error-color); /* Error/Danger color */
+  color: var(--text-color);
   padding: 0.75rem 1.5rem;
   border-radius: 0.375rem;
   font-weight: 600;
@@ -635,7 +682,7 @@ svg {
 }
 
 .modal-body {
-  color: #2B2B2B; /* text-textPrimary-dark */
+  color: var(--light-dark-background); /* text-textPrimary-dark */
   margin-bottom: 1.5rem; /* mb-6 */
 }
 
@@ -655,13 +702,13 @@ svg {
 }
 
 .modal-button.primary {
-  background-color: #1ED94F; /* bg-primary-DEFAULT */
+  background-color: var(--primary-gradient-to); /* bg-primary-DEFAULT */
   color: white; /* text-white */
 }
 
 .modal-button.secondary {
-  background-color: #4D4D4D; /* bg-gray-600 */
-  color: #B0B0B0; /* text-textPrimary-dark */
+  background-color: var(--border-color); /* bg-gray-600 */
+  color: var(--text-secondary-color); /* text-textPrimary-dark */
 }
 
 .modal-button:hover {
@@ -676,14 +723,14 @@ svg {
   width: 40px; /* w-10 */
   height: 40px; /* h-10 */
   border: 1px solid; /* border border-border-dark */
-  border-color: #B0B0B0; /* border-border-dark */
+  border-color: var(--text-secondary-color); /* border-border-dark */
   border-radius: 0.375rem; /* rounded-md */
-  background-color: #1A1A1A; /* bg-background-dark */
+  background-color: var(--dark-background); /* bg-background-dark */
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .input-cell-container:focus-within { /* Apply focus styles to the container when input is focused */
-  border-color: #1ED94F; /* focus:border-primary-DEFAULT */
+  border-color: var(--primary-gradient-to); /* focus:border-primary-DEFAULT */
   box-shadow: 0 0 0 2px rgba(30, 217, 79, 0.5); /* focus:ring-primary-DEFAULT (approximated) */
 }
 
@@ -692,7 +739,7 @@ svg {
   height: 100%; /* h-full */
   text-align: center; /* text-center */
   font-size: 1.125rem; /* text-lg (already rem, good) */
-  color: #B0B0B0; /* text-textPrimary-dark */
+  color: var(--text-secondary-color); /* text-textPrimary-dark */
   background-color: transparent; /* bg-transparent */
   border: none; /* border-none */
   outline: none; /* focus:outline-none */
@@ -726,7 +773,7 @@ svg {
 .confirmation-send-code-button-container {
   display: flex;
   margin: auto;
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
   font-size: 1.25rem; /* Use rem (20px = 1.25rem) */
   cursor: pointer;
   margin-top: 1.25rem; /* Use rem (20px = 1.25rem) */
@@ -753,11 +800,11 @@ svg {
 .next-button-step {
   padding: 0.5rem; /* p-2 */
   border-radius: 9999px; /* rounded-full */
-  background-image: linear-gradient(90deg, #F2F047, #1ED94F); /* bg-primary-gradient */
+  background-image: linear-gradient(90deg, #F2F047, var(--primary-gradient-to)); /* bg-primary-gradient */
   border: none;
   cursor: pointer;
   transition: opacity 0.2s ease-in-out;
-  color: #1A1A1A; /* text-white */
+  color: var(--dark-background); /* text-white */
   width: 4.375rem; /* Use rem (70px = 4.375rem) */
   height: 4.375rem; /* Use rem */
   display: flex; /* flex */
@@ -782,17 +829,17 @@ svg {
   margin-bottom: 6.25rem; /* Use rem (100px = 6.25rem) */
   position: absolute;
   z-index: -11;
-  color: #B0B0B0; /* text-white */
+  color: var(--text-secondary-color); /* text-white */
 }
 
 /* Text Secondary Dark Color */
 .text-textSecondary-dark {
-  color: #4D4D4D;
+  color: var(--border-color);
 }
 
 /* Primary Default Color */
 .text-primary-DEFAULT {
-  color: #1ED94F;
+  color: var(--primary-gradient-to);
 }
 
 /* Chat Page Styles */
@@ -800,7 +847,7 @@ svg {
   display: flex;
   width: 100%;
   min-height: 100vh;
-  background-color: #1A1A1A; /* Dark background */
+  background-color: var(--dark-background); /* Dark background */
 }
 
 .chat-sidebar {
@@ -834,14 +881,14 @@ svg {
   background-color: #404040; /* Darker background for the input field */
   border: none; /* No border */
   border-radius: 0px 0px 0px 10px; /* Rounded corners */
-  color: #F0F0F0; /* Light text color */
+  color: var(--text-color); /* Light text color */
   font-size: 1.5rem; /* Use rem (24px = 1.5rem) */
   outline: none; /* Remove outline on focus */
   box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
 .input-panel::placeholder {
-  color: #B0B0B0; /* Light grey placeholder text */
+  color: var(--text-secondary-color); /* Light grey placeholder text */
 }
 .chat-list {
   display: flex;
@@ -850,14 +897,14 @@ svg {
 
 .chat-list-item {
   padding: 1rem;
-  color: #B0B0B0; /* Light grey text */
+  color: var(--text-secondary-color); /* Light grey text */
   cursor: pointer;
   border-bottom: 1px solid transparent; /* Default transparent border */
   transition: border-bottom-color 0.2s ease-in-out;
 }
 
 .chat-list-item.active {
-  color: #F0F0F0; /* Primary green color */
+  color: var(--text-color); /* Primary green color */
   border-bottom-color: #96C93D; /* Green underline */
   border-width: 0.3125rem; /* Use rem (5px = 0.3125rem) */
   width: 4.0625rem; /* Use rem (65px = 4.0625rem) */
@@ -871,7 +918,7 @@ svg {
 
 .chat-welcome-message {
   text-align: center;
-  color: #F0F0F0;
+  color: var(--text-color);
   font-size: 1.25rem; /* Use rem (20px = 1.25rem) */
 }
 
@@ -883,8 +930,8 @@ svg {
   max-width: 350px; /* Use max-width */
   width: 90%; /* Add percentage width for flexibility */
   height: 100vh; /* Full viewport height */
-  background-color: #2E2E2E; /* Dark background for the sidebar */
-  color: #B0B0B0; /* Light grey text */
+  background-color: var(--even-lighter-dark-background); /* Dark background for the sidebar */
+  color: var(--text-secondary-color); /* Light grey text */
   display: flex;
   flex-direction: column;
   z-index: 50; /* Ensure it's above other content but below the overlay */
@@ -900,20 +947,20 @@ svg {
   display: flex;
   align-items: center;
   padding: 1rem; /* p-4 */
-  border-bottom: 1px solid #4D4D4D; /* border-b border-border-dark */
+  border-bottom: 1px solid var(--border-color); /* border-b border-border-dark */
 }
 
 .sidebar-avatar-placeholder {
   width: 3rem; /* w-12 */
   height: 3rem; /* h-12 */
-  background-color: #4D4D4D; /* bg-gray-600 */
+  background-color: var(--border-color); /* bg-gray-600 */
   border-radius: 9999px; /* rounded-full */
   margin-right: 1rem; /* mr-4 */
 }
 
 .sidebar-username {
   font-size: 0.875rem; /* text-sm */
-  color: #4D4D4D; /* text-textSecondary-dark */
+  color: var(--border-color); /* text-textSecondary-dark */
 }
 
 .sidebar-options-list {
@@ -933,7 +980,7 @@ svg {
 }
 
 .sidebar-menu-item:hover {
-  background-color: #1A1A1A; /* hover:bg-background-dark */
+  background-color: var(--dark-background); /* hover:bg-background-dark */
 }
 
 /* Ensure ListItem styles are applied correctly within the sidebar */
@@ -945,7 +992,7 @@ svg {
 }
 
 .sidebar-options-list .list-item.clickable:hover {
-  background-color: #1A1A1A; /* hover:bg-background-dark */
+  background-color: var(--dark-background); /* hover:bg-background-dark */
 }
 
 .sidebar-options-list .list-item-icon {
@@ -961,7 +1008,7 @@ svg {
   left: 0;
   width: 100%; /* Full width */
   height: 100vh; /* Full viewport height */
-  background-color: #1A1A1A;
+  background-color: var(--dark-background);
   z-index: 40; /* Ensure it's below the sidebar but above other content */
 }
 
@@ -980,13 +1027,13 @@ svg {
 }
 
 .subscribe-button {
-  background-image: linear-gradient(to right, #F2F047, #1ED94F); /* Primary gradient */
-  color: #1A1A1A; /* Dark text on light background */
+  background-image: linear-gradient(to right, #F2F047, var(--primary-gradient-to)); /* Primary gradient */
+  color: var(--dark-background); /* Dark text on light background */
 }
 
 .unsubscribe-button {
-  background-color: #4D4D4D; /* Gray background */
-  color: #B0B0B0; /* Light text */
+  background-color: var(--border-color); /* Gray background */
+  color: var(--text-secondary-color); /* Light text */
 }
 
 .subscribe-button:hover,
@@ -1005,7 +1052,7 @@ svg {
 }
 
 .modal-close-button img {
-  filter: brightness(0) invert(1); /* Make the close icon white */
+  filter: var(--icon-filter); /* Make the close icon white */
 }
 
 /* Channel Details Modal Specific Styles */
@@ -1024,31 +1071,31 @@ svg {
   width: 6.25rem; /* Use rem (100px = 6.25rem) */
   height: 6.25rem; /* Use rem */
   border-radius: 50%;
-  background-color: #4D4D4D; /* Placeholder background */
+  background-color: var(--border-color); /* Placeholder background */
   overflow: hidden;
 }
 
 .channel-avatar-section img {
   width: 5rem; /* Use rem (80px = 5rem) */
   height: 5rem; /* Use rem */
-  filter: brightness(0) invert(1); /* Make the channel icon white */
+  filter: var(--icon-filter); /* Make the channel icon white */
 }
 
 .channel-info-section {
   text-align: center;
-  color: #F0F0F0;
+  color: var(--text-color);
 }
 
 .channel-info-section h3 {
   font-size: 1.25rem; /* text-xl */
   font-weight: 700; /* font-bold */
   margin-bottom: 0.5rem;
-  color: #F0F0F0;
+  color: var(--text-color);
 }
 
 .channel-info-section p {
   font-size: 1rem; /* text-base */
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
   margin-bottom: 0.25rem;
 }
 
@@ -1064,7 +1111,7 @@ svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
   font-size: 1rem;
 }
 
@@ -1073,7 +1120,7 @@ svg {
   display: inline-block;
   width: 2.5rem; /* Use rem (40px = 2.5rem) */
   height: 1.5rem; /* Use rem (24px = 1.5rem) */
-  background-color: #4D4D4D; /* Off state color */
+  background-color: var(--border-color); /* Off state color */
   border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -1084,7 +1131,7 @@ svg {
 }
 
 .toggle-switch:checked {
-  background-color: #1ED94F; /* On state color (primary green) */
+  background-color: var(--primary-gradient-to); /* On state color (primary green) */
 }
 
 .toggle-switch::before {
@@ -1093,7 +1140,7 @@ svg {
   width: 1.25rem; /* Use rem (20px = 1.25rem) */
   height: 1.25rem; /* Use rem */
   border-radius: 50%;
-  background-color: #FFFFFF; /* Handle color */
+  background-color: var(--text-color); /* Handle color */
   top: 0.125rem; /* Use rem (2px = 0.125rem) */
   left: 0.125rem; /* Use rem */
   transition: transform 0.3s;
@@ -1104,8 +1151,8 @@ svg {
 }
 
 .delete-channel-button {
-  background-color: #F44336; /* Error/Danger color */
-  color: #FFFFFF;
+  background-color: var(--error-color); /* Error/Danger color */
+  color: var(--text-color);
   padding: 0.75rem 1.5rem;
   border-radius: 0.375rem;
   font-weight: 600;
@@ -1280,8 +1327,8 @@ html {
 
 /* Small Settings Modal */
 .settings-small-modal-content {
-  background-color: none; /* A slightly lighter dark shade */
-  color: #f0f0f0;
+  background-color: var(--light-dark-background); /* A slightly lighter dark shade */
+  color: var(--text-color);
   padding: 1.5rem;
   border-radius: 15px;
   width: 350px;
@@ -1294,12 +1341,13 @@ html {
   align-items: center;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .settings-small-title {
   font-size: 1.5rem;
   font-weight: 600;
+  color: var(--text-color);
 }
 
 .settings-small-close-button {
@@ -1328,14 +1376,14 @@ html {
 .settings-option-label {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #b0b0b0;
+  color: var(--text-secondary-color);
 }
 
 /* Theme Buttons */
 .theme-buttons-container {
   display: flex;
   justify-content: space-between;
-  background-color: #1e1e1e;
+  background-color: var(--even-lighter-dark-background);
   border-radius: 10px;
   padding: 5px;
 }
@@ -1363,16 +1411,13 @@ html {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  background-color: var(--surface-color); /* Default background from theme */
+  color: var(--text-color); /* Default text color from theme */
 }
 
-.theme-button.dark-mode {
-  background-color: #000000; /* Explicit black color */
-  color: #ffffff;
-}
-
-.theme-button.light-mode {
-  background-color: transparent;
-  color: #b0b0b0;
+.theme-button.active {
+  background-color: var(--primary-gradient-to); /* Active background from theme */
+  color: var(--dark-background); /* Active text color from theme */
 }
 
 /* Language and Support Buttons */
@@ -1384,8 +1429,8 @@ html {
 
 .settings-action-button {
     flex: 1;
-    background-color: #3a3a3a;
-    color: #f0f0f0;
+    background-color: var(--surface-color);
+    color: var(--text-color);
     border: none;
     padding: 1rem;
     border-radius: 10px;
@@ -1397,13 +1442,13 @@ html {
 }
 
 .settings-action-button:hover {
-    background-color: #4a4a4a;
+    background-color: var(--border-color);
 }
 
 .support-description {
     text-align: center;
     margin-top: 1rem;
-    color: #888;
+    color: var(--text-secondary-color);
     font-size: 0.85rem;
 }
 
@@ -1411,7 +1456,7 @@ html {
 .support-modal-content {
   padding: 1.5rem;
   background-color: transparent;
-  color: #F0F0F0;
+  color: var(--text-color);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -1436,7 +1481,7 @@ html {
 .support-header-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--text-color);
 }
 
 .support-back-button,
@@ -1451,7 +1496,7 @@ html {
 
 .support-back-button:hover,
 .support-close-button:hover {
-    background-color: #333333;
+    background-color: var(--surface-color);
 }
 
 .support-back-button .icon,
@@ -1462,7 +1507,7 @@ html {
 
 .support-separator {
   height: 1px;
-  background-color: #3a3a3a;
+  background-color: var(--border-color);
   width: 100%;
 }
 
@@ -1475,16 +1520,16 @@ html {
 .support-section-title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1ED94F; /* Primary green color */
+  color: var(--primary-gradient-to); /* Primary green color */
   margin-bottom: 0.5rem;
-  border-left: 3px solid #1ED94F;
+  border-left: 3px solid var(--primary-gradient-to);
   padding-left: 0.75rem;
 }
 
 .support-text {
   font-size: 0.95rem;
   line-height: 1.6;
-  color: #B0B0B0;
+  color: var(--text-secondary-color);
 }
 
 .support-channels-list {
@@ -1496,7 +1541,7 @@ html {
 }
 
 .support-channel-item {
-    background-color: #2E2E2E;
+    background-color: var(--even-lighter-dark-background);
     padding: 1rem;
     border-radius: 8px;
     border-left: 3px solid transparent;
@@ -1508,11 +1553,11 @@ html {
 }
 
 .support-channel-item strong {
-  color: #F0F0F0;
+  color: var(--text-color);
 }
 
 .support-link {
-  color: #1ED94F;
+  color: var(--primary-gradient-to);
   text-decoration: none;
   transition: opacity 0.2s ease-in-out;
 }
@@ -1524,7 +1569,7 @@ html {
 
 .support-channel-description {
   font-size: 0.85rem;
-  color: #888;
+  color: var(--text-secondary-color);
   margin-top: 0.25rem;
   padding-left: 0.25rem;
 }

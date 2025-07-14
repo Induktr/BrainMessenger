@@ -21,14 +21,16 @@
     "logout": "Вийти"
   },
   "myAccount": {
-    "headerTitle": "Інформація",
-    "uploadPhoto": "Завантажити нове фото",
-    "uploading": "Завантаження...",
-    "uploadFailed": "Помилка завантаження: {{message}}",
-    "guest": "Гість",
-    "bioPlaceholder": "Введіть вашу біографію тут...",
-    "notAvailable": "Н/Д",
-    "logout": "Вийти",
+    "userLabel": {
+     "headerTitle": "Інформація",
+     "uploadPhoto": "Завантажити нове фото",
+     "uploading": "Завантаження...",
+     "uploadFailed": "Помилка завантаження: {{message}}",
+     "guest": "Гость",
+     "bioPlaceholder": "Введіть вашу біографію тут...",
+     "notAvailable": "Н/Д",
+     "logout": "Вийти"
+    },
     "alt": {
       "back": "Назад",
       "close": "Закрити",
@@ -54,6 +56,7 @@
     },
     "editModal": {
       "title": "Редагувати {{field}}",
+      "placeholder": "Введіть код",
       "statusLabel": "Статус:",
       "verified": "Перевірено",
       "notVerified": "Не перевірено",
@@ -73,6 +76,40 @@
         "crop": "Обріж мене"
       }
     }
+  },
+  "settings": {
+    "headerTitle": "Налаштування",
+    "myAccount": "Мій акаунт",
+    "language": "Мова",
+    "advancedSettings": "Розширені налаштування"
+  },
+  "advancedSettings": {
+    "headerTitle": "Розширені налаштування",
+    "description": "Розширені налаштування будуть відображатися тут."
+  },
+  "smallSettings": {
+    "headerTitle": "Налаштування",
+    "theme": {
+      "headerTitle": "Тема",
+      "light": "Світла тема",
+      "dark": "Темна тема"
+    },
+    "language": "Мова",
+    "support": "Підтримка",
+    "descriptionFaq": "Є питання? Зв'яжіться з нами."
+  },
+  "support": {
+    "headerTitle": "Підтримка та послуги",
+    "ourPhilosophy": "Наша філософія",
+    "descriptionPhilosophy": "Підтримка та подтримка є частиною нашої системи, що має на меті підтримувати здоров'я застосунку та зберегти це цифрове активне для наших користувачів. Ми поширюємося на принципах непрервної покращення (Kaizen), якості та відповідальності.",
+    "howToReachUs": "Як зв'яжіться з нами",
+    "descriptionHowToReachUs": "Для будь-яких запитань або проблем, ви можете зв'яжіться з нами через наступні канали:",
+    "email": "Електронна пошта",
+    "descriptionEmail": "Основний канал, відповідь за 24 години.",
+    "inAppFeedbackForm": "Форма зворотного зв'язку",
+    "descriptionInAppFeedbackForm": "Перейдіть до Налаштувань → Допомога → Зв'яжіться з нами для структурованого звідомлення про проблеми.",
+    "forMoreInformation": "Для більш детальної документації та гайдів",
+    "descriptionForMoreInformation": "Для детальної документації та гайдів, будь ласка, відвідайте нашу офіційну сторінку."
   },
   "linkPreview": {
     "loading": "Завантаження предпросмотра..."
@@ -400,5 +437,22 @@
     "welcome_prompt": "Ласкаво просимо, {{email}}! Щоб завершити процес реєстрації, будь ласка, введіть код, який ми надіслали вам електронною поштою.",
     "next_button_alt": "Далі",
     "back_button_alt": "Назад"
+  },
+  "chat_input": {
+    "placeholder": "Введіть повідомлення...",
+    "error": "Помилка: {{message}}",
+    "confirm_edit": "Підтвердити редагування",
+    "send": "Відправити",
+    "subscribe": "Підписатися",
+    "unsubscribe": "Відписатися",
+    "release_to_upload": "Випустіть для завантаження"
+  },
+  "user_profile": {
+    "header_title": "Профіль користувача",
+    "email_label": "Eлектронна пошта",
+    "user_name_label": "Ім'я користувача",
+    "verified_label": "Підтверджений",
+    "yes": "Так",
+    "no": "Ні"
   }
 }

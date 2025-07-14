@@ -54,4 +54,4 @@ COPY --from=development /usr/src/app/schema.gql ./schema.gql
 
 EXPOSE 4000
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:prod"]

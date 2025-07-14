@@ -179,6 +179,7 @@ export class ChatResolver {
       messages: (chat.messages || []).map(m => this._mapMessageToDto(m)),
       channel: chat.channel ? {
         ...chat.channel,
+        name: chat.name ?? '',
         chat: {
           id: chat.channel.chat.id,
           name: chat.channel.chat.name,
@@ -209,7 +210,7 @@ export class ChatResolver {
 
     return Promise.all(chatParticipants.map(async (cp) => {
       const chat = cp.chat;
-      const lastMessage = chat.messages[0];
+      const lastMessage = chat.messages?.[0];
       // Correctly calculate unread count. Assumes messageService has this method.
       const unreadCount = lastMessage && cp.lastReadMessage?.createdAt
         ? 1 // Placeholder, real logic would be a count query
@@ -232,6 +233,7 @@ export class ChatResolver {
         participants: chat.participants.map(p => this._mapUserToDto(p.user)).filter(Boolean) as UserDto[],
         channel: chat.channel ? {
           ...chat.channel,
+          name: chat.name ?? '',
           owner: this._mapUserToDto(chat.channel.owner) as UserDto, // Ensure owner is mapped to UserDto
           chat: {
             id: chat.channel.chat.id,
@@ -260,6 +262,7 @@ export class ChatResolver {
       messages: [],
       channel: chat.channel ? {
           ...chat.channel,
+          name: chat.name ?? '',
           owner: this._mapUserToDto(chat.channel.owner) as UserDto, // Ensure owner is mapped to UserDto
           chat: {
             id: chat.channel.chat.id,
@@ -364,6 +367,7 @@ export class ChatResolver {
     }
     return {
       ...updatedChannel,
+      name: updatedChannel.chat.name ?? '',
       owner: ownerDto,
       chat: {
         id: updatedChannel.chat.id,

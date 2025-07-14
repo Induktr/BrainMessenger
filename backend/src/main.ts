@@ -5,7 +5,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { graphqlUploadExpress } from 'graphql-upload-ts'; // Import middleware
 import * as Sentry from '@sentry/node';
-import { LOG_LEVELS } from '@nestjs/common';
 // import { SentryInterceptor } from '@sentry/nestjs'; // Temporarily commented out
 // import { GraphQLErrorFilter } from './common/filters/graphql-error.filter'; // Assuming this path - Temporarily commented out
 
@@ -32,7 +31,8 @@ async function bootstrap() {
       const allowedOrigins = [
         'http://localhost:3000', // Allow local frontend development server
         ...frontendUrls, // Spread the parsed frontend URLs
-        // Add other allowed origins as needed, e.g., preview URLs
+        'https://app.brain-messenger.com', // Allow production domain
+        /https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/, // Allow Vercel preview deployments
         /https:\/\/[a-zA-Z0-9-]+\.cloudworkstations\.dev$/, // Allow preview URLs from cloud workstations
       ].filter(Boolean); // Filter out any undefined or null values
 

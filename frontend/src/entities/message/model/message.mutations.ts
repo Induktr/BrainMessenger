@@ -51,7 +51,7 @@ export const UPDATE_MESSAGE = gql`
         username
         status
         bio
-        roles
+        role
       }
       attachments {
         id
@@ -85,7 +85,7 @@ export const SEND_MESSAGE = gql`
         username
         status
         bio
-        roles
+        role
       }
       attachments {
         id

@@ -21,14 +21,16 @@
     "logout": "Logout"
   },
   "myAccount": {
-    "headerTitle": "Info",
-    "uploadPhoto": "Upload a fresh photo",
-    "uploading": "Uploading...",
-    "uploadFailed": "Upload failed: {{message}}",
-    "guest": "Guest",
-    "bioPlaceholder": "Enter your biography here...",
-    "notAvailable": "N/A",
-    "logout": "Logout",
+    "userLabel": {
+     "headerTitle": "Info",
+     "uploadPhoto": "Upload a fresh photo",
+     "uploading": "Uploading...",
+     "uploadFailed": "Upload failed: {{message}}",
+     "guest": "Guest",
+     "bioPlaceholder": "Enter your biography here...",
+     "notAvailable": "N/A",
+     "logout": "Logout"
+    },
     "alt": {
       "back": "Back",
       "close": "Close",
@@ -54,6 +56,7 @@
     },
     "editModal": {
       "title": "Edit {{field}}",
+      "placeholder": "Enter code",
       "statusLabel": "Status:",
       "verified": "Verified",
       "notVerified": "Not Verified",
@@ -73,6 +76,40 @@
         "crop": "Crop me"
       }
     }
+  },
+  "settings": {
+    "headerTitle": "Settings",
+    "myAccount": "My Account",
+    "language": "Language",
+    "advancedSettings": "Advanced Settings"
+  },
+  "advancedSettings": {
+    "headerTitle": "Advanced Settings",
+    "description": "Advanced Settings features will be displayed here."
+  },
+  "smallSettings": {
+    "headerTitle": "Small Settings",
+    "theme": {
+      "headerTitle": "Theme",
+      "light": "Light Mode",
+      "dark": "Dark Mode"
+    },
+    "language": "Language",
+    "support": "Support",
+    "descriptionFaq": "Have questions? Contact our support team."
+  },
+  "support": {
+    "headerTitle": "Support & Service",
+    "ourPhilosophy": "Our Philosophy",
+    "descriptionPhilosophy": "Support and maintenance are an integral part of our system, aimed at maintaining the health of the application and preserving the value of this digital asset for our users. We are guided by the principles of continuous improvement (Kaizen), quality, and responsibility.",
+    "howToReachUs": "How to Reach Us",
+    "descriptionHowToReachUs": "For any questions or issues, you can contact us through the following channels:",
+    "email": "Email",
+    "descriptionEmail": "Primary channel, response within 24 hours.",
+    "inAppFeedbackForm": "In-App Feedback Form",
+    "descriptionInAppFeedbackForm": "Go to Settings → Help → Contact Us for structured problem reporting.",
+    "forMoreInformation": "For More Information",
+    "descriptionForMoreInformation": "For detailed documentation and guides, please visit our official landing page."
   },
   "linkPreview": {
     "loading": "Loading preview..."
@@ -398,5 +435,22 @@
     "welcome_prompt": "Welcome, {{email}}! To complete the registration process, please enter the code we sent to you by email.",
     "next_button_alt": "Next",
     "back_button_alt": "Back"
+  },
+  "chat_input": {
+    "placeholder": "Enter message...",
+    "error": "Error: {{message}}",
+    "confirm_edit": "Confirm Edit",
+    "send": "Send",
+    "subscribe": "Subscribe",
+    "unsubscribe": "Unsubscribe",
+    "release_to_upload": "Release to upload"
+  },
+  "user_profile": {
+    "header_title": "User Profile",
+    "email_label": "E-mail",
+    "user_name_label": "User name",
+    "verified_label": "Verified",
+    "yes": "Yes",
+    "no": "No"
   }
 }
