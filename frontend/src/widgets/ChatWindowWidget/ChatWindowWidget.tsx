@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import ChatMessage from '@/entities/message/ui/ChatMessage';
 import ChatInput from '@/features/send-message/ui/ChatInput';
 import Spinner from '@/shared/ui/Spinner/Spinner';

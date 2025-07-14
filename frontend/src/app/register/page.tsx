@@ -444,10 +444,19 @@ const RegisterPage = () => {
 
         </form>
 
+        <Button
+          type="button"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2 mt-4" // Added mt-4 for margin-top
+          onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'} // TODO: Use config service for backend URL
+        >
+          <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
+          <span>{t('register_page.sign_up_with_google')}</span>
+        </Button>
+
         {/* Back Button */}
         {currentStep >= 1 && (
-          <Button type="button" onClick={handleBack} className="back-button-top-left"> {/* Added class for styling */}
-            <Image src={ICONS.arrowBack} alt={t('register_page.back_button_alt')} className="icon svg-icon" width={24} height={24} /> {/* Use img tag and apply svg-icon class */}
+          <Button type="button" onClick={handleBack} className="back-button-top-left">
+            <Image src={ICONS.arrowBack} alt={t('register_page.back_button_alt')} className="icon svg-icon" width={24} height={24} />
           </Button>
         )}
         {currentStep !== 4 && (<p className="text-center text-sm text-textSecondary-dark">

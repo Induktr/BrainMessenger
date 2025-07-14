@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react'; // Import useLayoutEffect
 import { useRouter } from 'next/navigation'; // Import useRouter
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth
 import { ICONS } from '@/shared/assets/Icons/icons';
 import { IMAGES } from '@/shared/assets/Images/images';
 import Button from '@/shared/ui/Button/Button';

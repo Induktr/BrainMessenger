@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useMutation } from '@apollo/client';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import { UPDATE_LAST_ACTIVE_MUTATION, GET_CURRENT_USER } from '@/entities/user/model/user.queries';
 
 // This component handles periodically updating the user's last active status

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useGlobalAudio } from '@/features/manage-audio-player/ui/GlobalAudioContext';
+import { useGlobalAudio } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
 import { ICONS } from '@/shared/assets/Icons/icons';
 
 const GlobalAudioControls: React.FC = () => {

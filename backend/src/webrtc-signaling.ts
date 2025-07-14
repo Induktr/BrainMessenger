@@ -15,6 +15,8 @@ import { ConfigService } from '@nestjs/config'; // Import ConfigService
       const allowedOrigins = [
         'http://localhost:3000', // Allow local frontend development server
         ...frontendUrls, // Spread the parsed frontend URLs
+        'https://app.brain-messenger.com', // Allow production domain
+        /https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/, // Allow Vercel preview deployments
         // Add other allowed origins as needed, e.g., preview URLs
         /https:\/\/[a-zA-Z0-9-]+\.cloudworkstations\.dev$/, // Allow preview URLs from cloud workstations
       ].filter(Boolean); // Filter out any undefined or null values

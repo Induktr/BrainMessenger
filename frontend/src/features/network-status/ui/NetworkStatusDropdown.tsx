@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useNetworkStatus } from "@/features/network-status/ui/NetworkStatusContext";
+import { useNetworkStatus } from "@/app/providers/NetworkStatusProvider/NetworkStatusContext";
 
 const NetworkStatusDropdown: React.FC = () => {
   const { isOnline, isPoorConnection } = useNetworkStatus();

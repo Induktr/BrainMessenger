@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ICONS } from '@/shared/assets/Icons/icons';
-import { useGlobalAudio } from '@/features/manage-audio-player/ui/GlobalAudioContext'; // Import useGlobalAudio
+import { useGlobalAudio } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext'; // Import useGlobalAudio
 import { AudioPlayerProps } from '@/features/manage-audio-player/model/auido.types';
 
 const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, onShowGlobalControls }) => {

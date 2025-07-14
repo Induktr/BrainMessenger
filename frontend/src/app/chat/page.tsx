@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
-import { GlobalAudioProvider } from '@/features/manage-audio-player/ui/GlobalAudioContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
+import { GlobalAudioProvider } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
 import ChatListWidget from '@/widgets/ChatListWidget/ChatListWidget';
 import ChatWindowWidget from '@/widgets/ChatWindowWidget/ChatWindowWidget';
 import Spinner from '@/shared/ui/Spinner/Spinner';
@@ -21,7 +21,7 @@ import ContextMenu from '@/shared/ui/ContextMenu/ContextMenu';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
 import SearchWidget from '@/widgets/SearchWidget/SearchWidget';
 import { useSubscription } from '@apollo/client'; // Import useSubscription
-import { useNotification } from '@/features/manage-notifications/ui/NotificationContext'; // Import useNotification
+import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification
 import NotificationDropdown from '@/features/manage-notifications/ui/NotificationDropdown'; // Import NotificationDropdown
 import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
 import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions'; // Import existing subscription

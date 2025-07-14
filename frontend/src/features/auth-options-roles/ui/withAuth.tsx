@@ -2,15 +2,10 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
-import { UserRole } from '@/entities/user/model/user.types';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import Spinner from '@/shared/ui/Spinner/Spinner';
 import Image from 'next/image';
-
-interface WithAuthOptions {
-  requiredRoles?: UserRole[];
-  redirectPath?: string;
-}
+import { WithAuthOptions } from '@/features/auth-options-roles/model/auth-options-roles.types'
 
 const withAuth = (WrappedComponent: React.ComponentType, options?: WithAuthOptions) => {
   const { requiredRoles = [], redirectPath = '/login' } = options || {};

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ICONS } from '@/shared/assets/Icons/icons';
 import { useMutation } from '@apollo/client';
 import { UPDATE_CHANNEL_PRIVACY, DELETE_CHANNEL } from '@/entities/channel/model/channel.queries';
-import { useNotification } from '@/features/manage-notifications/ui/NotificationContext';
+import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext';
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
 import { ChannelDetailsModalProps } from '@/features/create-chat/model/create-chat.types';

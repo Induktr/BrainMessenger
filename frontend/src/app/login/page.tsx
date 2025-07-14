@@ -12,7 +12,7 @@ import { LOGIN_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/entities/us
 import { useRouter } from 'next/navigation'; // Import useRouter
 import Image from 'next/image';
 import { IMAGES } from '@/shared/assets/Images/images'
-import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 import { ICONS } from '@/shared/assets/Icons/icons';
 
@@ -184,6 +184,14 @@ const LoginPage = () => {
               )
             )}
           </form>
+          <Button
+            type="button"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
+            onClick={() => window.location.href = 'http://localhost:5000/api/auth/google'} // TODO: Use config service for backend URL
+          >
+            <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
+            <span>{t('login_page.sign_in_with_google')}</span>
+          </Button>
           <p className="text-center text-sm text-textSecondary-dark">
             {t('login_page.no_account_prompt')}{' '}
             <Link href="/register" className="text-primary-DEFAULT hover:underline">

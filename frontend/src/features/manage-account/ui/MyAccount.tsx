@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'; // Corrected import
 import Modal from '@/shared/ui/Modal/Modal';
 import { ICONS } from '@/shared/assets/Icons/icons'; // Adjusted import based on usage
 import Button from '@/shared/ui/Button/Button';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
 import Spinner from '@/shared/ui/Spinner/Spinner'; // Import LazyLoading
 import { useMutation, useApolloClient } from '@apollo/client';

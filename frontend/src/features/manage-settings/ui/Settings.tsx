@@ -9,7 +9,7 @@ import AdvancedSettings from '@/features/manage-settings/ui/AdvancedSettings';
 import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now
 import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image';
-import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
 import { SettingsProps } from '@/features/manage-settings/model/settings.types';
 import { useTranslation } from 'react-i18next';

@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface DeleteMessageModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-}
+import { DeleteMessageModalProps } from '@/entities/admin-manage-panel/model/admin-manage-panel.types';
 
 const DeleteMessageModal: React.FC<DeleteMessageModalProps> = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;

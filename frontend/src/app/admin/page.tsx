@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import withAuth from '@/components/withAuth';
+import withAuth from '@/features/auth-options-roles/ui/withAuth';
 import { UserRole } from '@/entities/user/model/user.types';
 import UserStatsWidget from '@/widgets/AdminDashboardWidgets/UserStatsWidget';
 import FeedbackFeedWidget from '@/widgets/AdminDashboardWidgets/FeedbackFeedWidget';

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { useDeepWork } from '@/features/deepwork-chat/ui/DeepWorkContext';
+import { useDeepWork } from '@/app/providers/DeepWorkProvider/DeepWorkContext';
 import { Geist } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
 import { Roboto } from 'next/font/google';

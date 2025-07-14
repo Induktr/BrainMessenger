@@ -348,4 +348,55 @@ export class AuthService {
       throw new UnauthorizedException('Failed to refresh tokens.');
     }
   }
+  async validateUserWithGoogle(profile: any): Promise<any> {
+    try {
+      const { emails, name, photos } = profile;
+      const email = emails && emails.length > 0 ? emails[0].value : null;
+      const displayName = name ? `${name.givenName} ${name.familyName}` : null;
+      const avatarUrl = photos && photos.length > 0 ? photos[0].value : null;
+
+      if (!email) {
+        throw new UnauthorizedException('Google profile did not provide an email address.');
+      }
+
+      let user = await this.prisma.user.findUnique({ where: { email } });
+
+      if (user) {
+        // Если пользователь существует, просто аутентифицируем его
+        this.logger.log(`User ${user.id} found via Google OAuth. Authenticating.`);
+        // Возможно, обновить данные профиля, если они изменились
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            name: displayName || user.name,
+            avatarUrl: avatarUrl || user.avatarUrl,
+            // Обновить другие поля, если необходимо
+          },
+        });
+      } else {
+        // Если пользователя нет, создаем нового
+        this.logger.log(`New user with email ${email} registering via Google OAuth.`);
+        user = await this.prisma.user.create({
+          data: {
+            email,
+            name: displayName || '', // Provide empty string if null
+            avatarUrl: avatarUrl || '', // Provide empty string if null
+            isVerified: true, // Google аутентификация подразумевает верификацию email
+            role: 'USER', // Дефолтная роль
+            // Пароль не требуется для OAuth пользователей, но Prisma schema может требовать.
+            // Если password в schema.prisma не nullable, нужно будет сгенерировать заглушку или изменить схему.
+            // Предполагаем, что password может быть nullable или будет сгенерирован.
+            password: 'GOOGLE_OAUTH_USER_NO_PASSWORD', // Заглушка, если поле password не nullable
+          },
+        });
+      }
+
+      // Возвращаем пользователя без чувствительных данных
+      const { password, refreshToken, refreshTokenExpiresAt, verificationCode, verificationCodeExpiresAt, verificationAttempts, lastVerificationAttempt, ...result } = user;
+      return result;
+    } catch (error) {
+      this.logger.error(`Error validating user with Google: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
 }

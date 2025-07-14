@@ -6,7 +6,7 @@ import { useQuery } from '@apollo/client';
 import { GET_USER_BY_ID } from '@/entities/user/model/user.queries';
 import Image from 'next/image';
 import { ICONS } from '@/shared/assets/Icons/icons';
-import { useAuth } from '@/features/user-auth/ui/AuthContext'; // To check if it's the current user
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // To check if it's the current user
 import { UserProfileModalProps } from '@/entities/user/model/user.types';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 import { useTranslation } from 'react-i18next';

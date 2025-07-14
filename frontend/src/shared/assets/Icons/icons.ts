@@ -52,4 +52,5 @@ export const ICONS = {
     refresh: '/icons/refresh.svg',
     globe: '/icons/globe.svg',
     foucsMode: '/icons/foucsMode.svg',
+    google: '/icons/google.svg', // New icon for Google OAuth
 };

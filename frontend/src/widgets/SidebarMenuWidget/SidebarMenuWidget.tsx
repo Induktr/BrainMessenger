@@ -10,10 +10,10 @@ import CreateGroupModal from '@/features/create-chat/ui/CreateGroupModal';
 import Spinner from '@/shared/ui/Spinner/Spinner'; // Import LazyLoading
 import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now, might remove later
 import Image from 'next/image';
-import { useAuth } from '@/features/user-auth/ui/AuthContext'; // Import useAuth hook
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
 import AllNotificationsModal from '@/features/manage-notifications/ui/AllNotificationsModal'; // Import AllNotificationsModal
-import { useNotification } from '@/features/manage-notifications/ui/NotificationContext'; // Import useNotification hook
+import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification hook
 import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
 import Support from '@/features/manage-settings/ui/Support';
 import Settings from '@/features/manage-settings/ui/Settings';

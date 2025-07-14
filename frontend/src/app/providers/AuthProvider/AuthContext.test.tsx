@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useAuth, AuthProvider } from '@/features/user-auth/ui/AuthContext';
+import { useAuth, AuthProvider } from '@/app/providers/AuthProvider/AuthContext';
 import { useQuery, useApolloClient } from '@apollo/client';
 import { useRouter } from 'next/navigation';
 import React, { ReactNode } from 'react';

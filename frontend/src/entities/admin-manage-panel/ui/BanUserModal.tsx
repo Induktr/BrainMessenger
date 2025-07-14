@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-
-interface BanUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (reason: string, durationDays: number) => void;
-  userName: string;
-}
+import { BanUserModalProps } from '@/entities/admin-manage-panel/model/admin-manage-panel.types';
 
 const BanUserModal: React.FC<BanUserModalProps> = ({ isOpen, onClose, onConfirm, userName }) => {
   const [reason, setReason] = useState('');

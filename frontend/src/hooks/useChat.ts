@@ -3,7 +3,7 @@ import { useQuery, useMutation, useSubscription, useApolloClient } from '@apollo
 import { GET_MESSAGES, SEND_MESSAGE, UPDATE_MESSAGE } from '@/entities/message/model/message.queries';
 import { GET_CHAT_DETAILS } from '@/entities/chat/model/chat.queries';
 import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions';
-import { useAuth } from '@/features/user-auth/ui/AuthContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import type { Message } from '@/entities/message/model/message.types';
 import type { Chat } from '@/entities/chat/model/chat.types';
 import { useChatActions } from '@/features/manage-chat/useChatActions';
