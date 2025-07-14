@@ -79,14 +79,6 @@ const ChatPage = () => {
     clearNotification();
   };
 
-  if (authLoading || isInitializing) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
-        <Spinner className="spinner-logo-container"/>
-      </div>
-    );
-  }
-
   useEffect(() => {
     if (!currentUser && !authLoading && !isInitializing) {
       router.push('/');
