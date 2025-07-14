@@ -43,7 +43,7 @@
   --dark-background: #1A1A1A;
   --light-dark-background: #333333;
   --even-lighter-dark-background: #B0B0B0;
-  --icon-filter: invert(1); /* No filter for black icons on light background */
+  --icon-filter: invert(0); /* No filter for black icons on light background */
 }
 /* General styles */
 

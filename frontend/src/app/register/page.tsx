@@ -16,6 +16,7 @@ import { ICONS } from '@/shared/assets/Icons/icons';
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 import { IMAGES } from '@/shared/assets/Images/images';
 import { RegisterFormInputs } from '@/features/user-auth/model/user-auth.types';
+import GoogleAuthButton from '@/entities/google-auth/ui/GoogleAuthButton';
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -444,14 +445,7 @@ const RegisterPage = () => {
 
         </form>
 
-        <Button
-          type="button"
-          className="sign-with-google-button" // Added mt-4 for margin-top
-          onClick={() => window.location.href = 'http://localhost:4000/auth/google'} // Removed /api/ prefix
-        >
-          <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
-          <span>{t('register_page.sign_up_with_google')}</span>
-        </Button>
+        <GoogleAuthButton type='register' />
 
         {/* Back Button */}
         {currentStep >= 1 && (

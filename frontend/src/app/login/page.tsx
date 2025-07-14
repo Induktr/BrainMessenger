@@ -15,6 +15,7 @@ import { IMAGES } from '@/shared/assets/Images/images'
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
 import { ICONS } from '@/shared/assets/Icons/icons';
+import GoogleAuthButton from '@/entities/google-auth/ui/GoogleAuthButton';
 
 interface LoginFormInputs {
   email: string;
@@ -184,14 +185,7 @@ const LoginPage = () => {
               )
             )}
           </form>
-          <Button
-            type="button"
-            className="sign-with-google-button"
-            onClick={() => window.location.href = 'http://localhost:4000/auth/google'} // Removed /api/ prefix
-          >
-            <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
-            <span>{t('login_page.sign_in_with_google')}</span>
-          </Button>
+          <GoogleAuthButton type='login' />
           <p className="text-center text-sm text-textSecondary-dark">
             {t('login_page.no_account_prompt')}{' '}
             <Link href="/register" className="text-primary-DEFAULT hover:underline">

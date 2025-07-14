@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BanUserModalProps } from '@/entities/admin-manage-panel/model/admin-manage-panel.types';
+import { BanUserModalProps } from '@/entities/admin/model/admin.types';
 
 const BanUserModal: React.FC<BanUserModalProps> = ({ isOpen, onClose, onConfirm, userName }) => {
   const [reason, setReason] = useState('');

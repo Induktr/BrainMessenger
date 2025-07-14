@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@apollo/client';
 import { GET_FEEDBACK_COMPLAINTS } from '@/entities/feedback-complaint/model/feedback-complaint.queries';
-import BanUserModal from '../../entities/admin-manage-panel/ui/BanUserModal';
-import DeleteMessageModal from '../../entities/admin-manage-panel/ui/DeleteMessageModal';
+import BanUserModal from '../../entities/admin/ui/BanUserModal';
+import DeleteMessageModal from '../../entities/admin/ui/DeleteMessageModal';
 import { BAN_USER_MUTATION, DELETE_COMPLAINT_MESSAGE_MUTATION } from '@/entities/feedback-complaint/model/feedback-complaint.mutations';
 
 // More detailed interfaces to match backend data
