@@ -16,8 +16,8 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type }) => {
     const handleGoogleLogin = () => {
         // Determine the correct redirect URL based on the environment
         const redirectUrl = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:4000/auth/google'
-            : 'https://brainmessenger.onrender.com/auth/google';
+            ? 'http://localhost:4000/auth/google/callback'
+            : 'https://brainmessenger.onrender.com/auth/google/callback';
         window.location.href = redirectUrl;
     };
 
