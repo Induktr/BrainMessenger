@@ -1,10 +1,16 @@
 'use client';
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { 
+  useTranslation 
+} from 'react-i18next';
 import i18n from '../../i18n'; // Adjust path as needed
 import Button from '@/shared/ui/Button/Button';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { 
+  En, 
+  Ru, 
+  Ua 
+} from '@/shared/assets/Icons/icons';
 
 const LanguageSwitcherAdmin: React.FC = () => {
   const { t } = useTranslation();
@@ -14,20 +20,20 @@ const LanguageSwitcherAdmin: React.FC = () => {
   };
 
   return (
-    <div className="admin-language-switcher">
-      <h3 className="admin-language-switcher-title">{t('languageSwitcherAdmin.title')}</h3>
-      <div className="admin-language-options-list">
-        <Button className="admin-language-option" onClick={() => changeLanguage('en')}>
-          <div className="admin-language-option-icon"><img src={ICONS.en} alt={t('languageSwitcherAdmin.alt.en')} className="icon" /></div>
-          <p className="admin-language-option-text">{t('language.english')}</p>
+    <div className="bg-surface rounded-lg shadow-md p-6">
+      <h3 className="text-xl font-semibold text-text-primary mb-4">{t('languageSwitcherAdmin.title')}</h3>
+      <div className="flex flex-col space-y-3">
+        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('en')}>
+          <div className="mr-3"><En alt={t('languageSwitcherAdmin.alt.en')} className="w-6 h-6" /></div>
+          <p className="text-text-primary">{t('language.english')}</p>
         </Button>
-        <Button className="admin-language-option" onClick={() => changeLanguage('ua')}>
-          <div className="admin-language-option-icon"><img src={ICONS.ua} alt={t('languageSwitcherAdmin.alt.ua')} className="icon" /></div>
-          <p className="admin-language-option-text">{t('language.ukrainian')}</p>
+        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('ua')}>
+          <div className="mr-3"><Ua alt={t('languageSwitcherAdmin.alt.ua')} className="w-6 h-6" /></div>
+          <p className="text-text-primary">{t('language.ukrainian')}</p>
         </Button>
-        <Button className="admin-language-option" onClick={() => changeLanguage('ru')}>
-          <div className="admin-language-option-icon"><img src={ICONS.ru} alt={t('languageSwitcherAdmin.alt.ru')} className="icon" /></div>
-          <p className="admin-language-option-text">{t('language.russian')}</p>
+        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('ru')}>
+          <div className="mr-3"><Ru alt={t('languageSwitcherAdmin.alt.ru')} className="w-6 h-6" /></div>
+          <p className="text-text-primary">{t('language.russian')}</p>
         </Button>
       </div>
     </div>

@@ -2,54 +2,67 @@
 
 import React from 'react';
 import Button from '@/shared/ui/Button/Button';
-import { ICONS } from '@/shared/assets/Icons/icons';
-import { SupportProps } from '@/features/manage-settings/model/settings.types'
-import { useTranslation } from 'react-i18next';
+import { 
+  ArrowLeft, 
+  CloseModal 
+} from '@/shared/assets/Icons/icons';
+import { 
+  SupportProps 
+} from '@/features/manage-settings/model/settings.types'
+import { 
+  useTranslation 
+} from 'react-i18next';
+import { 
+  variantsStylesIcons 
+} from '@/shared/assets/variantStyles/variantStyles';
 
 const Support: React.FC<SupportProps> = ({ onBack, onClose, isOpen }) => {
   const { t } = useTranslation();
   return (
-    <div className="support-modal-content">
+    <div className="p-6 text-[var(--color-text-primary)]">
       {/* Header */}
-      <div className="support-header">
-        <Button className="support-back-button" onClick={onBack}>
-          <img src={ICONS.arrowLeft} alt="Back" className="icon" style={{ transform: 'rotate(0deg)' }} />
+      <div className="flex items-center justify-between pb-4 border-b border-[var(--color-border)]">
+        <Button variant="ghost" onClick={onBack}>
+          <ArrowLeft alt="Back" className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} />
         </Button>
-        <h2 className="support-header-title">{t('support.headerTitle')}</h2>
-        <Button className="support-close-button" onClick={onClose}>
-          <img src={ICONS.closeModal} alt="Close" className="icon" />
+        <h2 className="text-lg font-semibold">{t('support.headerTitle')}</h2>
+        <Button variant="ghost" onClick={onClose}>
+          <CloseModal alt="Close" className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} />
         </Button>
       </div>
 
-      {/* Separator */}
-      <div className="support-separator"></div>
-
       {/* Body */}
-      <div className="support-body">
-        <h3 className="support-section-title">{t('support.ourPhilosophy')}</h3>
-        <p className="support-text">
-          {t('support.descriptionPhilosophy')}
-        </p>
+      <div className="pt-6 space-y-4">
+        <div>
+          <h3 className="font-semibold text-md mb-2">{t('support.ourPhilosophy')}</h3>
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {t('support.descriptionPhilosophy')}
+          </p>
+        </div>
 
-        <h3 className="support-section-title">{t('support.howToReachUs')}</h3>
-        <p className="support-text">
-          {t('support.descriptionHowToReachUs')}
-        </p>
-        <ul className="support-channels-list">
-          <li className="support-channel-item">
-            <strong>{t('support.email')}:</strong> <a href="mailto:support@brainmessenger.com" className="support-link">support@brainmessenger.com</a>
-            <p className="support-channel-description">{t('support.descriptionEmail')}</p>
-          </li>
-          <li className="support-channel-item">
-            <strong>{t('support.inAppFeedbackForm')}:</strong>
-            <p className="support-channel-description">{t('support.descriptionInAppFeedbackForm')}</p>
-          </li>
-        </ul>
+        <div>
+          <h3 className="font-semibold text-md mb-2">{t('support.howToReachUs')}</h3>
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {t('support.descriptionHowToReachUs')}
+          </p>
+          <ul className="mt-2 space-y-2">
+            <li>
+              <strong>{t('support.email')}:</strong> <a href="mailto:support@brainmessenger.com" className="text-[var(--color-accent)] hover:underline">support@brainmessenger.com</a>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">{t('support.descriptionEmail')}</p>
+            </li>
+            <li>
+              <strong>{t('support.inAppFeedbackForm')}:</strong>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1">{t('support.descriptionInAppFeedbackForm')}</p>
+            </li>
+          </ul>
+        </div>
 
-        <h3 className="support-section-title">{t('support.forMoreInformation')}</h3>
-        <p className="support-text">
-          {t('support.descriptionForMoreInformation')}
-        </p>
+        <div>
+          <h3 className="font-semibold text-md mb-2">{t('support.forMoreInformation')}</h3>
+          <p className="text-sm text-[var(--color-text-secondary)]">
+            {t('support.descriptionForMoreInformation')}
+          </p>
+        </div>
       </div>
     </div>
   );

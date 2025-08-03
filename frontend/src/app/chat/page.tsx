@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import { GlobalAudioProvider } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
 import ChatListWidget from '@/widgets/ChatListWidget/ChatListWidget';
@@ -12,7 +11,7 @@ import Spinner from '@/shared/ui/Spinner/Spinner';
 import SidebarMenuWidget from '@/widgets/SidebarMenuWidget/SidebarMenuWidget';
 import Settings from '@/features/manage-settings/ui/Settings';
 import Button from '@/shared/ui/Button/Button';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { BurgerMenu } from '@/shared/assets/Icons/icons';
 import { useChatList } from '@/hooks/useChatList';
 import { Chat } from '@/entities/chat/model/chat.types';
 import { UserDto } from '@/entities/user/model/user.types';
@@ -23,12 +22,14 @@ import SearchWidget from '@/widgets/SearchWidget/SearchWidget';
 import { useSubscription } from '@apollo/client'; // Import useSubscription
 import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification
 import NotificationDropdown from '@/features/manage-notifications/ui/NotificationDropdown'; // Import NotificationDropdown
-import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
 import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions'; // Import existing subscription
+import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import GlobalAudioControls from '@/features/manage-audio-player/ui/GlobalAudioControls';
 
 const ChatPage = () => {
   const { t } = useTranslation();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [isChatViewActive, setIsChatViewActive] = useState(false); // For mobile view management
   const [selectedChatType, setSelectedChatType] = useState<'PRIVATE' | 'GROUP' | 'CHANNEL' | null>(null);
   const [selectedChatName, setSelectedChatName] = useState<string | null>(null);
   const [openMenu, setOpenMenu] = useState(false);
@@ -87,8 +88,8 @@ const ChatPage = () => {
 
   if (authLoading || isInitializing) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
-        <Spinner className="spinner-logo-container"/>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
+        <Spinner className="w-16 h-16 text-[var(--color-gradient-start)]" />
       </div>
     );
   }
@@ -101,6 +102,7 @@ const ChatPage = () => {
     setSelectedChatId(chatId);
     setSelectedChatType(chatType);
     setSelectedChatName(chatName);
+    setIsChatViewActive(true); // Show chat window on mobile
   };
 
   const handleOpenMenu = () => setOpenMenu(!openMenu);
@@ -136,26 +138,40 @@ const ChatPage = () => {
 
   return (
     <GlobalAudioProvider>
-      <div className={`chat-container ${selectedChatId ? 'chat-selected' : ''}`}>
+      <div className="flex flex-col md:flex-row h-full bg-[var(--color-background)] text-[var(--color-text-primary)]">
         {openMenu && (
-          <div className="sidebar-overlay" onClick={() => setOpenMenu(false)}>
-            <div onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 bg-[var(--color-backdrop)] z-40" onClick={() => setOpenMenu(false)}>
+            <div className="h-full w-64 bg-[var(--color-surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
               <SidebarMenuWidget onOpenSettings={handleOpenSettings} onToggleTheme={handleToggleTheme} onToggleNotification={handleToggleNotification} />
             </div>
           </div>
         )}
 
-        <div className="chat-sidebar">
-          <div className="sidebar-header">
-            <Button className="burger-icon" onClick={handleOpenMenu}>
-              {ICONS.burgerMenu && <Image src={ICONS.burgerMenu} alt={t('chat_page.burger_menu_alt')} className="icon" width={24} height={24} />}
+        {/* Sidebar - Mobile First */}
+        <div className={`
+          ${isChatViewActive ? 'hidden' : 'flex'}
+          md:flex flex-col
+          w-full md:w-[320px] lg:w-[380px]
+          border-r border-[var(--color-border)]
+          bg-[var(--color-surface)]
+        `}>
+          <div className={`${variantsStylesIcons.iconSecondary} flex items-center p-4 border-b border-[var(--color-border)]`}>
+            <Button variant="icon" className="mr-4" onClick={handleOpenMenu}>
+              <BurgerMenu className="w-6 h-6 text-[var(--color-text-primary)]" />
             </Button>
             <SearchWidget searchQuery={searchQuery} setSearchQuery={setSearchQuery} placeholder={t('chat_page.search_placeholder')} />
           </div>
-          <ChatListWidget onSelectChat={handleSelectChat} activeChatId={selectedChatId} searchQuery={searchQuery} />
+          <div className="flex-1 overflow-y-auto">
+            <ChatListWidget onSelectChat={handleSelectChat} activeChatId={selectedChatId} searchQuery={searchQuery} />
+          </div>
         </div>
 
-        <div className="chat-main-content chat-area-container">
+        {/* Chat Window - Mobile First */}
+        <div className={`
+          ${isChatViewActive ? 'flex' : 'hidden'}
+          md:flex flex-col flex-1
+          ${variantsStylesIcons.iconSecondary}
+        `}>
           {selectedChat && selectedChatType && selectedChatName ? (
             <ChatWindowWidget
               chatId={selectedChatId!}
@@ -166,10 +182,13 @@ const ChatPage = () => {
               onUnsubscribe={handleUnsubscribe}
               onSendMessageOrUpdate={handleSendMessageOrUpdate}
               onOpenContextMenu={handleOpenContextMenu}
-              onBackButtonClick={() => setSelectedChatId(null)} // Pass the back button handler
+              onBackButtonClick={() => setIsChatViewActive(false)} // Go back to chat list on mobile
             />
           ) : (
-            !selectedChatId && <div className="chat-welcome-message">{t('chat_page.welcome_message')}</div>
+            <div className="hidden md:flex flex-col items-center justify-center h-full text-center text-[var(--color-text-secondary)] p-4">
+              <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">{t('chat_page.welcome_title')}</h2>
+              <p className="text-lg max-w-md">{t('chat_page.welcome_message')}</p>
+            </div>
           )}
         </div>
 

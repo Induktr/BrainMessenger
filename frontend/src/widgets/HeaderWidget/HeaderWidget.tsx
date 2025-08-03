@@ -1,10 +1,17 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { 
+  useTranslation 
+} from 'react-i18next';
 import Input from '@/shared/ui/Input/Input';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useSubscription } from '@apollo/client';
-import { TYPING_STATUS_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions';
+import React, { 
+  useState, useEffect
+} from 'react';
+import { 
+  useSubscription 
+} from '@apollo/client';
+import { 
+  TYPING_STATUS_SUBSCRIPTION 
+} from '@/entities/message/model/message.subscriptions';
 
 interface TypingUser {
   id: string;
@@ -31,7 +38,7 @@ const HeaderWidget: React.FC<HeaderProps> = ({ title, status, leftIcon, rightIco
 
   useEffect(() => {
     if (error) {
-            console.error(t('typingSubscriptionError'), error);
+      console.error(t('typingSubscriptionError'), error);
       return;
     }
     if (data?.typingStatus) {
@@ -65,41 +72,42 @@ const HeaderWidget: React.FC<HeaderProps> = ({ title, status, leftIcon, rightIco
   const dynamicStatus = getTypingStatus();
 
   return (
-    <header className="app-header">
+    <header className="flex items-center justify-between p-4 bg-surface border-b border-border">
       {/* Left Section */}
-      <div className="header-left-section">
-        {avatar && <Image src={avatar} alt="User Avatar" className="header-avatar" width={40} height={40} />}
-        <div className="header-user-info">
-          {title && <h1 className="header-title">{title}</h1>}
-          {dynamicStatus && <p className="header-status">{dynamicStatus}</p>}
+      <div className="flex items-center">
+        {avatar && <Image src={avatar} alt="User Avatar" className="w-10 h-10 rounded-full mr-3" width={40} height={40} />}
+        <div className="flex flex-col">
+          {title && <h1 className="text-lg font-semibold text-text-primary">{title}</h1>}
+          {dynamicStatus && <p className="text-sm text-text-secondary">{dynamicStatus}</p>}
         </div>
       </div>
 
       {/* Center Section - Can be used for search or other elements if needed */}
-      <div className="header-center-section">
+      <div className="flex-1 mx-4">
         {!title && (
             <Input
                 type="text"
+                id="search"
                 placeholder="Search"
-                className="header-search-input"
+                className="w-full p-2 bg-input-background border border-border rounded-lg text-text-primary focus:outline-none focus:ring-1 focus:ring-accent"
             />
         )}
       </div>
 
       {/* Right Section */}
-      <div className="header-right-section">
+      <div className="flex items-center space-x-4">
         {rightIcons?.map((icon, index) => (
-          <div key={index} onClick={icon.onClick} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <div key={index} onClick={icon.onClick} className="cursor-pointer flex items-center">
             {icon.src ? (
               <Image
                 src={icon.src}
                 alt={icon.name}
-                className="header-icon"
+                className="w-6 h-6 text-text-primary"
                 width={24}
                 height={24}
               />
             ) : (
-              <span className="header-icon-text">{icon.name}</span>
+              <span className="text-text-primary">{icon.name}</span>
             )}
           </div>
         ))}

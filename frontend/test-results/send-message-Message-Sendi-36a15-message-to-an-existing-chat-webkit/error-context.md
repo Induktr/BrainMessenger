@@ -6,27 +6,11 @@
 # Error details
 
 ```
-Error: page.click: Test timeout of 60000ms exceeded.
+Error: page.goto: Could not connect to localhost: Connection refused
 Call log:
-  - waiting for locator('text=Nikits')
+  - navigating to "http://localhost:3000/login", waiting until "load"
 
-    at /home/induktr/Storage/Projects/BrainMessenger/frontend/e2e/send-message.spec.ts:22:16
-```
-
-# Page snapshot
-
-```yaml
-- alert
-- button "Open Next.js Dev Tools":
-  - img
-- button "Open issues overlay": 1 Issue
-- button "Collapse issues badge":
-  - img
-- textbox "Search"
-- button "Burger Menu":
-  - img "Burger Menu"
-- paragraph: "Error loading chats: Cannot read properties of undefined (reading 'id')"
-- text: Communication starts here, start with us!
+    at /home/induktr/Storage/Projects/BrainMessenger/frontend/e2e/send-message.spec.ts:6:16
 ```
 
 # Test source
@@ -37,7 +21,8 @@ Call log:
    3 | test.describe('Message Sending Flow', () => {
    4 |   // Use a beforeEach hook to log in before each test
    5 |   test.beforeEach(async ({ page }) => {
-   6 |     await page.goto('http://localhost:3000/login');
+>  6 |     await page.goto('http://localhost:3000/login');
+     |                ^ Error: page.goto: Could not connect to localhost: Connection refused
    7 |
    8 |     // Replace with your actual login credentials
    9 |     await page.fill('input[name="email"]', 'nikitavoitenko2020@gmail.com'); // Replace with your email
@@ -53,8 +38,7 @@ Call log:
   19 |     // Assuming there's a chat list item for a user you've already chatted with
   20 |     // You might need to adjust the selector based on your actual chat list structure
   21 |     // For example, click on a chat item that contains the name "Nikits"
-> 22 |     await page.click('text=Nikits'); // Replace "Nikits" with the name of an existing chat/user
-     |                ^ Error: page.click: Test timeout of 60000ms exceeded.
+  22 |     await page.click('text=Nikits'); // Replace "Nikits" with the name of an existing chat/user
   23 |
   24 |     // Wait for the chat messages to load (you might need a more specific selector)
   25 |     await page.waitForSelector('.chat-messages-container'); // Adjust this selector

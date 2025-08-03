@@ -5,7 +5,7 @@ import { Notification, NotificationContextType } from '@/features/manage-notific
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
-const notificationSound = typeof Audio !== 'undefined' ? new Audio('/sound/notification.mp3') : null;
+const notificationSound = typeof Audio !== 'undefined' ? new Audio('/sounds/notification.mp3') : null;
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [notification, setNotification] = useState<Notification | null>(null);

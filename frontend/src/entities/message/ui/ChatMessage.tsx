@@ -5,81 +5,53 @@ import Image from 'next/image';
 import UserProfileModal from '@/entities/user/ui/UserProfileModal';
 import ContextMenu from '@/shared/ui/ContextMenu/ContextMenu';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
-import AudioPlayer from '@/features/manage-audio-player/ui/AudioPlayer'; // Import AudioPlayer
-import Spinner from '@/shared/ui/Spinner/Spinner'; // Import LazyLoading
+import AudioPlayer from '@/features/manage-audio-player/ui/AudioPlayer';
+import Spinner from '@/shared/ui/Spinner/Spinner';
 import { useMutation } from '@apollo/client';
-import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/entities/message/model/message.mutations'; // Import mutations
-import LinkRenderer from '../../../features/link-renderer/ui/LinkRenderer'; // Import LinkRenderer
+import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/entities/message/model/message.mutations';
+import LinkRenderer from '../../../features/link-renderer/ui/LinkRenderer';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { ICONS } from '@/shared/assets/Icons/icons'; // Import ICONS
-import { SMILES } from '@/shared/assets/Smiles/smiles'; // Import SMILES
+import { File, UploadImage, Pdf } from '@/shared/assets/Icons/icons';
+import { SMILES } from '@/shared/assets/Smiles/smiles';
 import { ChatMessageProps } from '@/entities/message/model/message.types';
+import clsx from 'clsx';
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, onShowGlobalAudioControls, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [selectedProfileUserId, setSelectedProfileUserId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string; showEmojis?: boolean } | null>(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
-  const [isVisible, setIsVisible] = useState(false); // State to track visibility for lazy loading
-  const messageRef = useRef<HTMLDivElement>(null); // Ref for the message container
+  const [isVisible, setIsVisible] = useState(false);
+  const messageRef = useRef<HTMLDivElement>(null);
 
-  const [deleteMessage] = useMutation(DELETE_MESSAGE, {
-    onCompleted: () => {
-      console.log('Message deleted successfully');
-      // The parent component (ChatPage) will likely refetch messages or update its state
-      // based on the subscription or a direct cache update.
-    },
-    onError: (error) => {
-      console.error('Error deleting message:', error);
-    },
-  });
+  const [deleteMessage] = useMutation(DELETE_MESSAGE);
+  const [removeMessageReaction] = useMutation(REMOVE_MESSAGE_REACTION);
+  const [addMessageReaction] = useMutation(ADD_MESSAGE_REACTION);
 
-  const [removeMessageReaction] = useMutation(REMOVE_MESSAGE_REACTION, {
-    onCompleted: (data) => {
-      console.log('Reaction added successfully:', data);
-      // The UI will be updated by the subscription
-    },
-    onError: (error) => {
-      console.error('Error adding reaction:', error);
-    },
-  });
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-  const [addMessageReaction] = useMutation(ADD_MESSAGE_REACTION, {
-    onCompleted: (data) => {
-      console.log('Reaction added successfully:', data);
-      // The UI will be updated by the subscription
-    },
-    onError: (error) => {
-      console.error('Error adding reaction:', error);
-    },
-  });
+    if (messageRef.current) {
+      observer.observe(messageRef.current);
+    }
 
- useEffect(() => {
-   const observer = new IntersectionObserver(
-     ([entry]) => {
-       if (entry.isIntersecting) {
-         setIsVisible(true);
-         observer.disconnect(); // Stop observing once visible
-       }
-     },
-     { threshold: 0.1 } // Trigger when 10% of the message is visible
-   );
+    return () => {
+      if (messageRef.current) {
+        observer.unobserve(messageRef.current);
+      }
+    };
+  }, []);
 
-   if (messageRef.current) {
-     observer.observe(messageRef.current);
-   }
-
-   return () => {
-     const currentRef = messageRef.current; // Capture the current value of the ref
-     if (currentRef) {
-       observer.unobserve(currentRef); // Use the captured value in cleanup
-     }
-   };
- }, []); // Empty dependency array because messageRef is a ref and its .current property is not a dependency
-
- const handleAvatarClick = () => {
-    // Only open UserProfileModal for other users, not the current user
+  const handleAvatarClick = () => {
     if (!isCurrentUser) {
       setSelectedProfileUserId(message.sender.id);
       setShowUserProfileModal(true);
@@ -92,26 +64,19 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
   };
 
   const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault(); // Prevent default browser context menu
+    event.preventDefault();
     setContextMenu({ x: event.clientX, y: event.clientY, messageId: message.id });
   };
 
-  const handleCloseContextMenu = () => {
-    setContextMenu(null);
-  };
-
+  const handleCloseContextMenu = () => setContextMenu(null);
   const handleDeleteClick = () => {
     setShowDeleteConfirmModal(true);
     handleCloseContextMenu();
   };
 
   const handleConfirmDelete = async () => {
-    try {
-      await deleteMessage({ variables: { messageId: message.id } });
-      setShowDeleteConfirmModal(false);
-    } catch (error) {
-      console.error('Failed to delete message:', error);
-    }
+    await deleteMessage({ variables: { messageId: message.id } });
+    setShowDeleteConfirmModal(false);
   };
 
   const handleEditClick = () => {
@@ -119,105 +84,102 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
     handleCloseContextMenu();
   };
 
-  // New handler for selecting an emoji
   const handleSelectEmoji = (emoji: string) => {
-    console.log(`Selected emoji: ${emoji} for message ${message.id}`);
-    addMessageReaction({ variables: { messageId: message.id, emoji } }); // Call the mutation
+    addMessageReaction({ variables: { messageId: message.id, emoji } });
     handleCloseContextMenu();
   };
 
-  // Options for the main context menu
   const mainContextMenuOptions = [
-    { label: 'React', onClick: () => setContextMenu({ x: contextMenu!.x, y: contextMenu!.y, messageId: message.id, showEmojis: true }) }, // Option to show emojis
+    { label: 'React', onClick: () => setContextMenu({ ...contextMenu!, showEmojis: true }) },
     { label: 'Delete', onClick: handleDeleteClick, disabled: !isCurrentUser },
     { label: 'Edit', onClick: handleEditClick, disabled: !isCurrentUser },
   ];
 
-  // Options for the emoji context menu
   const emojiContextMenuOptions = Object.values(SMILES).map(emoji => ({
     label: emoji,
     onClick: () => handleSelectEmoji(emoji),
   }));
 
-
   return (
     <>
       <div
-        id={`message-${message.id}`} // Add ID for selection logic
-        className={`chat-message-container ${isCurrentUser ? 'current-user' : 'other-user'} ${isSelected ? '' : ''}`}
+        id={`message-${message.id}`}
+        className={clsx('flex items-start gap-3', isCurrentUser ? 'justify-end' : 'justify-start')}
         onContextMenu={handleContextMenu}
-        ref={messageRef} // Attach ref to the message container
+        ref={messageRef}
       >
         {!isCurrentUser && (
           <div
-            className={`chat-message-avatar ${isPoorConnection ? 'blur-sm' : ''}`}
+            className={clsx('flex-shrink-0 cursor-pointer', isPoorConnection && 'blur-sm')}
             onClick={handleAvatarClick}
-            style={{ cursor: 'pointer' }}
           >
             {message.sender.avatarUrl ? (
-              <img src={message.sender.avatarUrl} alt={`${message.sender.name}'s avatar`} width={32} height={32} className={`rounded-full ${isPoorConnection ? 'grayscale opacity-50' : ''}`} />
+              <img src={message.sender.avatarUrl} alt={`${message.sender.name}'s avatar`} className={clsx('w-8 h-8 rounded-full', isPoorConnection && 'grayscale opacity-50')} />
             ) : (
-              <div className="default-avatar" style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#555' }}></div>
+              <div className="w-8 h-8 rounded-full bg-[var(--color-disabled)] flex items-center justify-center text-sm font-bold">
+                {message.sender.name.charAt(0).toUpperCase()}
+              </div>
             )}
           </div>
         )}
         <div
-          className={`chat-message-bubble ${isCurrentUser ? 'current-user' : 'other-user'} ${isSelected ? 'selected-bubble' : ''}`}
+          className={clsx(
+            'max-w-md p-3 rounded-lg',
+            isCurrentUser ? 'bg-[var(--color-gradient-start)]/30' : 'bg-[var(--color-surface)]',
+            isSelected && 'ring-2 ring-[var(--color-accent)]'
+          )}
         >
           {!isCurrentUser && (
-            <div className="chat-message-sender-name">{message.sender.name || message.sender.username || 'Unknown User'}</div>
+            <div className="text-xs font-bold text-[var(--color-accent)] mb-1">
+              {message.sender.name || message.sender.username || 'Unknown User'}
+            </div>
           )}
-          {/* Conditionally render content and attachments based on visibility and network status */}
           {(isRecentMessage || !isPoorConnection || isVisible) ? (
-            <>
+            <div className="space-y-2">
               {message.attachments && message.attachments.length > 0 && (
-                <div className="chat-attachments-wrapper">
-                  {message.attachments.map((attachment, attachmentIndex) => (
-                    <div key={attachment.id} className={`chat-attachment-item-display ${isPoorConnection ? 'grayscale oacity-50' : ''}`}>
+                <div className="flex flex-wrap gap-2">
+                  {message.attachments.map((attachment) => (
+                    <div key={attachment.id} className={clsx('relative', isPoorConnection && 'grayscale opacity-50')}>
                       {attachment.mimetype.startsWith('image/') && (
-                                                <img 
-                          src={attachment.url} 
-                          alt={attachment.filename} 
-                          className={`chat-attachment-image ${isPoorConnection ? 'blur-sm' : ''}`}
+                        <img
+                          src={attachment.url}
+                          alt={attachment.filename}
+                          className={clsx('max-w-xs max-h-96 rounded-lg object-cover cursor-pointer', isPoorConnection && 'blur-sm')}
                           onClick={() => onImageClick?.(attachment.url)}
-                          style={{ cursor: 'pointer' }}
                         />
                       )}
                       {attachment.mimetype.startsWith('audio/') && (
                         <AudioPlayer
                           src={attachment.url}
-                          onShowGlobalControls={() => onShowGlobalAudioControls(message.id, attachment.url)} // Pass the new prop
-                          messageId={message.id} // Pass messageId
-                        >
-                        </AudioPlayer>
+                          messageId={message.id}
+                        />
                       )}
                       {attachment.mimetype === 'application/pdf' && (
-                        <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="chat-attachment-file-display chat-attachment-pdf-link">
-                          <Image src={ICONS.pdf} alt="PDF File" width={45} height={45} className="chat-attachment-image-pdf" />
-                          <span>{attachment.filename}</span>
+                        <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 bg-[var(--color-surface-dark)] rounded-lg">
+                          <Pdf alt="PDF File" className="w-8 h-8" />
+                          <span className="text-sm">{attachment.filename}</span>
                         </a>
                       )}
                       {attachment.mimetype === 'application/zip' && (
-                        <a href={attachment.url} download={attachment.filename} className="chat-attachment-file-display chat-attachment-zip-link">
-                          <Image src={ICONS.file} alt="ZIP File" width={45} height={45} className="chat-attachment-image-zip" />
-                          <span>{attachment.filename}</span>
+                        <a href={attachment.url} download={attachment.filename} className="flex items-center gap-2 p-2 bg-[var(--color-surface-dark)] rounded-lg">
+                          <File alt="ZIP File" className="w-8 h-8" />
+                          <span className="text-sm">{attachment.filename}</span>
                         </a>
                       )}
-                      {/* Add more attachment types here if needed, e.g., video/mp4 */}
                       {!attachment.mimetype.startsWith('image/') && !attachment.mimetype.startsWith('audio/') && attachment.mimetype !== 'application/pdf' && attachment.mimetype !== 'application/zip' && (
-                        <div className="chat-attachment-file-display">
-                          <Image src={ICONS.image} alt="File" width={20} height={20} />
-                          <span>{attachment.filename}</span>
+                        <div className="flex items-center gap-2 p-2 bg-[var(--color-surface-dark)] rounded-lg">
+                          <UploadImage alt="File" className="w-8 h-8" />
+                          <span className="text-sm">{attachment.filename}</span>
                         </div>
                       )}
                     </div>
                   ))}
                 </div>
               )}
-                            {message.content && message.content.trim() !== '' && (
-                <div className="chat-message-content">
+              {message.content && message.content.trim() !== '' && (
+                <div className="text-sm text-[var(--color-text-primary)] break-words overflow-wrap-anywhere">
                   {message.content.startsWith('```') && message.content.endsWith('```') ? (
-                    <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ borderRadius: '8px', margin: 0 }}>
+                    <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ borderRadius: '8px', margin: 0, padding: '1rem' }}>
                       {message.content.slice(3, -3).trim()}
                     </SyntaxHighlighter>
                   ) : (
@@ -225,42 +187,42 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                   )}
                 </div>
               )}
-            </>
-          ) : (
-            <Spinner className={`chat-message-bubble ${isCurrentUser ? 'current-user' : 'other-user'}`} />
-          )}
-          <div className={`chat-message-timestamp ${isCurrentUser ? 'current-user' : 'other-user'}`}>
-            {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </div>
-          {/* Display reactions here */}
-          {message.reactions && message.reactions.length > 0 && (
-            <div className="message-reactions">
-              {/* Group and display reactions */}
-              {Object.entries(message.reactions.reduce((acc, reaction) => {
-                if (!acc[reaction.emoji]) {
-                  acc[reaction.emoji] = { count: 0, userIds: new Set() };
-                }
-                acc[reaction.emoji].count++;
-                acc[reaction.emoji].userIds.add(reaction.userId);
-                return acc;
-              }, {} as Record<string, { count: number; userIds: Set<string> }>)).map(([emoji, reactionData]) => {
-                const isCurrentUserReaction = currentUserId && reactionData.userIds.has(currentUserId);
-                return (
-                  <span
-                    key={emoji}
-                    className={`message-reaction-item ${isCurrentUserReaction ? 'current-user-reacted' : ''}`} // Add conditional class
-                    onClick={() => {
-                      if (isCurrentUserReaction) {
-                        removeMessageReaction({ variables: { messageId: message.id, emoji } }); // Call remove reaction mutation
-                      }
-                    }}
-                  >
-                    {emoji} {reactionData.count > 1 && <span className="reaction-count">{reactionData.count}</span>}
-                  </span>
-                );
-              })}
             </div>
+          ) : (
+            <Spinner className="w-8 h-8" />
           )}
+          <div className="flex items-center justify-end gap-2 mt-1">
+            {message.reactions && message.reactions.length > 0 && (
+              <div className="flex gap-1">
+                {Object.entries(message.reactions.reduce((acc, reaction) => {
+                  if (!acc[reaction.emoji]) {
+                    acc[reaction.emoji] = { count: 0, userIds: new Set() };
+                  }
+                  acc[reaction.emoji].count++;
+                  acc[reaction.emoji].userIds.add(reaction.userId);
+                  return acc;
+                }, {} as Record<string, { count: number; userIds: Set<string> }>)).map(([emoji, reactionData]) => {
+                  const isCurrentUserReaction = currentUserId && reactionData.userIds.has(currentUserId);
+                  return (
+                    <span
+                      key={emoji}
+                      className={clsx('cursor-pointer p-1 text-xs rounded-full transition-colors', isCurrentUserReaction ? 'bg-[var(--color-accent)]/30' : 'hover:bg-[var(--color-surface-dark)]')}
+                      onClick={() => {
+                        if (isCurrentUserReaction) {
+                          removeMessageReaction({ variables: { messageId: message.id, emoji } });
+                        }
+                      }}
+                    >
+                      {emoji} {reactionData.count > 1 && <span className="text-xs">{reactionData.count}</span>}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+            <div className="text-xs text-[var(--color-text-secondary)]">
+              {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -268,9 +230,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}
-          options={contextMenu.showEmojis ? emojiContextMenuOptions : mainContextMenuOptions} // Show emoji options if showEmojis is true
+          options={contextMenu.showEmojis ? emojiContextMenuOptions : mainContextMenuOptions}
           onClose={handleCloseContextMenu}
-          isEmojiMenu={contextMenu.showEmojis} // Pass a prop to indicate if it's the emoji menu
+          isEmojiMenu={contextMenu.showEmojis}
         />
       )}
 

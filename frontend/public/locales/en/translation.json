@@ -13,6 +13,7 @@
     "createChannel": "Create Channel",
     "createGroup": "Create Group",
     "nightMode": "Night Mode",
+    "lightMode": "Light Mode",
     "allNotifications": "All Notifications",
     "support": "Support",
     "myAccount": "My Account",
@@ -190,6 +191,10 @@
   "feedbackFeed": {
     "title": "Feedback Feed",
     "noFeedback": "No feedback to display."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No notifications yet."
   },
   "complaintFeed": {
     "title": "Complaint Feed",
@@ -402,41 +407,80 @@
     "sent_success": "Verification code sent successfully!"
   },
   "register_page": {
-    "resend_code_unavailable": "Cannot resend code: Email not available.",
-    "code_resent_success": "Verification code resent. Please check your email.",
-    "resend_code_failed_generic": "Failed to resend verification code.",
-    "resend_code_failed_with_error": "Failed to resend verification code: {{error}}",
-    "registration_success": "Registration successful:",
-    "sign_up_with_google": "Sign up with Google",
-    "registration_error": "Registration Error:",
-    "enter_complete_code": "Please enter the complete 8-digit code.",
-    "verification_failed_generic": "Verification failed: Invalid code or verification returned false.",
-    "verification_error_prefix": "Verification failed:",
-    "resend_error_prefix": "Resend failed:",
-    "verification_success_redirect": "Verification successful! Redirecting to chat...",
-    "sending_button": "Sending...",
-    "get_code_again_button": "Get the code again",
-    "already_have_account": "Already have an account?",
-    "login_link": "Login",
-    "step_prefix": "Step",
-    "create_password_placeholder": "Password",
-    "input_field_empty": "Input field is empty",
-    "password_too_short": "Password is too short",
-    "password_too_long": "Password is too long",
-    "password_requirements": "The password must contain an uppercase letter and a special character",
-    "your_name_placeholder": "Your name",
-    "name_too_short": "The name is too short",
-    "name_too_long": "The name is too long",
-    "username_placeholder": "Username",
-    "username_too_short": "Username is too short",
-    "username_too_long": "Username is too long",
-    "email_placeholder": "Email",
-    "invalid_email_format": "Invalid E-Mail format",
+    "title": "Registration",
+    "next_button": "Next",
+    "verify_button": "Verify",
     "verifying_button": "Verifying...",
-    "confirm_button": "Confirm",
-    "welcome_prompt": "Welcome, {{email}}! To complete the registration process, please enter the code we sent to you by email.",
-    "next_button_alt": "Next",
-    "back_button_alt": "Back"
+    "resend_code_button": "Resend code",
+    "resending_code_button": "Resending...",
+    "steps": [
+      {
+        "subtitle": "Step 1",
+        "prompt": "Create a strong password. Minimum 8 characters, must contain an uppercase letter, a number, and a special character.",
+        "fields": [
+          {
+            "name": "password",
+            "label": "Password",
+            "type": "password",
+            "icon": "Castle"
+          }
+        ]
+      },
+      {
+        "subtitle": "Step 2",
+        "prompt": "What should we call you? Enter your name. It will be displayed in your profile.",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Your name",
+            "type": "text",
+            "required": "Name is required",
+            "icon": "Man"
+          }
+        ]
+      },
+      {
+        "subtitle": "Step 3",
+        "prompt": "Come up with a unique username. It will be used for identification in the chat.",
+        "fields": [
+          {
+            "name": "username",
+            "label": "Username",
+            "type": "text",
+            "required": "Username is required",
+            "icon": "UsernameDog"
+          }
+        ]
+      },
+      {
+        "subtitle": "Step 4",
+        "prompt": "Enter your email. We will send a code to it to verify your account.",
+        "fields": [
+          {
+            "name": "email",
+            "label": "Email",
+            "type": "email",
+            "required": "Email is required",
+            "icon": "Mail"
+          }
+        ]
+      },
+      {
+        "subtitle": "Step 5",
+        "prompt": "We have sent an 8-digit confirmation code to <strong class=\"font-bold text-[var(--color-text-primary)]\">{{email}}</strong>. Please enter it below to complete your registration.",
+        "component": "VerificationCodeInput"
+      }
+    ],
+    "resend_code_unavailable": "Cannot resend code: email is not available.",
+    "code_resent_success": "Confirmation code has been resent. Please check your email.",
+    "resend_code_failed_generic": "Failed to resend confirmation code.",
+    "resend_code_failed_with_error": "Failed to resend confirmation code: {{error}}",
+    "registration_error": "Registration error:",
+    "enter_complete_code": "Please enter the complete 8-digit code.",
+    "verification_failed_generic": "Verification failed: invalid code or verification returned false.",
+    "already_have_account": "Already have an account?",
+    "sign_up_with_google": "Sign up with Google",
+    "login_link": "Log In"
   },
   "chat_input": {
     "placeholder": "Enter message...",
@@ -450,9 +494,36 @@
   "user_profile": {
     "header_title": "User Profile",
     "email_label": "E-mail",
+    "name_label": "Name",
     "user_name_label": "User name",
     "verified_label": "Verified",
     "yes": "Yes",
     "no": "No"
+  },
+  "password_validator": {
+    "length": "Minimum 8 characters",
+    "uppercase": "At least one uppercase letter",
+    "lowercase": "At least one lowercase letter",
+    "number": "At least one number",
+    "special": "At least one special character"
+  },
+  "validation": {
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least 8 characters",
+      "uppercase": "Must contain an uppercase letter",
+      "digit": "Must contain a digit",
+      "specialChar": "Must contain a special character"
+    },
+    "name": {
+      "required": "Name is required",
+      "minLength": "Name must be longer than 2 characters",
+      "maxLength": "Name must be shorter than 50 characters"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email",
+      "gmailOnly": "Only Gmail accounts are supported for registration"
+    }
   }
 }

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { Loop, Download, CloseModal, ArrowLeft, ArrowRight } from '@/shared/assets/Icons/icons';
 import { useImageGallery } from '@/features/gallery-images/ui/ImageGalleryContext';
 
 const ImageGallery: React.FC = () => {
@@ -177,19 +177,19 @@ const ImageGallery: React.FC = () => {
     <div className="gallery-overlay" onClick={handleOverlayClick}>
       <div className="gallery-toolbar">
         <button onClick={handleRotate} className="gallery-button">
-          <Image src={ICONS.rotate} alt={t('imageGallery.alt.rotate')} width={24} height={24} />
+          <Loop alt={t('imageGallery.alt.rotate')} width={24} height={24} />
         </button>
         <button onClick={handleDownload} className="gallery-button">
-          <Image src={ICONS.download} alt={t('imageGallery.alt.download')} width={24} height={24} />
+          <Download alt={t('imageGallery.alt.download')} width={24} height={24} />
         </button>
       </div>
 
       <button onClick={closeGallery} className="gallery-close-button">
-        <Image src={ICONS.closeModal} alt={t('imageGallery.alt.close')} width={32} height={32} />
+        <CloseModal alt={t('imageGallery.alt.close')} width={32} height={32} />
       </button>
 
       <button onClick={handlePrev} className="gallery-nav-button gallery-nav-prev">
-        <Image src={ICONS.arrowBack} alt={t('imageGallery.alt.previous')} width={48} height={48} />
+        <ArrowLeft alt={t('imageGallery.alt.previous')} width={48} height={48} />
       </button>
 
       <div className="gallery-main-view" ref={containerRef}>
@@ -223,7 +223,7 @@ const ImageGallery: React.FC = () => {
       </div>
 
       <button onClick={handleNext} className="gallery-nav-button gallery-nav-next">
-        <Image src={ICONS.arrowRight} alt={t('imageGallery.alt.next')} width={48} height={48} />
+        <ArrowRight alt={t('imageGallery.alt.next')} width={48} height={48} />
       </button>
     </div>
   );

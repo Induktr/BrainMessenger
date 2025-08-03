@@ -1,19 +1,27 @@
 'use client';
 
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { 
+  useRef, 
+  useState, 
+  useEffect, 
+  useCallback 
+} from 'react';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons';
-import { useGlobalAudio } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext'; // Import useGlobalAudio
-import { AudioPlayerProps } from '@/features/manage-audio-player/model/auido.types';
+import { 
+  Play, 
+  Pause 
+} from '@/shared/assets/Icons/icons';
+import { 
+  useGlobalAudio 
+} from '@/app/providers/GlobalAudioProvider/GlobalAudioContext'; // Import useGlobalAudio
+import { 
+  AudioPlayerProps 
+} from '@/features/manage-audio-player/model/auido.types';
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, onShowGlobalControls }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId }) => {
   const { currentAudioSrc, isPlaying: isGlobalPlaying, currentTime: globalCurrentTime, duration: globalDuration, playAudio, pauseAudio, seekAudio } = useGlobalAudio(); // Consume global audio context
 
   const isThisAudioPlayingGlobally = currentAudioSrc === src;
-
-  // Local state is no longer needed as playback is managed globally
-  // const [localDuration, setLocalDuration] = useState(0);
-  // const audioRef = useRef<HTMLAudioElement>(null); // Local ref removed
 
   // Duration and current time should always come from the global context
   const displayDuration = globalDuration;
@@ -21,15 +29,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, onShowGlobalC
 
 
   const handlePlayButtonClick = () => {
-    // If this audio is already playing globally and is currently playing, pause it.
-    // Otherwise, play this audio globally.
     if (isThisAudioPlayingGlobally && isGlobalPlaying) {
-      pauseAudio(); // Use pauseAudio from global context
+      pauseAudio();
     } else {
-      playAudio(src); // Trigger global playback using playAudio from global context
-      onShowGlobalControls(messageId, src); // Signal to show global controls
+      playAudio(src);
     }
   };
+
+  const progress = isThisAudioPlayingGlobally && displayDuration > 0 ? (displayCurrentTime / displayDuration) * 100 : 0;
 
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
@@ -38,28 +45,30 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, messageId, onShowGlobalC
   };
 
   return (
-    <div className="audio-player-container">
-      {/* Local audio element removed - playback is handled by GlobalAudioContext */}
-      {/* Blue button to trigger global playback */}
-      <button onClick={handlePlayButtonClick} className="audio-player-play-pause-button">
-        {/* Use global state to determine play/pause icon */}
-        <Image src={isThisAudioPlayingGlobally && isGlobalPlaying ? ICONS.play : ICONS.pause} alt={isThisAudioPlayingGlobally && isGlobalPlaying ? "Pause" : "Play"} width={20} height={20} className="audio-player-icon" style={{ objectFit: 'contain' }} />
+    <div className="flex items-center w-full gap-2 p-2 rounded-lg bg-surface">
+      <button
+        onClick={handlePlayButtonClick}
+        className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white transition-transform hover:scale-110"
+      >
+        {isThisAudioPlayingGlobally && isGlobalPlaying ? (
+          <Pause alt="Pause" width={16} height={16} />
+        ) : (
+          <Play alt="Play" width={16} height={16} />
+        )}
       </button>
-      {/* Display global progress if this audio is playing globally, otherwise display 0 progress */}
       <input
         type="range"
         min="0"
-        max={displayDuration || 0} // Ensure max is at least 0
-        value={isThisAudioPlayingGlobally ? (displayCurrentTime || 0) : 0} // Ensure value is at least 0, only show progress if playing globally
-        onChange={(e) => seekAudio(parseFloat(e.target.value))} // Use global seek
-        className="audio-player-progress-slider"
+        max={displayDuration || 0}
+        value={isThisAudioPlayingGlobally ? displayCurrentTime || 0 : 0}
+        onChange={(e) => seekAudio(parseFloat(e.target.value))}
+        className="w-full h-1 bg-transparent rounded-lg appearance-none cursor-pointer"
         style={{
-          background: `linear-gradient(to right, #96C93D 0%, #96C93D ${isThisAudioPlayingGlobally && displayDuration > 0 ? ((displayCurrentTime || 0) / displayDuration) * 100 : 0}%, #4D4D4D ${isThisAudioPlayingGlobally && displayDuration > 0 ? ((displayCurrentTime || 0) / displayDuration) * 100 : 0}%, #4D4D4D 100%)`
+          background: `linear-gradient(to right, var(--color-gradient-start) ${progress}%, var(--color-disabled) ${progress}%)`
         }}
-        disabled={!isThisAudioPlayingGlobally} // Disable seeking if not playing globally
+        disabled={!isThisAudioPlayingGlobally}
       />
-      <div className="audio-player-time-display">
-        {/* Display global time if playing globally, otherwise display 0:00 / duration */}
+      <div className="text-xs font-mono text-[var(--color-text-secondary)] w-20 text-center">
         {isThisAudioPlayingGlobally ? formatTime(displayCurrentTime) : formatTime(0)} / {formatTime(displayDuration)}
       </div>
     </div>

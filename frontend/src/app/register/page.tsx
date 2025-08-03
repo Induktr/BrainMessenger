@@ -1,197 +1,299 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import React, { 
+  useState, 
+  useRef 
+} from 'react';
+import { 
+  useEffect,
+  useMemo
+} from 'react';
+import {
+  useTranslation
+} from 'react-i18next';
+import { 
+  useForm, 
+  SubmitHandler 
+} from 'react-hook-form';
 import Link from 'next/link';
 import Image from 'next/image';
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import InputCell from '@/shared/ui/InputCell/InputCell';
-import { useRouter } from 'next/navigation';
+import { 
+  useRouter 
+} from 'next/navigation';
 import ProgressIndicator from '@/shared/ui/ProgressIndicator/ProgressIndicator';
-import { useMutation } from '@apollo/client';
-import { REGISTER_USER, VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/entities/user/model/user.queries'; // Import mutations
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { 
+  useMutation 
+} from '@apollo/client';
+import { 
+  REGISTER_USER, 
+  VERIFY_EMAIL, 
+  SEND_VERIFICATION_EMAIL 
+} from '@/entities/user/model/user.queries'; // Import mutations
+import { 
+  Castle, 
+  Man, 
+  UsernameDog, 
+  Mail, 
+  ArrowRight,
+  ArrowBack, 
+  Eye, 
+  EyeOff 
+} from '@/shared/assets/Icons/icons';
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
-import { IMAGES } from '@/shared/assets/Images/images';
-import { RegisterFormInputs } from '@/features/user-auth/model/user-auth.types';
+import { 
+  RegisterFormInputs 
+} from '@/features/user-auth/model/user-auth.types';
+import { 
+  variantsStylesIcons
+} from '@/shared/assets/variantStyles/variantStyles';
 import GoogleAuthButton from '@/entities/google-auth/ui/GoogleAuthButton';
+import AuthPrompt from '@/shared/ui/AuthPrompt/AuthPrompt';
+import { 
+  useFeedbackAnimation 
+} from '@/hooks/useFeedbackAnimation';
+import AuthLayout from '@/shared/ui/AuthLayout/AuthLayout';
+
+const iconComponents: { [key: string]: React.ElementType } = {
+  Castle,
+  Man,
+  UsernameDog,
+  Mail,
+};
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
-    const [confirmationCode, setConfirmationCode] = useState<string[]>(Array(8).fill('')); // State for the 8-digit code
-    const inputRefs = useRef<Array<React.RefObject<HTMLInputElement | null>>>(Array(8).fill(null).map(() => React.createRef())); // Refs for input cells
-    const { register, handleSubmit, formState: { errors }, watch, trigger } = useForm<RegisterFormInputs>();
-    const email = watch('email'); // Watch the email field
-    const [registeredEmail, setRegisteredEmail] = useState<string | null>(null); // New state to store the registered email
-    const router = useRouter();
-    const [registerUser, { error: errorRegistration }] = useMutation(REGISTER_USER);
-    const [verifyEmail, { loading: loadingVerification, error: errorVerification }] = useMutation(VERIFY_EMAIL); // Use useMutation for verification
-    const [resendVerificationCode, { loading: loadingResend, error: errorResend }] = useMutation(SEND_VERIFICATION_EMAIL); // Use useMutation for resending code
-    const [verificationSuccess, setVerificationSuccess] = useState(false); // State for verification success
-    const [currentView, setCurrentView] = useState('');
-   
-   
-     // Function to handle resending the verification code
-     const handleResendCode = async () => { // Removed emailToResend parameter
-       if (!registeredEmail) {
-         console.error("No registered email found to resend verification code.");
-         alert(t('register_page.resend_code_unavailable'));
-         return;
-       }
-       try {
-         console.log("Attempting to resend verification code for email:", registeredEmail);
-         const response = await resendVerificationCode({ variables: { email: registeredEmail } }); // Use registeredEmail
+  const stepsData = t('register_page.steps', { returnObjects: true });
+  const registrationSteps: any[] = Array.isArray(stepsData) ? stepsData : [];
+  const currentStepConfig = registrationSteps[currentStep - 1] || {};
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmationCode, setConfirmationCode] = useState<string[]>(Array(8).fill('')); // State for the 8-digit code
+  const inputRefs = useRef<Array<React.RefObject<HTMLInputElement | null>>>(Array(8).fill(null).map(() => React.createRef())); // Refs for input cells
+  const { register, handleSubmit, formState: { errors }, watch, trigger } = useForm<RegisterFormInputs>({
+    mode: 'onChange'
+  });
+  const password = watch('password', '');
+  const email = watch('email'); // Watch the email field
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null); // New state to store the registered email
+  const router = useRouter();
+  const [registerUser, { error: errorRegistration }] = useMutation(REGISTER_USER);
+  const [verifyEmail, { loading: loadingVerification, error: errorVerification }] = useMutation(VERIFY_EMAIL); // Use useMutation for verification
+  const [resendVerificationCode, { loading: loadingResend, error: errorResend }] = useMutation(SEND_VERIFICATION_EMAIL); // Use useMutation for resending code
+  const [verificationSuccess, setVerificationSuccess] = useState(false); // State for verification success
+  const [verificationStatus, setVerificationStatus] = useState<'idle' | 'checking' | 'success' | 'error'>('idle');
+  const { triggerAnimation: triggerGlitch, animationClassName: glitchClassName } = useFeedbackAnimation('glitch-effect', 400);
+  const { triggerAnimation: triggerJiggle, animationClassName: jiggleClassName } = useFeedbackAnimation('jiggle-effect', 300);
+  const [isSuggestionVisible, setIsSuggestionVisible] = useState(false);
+  const [currentView, setCurrentView] = useState('');
+  const prevPasswordRef = useRef(password);
 
-       if (response.data && response.data.resendVerificationCode) { // Check the correct response field
-         console.log("Resend code successful:", response.data.resendVerificationCode);
-         // Optionally show a message to the user that the code has been resent
-         alert(t('register_page.code_resent_success')); // Added alert for user feedback
-       } else {
-          console.error('Resend code failed: No data received.');
-          alert(t('register_page.resend_code_failed_generic')); // Added alert for user feedback
-       }
-     } catch (e) {
-       console.error('Resend code error:', e);
-       // Handle error (e.g., display error message to the user)
-       alert(t('register_page.resend_code_failed_with_error', { error: e })); // Added alert with error message
-     }
-   };
- 
-   // Function to handle resending the verification code
-   const handleNext = async () => {
-    let isStepValid = false;
-    if (currentStep === 1) {
-       isStepValid = await trigger('password');
-     } else if (currentStep === 2) {
-       isStepValid = await trigger('name');
-     } else if (currentStep === 3) { // New step for username
-       isStepValid = await trigger('username');
-     } else if (currentStep === 4) { // Email step is now step 4
-        isStepValid = await trigger('email');
-        if (isStepValid) {
-          // Trigger registration mutation after email step (now step 4)
-          try {
-            const response = await registerUser({
-              variables: {
-                email: watch('email'), // Use watch to get the current email value
-                password: watch('password'), // Use watch to get the current password value
-                name: watch('name'), // Use watch to get the current name value
-                username: watch('username'), // Pass the username value
-              },
-            });
+  const getPasswordSuggestion = useMemo(() => (pass: string): string => {
+    if (!pass) return ''; // Do not show suggestion if input is empty
+    if (pass.length < 8) return '...'; // Suggest length requirement first
+    if (!/[A-Z]/.test(pass)) return 'A';
+    if (!/[a-z]/.test(pass)) return 'a';
+    if (!/[0-9]/.test(pass)) return '1';
+    if (!/[^A-Za-z0-9]/.test(pass)) return '!';
+    return ''; // All conditions met
+  }, []);
 
-            if (response.data && response.data.register) { // Check for direct UserDto object
-              console.log("Registration successful:", response.data.register); // Log the direct UserDto
-              setRegisteredEmail(watch('email')); // Store the email after successful registration
-              setCurrentStep(currentStep + 1); // Move to step 5
-            }
-          } catch (e) {
-            console.error('Registration error:', e);
-            // Error will be handled by the useMutation hook and displayed
-          }
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showPassword) {
+      timer = setTimeout(() => {
+        setIsSuggestionVisible(true);
+      }, 1000);
+    } else {
+      setIsSuggestionVisible(false);
+    }
+    return () => clearTimeout(timer);
+  }, [showPassword]);
+
+  useEffect(() => {
+    // --- Animation Optimization ---
+    // Only run animations if the password field is visible
+    if (!showPassword || !isSuggestionVisible) {
+      return;
+    }
+
+    const suggestion = getPasswordSuggestion(password);
+    // Timer-based jiggle
+    const interval = setInterval(() => {
+      if (suggestion) {
+        triggerJiggle();
+      }
+    }, 5000);
+
+    // Incorrect input jiggle
+    const lastChar = password.slice(-1);
+    const prevSuggestion = getPasswordSuggestion(prevPasswordRef.current);
+
+    if (password.length > prevPasswordRef.current.length && prevSuggestion) {
+        let isCharInvalid = false;
+        if (prevSuggestion === 'A' && !/[A-Z]/.test(lastChar)) isCharInvalid = true;
+        else if (prevSuggestion === 'a' && !/[a-z]/.test(lastChar)) isCharInvalid = true;
+        else if (prevSuggestion === '1' && !/[0-9]/.test(lastChar)) isCharInvalid = true;
+        else if (prevSuggestion === '!' && !/[^A-Za-z0-9]/.test(lastChar)) isCharInvalid = true;
+        
+        if(isCharInvalid) {
+            triggerJiggle();
         }
-        return; // Prevent default step increment
-     }
+    }
 
-     if (isStepValid && currentStep < 5) { // Total steps are now 5
-       setCurrentStep(currentStep + 1);
-     }
-   };
+    prevPasswordRef.current = password;
+    return () => clearInterval(interval);
+  }, [password, getPasswordSuggestion, triggerJiggle, showPassword, isSuggestionVisible]);
 
-   const handleBack = () => {
-     if (currentStep === 1) {
-       router.push('/'); // Navigate to welcome page
-     } else {
-       setCurrentStep(currentStep - 1);
-     }
-   };
- 
-   const handleSmallSettingsClick = () => {
+  // Function to handle resending the verification code
+  const handleResendCode = async () => { // Removed emailToResend parameter
+    if (!registeredEmail) {
+      console.error("No registered email found to resend verification code.");
+      alert(t('register_page.resend_code_unavailable'));
+      return;
+    }
+    try {
+      console.log("Attempting to resend verification code for email:", registeredEmail);
+      const response = await resendVerificationCode({ variables: { email: registeredEmail } }); // Use registeredEmail
+
+      if (response.data && response.data.resendVerificationCode) { // Check the correct response field
+        console.log("Resend code successful:", response.data.resendVerificationCode);
+        // Optionally show a message to the user that the code has been resent
+        alert(t('register_page.code_resent_success')); // Added alert for user feedback
+      } else {
+        console.error('Resend code failed: No data received.');
+        alert(t('register_page.resend_code_failed_generic')); // Added alert for user feedback
+      }
+    } catch (e) {
+      console.error('Resend code error:', e);
+      // Handle error (e.g., display error message to the user)
+      alert(t('register_page.resend_code_failed_with_error', { error: e })); // Added alert with error message
+    }
+  };
+
+  // Function to handle resending the verification code
+  const handleNext = async () => {
+    // If this is the step before the verification step, trigger registration
+    if (currentStep === registrationSteps.length - 1) {
+      try {
+        const response = await registerUser({
+          variables: {
+            email: watch('email'),
+            password: watch('password'),
+            name: watch('name'),
+            username: watch('username'),
+          },
+        });
+
+        if (response.data && response.data.register) {
+          console.log("Registration successful:", response.data.register);
+          setRegisteredEmail(watch('email'));
+          setCurrentStep(currentStep + 1);
+        }
+      } catch (e) {
+        console.error('Registration error:', e);
+      }
+    } else if (currentStep < registrationSteps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const currentFields = currentStepConfig.fields?.map((field: any) => field.name as keyof RegisterFormInputs) || [];
+  const watchedValues = watch(currentFields);
+  const isNextButtonDisabled = useMemo(() => {
+    if (!currentFields.length) return false;
+    const hasEmptyFields = watchedValues.some((value: string) => !value);
+    const hasErrors = currentFields.some((field: keyof RegisterFormInputs) => errors[field]);
+    return hasEmptyFields || hasErrors;
+  }, [watchedValues, errors, currentFields]);
+
+  const handleBack = () => {
+    if (currentStep === 1) {
+      router.push('/'); // Navigate to welcome page
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSmallSettingsClick = () => {
     setCurrentView('smallSettings')
-   }
- 
-   const handleClose = () => {
+  }
+
+  const handleClose = () => {
     setCurrentView('')
-   }
- 
-   // Function to handle code verification submission
-   const handleVerificationSubmit = async (emailToVerify: string) => {
-     const enteredCode = confirmationCode.join('');
-     if (enteredCode.length !== 8) {
-       console.log('Please enter the complete 8-digit code.');
-       // Optionally show an error message to the user
-       return;
-     }
- 
-     try {
-       const response = await verifyEmail({
-         variables: {
-           email: emailToVerify, // Use the passed email
-           code: enteredCode,
-         },
-       });
+  }
 
-       console.log("Frontend received response:", response); // Log the full response object
+  // Function to handle code verification submission
+  const handleVerificationSubmit = async (emailToVerify: string) => {
+    const enteredCode = confirmationCode.join('');
+    if (enteredCode.length !== 8) {
+      console.log('Please enter the complete 8-digit code.');
+      return;
+    }
 
-       if (response.data && response.data.verifyEmail === true) {
-         console.log("Verification successful for email:", watch('email'));
-         setVerificationSuccess(true);
-         // Redirect to login page after successful verification to obtain tokens
-         router.push('/login');
-       } else {
-          console.error('Verification failed: Invalid code or verification returned false.');
-          // Optionally show a generic verification failed message
-       }
-     } catch (e: unknown) { // Catch and type the error
-       console.error('Verification error:', e);
-       // Handle error (e.g., display error message to the user)
-       // The error message from the backend should be displayed by the useMutation hook
-     }
-   };
+    setVerificationStatus('checking');
 
-   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
-     if (currentStep === 5) { // Check for step 5 (email verification)
-       // Call the verification handler with the current email from form data
-       await handleVerificationSubmit(data.email);
-     } else {
-       // This part should ideally not be reached if handleNext is used for steps 1-4
-       // Remove the log as it's no longer relevant
-       // console.log("Form submitted on a step other than 5.");
-     }
-   };
+    try {
+      const response = await verifyEmail({
+        variables: {
+          email: emailToVerify,
+          code: enteredCode,
+        },
+      });
 
-   // Check if any of the confirmation code input fields have content
-   const isCodeInputStarted = confirmationCode.some(code => code !== '');
+      if (response.data && response.data.verifyEmail === true) {
+        setVerificationStatus('success');
+        setTimeout(() => router.push('/login'), 1000); // Redirect after success animation
+      } else {
+        setVerificationStatus('error');
+        triggerGlitch();
+        console.error('Verification failed: Invalid code or verification returned false.');
+      }
+    } catch (e: unknown) {
+      setVerificationStatus('error');
+      triggerGlitch();
+      console.error('Verification error:', e);
+    }
+  };
 
-   const handleCodeInputChange = (index: number, value: string) => {
-     console.log(`Input change at index ${index}: "${value}"`); // Log input change
-     const newCode = [...confirmationCode];
-     newCode[index] = value;
-     setConfirmationCode(newCode);
-     console.log('Updated confirmationCode state:', newCode); // Log updated state
+  const onSubmit: SubmitHandler<RegisterFormInputs> = async () => {
+    if (currentStep < registrationSteps.length) {
+      await handleNext();
+    }
+    // For the last step, submission is handled by the dedicated verification button.
+  };
 
-     // Move focus to the next input cell if a digit was entered
-     if (value !== '' && index < 7) {
-       inputRefs.current[index + 1]?.current?.focus();
-     }
-   };
+  // Check if any of the confirmation code input fields have content
+  const isCodeInputStarted = confirmationCode.some(code => code !== '');
 
-   const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
-     if (event.key === 'Backspace' && confirmationCode[index] === '' && index > 0) {
-       // If backspacing in an empty cell, move focus to the previous cell
-       inputRefs.current[index - 1]?.current?.focus();
-     } else if (event.key === 'Backspace' && confirmationCode[index] !== '') {
-       // If backspacing in a non-empty cell, clear the current cell
-       const newCode = [...confirmationCode];
-       newCode[index] = '';
-       setConfirmationCode(newCode);
-     }
-   };
+    const handleCodeInputChange = (index: number, value: string) => {
+    console.log(`Input change at index ${index}: "${value}"`); // Log input change
+    const newCode = [...confirmationCode];
+    newCode[index] = value;
+    setConfirmationCode(newCode);
+    console.log('Updated confirmationCode state:', newCode); // Log updated state
 
-   const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+    // Move focus to the next input cell if a digit was entered
+    if (value !== '' && index < 7) {
+      inputRefs.current[index + 1]?.current?.focus();
+    }
+  };
+
+  const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Backspace' && confirmationCode[index] === '' && index > 0) {
+      // If backspacing in an empty cell, move focus to the previous cell
+      inputRefs.current[index - 1]?.current?.focus();
+    } else if (event.key === 'Backspace' && confirmationCode[index] !== '') {
+      // If backspacing in a non-empty cell, clear the current cell
+      const newCode = [...confirmationCode];
+      newCode[index] = '';
+      setConfirmationCode(newCode);
+    }
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     const pastedData = event.clipboardData.getData('text');
     const codeArray = pastedData.slice(0, 8).split('');
@@ -209,259 +311,144 @@ const RegisterPage = () => {
     }
   };
 
-   // Function to determine the text to display based on the current step
-   const getStepText = (step: number, email?: string) => {
-     switch (step) {
-       case 1:
-         return t('register_page.create_password_placeholder');
-       case 2:
-         return t('register_page.your_name_placeholder');
-       case 3:
-         return t('register_page.username_placeholder'); // Text for the new username step
-       case 4:
-         return t('register_page.email_placeholder');
-       case 5:
-         return t('register_page.welcome_prompt', { email: email }); // Use email from watch
-       default:
-         return "";
-     }
-   };
+  return (
+    <AuthLayout
+      subtitle={currentStepConfig.subtitle}
+      onSettingsClick={handleSmallSettingsClick}
+      isSettingsOpen={currentView === 'smallSettings'}
+      onSettingsClose={handleClose}
+      handleBackPage={handleBack}
+    >
+      <div className="w-full max-w-md">
+            <AuthPrompt
+              textKey={currentStepConfig.prompt}
+              textKeyOptions={
+                currentStepConfig.component === 'VerificationCodeInput'
+                  ? { email: registeredEmail }
+                  : undefined
+              }
+            />
 
+        <ProgressIndicator currentStep={currentStep} totalSteps={registrationSteps.length} />
 
-   return (
-     <div className="welcome-container"> {/* Reusing welcome-container for centering */}
-     {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
-          <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-              <Image src={ICONS.burgerMenu} alt={t('register_page.burger_menu_alt')} className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
-          </div>
-       <div className="main-content-area"> {/* Reusing main-content-area */}
-         {/* Logo */}
-         {/* You might want to add the logo here */}
-       <div className="icon-container-steps">
-         <Image
-           src={IMAGES.logoBrainMessenger}
-           alt={t('register_page.logo_alt')} // Added alt text
-           width={175} // Example width, adjust as needed
-           height={175} // Example height, adjust as needed
-           className="logo"
-         />
-       </div>
-   
-   
-         {/* Step Content */}
-         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-           {currentStep === 1 && (
-             <>
-               <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2> {/* Added heading based on mockup */}
-               <div className="input-button-container"> {/* Container for input and button */}
-                 <Input
-                   placeholder={t('register_page.create_password_placeholder')}
-                   id="password"
-                   type="password"
-                   iconPath={ICONS.castle} // Use iconPath prop
-                   registration={register('password', {
-                     required: t('register_page.input_field_empty'), // Figma message
-                     minLength: { value: 6, message: t('register_page.password_too_short') }, // Figma message
-                     maxLength: { value: 50, message: t('register_page.password_too_long') }, // Added maxLength based on common practices
-                     pattern: {
-                       value: /^(?=.*[A-Z])(?=.*[!@#$%^&*()]).*$/, // Requires at least one capital letter and one special character
-                       message: t('register_page.password_requirements'), // Combined Figma messages
-                     },
-                   })}
-                 />
-                 <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon-container-size-lg" width={24} height={24} /> {/* Use img tag */}
-                 </Button>
-               </div>
-               {errors.password && <p className="input-error-message">{errors.password.message}</p>}
-               {errorRegistration && (
-                 errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
-                   errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
-                   ))
-                 ) : (
-                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
-                 )
-               )}
-             </>
-           )}
-           {currentStep === 2 && (
-             <>
-               {/* Progress Indicator for Step 2 */}
-               <div className="progress-indicator-container">
-                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
-                 <ProgressIndicator currentStep={currentStep} totalSteps={5} />
-               </div>
-               <div className="input-button-container">
-                 <Input
-                   placeholder={t('register_page.your_name_placeholder')}
-                   id="name"
-                   type="text"
-                   iconPath={ICONS.man} // Use iconPath prop
-                   registration={register('name', {
-                     required: t('register_page.input_field_empty'),
-                     minLength: { value: 2, message: t('register_page.name_too_short') },
-                     maxLength: { value: 50, message: t('register_page.name_too_long') },
-                   })}
-                 />
-                 <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
-                 </Button>
-               </div>
-               {errors.name && <p className="input-error-message">{errors.name.message}</p>}
-               {errorRegistration && (
-                 errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
-                   errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
-                   ))
-                 ) : (
-                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
-                 )
-               )}
-             </>
-           )}
-           {currentStep === 3 && (
-             <>
-               {/* Progress Indicator for Step 3 */}
-               <div className="progress-indicator-container">
-                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
-                 <ProgressIndicator currentStep={currentStep} totalSteps={5} />
-               </div>
-               <div className="input-button-container">
-                 <Input
-                   placeholder={t('register_page.username_placeholder')}
-                   id="username"
-                   type="text"
-                   iconPath={ICONS.usernameDog} // Assuming you have an icon for username
-                   registration={register('username', {
-                     // Removed 'required' validation to make username optional
-                     minLength: { value: 3, message: t('register_page.username_too_short') },
-                     maxLength: { value: 20, message: t('register_page.username_too_long') },
-                     // You might want to add a pattern for valid username characters
-                   })}
-                 />
-                 <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
-                 </Button>
-               </div>
-               {errors.username && <p className="input-error-message">{errors.username.message}</p>}
-               {errorRegistration && (
-                 errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
-                   errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
-                   ))
-                 ) : (
-                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
-                 )
-               )}
-             </>
-           )}
-           {currentStep === 4 && (
-             <>
-               {/* Progress Indicator for Step 4 */}
-               <div className="progress-indicator-container">
-                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
-                 <ProgressIndicator currentStep={currentStep} totalSteps={5} />
-               </div>
-               <div className="input-button-container">
-                 <Input
-                   placeholder={t('register_page.email_placeholder')}
-                   id="email"
-                   type="email"
-                   iconPath={ICONS.mail} // Use iconPath prop
-                   registration={register('email', {
-                     required: t('register_page.input_field_empty'),
-                     pattern: {
-                       value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                       message: t('register_page.invalid_email_format'),
-                     },
-                   })}
-                 />
-                 <Button type="button" onClick={handleNext} className="next-button-step">
-                   <Image src={ICONS.arrowRight} alt={t('register_page.next_button_alt')} className="icon" width={24} height={24} /> {/* Use img tag */}
-                 </Button>
-               </div>
-               {errors.email && <p className="input-error-message">{errors.email.message}</p>}
-               {errorRegistration && (
-                 errorRegistration.graphQLErrors && errorRegistration.graphQLErrors.length > 0 ? (
-                   errorRegistration.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message">{t('register_page.registration_error')} {err.message}</p>
-                   ))
-                 ) : (
-                   <p className="input-error-message">{t('register_page.registration_error')} {errorRegistration.message}</p>
-                 )
-               )}
-             </>
-           )}
-            {currentStep === 5 && (
-             <>
-               {/* Progress Indicator for Step 5 */}
-               <p className="step-description">{getStepText(currentStep, email)}</p> {/* Pass email to getStepText */}
-               <div className="progress-indicator-container"> {/* Added container for centering */}
-                 <h2 className="step-heading">{t('register_page.step_prefix')} {currentStep}</h2>
-                 <ProgressIndicator currentStep={currentStep} totalSteps={5} />
-               </div>
-               {/* Confirmation code input cells */}
-               <div className="confirmation-code-input-container"> {/* Container for input cells */}
-                 {confirmationCode.map((value, index) => (
-                   <InputCell
-                     className="confirmation-code-input"
-                     key={index}
-                     value={value}
-                     onChange={(val) => handleCodeInputChange(index, val)}
-                     onKeyDown={(e) => handleKeyDown(index, e)} // Add onKeyDown handler
-                     onPaste={handlePaste} // Add onPaste handler
-                     inputRef={inputRefs.current[index]}
-                   />
-                 ))}
-               </div>
-                <Button className="custom-button" type="submit" disabled={loadingVerification || !isCodeInputStarted}> {/* Disable button while loading or if code input not started */}
-                   {loadingVerification ? t('register_page.verifying_button') : t('register_page.confirm_button')}
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+          <div>
+
+            {currentStepConfig.component === 'VerificationCodeInput' ? (
+              <div className="text-center">
+                <div className={`flex justify-center gap-2 mb-4 ${verificationStatus === 'checking' ? 'neural-check-animation' : ''} ${glitchClassName}`}>
+                  {confirmationCode.map((digit, index) => (
+                    <InputCell
+                      key={index}
+                      value={digit}
+                      onChange={(value) => handleCodeInputChange(index, value)}
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      onPaste={handlePaste}
+                      inputRef={inputRefs.current[index] as React.RefObject<HTMLInputElement>}
+                      className={
+                        verificationStatus === 'success' ? 'bg-green-500/20 border-green-500' :
+                        verificationStatus === 'error' ? 'bg-red-500/20 border-red-500' : ''
+                      }
+                    />
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => handleVerificationSubmit(registeredEmail || '')}
+                  className="w-full"
+                  disabled={loadingVerification || !isCodeInputStarted}
+                >
+                  {loadingVerification ? t('register_page.verifying_button') : t('register_page.verify_button')}
                 </Button>
-                {errorVerification && (
-                  errorVerification.graphQLErrors && errorVerification.graphQLErrors.length > 0 ? (
-                    errorVerification.graphQLErrors.map((err, index) => (
-                      <p key={index} className="input-error-message text-center">{t('register_page.verification_error_prefix')} {err.message}</p>
-                    ))
-                  ) : (
-                    <p className="input-error-message text-center">{t('register_page.verification_error_prefix')} {errorVerification.message}</p>
-                  )
-                )}
-                {errorResend && ( // Display resend error
-                  errorResend.graphQLErrors && errorResend.graphQLErrors.length > 0 && (
-                    errorResend.graphQLErrors.map((err, index) => (
-                     <p key={index} className="input-error-message text-center">{t('register_page.resend_error_prefix')} {errorResend.message}</p>
-                    ))
-                  )
-                )}
-                {verificationSuccess && <p className="success-message text-center">{t('register_page.verification_success_redirect')}</p>}
-                {!verificationSuccess && ( // Only show button if verification is not successful
-                  <Button onClick={handleResendCode} className="confirmation-send-code-button-container" disabled={loadingResend || verificationSuccess}> {/* Call handleResendCode without arguments */}
-                     {loadingResend ? t('register_page.sending_button') : t('register_page.get_code_again_button')} {/* Change button text while loading */}
-                  </Button>
-                )}
-              </>
+                <button onClick={handleResendCode} className="text-sm text-[var(--color-accent)] mt-4 hover:underline" disabled={loadingResend}>
+                  {loadingResend ? t('register_page.resending_code_button') : t('register_page.resend_code_button')}
+                </button>
+                {errorVerification && <p className="text-[var(--color-danger)] text-sm mt-2">{errorVerification.message}</p>}
+                {errorResend && <p className="text-[var(--color-danger)] text-sm mt-2">{errorResend.message}</p>}
+              </div>
+            ) : (
+              currentStepConfig.fields?.map((field: any) => (
+                <Input
+                  key={field.name}
+                  id={field.name}
+                  placeholder={field.label}
+                  type={field.type === 'password' && showPassword ? 'text' : field.type}
+                  registration={register(field.name as keyof RegisterFormInputs, {
+                    required: t(`validation.${field.name}.required`),
+                    minLength: {
+                      value: field.name === 'name' ? 2 : field.name === 'password' ? 8 : 0,
+                      message: t(`validation.${field.name}.minLength`)
+                    },
+                    maxLength: {
+                      value: field.name === 'name' ? 50 : 255,
+                      message: t(`validation.${field.name}.maxLength`)
+                    },
+                    validate: (value) => {
+                      if (field.name === 'password') {
+                        if (!/[A-Z]/.test(value)) return t('validation.password.uppercase');
+                        if (!/[0-9]/.test(value)) return t('validation.password.digit');
+                        if (!/[!@#$%^&*]/.test(value)) return t('validation.password.specialChar');
+                      }
+                      if (field.name === 'email') {
+                        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)) return t('validation.email.invalid');
+                        if (!/@gmail\.com$/.test(value)) return t('validation.email.gmailOnly');
+                      }
+                      return true;
+                    }
+                  })}
+                  error={errors[field.name as keyof RegisterFormInputs]?.message}
+                  icon={
+                    field.icon && iconComponents[field.icon]
+                      ? React.createElement(iconComponents[field.icon], { className: `${variantsStylesIcons.iconSecondary} w-6 h-6` })
+                      : null
+                  }
+                  rightIcon={
+                    field.type === 'password' && (
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="focus:outline-none">
+                        {showPassword ? <EyeOff className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} /> : <Eye className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} />}
+                      </button>
+                    )
+                  }
+                  suggestion={
+                    field.type === 'password' && showPassword && isSuggestionVisible
+                      ? getPasswordSuggestion(password)
+                      : ''
+                  }
+                  suggestionClassName={field.name === 'password' ? jiggleClassName : ''}
+                  suggestionContainerClassName={field.name === 'password' && isSuggestionVisible ? 'fade-in-up-effect' : 'opacity-0'}
+                  // Pass the watched value to the Input component so the suggestion can use it
+                  {...(field.name === 'password' && { value: password })}
+                />
+              ))
             )}
+          </div>
 
+          {currentStep < registrationSteps.length && (
+            <Button
+              type="button"
+              onClick={handleNext}
+              className="w-full flex items-center transparent justify-center"
+              disabled={isNextButtonDisabled}
+            >
+              {t('register_page.next_button')}
+              <ArrowRight className={`${variantsStylesIcons.iconPrimary} w-5 h-5 ml-3`} />
+            </Button>
+          )}
+
+          {errorRegistration && <p className="text-[var(--color-danger)] text-sm text-center mt-2">{errorRegistration.message}</p>}
         </form>
 
-        <GoogleAuthButton type='register' />
-
-        {/* Back Button */}
-        {currentStep >= 1 && (
-          <Button type="button" onClick={handleBack} className="back-button-top-left">
-            <Image src={ICONS.arrowBack} alt={t('register_page.back_button_alt')} className="icon svg-icon" width={24} height={24} />
-          </Button>
-        )}
-        {currentStep !== 4 && (<p className="text-center text-sm text-textSecondary-dark">
-          {t('register_page.already_have_account')}{' '}
-          <Link href="/login" className="text-primary-DEFAULT hover:underline">
-            {t('register_page.login_link')}
-          </Link>
-        </p>)}
+        <div className="mt-6 text-center">
+          <GoogleAuthButton type='register' />
+             <AuthPrompt
+            textKey="register_page.already_have_account"
+            linkTextKey={t("register_page.login_link")}
+            optionPage="login"
+          />
+        </div>
       </div>
-      </div>
-      );
-    };
+    </AuthLayout>
+  );
+};
 
 export default RegisterPage;

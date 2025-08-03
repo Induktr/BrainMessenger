@@ -5,11 +5,12 @@ import Modal from '@/shared/ui/Modal/Modal';
 import { useQuery } from '@apollo/client';
 import { GET_USER_BY_ID } from '@/entities/user/model/user.queries';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { Account, CloseModal } from '@/shared/assets/Icons/icons';
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // To check if it's the current user
 import { UserProfileModalProps } from '@/entities/user/model/user.types';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 import { useTranslation } from 'react-i18next';
+import { Mail, UsernameDog, Shield } from '@/shared/assets/Icons/icons'; // Import icons for email and username
 
 import type { User } from '@/entities/user/model/user.types';
 
@@ -33,78 +34,65 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, us
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="myaccount-modal-content">
-        <div className="myaccount-header">
-          <button className="myaccount-close-button" onClick={onClose}>
-            <Image src={ICONS.closeModal} alt="Close" width={24} height={24} className="icon" />
+      <div className="text-[var(--color-text-primary)] rounded-[10px]">
+        <div className="flex justify-between items-center pb-4">
+          <h2 className="text-2xl font-semibold">{t('user_profile.header_title')}</h2>
+          <button onClick={onClose} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+            <CloseModal alt="Close" width={24} height={24} />
           </button>
-          <h2 className="myaccount-header-title">{t('user_profile.header_title')}</h2>
-          {/* Placeholder for options icon - hidden if not current user */}
-          {isCurrentUserProfile && (
-            <div className="myaccount-header-options">
-              {/* You can add an edit icon here if needed for own profile */}
-            </div>
-          )}
         </div>
 
-        <div className="myaccount-user-info-section">
-          <div className="myaccount-avatar">
+        <div className="flex flex-col text-[16px] items-center py-6">
+          <div className="relative">
             {user.avatarUrl ? (
-              <img src={user.avatarUrl} alt={`${user.name}'s avatar`} className="myaccount-avatar-image" />
+              <img src={user.avatarUrl} alt={`${user.name}'s avatar`} className="w-24 h-24 rounded-full object-cover" />
             ) : (
-              <div className="default-avatar"></div>
+              <div className="w-24 h-24 rounded-full bg-[var(--color-disabled)] flex items-center justify-center">
+                <span className="text-2xl font-bold">{user.name.charAt(0).toUpperCase()}</span>
+              </div>
             )}
           </div>
-          <div className="myaccount-name-status">
-            <h2 className="myaccount-user-name">{user.name || user.username || 'Unknown User'}</h2>
-            <p className={`myaccount-user-status ${dynamicStatus === 'offline' ? {lastSeen: dynamicStatus} : 'online'}`}>
-              {dynamicStatus}
-            </p>
-          </div>
+          <h2 className="text-2xl font-bold mt-4">{user.name || user.username || 'Unknown User'}</h2>
+          <p className={`mt-1 ${dynamicStatus === 'online' ? 'text-[var(--color-success)]' : 'text-[var(--color-text-secondary)]'}`}>
+            {dynamicStatus}
+          </p>
           {user.bio && (
-            <p className="myaccount-user-description">{user.bio}</p>
+            <p className="text-[var(--color-text-secondary)] mt-4">{user.bio}</p>
           )}
         </div>
 
-        <div className="myaccount-separator"></div>
-
-        <div className="myaccount-detailed-info">
-          <div className="myaccount-info-item">
-            <div className="myaccount-info-icon">
-              <Image src={ICONS.mail} alt="Email" width={24} height={24} className="icon" />
+        <div className="space-y-4 pt-6 border-t border-[var(--color-border)]">
+          {user.name && (
+            <div className="flex items-center">
+              <Account alt="Account" width={20} height={20} className="text-[var(--color-text-secondary)] mr-4" />
+              <div>
+                <p className="text-[var(--color-text-secondary)]">{t('user_profile.name_label')}</p>
+                <p className="text-[var(--color-gradient-start)] font-medium">{user.name}</p>
+              </div>
             </div>
-            <div className="myaccount-info-text">
-              <span className="myaccount-info-label">{t('user_profile.email_label')}:</span>
-              <span className="myaccount-info-value">{user.email}</span>
-            </div>
-          </div>
+          )}
 
           {user.username && (
-            <div className="myaccount-info-item">
-              <div className="myaccount-info-icon">
-                <Image src={ICONS.usernameDog} alt="Username" width={24} height={24} className="icon" />
-              </div>
-              <div className="myaccount-info-text">
-                <span className="myaccount-info-label">{t('user_profile.user_name_label')}:</span>
-                <span className="myaccount-info-value">{user.username}</span>
+            <div className="flex items-center">
+              <UsernameDog alt="Username" width={20} height={20} className="text-[var(--color-text-secondary)] mr-4" />
+              <div>
+                <p className="text-[var(--color-text-secondary)]">{t('user_profile.user_name_label')}</p>
+                <p className="text-[var(--color-gradient-start)] font-medium">@{user.username}</p>
               </div>
             </div>
           )}
 
-          {/* Add other read-only fields as needed, e.g., isVerified */}
-          <div className="myaccount-info-item">
-            <div className="myaccount-info-icon">
-              <Image src={ICONS.shield} alt="Verified" width={24} height={24} className="icon" />
-            </div>
-            <div className="myaccount-info-text">
-              <span className="myaccount-info-label">{t('user_profile.verified_label')}:</span>
-              <span className={`myaccount-info-value ${user.isVerified ? 'myaccount-info-value-green' : ''}`}>
+
+          <div className="flex items-center">
+            <Shield alt="Verified" width={20} height={20} className="text-[var(--color-text-secondary)] mr-4" />
+            <div>
+              <p className="text-[var(--color-text-secondary)]">{t('user_profile.verified_label')}</p>
+              <p className={`font-medium ${user.isVerified ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]'}`}>
                 {user.isVerified ? t('user_profile.yes') : t('user_profile.no')}
-              </span>
+              </p>
             </div>
           </div>
         </div>
-        {/* No edit buttons or input fields for other users */}
       </div>
     </Modal>
   );

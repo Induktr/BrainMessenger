@@ -1,10 +1,7 @@
 'use client';
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import './ui.css';
-import './admin/admin.css';
 
 import ApolloWrapper from '@/app/providers/ApolloWrapper';
 import BodyClassNameUpdater from '@/shared/ui/BodyClassNameUpdater/BodyClassNameUpdater';
@@ -19,7 +16,6 @@ import { GlobalAudioProvider } from '@/app/providers/GlobalAudioProvider/GlobalA
 import { ImageGalleryProvider } from '@/features/gallery-images/ui/ImageGalleryContext';
 import ImageGallery from '@/features/gallery-images/ui/ImageGallery';
 import UserStatusUpdater from '@/features/update-user-status/ui/UserStatusUpdater';
-
 // Import Roboto font
 import { Roboto } from 'next/font/google';
 
@@ -29,15 +25,6 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 // Configure Roboto font
 const roboto = Roboto({
@@ -55,14 +42,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang={i18n.language}>
-      <body className="antialiased bg-background-dark text-textPrimary-dark font-roboto"> {/* Use a static base class name */}
+    <html lang={i18n.language} className="h-full">
+      <body className={`h-full bg-[var(--color-background)] text-[var(--color-text-primary)] antialiased ${roboto.variable}`}>
         <ThemeProvider>
           <LanguageProvider>
             <I18nextProvider i18n={i18n}>
             <ApolloWrapper> {/* ApolloWrapper (containing ApolloProvider) must wrap AuthProvider */}
               <DeepWorkProvider>
-                <BodyClassNameUpdater /> {/* Add the component to update body class on client */}
+                {/* Removed BodyClassNameUpdater as theme is now set on html */}
                 <GlobalAudioProvider> {/* Wrap the entire application with GlobalAudioProvider */}
                   <NetworkStatusProvider>
                     <AuthProvider>

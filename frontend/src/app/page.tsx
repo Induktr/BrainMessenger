@@ -1,14 +1,29 @@
 'use client'; // This is a Client Component
 
-import React, { useState, useEffect, useLayoutEffect } from 'react'; // Import useLayoutEffect
+import React, { 
+  useState, 
+  useEffect, 
+  useLayoutEffect } from 'react'; // Import useLayoutEffect
 import { useRouter } from 'next/navigation'; // Import useRouter
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { 
+  Shield, 
+  Channel, 
+  Castle, 
+  Increase, 
+  ArrowLeft, 
+  ArrowRight, 
+  BurgerMenu } from '@/shared/assets/Icons/icons';
 import { IMAGES } from '@/shared/assets/Images/images';
 import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image';
 import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
+import { 
+  variantsStylesBackground, 
+  variantsStylesIcons, 
+  variantsStylesText 
+} from '@/shared/assets/variantStyles/variantStyles';
 
 const WelcomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -30,28 +45,28 @@ const WelcomePage = () => {
 
   const slides = [
     {
-      image: <Image src={IMAGES.logoBrainMessenger} alt={t('welcome_page.logo_alt')} className="logo-container-size" width={175} height={175}></Image>, // Temporarily commented out for debugging
+      image: <Image src={IMAGES.logoBrainMessenger} alt={t('welcome_page.logo_alt')} width={175} height={175}></Image>, // Temporarily commented out for debugging
       title: t('welcome_page.slide1_title'),
       description: t('welcome_page.slide1_description'),
       // Add more slides as needed based on the mockup/requirements
     },
     {
-      icon: <Image src={ICONS.shield} alt={t('welcome_page.shield_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      icon: <Shield alt={t('welcome_page.shield_alt')} className={variantsStylesIcons.iconAccent} width={120} height={120}></Shield>,
       title: t('welcome_page.slide2_title'),
       description: t('welcome_page.slide2_description'),
     },
     {
-      icon: <Image src={ICONS.channel} alt={t('welcome_page.group_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      icon: <Channel alt={t('welcome_page.group_alt')} className={variantsStylesIcons.iconAccent} width={120} height={120}></Channel>,
       title: t('welcome_page.slide3_title'),
       description: t('welcome_page.slide3_description'),
     },
     {
-      icon: <Image src={ICONS.castle} alt={t('welcome_page.castle_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      icon: <Castle alt={t('welcome_page.castle_alt')} className={`${variantsStylesIcons.iconAccent}`} width={120} height={120}></Castle>,
       title: t('welcome_page.slide4_title'),
       description: t('welcome_page.slide4_description'),
     },
     {
-      icon: <Image src={ICONS.increase} alt={t('welcome_page.increase_alt')} className="icon-container-size" width={120} height={120}></Image>,
+      icon: <Increase alt={t('welcome_page.increase_alt')} className={variantsStylesIcons.iconAccent} width={120} height={120}></Increase>,
       title: t('welcome_page.slide5_title'),
       description: t('welcome_page.slide5_description'),
     },
@@ -83,8 +98,6 @@ const WelcomePage = () => {
   // }, [user, loading, router]); // Depend on user, loading, and router
 
 
-
-  // Optionally show a loading state while checking authentication
   // Optionally show a loading state while checking authentication
   if (queryLoading) {
     return (
@@ -103,63 +116,47 @@ const WelcomePage = () => {
   // If user is authenticated, the useEffect hook will handle the redirect.
   // If not authenticated, render the welcome page.
   return (
-    <div className="welcome-container">
+    <div className={`${variantsStylesBackground.backgroundAccent} flex flex-col items-center justify-center min-h-screen p-4`}>
       {currentView === 'smallSettings' && (
-        <div>
-          <SmallSettings onClose={handleClose} isOpen={true}/>
-        </div>
+        <SmallSettings onClose={handleClose} isOpen={true}/>
       )}
       {/* Header */}
-      <header className="welcome-header">
-        {/* Right side: Burger Menu Icon */}
-        <div className="burger-menu-container">
-            <Image src={ICONS.burgerMenu} alt={t('welcome_page.burger_menu_alt')} onClick={handleSmallSettingsClick} className="icon" width={24} height={24}></Image>
-        </div>
+      <header className="absolute top-6 right-6">
+        <BurgerMenu alt={t('welcome_page.burger_menu_alt')} onClick={handleSmallSettingsClick} className={`${variantsStylesIcons.iconSecondary} w-6 h-6 text-text-primary cursor-pointer`} />
       </header>
 
       {/* Main Content Area */}
-      <div className="main-content-area">
+      <div className="flex flex-col items-center justify-center flex-1 text-center px-4">
         {/* Render slide image or icon */}
-        <div className="slide-image-container"> {/* Add a container for styling */}
+        <h1 className="text-2xl font-bold mb-4">{slides[currentSlide].title}</h1>
+        <div className="mb-8">
           {slides[currentSlide].image || slides[currentSlide].icon}
         </div>
 
-        <h1 className="slide-title h1">{slides[currentSlide].title}</h1>
-        <p className="slide-description p">{slides[currentSlide].description}</p>
 
         {/* Slider Navigation */}
-        <div className="slider-navigation">
+        <div className="relative flex items-center justify-center w-full max-w-md mb-10">
           <Button
             onClick={prevSlide}
             disabled={currentSlide === 0}
-            className="slider-button prev-button"
+            variant="ghost"
+            className="absolute left-0 p-2 rounded-full"
           >
-            {/* Left Arrow SVG */}
-              {/* Left Arrow SVG */}
-              <Image src={ICONS.arrowLeft} alt={t('welcome_page.back_button_alt')} className="icon" width={24} height={24}></Image>
+            <ArrowLeft alt={t('welcome_page.back_button_alt')} className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} />
           </Button>
-          {/* Placeholder for slider indicators if needed */}
-          <div className="slider-indicators">
-            {slides.map((_, index) => (
-              <span
-                key={index}
-                className={`slider-indicator ${index === currentSlide ? 'active' : ''}`}
-              ></span>
-            ))}
-          </div>
           <Button
             onClick={nextSlide}
             disabled={currentSlide === slides.length - 1}
-            className="slider-button next-button"
+            variant="ghost"
+            className="absolute right-0 p-2"
           >
-            {/* Right Arrow SVG */}
-            <Image src={ICONS.arrowRight} alt={t('welcome_page.next_button_alt')} className="icon" width={24} height={24}></Image>
+            <ArrowRight alt={t('welcome_page.next_button_alt')} className={`${variantsStylesIcons.iconSecondary} w-6 h-6`} />
           </Button>
         </div>
-
+        <p className="text-[16px] mb-10 max-w-md">{slides[currentSlide].description}</p>
 
         {/* Get Started Button */}
-        <Button className="get-started-button" onClick={() => router.push('/register')}>
+        <Button variant="primary" className="w-full from-[var(--color-gradient-start)] to-[var(--color-gradient-end)] text-[var(--color-background)] max-w-[456px] text-2xl min-h-[70px] py-3 rounded-lg font-semibold" onClick={() => router.push('/register')}>
           {t('welcome_page.get_started_button')}
         </Button>
       </div>

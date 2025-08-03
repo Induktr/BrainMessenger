@@ -12,7 +12,8 @@ import { GET_USER_STATS } from '@/entities/user/model/user.queries';
 import { GET_FEEDBACK_COMPLAINTS } from '@/entities/feedback-complaint/model/feedback-complaint.queries';
 import Spinner from '@/shared/ui/Spinner/Spinner';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons'
+import { IMAGES } from '@/shared/assets/Images/images'
+import { Loop, Night, Globe, FocusMode } from '@/shared/assets/Icons/icons';
 
 const AdminDashboardPage = () => {
   const { t } = useTranslation();
@@ -59,9 +60,9 @@ const AdminDashboardPage = () => {
 
   if (userStatsLoading || complaintsLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#1a1a1a' }}>
-        <Spinner className="lazy-loading-logo-container">
-          <Image src="/images/logo.png" alt={t('admin_dashboard.logo_alt')} width={120} height={120} />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <Spinner className="w-16 h-16 text-accent">
+          <Image src={IMAGES.logoBrainMessenger} alt={t('admin_dashboard.logo_alt')} width={120} height={120} />
         </Spinner>
       </div>
     );
@@ -69,11 +70,11 @@ const AdminDashboardPage = () => {
 
   if (userStatsError || complaintsError) {
     return (
-      <div className="admin-dashboard">
-        <h1 className="admin-dashboard__header">{t('admin_dashboard.error_title')}</h1>
-        <p>{t('admin_dashboard.error_loading_data')}</p>
-        {userStatsError && <p>{t('admin_dashboard.user_stats_error')} {userStatsError.message}</p>}
-        {complaintsError && <p>{t('admin_dashboard.complaints_error')} {complaintsError.message}</p>}
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary p-4">
+        <h1 className="text-3xl font-bold mb-4">{t('admin_dashboard.error_title')}</h1>
+        <p className="text-lg mb-4">{t('admin_dashboard.error_loading_data')}</p>
+        {userStatsError && <p className="text-danger text-sm">{t('admin_dashboard.user_stats_error')} {userStatsError.message}</p>}
+        {complaintsError && <p className="text-danger text-sm">{t('admin_dashboard.complaints_error')} {complaintsError.message}</p>}
       </div>
     );
   }
@@ -81,33 +82,41 @@ const AdminDashboardPage = () => {
   const userStats = userStatsData?.getUserStats || { totalUsers: 120, activeUsers: 10, newUsersToday: 4 };
 
   return (
-    <div className="admin-panel-layout">
+    <div className="flex flex-col min-h-screen bg-background text-text-primary">
       {/* Main Content Area */}
-      <main className="admin-panel-layout__main-content">
+      <main className="flex-1 p-4">
         {/* Header */}
-        <header className="admin-panel-layout__header">
-          <div className="header__search">
-            <input type="text" placeholder={t('admin_dashboard.search_placeholder')} />
+        <header className="flex items-center justify-between p-4 border-b border-border mb-6">
+          <div className="flex-1 mr-4">
+            <input type="text" placeholder={t('admin_dashboard.search_placeholder')} className="w-full p-2 bg-input-background border border-border rounded-lg text-text-primary focus:outline-none focus:ring-1 focus:ring-accent" />
           </div>
-          <div className="header__actions">
-            <button onClick={() => setIsFocusMode(!isFocusMode)}><span><Image src={ICONS.foucsMode} alt={t('admin_dashboard.toggle_focus_mode_alt')} width={24} height={24}></Image></span></button>
-            <button><span><Image src={ICONS.loop} alt={t('admin_dashboard.toggle_roles_alt')} width={24} height={24}></Image></span></button>
-            <button><span><Image src={ICONS.night} alt={t('admin_dashboard.toggle_theme_alt')} width={24} height={24}></Image></span></button>
-            <button><span><Image src={ICONS.globe} alt={t('admin_dashboard.toggle_language_alt')} width={24} height={24}></Image></span></button>
+          <div className="flex space-x-4">
+            <button onClick={() => setIsFocusMode(!isFocusMode)} className="p-2 rounded-full hover:bg-surface transition-colors duration-200">
+              <FocusMode alt={t('admin_dashboard.toggle_focus_mode_alt')} className="w-6 h-6 text-text-primary" />
+            </button>
+            <button className="p-2 rounded-full hover:bg-surface transition-colors duration-200">
+              <Loop alt={t('admin_dashboard.toggle_roles_alt')} className="w-6 h-6 text-text-primary" />
+            </button>
+            <button className="p-2 rounded-full hover:bg-surface transition-colors duration-200">
+              <Night alt={t('admin_dashboard.toggle_theme_alt')} className="w-6 h-6 text-text-primary" />
+            </button>
+            <button className="p-2 rounded-full hover:bg-surface transition-colors duration-200">
+              <Globe alt={t('admin_dashboard.toggle_language_alt')} className="w-6 h-6 text-text-primary" />
+            </button>
           </div>
         </header>
 
         {/* Dashboard Content */}
-        <div className={`admin-dashboard ${isFocusMode ? 'admin-dashboard--focus-mode' : ''}`}>
+        <div className={`p-4 ${isFocusMode ? 'max-w-full' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
           {!isFocusMode && (
-            <div className="admin-dashboard__user-profile-section">
-              <Image src="/images/default-avatar.png" alt={t('admin_dashboard.user_avatar_alt')} width={80} height={80} className="user-profile-section__avatar" />
-              <span className="user-profile-section__name">Induktr</span> {/* Usernames are not translated */}
-              <p className="user-profile-section__welcome-message">{t('admin_dashboard.welcome_message')}</p>
+            <div className="flex flex-col items-center p-6 bg-surface rounded-lg shadow-md mb-6">
+              <Image src="/images/default-avatar.png" alt={t('admin_dashboard.user_avatar_alt')} width={80} height={80} className="rounded-full mb-4" />
+              <span className="text-xl font-semibold text-text-primary mb-2">Induktr</span> {/* Usernames are not translated */}
+              <p className="text-text-secondary text-center">{t('admin_dashboard.welcome_message')}</p>
             </div>
           )}
-          <h1 className="admin-dashboard__header">{t('admin_dashboard.dashboard_title')}</h1>
-          <div className="admin-dashboard__grid">
+          <h1 className="text-3xl font-bold text-text-primary mb-6">{t('admin_dashboard.dashboard_title')}</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <UserStatsWidget
               totalUsers={userStats.totalUsers}
               activeUsers={userStats.activeUsers}
@@ -120,41 +129,41 @@ const AdminDashboardPage = () => {
           {!isFocusMode && (
             <>
               {/* Moderator Handbook Section */}
-              <div className="moderator-handbook admin-widget">
-                <h2 className="admin-widget__title">{t('admin_dashboard.handbook_title')}</h2>
-                <div className="handbook__tabs">
+              <div className="bg-surface rounded-lg shadow-md p-6 mb-6">
+                <h2 className="text-2xl font-semibold text-text-primary mb-4">{t('admin_dashboard.handbook_title')}</h2>
+                <div className="flex space-x-4 mb-4 border-b border-border">
                   <button
-                    className={`handbook__tab ${activeHandbookSection === 'mission' ? 'active' : ''}`}
+                    className={`py-2 px-4 text-text-secondary hover:text-text-primary border-b-2 border-transparent ${activeHandbookSection === 'mission' ? 'border-accent text-text-primary' : ''} transition-colors duration-200`}
                     onClick={() => setActiveHandbookSection('mission')}
                   >
                     {t('admin_dashboard.handbook_mission_tab')}
                   </button>
                   <button
-                    className={`handbook__tab ${activeHandbookSection === 'responsibilities' ? 'active' : ''}`}
+                    className={`py-2 px-4 text-text-secondary hover:text-text-primary border-b-2 border-transparent ${activeHandbookSection === 'responsibilities' ? 'border-accent text-text-primary' : ''} transition-colors duration-200`}
                     onClick={() => setActiveHandbookSection('responsibilities')}
                   >
                     {t('admin_dashboard.handbook_responsibilities_tab')}
                   </button>
                   <button
-                    className={`handbook__tab ${activeHandbookSection === 'rules' ? 'active' : ''}`}
+                    className={`py-2 px-4 text-text-secondary hover:text-text-primary border-b-2 border-transparent ${activeHandbookSection === 'rules' ? 'border-accent text-text-primary' : ''} transition-colors duration-200`}
                     onClick={() => setActiveHandbookSection('rules')}
                   >
                     {t('admin_dashboard.handbook_rules_tab')}
                   </button>
                   <button
-                    className={`handbook__tab ${activeHandbookSection === 'accountability' ? 'active' : ''}`}
+                    className={`py-2 px-4 text-text-secondary hover:text-text-primary border-b-2 border-transparent ${activeHandbookSection === 'accountability' ? 'border-accent text-text-primary' : ''} transition-colors duration-200`}
                     onClick={() => setActiveHandbookSection('accountability')}
                   >
                     {t('admin_dashboard.handbook_accountability_tab')}
                   </button>
                 </div>
-                <div className="handbook__content">
+                <div className="text-text-secondary">
                   {activeHandbookSection === 'mission' && (
                     <>
-                      <h3>{t('admin_dashboard.mission_section_title')}</h3>
-                      <p>{t('admin_dashboard.mission_description')}</p>
-                      <h4>{t('admin_dashboard.core_principles_title')}</h4>
-                      <ul>
+                      <h3 className="text-xl font-semibold text-text-primary mb-2">{t('admin_dashboard.mission_section_title')}</h3>
+                      <p className="mb-4">{t('admin_dashboard.mission_description')}</p>
+                      <h4 className="text-lg font-semibold text-text-primary mb-2">{t('admin_dashboard.core_principles_title')}</h4>
+                      <ul className="list-disc list-inside space-y-1">
                         <li>{t('admin_dashboard.fairness_principle')}</li>
                         <li>{t('admin_dashboard.accountability_principle')}</li>
                         <li>{t('admin_dashboard.empathy_principle')}</li>
@@ -163,9 +172,9 @@ const AdminDashboardPage = () => {
                   )}
                   {activeHandbookSection === 'responsibilities' && (
                     <>
-                      <h3>{t('admin_dashboard.responsibilities_section_title')}</h3>
-                      <p>{t('admin_dashboard.responsibilities_description')}</p>
-                      <ul>
+                      <h3 className="text-xl font-semibold text-text-primary mb-2">{t('admin_dashboard.responsibilities_section_title')}</h3>
+                      <p className="mb-4">{t('admin_dashboard.responsibilities_description')}</p>
+                      <ul className="list-disc list-inside space-y-1">
                         <li>{t('admin_dashboard.responsibility_monitor_channels')}</li>
                         <li>{t('admin_dashboard.responsibility_respond_reports')}</li>
                         <li>{t('admin_dashboard.responsibility_enforce_guidelines')}</li>
@@ -176,9 +185,9 @@ const AdminDashboardPage = () => {
                   )}
                   {activeHandbookSection === 'rules' && (
                     <>
-                      <h3>{t('admin_dashboard.rules_section_title')}</h3>
-                      <p>{t('admin_dashboard.rules_description')}</p>
-                      <ul>
+                      <h3 className="text-xl font-semibold text-text-primary mb-2">{t('admin_dashboard.rules_section_title')}</h3>
+                      <p className="mb-4">{t('admin_dashboard.rules_description')}</p>
+                      <ul className="list-disc list-inside space-y-1">
                         <li>{t('admin_dashboard.rule_no_personal_attacks')}</li>
                         <li>{t('admin_dashboard.rule_no_hate_speech')}</li>
                         <li>{t('admin_dashboard.rule_no_spamming')}</li>
@@ -189,9 +198,9 @@ const AdminDashboardPage = () => {
                   )}
                   {activeHandbookSection === 'accountability' && (
                     <>
-                      <h3>{t('admin_dashboard.accountability_section_title')}</h3>
-                      <p>{t('admin_dashboard.accountability_description')}</p>
-                      <ul>
+                      <h3 className="text-xl font-semibold text-text-primary mb-2">{t('admin_dashboard.accountability_section_title')}</h3>
+                      <p className="mb-4">{t('admin_dashboard.accountability_description')}</p>
+                      <ul className="list-disc list-inside space-y-1">
                         <li>{t('admin_dashboard.accountability_transparent')}</li>
                         <li>{t('admin_dashboard.accountability_consistent')}</li>
                         <li>{t('admin_dashboard.accountability_documented')}</li>
@@ -203,11 +212,11 @@ const AdminDashboardPage = () => {
               </div>
 
               {/* Placeholder Cards at the Bottom */}
-              <div className="admin-dashboard__bottom-grid">
-                <div className="admin-widget placeholder-card"></div>
-                <div className="admin-widget placeholder-card"></div>
-                <div className="admin-widget placeholder-card"></div>
-                <div className="admin-widget placeholder-card"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-surface rounded-lg shadow-md h-32"></div>
+                <div className="bg-surface rounded-lg shadow-md h-32"></div>
+                <div className="bg-surface rounded-lg shadow-md h-32"></div>
+                <div className="bg-surface rounded-lg shadow-md h-32"></div>
               </div>
             </>
           )}

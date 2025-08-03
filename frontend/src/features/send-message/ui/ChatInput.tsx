@@ -7,11 +7,12 @@ import { useTypingSender } from '@/hooks/useTypingSender';
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image'; // Import Image component
-import { ICONS } from '@/shared/assets/Icons/icons'; // Import icons
+import { UploadImage, Folder, Checkmark, SendButton } from '@/shared/assets/Icons/icons'; // Import icons
 import AttachmentPreview from '@/shared/ui/AttachmentPreview/AttachmentPreview'; // Import the new AttachmentPreview component
 import { isCodeSnippet } from '@/features/code-detector/model/codeDetector';
 import { ChatInputProps } from '@/features/send-message/model/send-message.types';
 import { useTranslation } from 'react-i18next';
+import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
 
 const ChatInput: React.FC<ChatInputProps> = ({
   chatId,
@@ -46,10 +47,19 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   }, [editingMessage]);
 
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const onInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessageContent(e.target.value);
     setIsTyping(true);
   };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [messageContent]);
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     if (isTouchDevice) return;
@@ -117,7 +127,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     if (e.clipboardData.files.length > 0) {
       const newFiles = Array.from(e.clipboardData.files);
       setAttachedFiles((prevFiles) => [...prevFiles, ...newFiles]);
@@ -130,88 +140,79 @@ const ChatInput: React.FC<ChatInputProps> = ({
     );
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevent new line on Enter
       handleSendOrUpdate();
     }
   };
 
   const isInputDisabled = isChannel && !isChannelOwner;
 
+  const canSendMessage = messageContent.trim() !== '' || attachedFiles.length > 0;
+
   return (
     <div
-      className="chat-input-wrapper"
+      className={`${variantsStylesIcons.iconSecondary} relative p-2 md:p-3 rounded-[10px] z-10`}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       {isDragging && (
-        <div className="drag-drop-overlay">
-          <Image src={ICONS.uploadImage} alt="Upload File" width={64} height={64} />
-          <span>{t('chat_input.release_to_upload')}</span>
+        <div className="absolute inset-0 bg-[var(--color-backdrop)] backdrop-blur-sm flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-accent)] rounded-lg z-20">
+          <UploadImage className="w-16 h-16 text-[var(--color-text-primary)] mb-2" />
+          <span className="text-[var(--color-text-primary)] font-semibold">{t('chat_input.release_to_upload')}</span>
         </div>
       )}
+      
       {attachedFiles.length > 0 && (
-        <AttachmentPreview
-          files={attachedFiles}
-          onRemoveFile={handleRemoveFile}
-        />
+        <div className="p-2">
+          <AttachmentPreview files={attachedFiles} onRemoveFile={handleRemoveFile} />
+        </div>
       )}
-      <div className="chat-input-container">
-        {isChannel && !isChannelOwner ? (
-          isSubscribedToChannel ? (
-            <Button className="unsubscribe-button" onClick={onUnsubscribe}>
-              {t('chat_input.unsubscribe')}
-            </Button>
+
+      <div className="flex items-end gap-2 md:gap-3">
+        <button
+          className="p-2 md:p-3 rounded-full hover:bg-[var(--color-surface)] transition-colors flex-shrink-0"
+          onClick={handleFolderClick}
+          disabled={isInputDisabled}
+        >
+          <Folder className="w-6 h-6 text-[var(--color-text-secondary)]" />
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          multiple
+          accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml, image/x-icon, audio/*, video/mp4, application/pdf, application/zip"
+          onChange={handleFileChange}
+          disabled={isInputDisabled}
+        />
+        <textarea
+          ref={textareaRef}
+          rows={1}
+          className="w-full rounded-lg p-2 md:p-2.5 text-base resize-none max-h-40 text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:outline-none transition-shadow"
+          placeholder={t('chat_input.type_a_message')}
+          value={messageContent}
+          onChange={onInputChange}
+          onKeyPress={handleKeyPress}
+          onPaste={handlePaste}
+          disabled={loading || isInputDisabled}
+        />
+        <button
+          className={`p-2 md:p-3 rounded-full transition-colors flex-shrink-0 ${canSendMessage ? 'bg-[var(--color-accent)] hover:bg-[var(--color-accent-dark)]' : 'bg-[var(--color-surface-dark)] cursor-not-allowed'}`}
+          onClick={handleSendOrUpdate}
+          disabled={!canSendMessage || loading}
+        >
+          {editingMessage ? (
+            <Checkmark className="w-6 h-6 text-[var(--color-text-primary)]" />
           ) : (
-            <Button className="subscribe-button" onClick={onSubscribe}>
-              {t('chat_input.subscribe')}
-            </Button>
-          )
-        ) : (
-          <>
-            <Button
-              className="folder-button"
-              onClick={handleFolderClick}
-              disabled={isInputDisabled}
-            >
-              <Image src={ICONS.folder} alt="Folder" width={24} height={24} />
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: 'none' }}
-              multiple
-              accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml, image/x-icon, audio/*, video/mp4, application/pdf, application/zip"
-              onChange={handleFileChange}
-              disabled={isInputDisabled}
-            />
-            <Input
-              type="text"
-              placeholder={t('chat_input.placeholder')}
-              value={messageContent}
-              onChange={onInputChange}
-              onKeyPress={handleKeyPress}
-              onPaste={handlePaste}
-              disabled={loading || isInputDisabled}
-            />
-            <Button
-              onClick={handleSendOrUpdate}
-              disabled={loading || isInputDisabled}
-              className="send-button"
-            >
-              <Image
-                src={editingMessage ? ICONS.checkmark : ICONS.sendButton}
-                alt={editingMessage ? t('chat_input.confirm_edit') : t('chat_input.send')}
-                width={24}
-                height={24}
-              />
-            </Button>
-          </>
-        )}
-        {error && <p>{t('chat_input.error')}</p>}
+            <SendButton className="w-6 h-6 text-[var(--color-text-primary)]" />
+          )}
+        </button>
       </div>
+      {error && <p className="text-sm text-[var(--color-danger)] mt-2">{t('chat_input.error')}</p>}
     </div>
   );
 };

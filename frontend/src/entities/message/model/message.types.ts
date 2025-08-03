@@ -56,7 +56,6 @@ export interface ChatMessageProps {
   setCurrentlyPlayingAudio: React.Dispatch<React.SetStateAction<{ messageId: string; attachmentIndex: number } | null>>;
   isSelected: boolean; // New prop for selection state
   isSelecting: boolean; // New prop to indicate if selection is active
-  onShowGlobalAudioControls: (messageId: string, src: string) => void; // Renamed prop for clarity
   isPoorConnection: boolean; // New prop for network status
   isRecentMessage: boolean; // New prop to indicate if it's one of the last 10 messages
   currentUserId?: string | null; // Add currentUserId prop

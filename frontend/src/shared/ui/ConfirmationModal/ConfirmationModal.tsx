@@ -23,15 +23,17 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2>{title}</h2>
-      <p>{message}</p>
-      <div className="confirmation-modal-buttons">
-        <Button onClick={onClose} className="confirmation-modal-button cancel">
-          {cancelText}
-        </Button>
-        <Button onClick={onConfirm} className="confirmation-modal-button confirm">
-          {confirmText}
-        </Button>
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-text-primary mb-2">{title}</h2>
+        <p className="text-text-secondary mb-6">{message}</p>
+        <div className="flex justify-center gap-4">
+          <Button variant="ghost" onClick={onClose}>
+            {cancelText}
+          </Button>
+          <Button variant="danger" onClick={onConfirm}>
+            {confirmText}
+          </Button>
+        </div>
       </div>
     </Modal>
   );

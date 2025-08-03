@@ -1,4 +1,7 @@
 import React from 'react';
+import { 
+  twMerge 
+} from 'tailwind-merge';
 
 interface ModalProps {
   isOpen: boolean;
@@ -13,22 +16,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, containerClass
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-            <div
-        className={`modal-container ${containerClassName || ''}`}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-background)]/75"
+      onClick={onClose}
+    >
+      <div
+        className={twMerge(
+          'bg-[var(--color-surface)] rounded-lg shadow-xl p-6 w-full max-w-md',
+          containerClassName
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Modal Header (Optional - can be added based on specific use cases) */}
-        {/* <div className="flex justify-end p-2">
-          <button onClick={onClose} className="modal-close-button">
-            Close
-          </button>
-        </div> */}
-
-        {/* Modal Content */}
-        <div className="modal-content">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );

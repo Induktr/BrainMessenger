@@ -103,15 +103,15 @@ const AuthSuccessPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background-dark text-textPrimary-dark p-4">
-      <h1 className="text-2xl font-bold text-center">{t('auth_success_page.processing')}</h1>
-      <p className="text-center">{t('auth_success_page.redirecting')}</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary p-4">
+      <h1 className="text-2xl font-bold text-center mb-2">{t('auth_success_page.processing')}</h1>
+      <p className="text-center text-text-secondary mb-4">{t('auth_success_page.redirecting')}</p>
 
       {showEmailVerificationModal && currentUser && (
         <Modal onClose={handleEmailVerificationModalClose} isOpen={showEmailVerificationModal}>
-          <div className="verification-modal-content">
-            <h3>{t('verification.title')}</h3>
-            <p>{t('verification.prompt', { email: currentUser.email })}</p>
+          <div className="p-6 bg-surface rounded-lg shadow-lg text-center">
+            <h3 className="text-xl font-semibold text-text-primary mb-4">{t('verification.title')}</h3>
+            <p className="text-text-secondary mb-6">{t('verification.prompt', { email: currentUser.email })}</p>
             <Input
               id="verificationCode"
               label={t('verification.placeholder')}
@@ -120,13 +120,14 @@ const AuthSuccessPage = () => {
               onChange={(e) => setVerificationCode(e.target.value)}
               error={verificationError}
             />
-            <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail}>
+            {verificationError && <p className="mt-1 text-sm text-danger mb-4">{verificationError}</p>}
+            <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail} className="w-full mb-3" variant="primary">
               {isVerifyingEmail ? t('verification.verifying') : t('verification.verify_button')}
             </Button>
-            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
+            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode} className="w-full" variant="secondary">
               {isResendingCode ? t('verification.sending') : t('verification.resend_button')}
             </Button>
-            {resendSuccess && <p className="success-message">{t('verification.sent_success')}</p>}
+            {resendSuccess && <p className="mt-3 text-sm text-success">{t('verification.sent_success')}</p>}
           </div>
         </Modal>
       )}

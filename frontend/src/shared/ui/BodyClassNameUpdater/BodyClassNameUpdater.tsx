@@ -1,11 +1,23 @@
 'use client';
 
-import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { useDeepWork } from '@/app/providers/DeepWorkProvider/DeepWorkContext';
-import { Geist } from "next/font/google";
-import { Geist_Mono } from "next/font/google";
-import { Roboto } from 'next/font/google';
+import { 
+  useEffect 
+} from 'react';
+import { 
+  usePathname 
+} from 'next/navigation';
+import { 
+  useDeepWork 
+} from '@/app/providers/DeepWorkProvider/DeepWorkContext';
+import { 
+  Geist 
+} from "next/font/google";
+import { 
+  Geist_Mono 
+} from "next/font/google";
+import { 
+  Roboto
+} from 'next/font/google';
 
 // Re-configure fonts to get the variable names
 const geistSans = Geist({

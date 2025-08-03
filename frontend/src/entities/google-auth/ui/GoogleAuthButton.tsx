@@ -1,14 +1,20 @@
 import React from 'react';
 import Image from 'next/image';
 import Button from '@/shared/ui/Button/Button';
-import { ICONS } from '@/shared/assets/Icons/icons';
-import { useTranslation } from 'react-i18next';
+import { 
+    Google 
+} from '@/shared/assets/Icons/icons';
+import { 
+    useTranslation 
+} from 'react-i18next';
+import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
 
 interface GoogleAuthButtonProps {
     type: 'login' | 'register'; // Prop to determine button text
+    className?: string; // Optional className prop for additional styling
 }
 
-const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type }) => {
+const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type, className }) => {
     const { t } = useTranslation();
 
     const buttonTextKey = type === 'login' ? 'login_page.sign_in_with_google' : 'register_page.sign_up_with_google';
@@ -24,10 +30,16 @@ const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type }) => {
     return (
         <Button
             type="button"
-            className="sign-with-google-button" // Apply the CSS module class
+            variant="secondary"
+            className="w-full flex items-center justify-center gap-x-2"
             onClick={handleGoogleLogin}
         >
-            <Image src={ICONS.google} alt="Google icon" width={20} height={20} />
+            <Google
+                alt="Google icon" 
+                width={20} 
+                height={20}
+                className={`${variantsStylesIcons.iconAccent} w-6 h-6`} 
+            />
             <span>{t(buttonTextKey)}</span>
         </Button>
     );

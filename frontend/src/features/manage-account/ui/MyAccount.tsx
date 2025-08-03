@@ -1,19 +1,57 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react'; // Corrected import
+import React, { 
+  useState, 
+  useEffect, 
+  useRef 
+} from 'react'; // Corrected import
 import Modal from '@/shared/ui/Modal/Modal';
-import { ICONS } from '@/shared/assets/Icons/icons'; // Adjusted import based on usage
+import { 
+  ArrowLeft, 
+  CloseModal, 
+  UploadImage, 
+  Logout, 
+  UsernameDog, 
+  Account, 
+  Mail 
+} from '@/shared/assets/Icons/icons'; // Adjusted import based on usage
 import Button from '@/shared/ui/Button/Button';
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
-import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
+import { 
+  useAuth 
+} from '@/app/providers/AuthProvider/AuthContext';
+import { 
+  generateAvatarData 
+} from '@/entities/user/model/user-generate-avatar';
 import Spinner from '@/shared/ui/Spinner/Spinner'; // Import LazyLoading
-import { useMutation, useApolloClient } from '@apollo/client';
+import { 
+  useMutation, 
+  useApolloClient 
+} from '@apollo/client';
 import Image from 'next/image'; // Corrected import
-import { UPLOAD_AVATAR, UPDATE_USER_PROFILE, GET_CURRENT_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/entities/user/model/user.queries';
-import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
+import { 
+  UPLOAD_AVATAR, 
+  UPDATE_USER_PROFILE, 
+  GET_CURRENT_USER, 
+  SEND_VERIFICATION_EMAIL, 
+  VERIFY_EMAIL 
+} from '@/entities/user/model/user.queries';
+import ReactCrop, { 
+  Crop, 
+  PixelCrop 
+} from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { MyAccountProps } from '@/features/manage-account/model/manage-account.types';
-import { useTranslation } from 'react-i18next';
+import { 
+  MyAccountProps 
+} from '@/features/manage-account/model/manage-account.types';
+import { 
+  useTranslation 
+} from 'react-i18next';
+import clsx from 'clsx';
+import { 
+  variantsStylesIcons 
+} from '@/shared/assets/variantStyles/variantStyles';
+import EditModal from './EditModal';
+import DropdownMenu from '@/shared/ui/DropdownMenu/DropdownMenu';
 
 const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const { t } = useTranslation();
@@ -98,48 +136,25 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
 
   const avatarData = generateAvatarData(user?.name);
 
-  if (queryLoading) {
-    return (
-      <Modal onClose={onClose} isOpen={isOpen}>
-        <div className="myaccount-modal-content">
-          <div className="myaccount-header">
-            <Button className="myaccount-back-button" onClick={onBack}>
-              <Image width={24} height={24} src={ICONS.arrowLeft} alt={t('myAccount.alt.back')} className="icon" />
-            </Button>
-            <h2 className="myaccount-header-title">{t('myAccount.headerTitle')}</h2>
-            <Button className="myaccount-close-button" onClick={onClose}>
-              <Image width={24} height={24} src={ICONS.closeModal} alt={t('myAccount.alt.close')} className="icon" />
-            </Button>
-          </div>
-          <div className="myaccount-user-info-section">
-            <Spinner className="myaccount-avatar" /> {/* Avatar loading */}
-            <div className="myaccount-name-status">
-              <Spinner className="lazy-loading-text-line myaccount-loading-name" /> {/* Name loading */}
-              <Spinner className="lazy-loading-text-line myaccount-loading-status" /> {/* Status loading */}
-            </div>
-            <Spinner className="lazy-loading-block myaccount-loading-bio" /> {/* Biography loading */}
-          </div>
-          <div className="myaccount-separator"></div>
-          <div className="myaccount-detailed-info">
-            <div className="myaccount-name-username-group">
-              <div className="myaccount-info-item">
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Name label loading */}
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Name value loading */}
-              </div>
-              <div className="myaccount-info-item">
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Username label loading */}
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Username value loading */}
-              </div>
-            </div>
-            <div className="myaccount-info-item myaccount-info-item-centered">
-              <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Email label loading */}
-              <Spinner className="lazy-loading-text-line myaccount-loading-email-value" /> {/* Email value loading */}
-            </div>
-          </div>
-        </div>
-      </Modal>
-    );
-  }
+  const dropdownOptions = [
+    {
+      label: t('myAccount.userLabel.uploadPhoto'),
+      icon: <UploadImage width={16} height={16} />,
+      onClick: () => {
+        document.getElementById('avatarUploadInput')?.click();
+        setDropdownOpen(false);
+      },
+    },
+    {
+      label: t('myAccount.userLabel.logout'),
+      icon: <Logout width={16} height={16} />,
+      onClick: () => {
+        logout();
+        setDropdownOpen(false);
+      },
+      className: 'text-[var(--color-danger)]',
+    },
+  ];
 
   // Optional: Handle case where user is not logged in
   if (!user) {
@@ -301,40 +316,16 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   if (queryLoading) {
     return (
       <Modal onClose={onClose} isOpen={isOpen}>
-        <div className="myaccount-modal-content">
-          <div className="myaccount-header">
-            <Button className="myaccount-back-button" onClick={onBack}>
-              <Image width={24} height={24} src={ICONS.arrowLeft} alt={t('myAccount.alt.back')} className="icon" />
-            </Button>
-            <h2 className="myaccount-header-title">{t('myAccount.userLabel.headerTitle')}</h2>
-            <Button className="myaccount-close-button" onClick={onClose}>
-              <Image width={24} height={24} src={ICONS.closeModal} alt={t('myAccount.alt.close')} className="icon" />
-            </Button>
+        <div className="p-6 bg-[var(--color-surface)] rounded-lg shadow-lg max-w-md mx-auto animate-pulse">
+          <div className="flex justify-between items-center pb-4 border-b border-[var(--color-border)]">
+            <div className="h-6 bg-[var(--color-disabled)] rounded w-1/4"></div>
+            <div className="h-6 w-6 bg-[var(--color-disabled)] rounded-full"></div>
           </div>
-          <div className="myaccount-user-info-section">
-            <Spinner className="myaccount-avatar" /> {/* Avatar loading */}
-            <div className="myaccount-name-status">
-              <Spinner className="lazy-loading-text-line myaccount-loading-name" /> {/* Name loading */}
-              <Spinner className="lazy-loading-text-line myaccount-loading-status" /> {/* Status loading */}
-            </div>
-            <Spinner className="lazy-loading-block myaccount-loading-bio" /> {/* Biography loading */}
-          </div>
-          <div className="myaccount-separator"></div>
-          <div className="myaccount-detailed-info">
-            <div className="myaccount-name-username-group">
-              <div className="myaccount-info-item">
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Name label loading */}
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Name value loading */}
-              </div>
-              <div className="myaccount-info-item">
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Username label loading */}
-                <Spinner className="lazy-loading-text-line myaccount-loading-info-value" /> {/* Username value loading */}
-              </div>
-            </div>
-            <div className="myaccount-info-item myaccount-info-item-centered">
-              <Spinner className="lazy-loading-text-line myaccount-loading-info-label" /> {/* Email label loading */}
-              <Spinner className="lazy-loading-text-line myaccount-loading-email-value" /> {/* Email value loading */}
-            </div>
+          <div className="flex flex-col items-center gap-4 mt-6">
+            <div className="w-32 h-32 bg-[var(--color-disabled)] rounded-full"></div>
+            <div className="w-3/4 h-6 bg-[var(--color-disabled)] rounded"></div>
+            <div className="w-1/2 h-4 bg-[var(--color-disabled)] rounded"></div>
+            <div className="w-full h-10 bg-[var(--color-disabled)] rounded-lg"></div>
           </div>
         </div>
       </Modal>
@@ -345,126 +336,101 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   return (
     <>
       <Modal onClose={onClose} isOpen={isOpen}>
-        <div className="myaccount-modal-content">
+        <div className="p-6 text-[var(--color-text-primary)] rounded-[10px] max-w-md mx-auto">
           {/* Header */}
-          <div className="myaccount-header">
-            <Button className="myaccount-back-button" onClick={onBack}>
-              <Image width={24} height={24} src={ICONS.arrowLeft} alt={t('myAccount.alt.back')} className="icon" />
+          <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4`}>
+            <Button variant="ghost" size="icon" onClick={onBack}>
+              <ArrowLeft alt={t('myAccount.alt.back')} className="w-6 h-6" />
             </Button>
-            <h2 className="myaccount-header-title">{t('myAccount.userLabel.headerTitle')}</h2>
-            <Button className="myaccount-close-button" onClick={onClose}>
-              <Image width={24} height={24} src={ICONS.closeModal} alt={t('myAccount.alt.close')} className="icon" />
+            <h2 className="text-lg font-semibold">{t('myAccount.userLabel.headerTitle')}</h2>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <CloseModal alt={t('myAccount.alt.close')} className="w-6 h-6" />
             </Button>
           </div>
 
           {/* User Info Section */}
-          <div className="myaccount-user-info-section">
+          <div className="flex flex-col items-center gap-4 mt-6">
             {/* Avatar and Dropdown Container */}
-            <div className="myaccount-avatar-container" style={{ position: 'relative' }}>
+            <div className="relative">
               <div
-                className="myaccount-avatar"
-                style={{ backgroundColor: avatarData.color, cursor: 'pointer' }}
+                className="relative w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold cursor-pointer group"
+                style={{ backgroundColor: avatarData.color }}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
                 {user.avatarUrl ? (
-                  <img key={user.avatarUrl} src={user.avatarUrl} alt="User Avatar" className="myaccount-avatar-image" />
+                  <img key={user.avatarUrl} src={user.avatarUrl} alt="User Avatar" className="w-full h-full rounded-full object-cover" />
                 ) : (
-                  <>
-                    <span className="myaccount-avatar-letter">{avatarData.letter}</span>
-                    <div className="myaccount-avatar-overlay">
-                      <span className="myaccount-avatar-upload-text">{t('myAccount.userLabel.uploadPhoto')}</span>
-                    </div>
-                  </>
+                  <span>{avatarData.letter}</span>
                 )}
+                <div className="absolute inset-0 bg-[var(--color-background)]/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-sm text-center text-[var(--color-text-primary)]">{t('myAccount.userLabel.uploadPhoto')}</span>
+                </div>
               </div>
 
               {/* Dropdown Menu */}
-              {dropdownOpen && (
-                <div className="myaccount-avatar-dropdown">
-                  {/* Upload Avatar Option */}
-                  <div
-                    className="myaccount-dropdown-item"
-                    onClick={() => {
-                      document.getElementById('avatarUploadInput')?.click();
-                      setDropdownOpen(false);
-                    }}
-                    style={{ padding: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                  >
-                    <Image width={24} height={24} className="myaccount-dropdown-icon" alt={t('myAccount.alt.uploadAvatar')} src={ICONS.uploadImage}></Image>
-                    {t('myAccount.userLabel.uploadPhoto')}
-                  </div>
-                  {/* Logout Option */}
-                  <div
-                    className="myaccount-dropdown-item"
-                    onClick={() => {
-                      logout();
-                      setDropdownOpen(false);
-                    }}
-                    style={{ padding: '10px', cursor: 'pointer' }}
-                  >
-                    <Image width={24} height={24} className="myaccount-dropdown-icon" alt={t('myAccount.alt.logout')} src={ICONS.logout}></Image>
-                    {t('myAccount.userLabel.logout')}
-                  </div>
-                </div>
-              )}
+              {dropdownOpen && <DropdownMenu options={dropdownOptions} />}
             </div>
             {/* Hidden file input */}
             <input
               id="avatarUploadInput"
               type="file"
               accept=".png,.jpeg,.jpg,.webp,.ico"
-              style={{ display: 'none' }}
+              className="hidden"
               onChange={handleFileChange}
             />
             {/* Upload status indicators */}
-            {uploading && <p className="myaccount-upload-status">{t('myAccount.userLabel.uploading')}</p>}
+            {uploading && <p className="text-sm text-[var(--color-text-secondary)]">{t('myAccount.userLabel.uploading')}</p>}
             {uploadError && (
-              <p className="myaccount-upload-error">
+              <p className="text-sm text-[var(--color-danger)]">
                 {t('myAccount.userLabel.uploadFailed', { message: uploadError.message })}
               </p>
             )}
-            <div className="myaccount-name-status">
-              <h2 className="myaccount-user-name">{user.name || t('guest')}</h2>
-              <p className={`myaccount-user-status ${user.status === 'online' ? 'online' : 'offline'}`}>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold">{user.name || t('guest')}</h2>
+              <p className={clsx("text-sm", {
+                'text-[var(--color-success)]': user.status === 'online',
+                'text-[var(--color-text-secondary)]': user.status !== 'online'                
+              })}>
                 {user.status === 'online' ? t('myAccount.status.online') : t('myAccount.status.offline')}
               </p>
             </div>
-            {/* Replace placeholder p with textarea for biography */}
             <textarea
-              className="myaccount-bio-textarea"
+              className="w-full bg-transparent text-center text-[var(--color-text-secondary)] resize-none focus:outline-none p-2 rounded-lg hover:bg-[var(--color-surface-dark)] focus:bg-[var(--color-surface-dark)]"
               value={biography}
               onChange={(e) => setBiography(e.target.value)}
               placeholder={t('myAccount.userLabel.bioPlaceholder')}
-              rows={4}
+              rows={2}
             />
           </div>
 
           {/* Separator */}
-          <div className="myaccount-separator"></div>
+          <div className="w-full my-6 border-t border-[var(--color-border)]"></div>
 
           {/* Detailed User Info */}
-          <div className="myaccount-detailed-info">
-            <div className="myaccount-name-username-group">
-              <div className="myaccount-info-item" onClick={() => handleEditClick('name')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.account} alt={t('myAccount.alt.account')} /></div>
-                <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">{t('myAccount.labels.name')}</p>
-                  <p className="myaccount-info-value">{user.name || t('myAccount.notAvailable')}</p>
+          <div className={`${variantsStylesIcons.iconAccent} w-full space-y-4`}>
+            <div className="grid grid-cols-2 gap-4 text-center">
+              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)]" onClick={() => handleEditClick('name')}>
+                <Account className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
+                <div>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.name')}</p>
+                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">{user.name || t('myAccount.notAvailable')}</p>
                 </div>
               </div>
-              <div className="myaccount-info-item" onClick={() => handleEditClick('username')} style={{ cursor: 'pointer' }}>
-                <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.usernameDog} alt={t('myAccount.alt.username')} /></div>
-                <div className="myaccount-info-text">
-                  <p className="myaccount-info-label">{t('myAccount.labels.username')}</p>
-                  <p className="myaccount-info-value myaccount-info-value-green">@{user.username || t('myAccount.notAvailable')}</p>
+              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)]" onClick={() => handleEditClick('username')}>
+                <UsernameDog className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
+                <div>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.username')}</p>
+                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">@{user.username || t('myAccount.notAvailable')}</p>
                 </div>
               </div>
             </div>
-            <div className="myaccount-info-item myaccount-info-item-centered" onClick={() => handleEditClick('email')} style={{ cursor: 'pointer' }}>
-              <div className="myaccount-info-icon"><Image width={24} height={24} src={ICONS.mail} alt={t('myAccount.alt.email')} /></div>
-              <div className="myaccount-info-text">
-                <p className="myaccount-info-label">{t('myAccount.labels.email')}</p>
-                <p className="myaccount-info-value">{user.email || t('myAccount.notAvailable')}</p>
+            <div className="flex justify-center">
+              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)] text-center" onClick={() => handleEditClick('email')}>
+                <Mail className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
+                <div>
+                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.email')}</p>
+                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">{user.email || t('myAccount.notAvailable')}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -472,54 +438,41 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       </Modal>
 
       {/* Generic Edit Modal */}
-      {editModalOpen && (
-        <Modal onClose={handleEditModalClose} isOpen={editModalOpen}>
-          <div className="edit-modal-content">
-            <h3>{t('myAccount.editModal.title', { field: editingField })}</h3>
-            <input
-              type={editingField === 'email' ? 'email' : 'text'}
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="edit-modal-input"
-            />
-            {editingField === 'email' && (
-              <div className="email-verification-section">
-                <p>{t('myAccount.editModal.statusLabel')} {user.isVerified ? t('myAccount.editModal.verified') : t('myAccount.editModal.notVerified')}</p>
-                {!user.isVerified && (
-                  <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-                    {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.editModal.resendButton')}
-                  </Button>
-                )}
-                {resendSuccess && <p className="success-message">{t('myAccount.verifyModal.resendSuccess')}</p>}
+      <EditModal
+        isOpen={editModalOpen}
+        onClose={handleEditModalClose}
+        onSave={handleSaveEdit}
+        editingField={editingField}
+        editValue={editValue}
+        setEditValue={setEditValue}
+        editError={editError}
+        isVerified={user.isVerified}
+        onResendVerificationEmail={handleResendVerificationEmail}
+        isResendingCode={isResendingCode}
+        resendSuccess={resendSuccess}
+      />
 
-                {editError && <p className="error-message">{editError}</p>} {/* Display editError here */}
-              </div>
-            )}
-            <Button onClick={handleSaveEdit}>{t('myAccount.buttons.save')}</Button>
-            <Button onClick={handleEditModalClose}>{t('myAccount.buttons.cancel')}</Button>
-          </div>
-        </Modal>
-      )}
-
-      {/* Email Verification Modal (for unverified users on login) */}
+      {/* Email Verification Modal */}
       {emailVerificationModalOpen && (
         <Modal onClose={handleEmailVerificationModalClose} isOpen={emailVerificationModalOpen}>
-          <div className="verification-modal-content">
-            <h3>{t('myAccount.verifyModal.title')}</h3>
-            <p>{t('myAccount.verifyModal.instruction', { email: user.email })}</p>
+          <div className="p-6 bg-[var(--color-surface)] text-[var(--color-text-primary)] rounded-lg shadow-lg max-w-sm mx-auto">
+            <h3 className="text-lg font-semibold mb-2">{t('myAccount.verifyModal.title')}</h3>
+            <p className="text-sm text-[var(--color-text-secondary)] mb-4">{t('myAccount.verifyModal.instruction', { email: user.email })}</p>
             <input
               type="text"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
               placeholder={t('myAccount.editModal.placeholder')}
-              className="verification-modal-input"
+              className="w-full p-2 rounded-lg bg-[var(--color-input-background)] border border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]"
             />
-            {verificationError && <p className="error-message">{verificationError}</p>}
-            <Button onClick={handleVerifyEmail}>{t('myAccount.buttons.verify')}</Button>
-            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
-              {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.verifyModal.resendButton')}
-            </Button>
-            {resendSuccess && <p className="success-message">{t('myAccount.editModal.resendSuccess')}</p>}
+            {verificationError && <p className="text-[var(--color-danger)] text-sm mt-2">{verificationError}</p>}
+            <div className="flex justify-end gap-4 mt-6">
+              <Button onClick={handleResendVerificationEmail} disabled={isResendingCode} variant="secondary">
+                {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.verifyModal.resendButton')}
+              </Button>
+              <Button onClick={handleVerifyEmail}>{t('myAccount.buttons.verify')}</Button>
+            </div>
+            {resendSuccess && <p className="text-[var(--color-success)] text-sm mt-2">{t('myAccount.editModal.resendSuccess')}</p>}
           </div>
         </Modal>
       )}
@@ -527,8 +480,8 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
       {/* Image Cropping Modal */}
       {cropModalOpen && (
         <Modal onClose={() => setCropModalOpen(false)} isOpen={cropModalOpen}>
-          <div className="crop-modal-content">
-            <h3>{t('cropModal.title')}</h3>
+          <div className="p-6 bg-[var(--color-surface)] text-[var(--color-text-primary)] rounded-lg shadow-lg max-w-lg mx-auto">
+            <h3 className="text-lg font-semibold mb-4">{t('myAccount.cropModal.title')}</h3>
             {imageSrc && (
               <ReactCrop
                 crop={crop}
@@ -543,7 +496,6 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   src={imageSrc}
                   onLoad={(e) => {
                     const { width, height } = e.currentTarget; // Use displayed dimensions
-                    // Set initial crop to a square in the center
                     const size = Math.min(width, height);
                     setCrop({
                       unit: 'px',
@@ -555,43 +507,24 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   }}
                   onWheel={(e) => {
                     if (!imgRef.current || !crop) return;
-
-                    e.preventDefault(); // Prevent default scroll behavior
-
+                    e.preventDefault();
                     const img = imgRef.current;
-                    const { width, height } = img; // Use displayed dimensions
+                    const { width, height } = img;
                     const currentCrop = crop;
-
-                    // Calculate the current crop size in pixels based on displayed dimensions
                     const currentCropWidthPx = (currentCrop.unit === 'px' ? currentCrop.width : (currentCrop.width / 100) * width);
                     const currentCropHeightPx = (currentCrop.unit === 'px' ? currentCrop.height : (currentCrop.height / 100) * height);
-
-
-                    // Determine zoom direction and factor
-                    const zoomFactor = e.deltaY < 0 ? 1.05 : 0.95; // Zoom in or out
-
-                    // Calculate new crop size in pixels
+                    const zoomFactor = e.deltaY < 0 ? 1.05 : 0.95;
                     let newCropWidthPx = currentCropWidthPx * zoomFactor;
                     let newCropHeightPx = currentCropHeightPx * zoomFactor;
-
-                    // Ensure new crop size is within bounds (e.g., min size, max size)
-                    const minSizePx = 50; // Minimum crop size in pixels
+                    const minSizePx = 50;
                     newCropWidthPx = Math.max(minSizePx, newCropWidthPx);
                     newCropHeightPx = Math.max(minSizePx, newCropHeightPx);
-                    newCropWidthPx = Math.min(width, newCropWidthPx); // Use displayed width for max size
-                    newCropHeightPx = Math.min(height, newCropHeightPx); // Use displayed height for max size
-
-
-                    // Calculate the new crop position to keep it centered
+                    newCropWidthPx = Math.min(width, newCropWidthPx);
+                    newCropHeightPx = Math.min(height, newCropHeightPx);
                     const newCropX = currentCrop.x + (currentCropWidthPx - newCropWidthPx) / 2;
                     const newCropY = currentCrop.y + (currentCropHeightPx - newCropHeightPx) / 2;
-
-                    // Ensure the new crop stays within the image boundaries based on displayed dimensions
                     const boundedNewCropX = Math.max(0, Math.min(width - newCropWidthPx, newCropX));
                     const boundedNewCropY = Math.max(0, Math.min(height - newCropHeightPx, newCropY));
-
-
-                    // Update the crop state using pixel units
                      setCrop({
                        unit: 'px',
                        x: boundedNewCropX,
@@ -603,22 +536,20 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                 />
               </ReactCrop>
             )}
-            {/* Add controls for zoom/radius here later */}
-            <div className="crop-controls">
-              {/* Zoom/Radius control */}
-              {/* <input type="range" ... /> */}
-            </div>
-            <div className="crop-buttons">
+            <div className="flex justify-end gap-4 mt-6">
+              <Button onClick={() => {
+                setCropModalOpen(false);
+                setImageSrc(null);
+                setCrop(undefined);
+                setCompletedCrop(undefined);
+              }} variant="secondary">{t('myAccount.buttons.cancel')}</Button>
               <Button onClick={async () => {
                 if (!completedCrop || !imgRef.current || !user) {
                   return;
                 }
                 try {
                   const croppedBlob = await getCroppedImg(imgRef.current, completedCrop);
-                  // Convert blob to File object for upload
                   const croppedFile = new File([croppedBlob], `avatar_${user.id}.png`, { type: 'image/png' });
-
-                  // Call the uploadAvatar mutation with the cropped file
                   const response = await uploadAvatarMutation({
                     variables: {
                       file: croppedFile,
@@ -626,24 +557,17 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
                   });
 
                   if (response.data && response.data.uploadAvatar) {
-                    setUserState(response.data.uploadAvatar); // Update user state with the new avatar URL
-                    refetchUser(); // Explicitly refetch user data
-                    setCropModalOpen(false); // Close the modal on success
-                    setImageSrc(null); // Clear the image source
-                    setCrop(undefined); // Reset crop state
-                    setCompletedCrop(undefined); // Reset completed crop state
+                    setUserState(response.data.uploadAvatar);
+                    refetchUser();
+                    setCropModalOpen(false);
+                    setImageSrc(null);
+                    setCrop(undefined);
+                    setCompletedCrop(undefined);
                   }
                 } catch (error) {
                   console.error('Error cropping or uploading avatar:', error);
-                  // Handle error, maybe show a message to the user
                 }
               }}>{t('myAccount.buttons.save')}</Button>
-              <Button onClick={() => {
-                setCropModalOpen(false);
-                setImageSrc(null); // Clear the image source when cancelling
-                setCrop(undefined); // Reset crop state
-                setCompletedCrop(undefined); // Reset completed crop state
-              }}>{t('myAccount.buttons.cancel')}</Button>
             </div>
           </div>
         </Modal>
@@ -684,7 +608,7 @@ const getCroppedImg = (image: HTMLImageElement, crop: PixelCrop): Promise<Blob> 
       } else {
         reject(new Error('Canvas is empty'));
       }
-    }, 'image/png'); // You can adjust the image format here
+    }, 'image/png');
   });
 };
 

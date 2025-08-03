@@ -2,7 +2,12 @@
 
 import React from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
-import { Notification } from '@/features/manage-notifications/model/notification.types';
+import {
+  Notification 
+} from '@/features/manage-notifications/model/notification.types';
+import { CloseModal } from '@/shared/assets/Icons/icons';
+import Button from '@/shared/ui/Button/Button';
+import { useTranslation } from 'react-i18next';
 
 interface AllNotificationsModalProps {
   isOpen: boolean;
@@ -11,25 +16,26 @@ interface AllNotificationsModalProps {
 }
 
 const AllNotificationsModal: React.FC<AllNotificationsModalProps> = ({ isOpen, onClose, notifications }) => {
+  const { t } = useTranslation();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">All Notifications</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
-            {/* Assuming ICONS.close is available or a simple 'X' */}
-            X
-          </button>
+      <div className="bg-[var(--color-surface)] text-[var(--color-text-primary)] rounded-[10px]">
+        <div className="flex justify-between items-center mb-4 pb-4 border-b border-[var(--color-border)]">
+          <h2 className="text-xl font-bold">{t('notifications.title')}</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <CloseModal className="w-6 h-6" />
+          </Button>
         </div>
         {notifications.length === 0 ? (
-          <p>No notifications yet.</p>
+          <p className="text-center text-[var(--color-text-secondary)] py-8">{t('notifications.noNotifications')}</p>
         ) : (
-          <ul>
+          <ul className="space-y-4 max-h-96 overflow-y-auto">
             {notifications.map((notification) => (
-              <li key={notification.id} className="border-b border-gray-700 py-2">
+              <li key={notification.id} className="border-b border-[var(--color-border)] pb-4 last:border-b-0">
                 <p className="font-bold">{notification.sender.name}</p>
-                <p className="text-sm text-gray-400">{notification.content}</p>
-                <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
+                <p className="text-sm text-[var(--color-text-secondary)]">{notification.content}</p>
+                <p className="text-xs text-[var(--color-text-secondary)]/70 mt-1">{new Date(notification.createdAt).toLocaleString()}</p>
               </li>
             ))}
           </ul>

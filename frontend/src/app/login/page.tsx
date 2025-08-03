@@ -1,94 +1,82 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import Link from 'next/link';
-import Input from '@/shared/ui/Input/Input';
-import Button from '@/shared/ui/Button/Button';
-import Modal from '@/shared/ui/Modal/Modal'; // Импортируем Modal
-import { useMutation } from '@apollo/client'; // Import useMutation
-import { LOGIN_USER, SEND_VERIFICATION_EMAIL, VERIFY_EMAIL } from '@/entities/user/model/user.queries';
-import { useRouter } from 'next/navigation'; // Import useRouter
-import Image from 'next/image';
-import { IMAGES } from '@/shared/assets/Images/images'
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
-import SmallSettings from '@/features/manage-settings/ui/SmallSettings';
-import { ICONS } from '@/shared/assets/Icons/icons';
-import GoogleAuthButton from '@/entities/google-auth/ui/GoogleAuthButton';
+import React, { 
+  useState
+} from 'react';
+import { 
+  useTranslation 
+} from 'react-i18next';
+import { 
+  useForm, 
+  SubmitHandler 
+} from 'react-hook-form';
+import { 
+  useMutation 
+} from '@apollo/client';
+import { 
+  useRouter 
+} from 'next/navigation';
 
-interface LoginFormInputs {
-  email: string;
-  password: string;
-}
+import { 
+  LOGIN_USER,
+  SEND_VERIFICATION_EMAIL,
+  VERIFY_EMAIL
+} from '@/entities/user/model/user.queries';
+import { 
+  useAuth 
+} from '@/app/providers/AuthProvider/AuthContext';
+
+import AuthLayout from '@/shared/ui/AuthLayout/AuthLayout';
+import Modal from '@/shared/ui/Modal/Modal';
+import Button from '@/shared/ui/Button/Button';
+import LoginForm, { 
+  LoginFormInputs 
+} from '@/features/user-auth/ui/LoginForm';
 
 const LoginPage = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { user, setUserState, showEmailVerificationModal, setShowEmailVerificationModal, refetchUser } = useAuth();
+
+  // State for the main login form
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>();
 
-  const [loginUser, { loading, error }] = useMutation(LOGIN_USER);
-  const [sendVerificationEmailMutation, { loading: isSendingVerificationEmail, error: sendVerificationEmailError }] = useMutation(SEND_VERIFICATION_EMAIL);
-  const [verifyEmailMutation, { loading: isVerifyingEmail, error: verifyEmailError }] = useMutation(VERIFY_EMAIL);
-  const [currentView, setCurrentView] = useState('');
+  // State for the settings modal
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const router = useRouter();
-  const { user, setUserState, showEmailVerificationModal, setShowEmailVerificationModal, refetchUser } = useAuth(); // Получаем новые состояния и функции из AuthContext
-
+  // State for the email verification modal
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationError, setVerificationError] = useState('');
   const [isResendingCode, setIsResendingCode] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  const handleSmallSettingsClick = () => {
-    setCurrentView('smallSettings')
-  }
-
-  const handleClose = () => {
-    setCurrentView('')
-  }
+  // Mutations
+  const [loginUser, { loading: loginLoading, error: loginError }] = useMutation(LOGIN_USER);
+  const [sendVerificationEmailMutation, { loading: isSendingVerificationEmail }] = useMutation(SEND_VERIFICATION_EMAIL);
+  const [verifyEmailMutation, { loading: isVerifyingEmail }] = useMutation(VERIFY_EMAIL);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await loginUser({
-        variables: {
-          email: data.email,
-          password: data.password,
-        },
+        variables: { email: data.email, password: data.password },
       });
 
-      if (response.data && response.data.login && response.data.login.access_token && response.data.login.refresh_token) {
-        // Store both access_token and refresh_token in localStorage
+      if (response.data?.login?.access_token) {
         localStorage.setItem('access_token', response.data.login.access_token);
-        console.log("Login page - access_token set in localStorage:", response.data.login.access_token);
         localStorage.setItem('refresh_token', response.data.login.refresh_token);
-        console.log("Login page - refresh_token set in localStorage:", response.data.login.refresh_token);
-        console.log("Login successful, tokens stored.");
-        // Verify tokens are in localStorage immediately after setting
-        const verifiedAccessToken = localStorage.getItem('access_token');
-        const verifiedRefreshToken = localStorage.getItem('refresh_token');
-        console.log("Login page - Verified access_token in localStorage:", verifiedAccessToken ? 'Present' : 'Missing');
-        console.log("Login page - Verified refresh_token in localStorage:", verifiedRefreshToken ? 'Present' : 'Missing');
-        // Update AuthContext state with the logged-in user data
-        // Update AuthContext state with the logged-in user data
-        // Update AuthContext state with the logged-in user data
         setUserState(response.data.login.user);
-        console.log("Login page - Updated AuthContext user state.");
 
-        // Direct redirection based on verification status
         if (response.data.login.user.isVerified) {
-          router.replace('/chat'); // Redirect to chat if verified
+          router.replace('/chat');
         } else {
-          setShowEmailVerificationModal(true); // Show modal if not verified
+          setShowEmailVerificationModal(true);
         }
       } else {
-        // Handle cases where login was not successful but no error was thrown
         console.error('Login failed: No access token received');
-        // Optionally show a generic login failed message
       }
-    } catch (e: unknown) { // Catch and type the error
+    } catch (e) {
       console.error('Login error:', e);
-      // Handle error (e.g., display error message to the user)
-      // You might want to set a state variable to display the error on the form
     }
   };
 
@@ -106,116 +94,74 @@ const LoginPage = () => {
     setResendSuccess(false);
     setVerificationError('');
     try {
-      await sendVerificationEmailMutation({ variables: { email: user.email } }); // Pass user.email as a variable
+      await sendVerificationEmailMutation({ variables: { email: user.email } });
       setResendSuccess(true);
     } catch (error: any) {
-      console.error('Error resending verification email:', error);
       setVerificationError(error.message || t('login_page.resend_email_failed'));
     } finally {
       setIsResendingCode(false);
     }
   };
+  const handleBack = () => {
+    router.push('/register');
+  }
 
   const handleVerifyEmail = async () => {
     if (!user) return;
     setVerificationError('');
     try {
-      const response = await verifyEmailMutation({
-        variables: { code: verificationCode }, // Removed email variable
-      });
-      if (response.data && response.data.verifyEmail) {
-        // If verification is successful, refetch user data to update isVerified status
-        // and then close the modal.
-        refetchUser();
+      const response = await verifyEmailMutation({ variables: { code: verificationCode } });
+      if (response.data?.verifyEmail) {
+        await refetchUser();
         handleEmailVerificationModalClose();
+        router.replace('/chat'); // Redirect to chat after successful verification
       }
     } catch (error: any) {
-      console.error('Error verifying email:', error);
       setVerificationError(error.message || t('login_page.verification_error'));
     }
   };
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background-dark text-textPrimary-dark p-4">
-        <div className="w-full max-w-md p-8 space-y-6 bg-surface-dark rounded-lg shadow-md">
-        {currentView === 'smallSettings' && <SmallSettings isOpen={currentView === 'smallSettings'} onClose={handleClose} />}
-        <div className="burger-menu-container"> {/* Reusing burger-menu-container */}
-          <Image src={ICONS.burgerMenu} alt={t('login_page.burger_menu_alt')} className="icon" onClick={handleSmallSettingsClick} width={24} height={24} /> {/* Use img tag */}
-        </div>
-        <div className="icon-container-steps">
-          <Image
-            src={IMAGES.logoBrainMessenger}
-            alt={t('login_page.logo_alt')}
-            width={175} // Example width, adjust as needed
-            height={175} // Example height, adjust as needed
-            className="logo"
-          />
-        </div>
-          <h1 className="text-2xl font-bold text-center text-textPrimary-dark">{t('login_page.title')}</h1>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              id="email"
-              label={t('login_page.email_label')}
-              type="email"
-              registration={register('email', { required: t('login_page.email_required') })}
-              error={errors.email?.message}
-            />
-            <Input
-              id="password"
-              label={t('login_page.password_label')}
-              type="password"
-              registration={register('password', { required: t('login_page.password_required') })}
-              error={errors.password?.message}
-            />
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading} // Disable button while loading
-            >
-              {loading ? t('login_page.logging_in') : t('login_page.login_button')}
-            </Button>
-            {error && (
-              error.graphQLErrors && error.graphQLErrors.length > 0 ? (
-                error.graphQLErrors.map((err, index) => (
-                  <p key={index} className="input-error-message text-center">{t('login_page.failed_prefix')}: {err.message}</p>
-                ))
-              ) : (
-                <p className="input-error-message text-center">{t('login_page.failed_prefix')}: {error.message}</p>
-              )
-            )}
-          </form>
-          <GoogleAuthButton type='login' />
-          <p className="text-center text-sm text-textSecondary-dark">
-            {t('login_page.no_account_prompt')}{' '}
-            <Link href="/register" className="text-primary-DEFAULT hover:underline">
-              {t('login_page.register_link')}
-            </Link>
-          </p>
-        </div>
-      </div>
+      <AuthLayout
+        subtitle={t('login_page.field_password_email_prompt')}
+        onSettingsClick={() => setIsSettingsOpen(true)}
+        isSettingsOpen={isSettingsOpen}
+        onSettingsClose={() => setIsSettingsOpen(false)}
+        handleBackPage={handleBack}
+      >
+        <LoginForm
+          onSubmit={onSubmit}
+          register={register}
+          errors={errors}
+          loading={loginLoading}
+          apiError={loginError}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          handleSubmit={handleSubmit}
+        />
+      </AuthLayout>
 
-      {/* Email Verification Modal */}
       {showEmailVerificationModal && user && (
         <Modal onClose={handleEmailVerificationModalClose} isOpen={showEmailVerificationModal}>
-          <div className="verification-modal-content">
-            <h3>{t('verification.title')}</h3>
-            <p>{t('verification.prompt', { email: user.email })}</p>
+          <div className="p-6 bg-[var(--color-surface)] rounded-lg shadow-lg text-center">
+            <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">{t('verification.title')}</h3>
+            <p className="text-[var(--color-text-secondary)] mb-6">{t('verification.prompt', { email: user.email })}</p>
             <input
               type="text"
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
               placeholder={t('verification.placeholder')}
-              className="verification-modal-input"
+              className="w-full p-3 mb-4 bg-[var(--color-input-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
             />
-            {verificationError && <p className="error-message">{verificationError}</p>}
-            <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail}>
+            {verificationError && <p className="mt-1 text-sm text-[var(--color-danger)] mb-4">{verificationError}</p>}
+            <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail} className="w-full mb-3" variant="primary">
               {isVerifyingEmail ? t('verification.verifying') : t('verification.verify_button')}
             </Button>
-            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode}>
+            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode} className="w-full" variant="secondary">
               {isResendingCode ? t('verification.sending') : t('verification.resend_button')}
             </Button>
-            {resendSuccess && <p className="success-message">{t('verification.sent_success')}</p>}
+            {resendSuccess && <p className="mt-3 text-sm text-[var(--color-success)]">{t('verification.sent_success')}</p>}
           </div>
         </Modal>
       )}

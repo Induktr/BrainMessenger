@@ -10,14 +10,14 @@ interface CreateGroupModalProps {
 const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="group-container">
-      {/* Group Header */}
-        <div className="group-header">
-          <h2>Group Name</h2> {/* Placeholder Group Name */}
+      <div className="p-6 bg-[var(--color-surface)] text-[var(--color-text-primary)] rounded-lg">
+        {/* Group Header */}
+        <div className="pb-4 border-b border-[var(--color-border)]">
+          <h2 className="text-lg font-semibold">Group Name</h2> {/* Placeholder Group Name */}
         </div>
 
         {/* Group Content (e.g., messages) */}
-        <div className="group-content">
+        <div className="pt-4">
           <p>This is the group content area.</p> {/* Placeholder Content */}
         </div>
       </div>

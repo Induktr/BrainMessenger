@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useSubscription } from '@apollo/client';
-import { TYPING_STATUS_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions';
+import React, { 
+  useState, 
+  useEffect
+} from 'react';
+import { 
+  useSubscription 
+} from '@apollo/client';
+import { 
+  TYPING_STATUS_SUBSCRIPTION 
+} from '@/entities/message/model/message.subscriptions';
 
 interface TypingIndicatorProps {
   chatId: string;

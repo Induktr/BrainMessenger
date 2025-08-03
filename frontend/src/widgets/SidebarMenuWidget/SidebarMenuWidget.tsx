@@ -1,22 +1,50 @@
 'use client';
  
 // frontend/src/ui/SidebarMenu.tsx
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/app/providers/ThemeProvider';
+import React, { 
+  useState, 
+  useEffect 
+} from 'react';
+import { 
+  useTranslation 
+} from 'react-i18next';
+import { 
+  useTheme 
+} from '@/app/providers/ThemeProvider';
 import Button from '@/shared/ui/Button/Button';
 import CreateChannelModal from '@/features/create-chat/ui/CreateChannelModal';
 import CreateGroupModal from '@/features/create-chat/ui/CreateGroupModal';
 import Spinner from '@/shared/ui/Spinner/Spinner'; // Import LazyLoading
-import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now, might remove later
+import { 
+  SettingsMenu, 
+  Channel, 
+  Night, 
+  Group, 
+  Bell, 
+  SupportMenu, 
+  CloseModal
+} from '@/shared/assets/Icons/icons'; // Keep import for now, might remove later
 import Image from 'next/image';
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
-import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
+import { 
+  useAuth 
+} from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
+import { 
+  generateAvatarData 
+} from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
 import AllNotificationsModal from '@/features/manage-notifications/ui/AllNotificationsModal'; // Import AllNotificationsModal
-import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification hook
-import { Notification } from '@/features/manage-notifications/model/notification.types'; // Import Notification type
+import { 
+  useNotification 
+} from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification hook
+import { 
+  Notification 
+} from '@/features/manage-notifications/model/notification.types'; // Import Notification type
 import Support from '@/features/manage-settings/ui/Support';
 import Settings from '@/features/manage-settings/ui/Settings';
+import {
+  variantsStylesIcons
+} from '@/shared/assets/variantStyles/variantStyles';
+import MenuItem from '@/shared/ui/MenuItem/MenuItem';
+import Modal from '@/shared/ui/Modal/Modal'; // Import Modal component
  
 interface SidebarMenuWidgetProps {
   onOpenSettings: () => void;
@@ -50,20 +78,18 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
   // Optional: Show loading state or placeholder if user data is queryLoading
   if (queryLoading) {
     return (
-      <div className="sidebar-menu sidebar-menu-container">
-        <div className="sidebar-menu-content sidebar-menu-content-wrapper">
-          <div className="sidebar-user-profile sidebar-user-profile-section">
-            <Spinner className="sidebar-avatar" />
-            <div className="sidebar-user-info">
-              <Spinner className="spinner-text-line sidebar-loading-name" /> {/* Placeholder for name */}
-              <Spinner className="spinner-text-line sidebar-loading-email" /> {/* Placeholder for email */}
-            </div>
+      <div className="p-4 animate-pulse">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 bg-disabled rounded-full"></div>
+          <div className="flex-1 space-y-2">
+            <div className="h-4 bg-disabled rounded w-3/4"></div>
+            <div className="h-3 bg-disabled rounded w-1/2"></div>
           </div>
-          <div className="sidebar-options-list sidebar-options-list-wrapper">
-            <Spinner className="spinner-block sidebar-option-loading" />
-            <Spinner className="spinner-block sidebar-option-loading" />
-            <Spinner className="spinner-block sidebar-option-loading" />
-          </div>
+        </div>
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-10 bg-disabled rounded-lg"></div>
+          ))}
         </div>
       </div>
     );
@@ -110,48 +136,45 @@ const SidebarMenuWidget: React.FC<SidebarMenuWidgetProps> = ({ onOpenSettings, o
   };
 
   return (
-    <div className="sidebar-menu sidebar-menu-container">
-      {/* Sidebar for Settings Options */}
-      <div className="sidebar-menu-content sidebar-menu-content-wrapper">
-        {/* User Profile Section Placeholder */}
-        <div className="sidebar-user-profile sidebar-user-profile-section">
-          {/* Avatar Placeholder */}
-          {/* Replace placeholder div with generated avatar */}
-          <div
-            className="sidebar-avatar-placeholder sidebar-avatar"
-            style={{ backgroundColor: avatarData.color }}
-          >
-            {user?.avatarUrl ? ( // Use optional chaining for user
-              // Display real avatar if available
-              <img src={user.avatarUrl} alt="User Avatar" className="sidebar-avatar-image" />
-            ) : (
-              // Display generated placeholder if no avatar URL
-              <span className="sidebar-avatar-letter">{avatarData.letter}</span>
-            )}
-          </div>
-          <div className="sidebar-user-info">
-            <h2>{user?.name || t('sidebar.guest')}</h2> {/* Display user's name or 'Guest' */}
-            <p className="sidebar-username sidebar-username-text">{user?.email || t('sidebar.na')}</p> {/* Display user's email or 'N/A' */}
-          </div>
+    <div className="h-full p-4 bg-[var(--color-surface)] w-screen max-w-[250px] sm:max-w-[400px] md:max-w-[400px] lg:max-w-[456px] text-[var(--color-text-primary)]">
+      {/* User Profile Section */}
+      <div className="flex flex-col gap-4 mb-6">
+        <div
+          className="w-[85px] h-[85px] mx-auto mt-12 mb-3 col-span-2 rounded-full text-xl text-[var(--color-text-primary)] bg-[var(--color-disabled)]"
+        >
+          {user?.avatarUrl ? (
+            <img src={user.avatarUrl} alt="User Avatar" className="rounded-full" />
+          ) : (
+            <span>{avatarData.letter}</span>
+          )}
         </div>
-        {/* Settings Options List */}
-        <div className="sidebar-options-list sidebar-options-list-wrapper">
-          <Button className="sidebar-option-button" onClick={onOpenSettings} ><span>{ICONS.settings && <Image src={ICONS.settings} alt={t('sidebar.settings')} className="icon" width={24} height={24} />} {t('sidebar.settings')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={handleOpenCreateChannelModal} ><span>{ICONS.channel && <Image src={ICONS.channel} alt={t('sidebar.createChannel')} className="icon" width={24} height={24} />} {t('sidebar.createChannel')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={handleOpenCreateGroupModal} ><span>{ICONS.group && <Image src={ICONS.group} alt={t('sidebar.createGroup')} className="icon" width={24} height={24} />} {t('sidebar.createGroup')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={toggleTheme} ><span>{ICONS.night && <Image src={ICONS.night} alt={t('sidebar.nightMode')} className="icon" width={24} height={24} />} {theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.nightMode')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={() => setIsAllNotificationsModalOpen(true)} ><span>{ICONS.bell && <Image src={ICONS.bell} alt={t('sidebar.allNotifications')} className="icon" width={24} height={24} />} {t('sidebar.allNotifications')}</span></Button> {/* Using ListItem */}
-          <Button className="sidebar-option-button" onClick={() => setIsSupportModalOpen(true)} ><span>{ICONS.support && <Image src={ICONS.support} alt={t('sidebar.support')} className="icon" width={24} height={24} />} {t('sidebar.support')}</span></Button> {/* Using ListItem */}
-          {/* ... more settings options */}
+        <div className="mx-auto text-center space-y-3">
+          <h2 className="text-2xl font-light">{user?.name || t('sidebar.guest')}</h2>
+          <p className="text-[16px] text-[var(--color-text-secondary)]">{`@${user?.username}` || t('sidebar.na')}</p>
         </div>
+      </div>
+      <div className="border-1 border-[var(--color-gradient-start)] mb-8"></div>
+      {/* Menu Options */}
+      <div className="flex flex-col items-center justify-center mx-auto">
+        <nav className={`${variantsStylesIcons.iconAccent} flex-1 space-y-2`}>
+          <MenuItem icon={<SettingsMenu className="w-6 h-6" />} text={t('sidebar.settings')} onClick={onOpenSettings} />
+          <MenuItem icon={<Channel className="w-6 h-6" />} text={t('sidebar.createChannel')} onClick={handleOpenCreateChannelModal} />
+          <MenuItem icon={<Group className="w-6 h-6" />} text={t('sidebar.createGroup')} onClick={handleOpenCreateGroupModal} />
+          <MenuItem icon={<Night className="w-6 h-6" />} text={theme === 'dark' ? t('sidebar.lightMode') : t('sidebar.nightMode')} onClick={toggleTheme} />
+          <MenuItem icon={<Bell className="w-6 h-6" />} text={t('sidebar.allNotifications')} onClick={() => setIsAllNotificationsModalOpen(true)} />
+          <MenuItem icon={<SupportMenu className="w-6 h-6" />} text={t('sidebar.support')} onClick={() => setIsSupportModalOpen(true)} />
+        </nav>
+
       </div>
 
       {isSupportModalOpen && (
-        <Support
-          onBack={handleBackSupportModal}
-          onClose={handleCloseSupportModal}
-          isOpen={isSupportModalOpen}
-        />
+        <Modal isOpen={isSupportModalOpen} onClose={handleCloseSupportModal}>
+          <Support
+            onBack={handleBackSupportModal}
+            onClose={handleCloseSupportModal}
+            isOpen={isSupportModalOpen}
+          />
+        </Modal>
       )}
 
       {/* All Notifications Modal */}

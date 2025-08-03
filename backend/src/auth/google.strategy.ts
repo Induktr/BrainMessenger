@@ -11,7 +11,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const callbackURL = "http://localhost:4000/auth/google/callback"
 
     if (callbackURL !== "http://localhost:4000/auth/google/callback") {
-      callbackURL === "https://brainmessenger.onrender.com/api/auth/google/callback"
+      callbackURL === "https://brainmessenger.onrender.com/auth/google/callback"
     } else {
       console.log(`[GoogleStrategy]: Error endpoint prod/local current URL: ${callbackURL}`)
     }

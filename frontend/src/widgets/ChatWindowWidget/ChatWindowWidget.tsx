@@ -1,15 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
+import React, { 
+  useState 
+} from 'react';
+import { 
+  useTranslation 
+} from 'react-i18next';
+import { 
+  useAuth 
+} from '@/app/providers/AuthProvider/AuthContext';
 import ChatMessage from '@/entities/message/ui/ChatMessage';
 import ChatInput from '@/features/send-message/ui/ChatInput';
 import Spinner from '@/shared/ui/Spinner/Spinner';
 import ImageGallery from '@/features/gallery-images/ui/ImageGallery';
+import Button from '@/shared/ui/Button/Button';
 import ChatHeader from '@/entities/chat/ui/ChatHeader';
-import { useScrollToBottom } from '@/hooks/useScrollToBottom';
-import { useChat } from '@/hooks/useChat';
+import { useGlobalAudio } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
+import GlobalAudioControls from '@/features/manage-audio-player/ui/GlobalAudioControls';
+import {
+  useScrollToBottom
+} from '@/hooks/useScrollToBottom';
+import { 
+  useChat 
+} from '@/hooks/useChat';
 
 interface ChatWindowWidgetProps {
   chatId: string;
@@ -32,6 +45,7 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
   onBackButtonClick, // Destructure the new prop
 }) => {
   const { user } = useAuth();
+  const { showGlobalControls } = useGlobalAudio();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const {
     messages,
@@ -52,9 +66,9 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
 
   const { t } = useTranslation();
 
-  if (!chatId) return <p>{t('chatWindow.selectChatPrompt')}</p>;
-  if (loading) return <Spinner />;
-  if (error) return <p>{t('chatWindow.loadError', { message: error.message })}</p>;
+  if (!chatId) return <p className="text-center text-[var(--color-text-secondary)] p-4">{t('chatWindow.selectChatPrompt')}</p>;
+  if (loading) return <div className="flex items-center justify-center h-full bg-[var(--color-background)]"><Spinner className="w-10 h-10 text-[var(--color-accent)]" /></div>;
+  if (error) return <p className="text-center text-[var(--color-danger)] p-4">{t('chatWindow.loadError', { message: error.message })}</p>;
 
   const getChatPartner = () => {
     if (!chatDetails || !user) return null;
@@ -96,7 +110,7 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
   }
 
   return (
-    <div className="chat-area-container">
+    <div className="flex flex-col h-full bg-[var(--color-surface)]">
       {selectedImage && <ImageGallery />}
       <ChatHeader
         chatId={chatId}
@@ -105,33 +119,30 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
         status={getStatus()}
         avatar={getAvatar()}
         onOpenChannelDetails={onOpenContextMenu}
-        onBackButtonClick={onBackButtonClick} 
+        onBackButtonClick={onBackButtonClick}
       />
-      <div className="chat-messages-list">
-        {messages.map((msg) => {
-          const isCurrentUser = msg.sender.id === user?.id;
-          return (
-            <ChatMessage
-              key={msg.id}
-              message={msg}
-              isCurrentUser={isCurrentUser}
-              onEditMessage={() => setEditingMessage({ id: msg.id, content: msg.content })}
-              onAudioEnded={() => {}}
-              currentlyPlayingAudio={null}
-              setCurrentlyPlayingAudio={() => {}}
-              isSelected={false}
-              isSelecting={false}
-              onShowGlobalAudioControls={() => {}}
-              isPoorConnection={false}
-              isRecentMessage={true}
-              currentUserId={user?.id}
-              onImageClick={handleImageClick}
-            />
-          );
-        })}
+      {showGlobalControls && <GlobalAudioControls />}
+      <div className="flex-1 bg-[var(--color-background)] overflow-y-auto p-4 space-y-3 min-h-0">
+        {messages.map((msg) => (
+          <ChatMessage
+            key={msg.id}
+            message={msg}
+            isCurrentUser={msg.sender.id === user?.id}
+            onEditMessage={() => setEditingMessage({ id: msg.id, content: msg.content })}
+            onAudioEnded={() => {}}
+            currentlyPlayingAudio={null}
+            setCurrentlyPlayingAudio={() => {}}
+            isSelected={false}
+            isSelecting={false}
+            isPoorConnection={false}
+            isRecentMessage={true}
+            currentUserId={user?.id}
+            onImageClick={handleImageClick}
+          />
+        ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="chat-input-panel">
+      <div className="p-4 border-t border-[var(--color-border)] bg-[var(--color-surface)] sticky bottom-0">
         <ChatInput
           chatId={chatId}
           editingMessage={editingMessage}
@@ -144,9 +155,11 @@ const ChatWindowWidget: React.FC<ChatWindowWidgetProps> = ({
           onSendMessageOrUpdate={handleSendMessageOrUpdate}
         />
         {isChannel && !isSubscribedToChannel && (
-          <div>
-            <button onClick={handleSubscribeToChannel}>{t('chatWindow.subscribeButton')}</button>
-            <p>{t('chatWindow.subscribePrompt')}</p>
+          <div className="mt-3 text-center">
+            <Button onClick={handleSubscribeToChannel} variant="primary" size="md">
+              {t('chatWindow.subscribeButton')}
+            </Button>
+            <p className="text-sm text-[var(--color-text-secondary)] mt-2">{t('chatWindow.subscribePrompt')}</p>
           </div>
         )}
       </div>

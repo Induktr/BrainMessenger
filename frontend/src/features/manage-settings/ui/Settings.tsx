@@ -1,19 +1,40 @@
 'use client';
 
 // frontend/src/ui/Settings.tsx
-import { useEffect, useState } from 'react';
+import { 
+  useEffect, 
+  useState 
+} from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
 import MyAccount from '@/features/manage-account/ui/MyAccount';
 import Language from '@/features/change-language/ui/Language';
 import AdvancedSettings from '@/features/manage-settings/ui/AdvancedSettings';
-import { ICONS } from '@/shared/assets/Icons/icons'; // Keep import for now
+import { 
+  CloseModal, 
+  Account, 
+  SwitchLang, 
+  SettingsMenu 
+} from '@/shared/assets/Icons/icons'; // Keep import for now
 import Button from '@/shared/ui/Button/Button';
 import Image from 'next/image';
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
-import { generateAvatarData } from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
-import { SettingsProps } from '@/features/manage-settings/model/settings.types';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/app/providers/ThemeProvider';
+import { 
+  useAuth 
+} from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
+import { 
+  generateAvatarData
+} from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
+import { 
+  SettingsProps
+} from '@/features/manage-settings/model/settings.types';
+import { 
+  useTranslation
+} from 'react-i18next';
+import { 
+  useTheme 
+} from '@/app/providers/ThemeProvider';
+import { 
+  variantsStylesIcons 
+} from '@/shared/assets/variantStyles/variantStyles';
 
 const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
   const [currentView, setCurrentView] = useState('settings'); // 'settings', 'myaccount', 'language', 'premium'
@@ -55,50 +76,46 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
   return (
     <Modal onClose={handleCloseModal} isOpen={isOpen}>
       {currentView === 'settings' && (
-        <div className="settings-modal-content">
+        <div className="text-[var(--color-text-primary)] max-w-[456px] rounded-[10px] mx-auto">
           {/* Settings Header */}
-          <div className="settings-header">
-            <h2 className="settings-header">{t('settings.headerTitle')}</h2>
-            <Button className="settings-close-button" onClick={handleCloseModal}>
-              <img src={ICONS.closeModal} alt="Close" className="icon" /> {/* Use img tag */}
+          <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4`}>
+            <h2 className="text-[24px] font-medium">{t('settings.headerTitle')}</h2>
+            <Button variant="ghost" onClick={handleCloseModal}>
+              <CloseModal alt="Close" className="w-6 h-6" />
             </Button>
           </div>
 
           {/* User Profile Section */}
-          <div className="settings-section settings-user-profile">
-            {/* Replace placeholder div with generated avatar */}
-            <div
-              className="settings-avatar-placeholder settings-avatar"
-              style={{ backgroundColor: avatarData.color }} // Apply background color to the container
-            >
-              {user?.avatarUrl ? ( // Use optional chaining for user
-                // Display real avatar if available
-                <img src={user.avatarUrl} alt="User Avatar" className="settings-avatar-image" />
+          <div className="flex items-center py-6 mb-3">
+            <div className="relative mr-4">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="User Avatar" className="w-[100px] h-[100px] rounded-full object-cover object-center" />
               ) : (
-                // Display generated placeholder if no avatar URL
-                <span className="settings-avatar-letter">{avatarData.letter}</span>
+                <div className="w-16 h-16 rounded-full bg-[var(--color-disabled)] flex items-center justify-center">
+                  <span className="text-2xl font-bold">{avatarData.letter}</span>
+                </div>
               )}
             </div>
-            <div className="settings-user-info">
-              <h2 className="">{user?.name || 'Guest'}</h2> {/* Display user's name or 'Guest' */}
-              <p className="settings-user-email">{user?.email || 'N/A'}</p> {/* Display user's email or 'N/A' */}
-              <p className="sidebar-username-text">@{user?.username || 'N/A'}</p> {/* Display user's email as username or 'N/A' */}
+            <div className="space-y-3">
+              <h2 className="text-[24px] font-bold">{user?.name || 'Guest'}</h2>
+              <p className="text-[16px] text-[var(--color-text-secondary)]">{user?.email || 'N/A'}</p>
+              <p className="text-[16px] text-[var(--color-text-secondary)]">@{user?.username || 'N/A'}</p>
             </div>
           </div>
-
+          <div className="border-1 border-[var(--color-gradient-start)]"></div>
           {/* Settings Options List */}
-          <div className="settings-options-list">
-            <div className="settings-option" onClick={handleMyAccountClick}>
-              <div className="settings-option-icon"><Image src={ICONS.account} alt="My account" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">{t('settings.myAccount')}</p>
+          <div className={`${variantsStylesIcons.iconAccent} space-y-2 mt-4`}>
+            <div className="flex items-center p-3 cursor-pointer rounded-lg hover:bg-[var(--color-surface-dark)]" onClick={handleMyAccountClick}>
+              <Account alt="My account" className="w-6 h-6 mr-4 text-[var(--color-text-secondary)]" />
+              <p className="font-medium">{t('settings.myAccount')}</p>
             </div>
-            <div className="settings-option" onClick={handleLanguageClick}>
-              <div className="settings-option-icon"><Image src={ICONS.language} alt="Language" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">{t('settings.language')}</p>
+            <div className="flex items-center p-3 cursor-pointer rounded-lg hover:bg-[var(--color-surface-dark)]" onClick={handleLanguageClick}>
+              <SwitchLang alt="Language" className="w-6 h-6 mr-4 text-[var(--color-text-secondary)]" />
+              <p className="font-medium">{t('settings.language')}</p>
             </div>
-            <div className="settings-option" onClick={handlePremiumClick}>
-              <div className="settings-option-icon"><Image src={ICONS.settings} alt="Settings" className="icon" width={20} height={20} /></div> {/* Use img tag */}
-              <p className="settings-option-text">{t('settings.advancedSettings')}</p>
+            <div className="flex items-center p-3 cursor-pointer rounded-lg hover:bg-[var(--color-surface-dark)]" onClick={handlePremiumClick}>
+              <SettingsMenu alt="Settings" className="w-6 h-6 mr-4 text-[var(--color-text-secondary)]" />
+              <p className="font-medium">{t('settings.advancedSettings')}</p>
             </div>
           </div>
         </div>

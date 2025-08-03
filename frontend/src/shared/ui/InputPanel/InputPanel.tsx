@@ -7,7 +7,7 @@ interface InputPanelProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const InputPanel: React.FC<InputPanelProps> = ({ className, ...props }) => {
   return (
     <input
-      className={`input-panel ${className || ''}`}
+      className={`${className || ''}`}
       {...props}
     />
   );

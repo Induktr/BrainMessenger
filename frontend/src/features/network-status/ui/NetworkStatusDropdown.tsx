@@ -15,15 +15,15 @@ const NetworkStatusDropdown: React.FC = () => {
 
   if (!isOnline) {
     message = "На текущий момент, ваше соеденение отсутствует. Попытка переподключения...";
-    className = "network-dropdown-offline";
+    className = "bg-[var(--color-danger)] text-[var(--color-text-primary)]";
   } else if (isPoorConnection) {
     message = "Плохое соеденение, попытка переподключения...";
-    className = "network-dropdown-poor";
+    className = "bg-[var(--color-secondary)] text-[var(--color-text-primary)]";
   }
 
   return (
     <div
-      className={`network-dropdown-container ${className}`}
+      className={`fixed top-0 left-0 right-0 p-2 text-center text-sm z-50 ${className}`}
       style={{ transition: "opacity 0.3s ease-in-out" }}
     >
       {message}

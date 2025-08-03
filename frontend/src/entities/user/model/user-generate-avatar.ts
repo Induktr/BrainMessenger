@@ -1,16 +1,10 @@
+import { listColors } from "@/shared/assets/Colors/colors";
+
 // frontend/src/utils/avatarUtils.ts
 
 // Define a set of colors that provide good contrast for text
 // These should ideally be aligned with the project's color palette
-const avatarColors = [
-  '#4CAF50', // Green
-  '#2196F3', // Blue
-  '#FF9800', // Orange
-  '#9C27B0', // Purple
-  '#00BCD4', // Cyan
-  '#FF5722', // Deep Orange
-  '#607D8B', // Blue Grey
-];
+const avatarColors = listColors;
 
 /**
  * Generates data for a simple avatar placeholder.

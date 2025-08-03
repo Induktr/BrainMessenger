@@ -1,4 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { 
+  useState, 
+  useEffect
+} from 'react';
+import { 
+  twMerge 
+} from 'tailwind-merge';
 
 interface InputCellProps {
   value: string;
@@ -35,7 +41,13 @@ const InputCell: React.FC<InputCellProps> = ({ value, onChange, onKeyDown, onPas
       onKeyDown={onKeyDown} // Pass onKeyDown prop
       onPaste={onPaste} // Pass onPaste prop
       ref={inputRef}
-      className={className} // Add a class for styling
+      className={twMerge(
+        "w-12 h-12 text-center text-2xl font-bold rounded-lg",
+        "bg-[var(--color-input-background)] text-[var(--color-text-primary)] border border-[var(--color-border)]",
+        "focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] outline-none",
+        "transition-all duration-200 ease-in-out",
+        className
+      )}
     />
   );
 };

@@ -1,6 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { 
+  Audio, 
+  VideoCamera, 
+  File,
+  Close 
+} from '@/shared/assets/Icons/icons';
 
 interface AttachmentPreviewProps {
   files: File[];
@@ -16,20 +21,20 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemoveFi
     } else if (file.type.startsWith('audio/')) {
       return (
         <div className="attachment-preview-placeholder">
-          <Image src={ICONS.audio} alt="Audio File" width={32} height={32} className="attachment-preview-image-audio" />
+          <Audio alt="Audio File" width={32} height={32} className="attachment-preview-image-audio" />
         </div>
       );
     }
     else if (file.type === 'video/mp4') {
       return (
         <div className="attachment-preview-placeholder">
-          <Image src={ICONS.videoCamera} alt="Video File" width={32} height={32} />
+          <VideoCamera alt="Video File" width={32} height={32} />
         </div>
       );
     } else {
       return (
         <div className="attachment-preview-placeholder">
-          <Image src={ICONS.file} alt="Generic File" width={32} height={32} className="attachment-preview-image-file" />
+          <File alt="Generic File" width={32} height={32} className="attachment-preview-image-file" />
         </div>
       );
     }
@@ -44,7 +49,7 @@ const AttachmentPreview: React.FC<AttachmentPreviewProps> = ({ files, onRemoveFi
             onClick={() => onRemoveFile(index)}
             className="attachment-preview-remove-button"
           >
-            <Image src={ICONS.close} alt="Remove File" width={20} height={20} />
+            <Close alt="Remove File" width={20} height={20} />
           </button>
         </div>
       ))}

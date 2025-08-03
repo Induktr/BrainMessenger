@@ -4,12 +4,13 @@ import React, { useState } from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { CloseModal } from '@/shared/assets/Icons/icons';
 import Image from 'next/image';
-import { useMutation } from '@apollo/client'; // Import useMutation
+import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import { CREATE_CHANNEL } from '@/entities/channel/model/channel.queries'; // Import CREATE_CHANNEL mutation
+import { CREATE_CHANNEL } from '@/entities/channel/model/channel.queries';
 import { CreateChannelModalProps } from '@/features/create-chat/model/create-chat.types';
+import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
 
 const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose }) => {
   const [channelName, setChannelName] = useState('');
@@ -25,7 +26,6 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
     },
     onError: (err) => {
       console.error('Error creating channel:', err);
-      // Optionally, show an error message to the user
     },
   });
 
@@ -34,7 +34,7 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
       await createChannel({
         variables: {
           name: channelName,
-          description: channelDescription || null, // Send null if description is empty
+          description: channelDescription || null,
         },
       });
     } catch (e) {
@@ -50,47 +50,55 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
 
   return (
     <Modal onClose={handleCloseClick} isOpen={isOpen}>
-      <div className="create-channel-modal-content">
+      <div className="rounded-[10px]">
         {/* Header */}
-        <div className="create-channel-header">
-          <h2 className="create-channel-header-title">{t('createChannelModal.title')}</h2>
-          <Button className="create-channel-close-button" onClick={handleCloseClick}>
-            <Image src={ICONS.closeModal} alt={t('createChannelModal.alt.close')} className="icon" width={24} height={24} /> {/* Use img tag */}
-          </Button> 
+        <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4 border-b border-[var(--color-border)]`}>
+          <h2 className="text-lg font-semibold">{t('createChannelModal.title')}</h2>
+          <Button variant="ghost" size="icon" onClick={handleCloseClick}>
+            <CloseModal alt={t('createChannelModal.alt.close')} className="w-6 h-6" />
+          </Button>
         </div>
 
         {/* Form */}
-        <div className="create-channel-form">
-          <div className="create-channel-input-group">
-            <label className="create-channel-label">{t('createChannelModal.nameLabel')}</label>
+        <div className="space-y-6 mt-6">
+          <div>
+            <label htmlFor="channelName" className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+              {t('createChannelModal.nameLabel')}
+            </label>
             <Input
+              type="text"
+              id="channelName"
               placeholder={t('createChannelModal.namePlaceholder')}
               value={channelName}
               onChange={(e) => setChannelName(e.target.value)}
             />
           </div>
 
-          <div className="create-channel-input-group">
-            <label className="create-channel-label">{t('createChannelModal.descriptionLabel')}</label>
-             <textarea
-              className="create-channel-textarea"
+          <div>
+            <label htmlFor="channelDescription" className="block text-[16px] font-medium text-[var(--color-text-secondary)] mb-2">
+              {t('createChannelModal.descriptionLabel')}
+            </label>
+            <textarea
+              id="channelDescription"
+              className="w-full p-2 rounded-[10px] border border-[var(--color-border)] text-[var(--color-text-primary)] focus:outline-none resize-none"
               placeholder={t('createChannelModal.descriptionPlaceholder')}
               value={channelDescription}
               onChange={(e) => setChannelDescription(e.target.value)}
+              rows={4}
             />
           </div>
         </div>
 
         {/* Create Button */}
-        <div className="create-channel-button-container">
-           <Button
-             className="create-channel-button-state-disabled"
-             onClick={handleCreateClick}
-             disabled={loading || !channelName.trim()} // Disable if loading or name is empty
-           >
-             {loading ? t('createChannelModal.creatingButton') : t('createChannelModal.createButton')}
-           </Button>
-           {error && <p className="error-message">{t('createChannelModal.errorMessage', { message: error.message })}</p>}
+        <div className="mt-8">
+          <Button
+            className="w-full !text-[var(--color-background)]"
+            onClick={handleCreateClick}
+            disabled={loading || !channelName.trim()}
+          >
+            {loading ? t('createChannelModal.creatingButton') : t('createChannelModal.createButton')}
+          </Button>
+          {error && <p className="text-sm text-[var(--color-error)] mt-2 text-center">{t('createChannelModal.errorMessage', { message: error.message })}</p>}
         </div>
       </div>
     </Modal>

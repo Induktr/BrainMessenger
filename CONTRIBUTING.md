@@ -17,7 +17,7 @@ This document outlines the guidelines and processes for contributing to this pro
 
 ## Code of Conduct
 
-We take our open-source community seriously and hold ourselves and other contributors to high standards of communication. By participating and contributing to this project, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). (Примечание: Тебе нужно будет создать этот файл CODE_OF_CONDUCT.md, используя стандартный шаблон, например, Contributor Covenant).
+We take our open-source community seriously and hold ourselves and other contributors to high standards of communication. By participating and contributing to this project, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## How Can I Contribute?
 

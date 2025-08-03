@@ -11,6 +11,7 @@ export const GlobalAudioProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1); // Volume state (0 to 1)
   const [isLooping, setIsLooping] = useState(false);
+  const [showGlobalControls, setShowGlobalControls] = useState(false);
 
   useEffect(() => {
     audioRef.current = new Audio();
@@ -61,15 +62,19 @@ export const GlobalAudioProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   const playAudio = (src: string) => {
     if (audioRef.current) {
+      // If it's a new audio source, set it up and reset time
       if (audioRef.current.src !== src) {
         audioRef.current.src = src;
         setCurrentAudioSrc(src);
-        setCurrentTime(0); // Reset time for new audio
+        setCurrentTime(0);
       }
-      // Set isPlaying to true only after the play promise resolves successfully
+      
+      // Always play from the current time (which is 0 for new tracks)
+      audioRef.current.currentTime = currentTime;
       audioRef.current.play()
         .then(() => {
           setIsPlaying(true);
+          setShowGlobalControls(true); // Automatically show controls on play
         })
         .catch(e => console.error("Error playing audio:", e));
     }
@@ -110,6 +115,7 @@ export const GlobalAudioProvider: React.FC<{ children: ReactNode }> = ({ childre
       seekAudio,
       setVolume,
       toggleLoop,
+      showGlobalControls, // Expose new state
     }}>
       {children}
     </GlobalAudioContext.Provider>

@@ -3,7 +3,7 @@ import Modal from '@/shared/ui/Modal/Modal';
 import Button from '@/shared/ui/Button/Button';
 import Input from '@/shared/ui/Input/Input';
 import Image from 'next/image';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { CloseModal, Channel } from '@/shared/assets/Icons/icons';
 import { useMutation } from '@apollo/client';
 import { UPDATE_CHANNEL_PRIVACY, DELETE_CHANNEL } from '@/entities/channel/model/channel.queries';
 import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext';
@@ -104,36 +104,39 @@ const ChannelDetailsModal: React.FC<ChannelDetailsModalProps> = ({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="modal-header">
-        <h2>{t('channelDetailsModal.title')}</h2>
-        <Button onClick={onClose} className="modal-close-button">
-          <Image src={ICONS.closeModal} alt={t('channelDetailsModal.alt.close')} width={24} height={24} />
+      <div className="flex items-center justify-between pb-4 mb-4 border-b border-[var(--color-border)]">
+        <h2 className="text-xl font-bold text-[var(--color-text-primary)]">{t('channelDetailsModal.title')}</h2>
+        <Button onClick={onClose} className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+          <CloseModal alt={t('channelDetailsModal.alt.close')} width={24} height={24} />
         </Button>
       </div>
-      <div className="channel-details-modal-content">
-        <div className="channel-avatar-section">
-          <Image src={ICONS.channel} alt={t('channelDetailsModal.alt.avatar')} width={80} height={80} className="rounded-full" />
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-center">
+          <Channel alt={t('channelDetailsModal.alt.avatar')} width={80} height={80} className="rounded-full" />
         </div>
-        <div className="channel-info-section">
-          <h3>{t('channelDetailsModal.nameLabel')} {channel.chatId}</h3> {/* Assuming chatId is the channel name for now */}
-          {channel.description && <p>{t('channelDetailsModal.descriptionLabel')} {channel.description}</p>}
-          <p>{t('channelDetailsModal.subscribersLabel')} {channel.subscribersCount}</p>
-          <p>{t('channelDetailsModal.ownerLabel')} {channel.owner.name || channel.owner.username}</p>
+        <div className="space-y-2 text-center">
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">{t('channelDetailsModal.nameLabel')} {channel.chatId}</h3>
+          {channel.description && <p className="text-sm text-[var(--color-text-secondary)]">{t('channelDetailsModal.descriptionLabel')} {channel.description}</p>}
+          <p className="text-sm text-[var(--color-text-secondary)]">{t('channelDetailsModal.subscribersLabel')} {channel.subscribersCount}</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t('channelDetailsModal.ownerLabel')} {channel.owner.name || channel.owner.username}</p>
         </div>
 
         {isOwner && (
-          <div className="channel-settings-section">
-            <div className="toggle-switch-container">
-              <label htmlFor="public-toggle">{t('channelDetailsModal.publicToggleLabel')}</label>
-              <input
-                type="checkbox"
-                id="public-toggle"
-                checked={isPublic}
-                onChange={handleTogglePrivacy}
-                className="toggle-switch"
-              />
+          <div className="pt-6 space-y-4 border-t border-[var(--color-border)]">
+            <div className="flex items-center justify-between">
+              <label htmlFor="public-toggle" className="text-[var(--color-text-primary)]">{t('channelDetailsModal.publicToggleLabel')}</label>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="public-toggle"
+                  checked={isPublic}
+                  onChange={handleTogglePrivacy}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[var(--color-success)]"></div>
+              </label>
             </div>
-            <Button onClick={handleDeleteChannelClick} className="delete-channel-button">
+            <Button onClick={handleDeleteChannelClick} className="w-full bg-[var(--color-error)] hover:bg-red-700 text-white">
               {t('channelDetailsModal.deleteButton')}
             </Button>
           </div>

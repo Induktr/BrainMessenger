@@ -13,6 +13,7 @@
     "createChannel": "Створити канал",
     "createGroup": "Створити групу",
     "nightMode": "Нічний режим",
+    "lightMode": "Світлий режим",
     "allNotifications": "Всі сповіщення",
     "support": "Підтримка",
     "myAccount": "Мій акаунт",
@@ -190,6 +191,10 @@
   "feedbackFeed": {
     "title": "Стрічка зворотного зв'язку",
     "noFeedback": "Немає відгуків для відображення."
+  },
+  "notifications": {
+    "title": "Повідомлення",
+    "noNotifications": "Немає повідомлень."
   },
   "complaintFeed": {
     "title": "Стрічка скарг",
@@ -404,41 +409,80 @@
     "sent_success": "Код підтвердження успішно надіслано!"
   },
   "register_page": {
-    "resend_code_unavailable": "Неможливо повторно надіслати код: електронна пошта недоступна.",
+    "title": "Реєстрація",
+    "next_button": "Далі",
+    "verify_button": "Підтвердити",
+    "verifying_button": "Перевірка...",
+    "resend_code_button": "Надіслати код ще раз",
+    "resending_code_button": "Надсилання...",
+    "steps": [
+      {
+        "subtitle": "Крок 1",
+        "prompt": "Створіть надійний пароль. Мінімум 8 символів, повинен містити велику літеру, цифру та спецсимвол.",
+        "fields": [
+          {
+            "name": "password",
+            "label": "Пароль",
+            "type": "password",
+            "icon": "Castle"
+          }
+        ]
+      },
+      {
+        "subtitle": "Крок 2",
+        "prompt": "Як до вас звертатися? Введіть ваше ім'я. Воно буде відображатися у вашому профілі.",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Ваше ім'я",
+            "type": "text",
+            "required": "Ім'я обов'язкове",
+            "icon": "Man"
+          }
+        ]
+      },
+      {
+        "subtitle": "Крок 3",
+        "prompt": "Придумайте унікальне ім'я користувача. Воно буде використовуватися для ідентифікації в чаті.",
+        "fields": [
+          {
+            "name": "username",
+            "label": "Ім'я користувача",
+            "type": "text",
+            "required": "Ім'я користувача обов'язкове",
+            "icon": "UsernameDog"
+          }
+        ]
+      },
+      {
+        "subtitle": "Крок 4",
+        "prompt": "Введіть ваш email. На нього ми надішлемо код для підтвердження вашого облікового запису.",
+        "fields": [
+          {
+            "name": "email",
+            "label": "Електронна пошта",
+            "type": "email",
+            "required": "Email обов'язковий",
+            "icon": "Mail"
+          }
+        ]
+      },
+      {
+        "subtitle": "Крок 5",
+        "prompt": "Ми надіслали 8-значний код підтвердження на <strong class=\"font-bold text-[var(--color-text-primary)]\">{{email}}</strong>. Будь ласка, введіть його нижче, щоб завершити реєстрацію.",
+        "component": "VerificationCodeInput"
+      }
+    ],
+    "resend_code_unavailable": "Неможливо повторно надіслати код: email недоступний.",
     "code_resent_success": "Код підтвердження надіслано повторно. Будь ласка, перевірте свою електронну пошту.",
     "resend_code_failed_generic": "Не вдалося повторно надіслати код підтвердження.",
     "resend_code_failed_with_error": "Не вдалося повторно надіслати код підтвердження: {{error}}",
-    "registration_success": "Реєстрація успішна:",
-    "sign_up_with_google": "Реєстрація через Google",
     "registration_error": "Помилка реєстрації:",
     "enter_complete_code": "Будь ласка, введіть повний 8-значний код.",
-    "verification_failed_generic": "Перевірка не вдалася: недійсний код або перевірка повернула false.",
-    "verification_error_prefix": "Перевірка не вдалася:",
-    "resend_error_prefix": "Повторна відправка не вдалася:",
-    "verification_success_redirect": "Перевірка успішна! Перенаправлення до чату...",
-    "sending_button": "Надсилання...",
-    "get_code_again_button": "Отримати код знову",
-    "already_have_account": "Вже маєте обліковий запис?",
-    "login_link": "Увійти",
-    "step_prefix": "Крок",
-    "create_password_placeholder": "Пароль",
-    "input_field_empty": "Поле введення порожнє",
-    "password_too_short": "Пароль занадто короткий",
-    "password_too_long": "Пароль занадто довгий",
-    "password_requirements": "Пароль повинен містити велику літеру та спеціальний символ",
-    "your_name_placeholder": "Ваше ім'я",
-    "name_too_short": "Ім'я занадто коротке",
-    "name_too_long": "Ім'я занадто довге",
-    "username_placeholder": "Ім'я користувача",
-    "username_too_short": "Ім'я користувача занадто коротке",
-    "username_too_long": "Ім'я користувача занадто довге",
-    "email_placeholder": "Електронна пошта",
-    "invalid_email_format": "Недійсний формат електронної пошти",
-    "verifying_button": "Перевірка...",
-    "confirm_button": "Підтвердити",
-    "welcome_prompt": "Ласкаво просимо, {{email}}! Щоб завершити процес реєстрації, будь ласка, введіть код, який ми надіслали вам електронною поштою.",
-    "next_button_alt": "Далі",
-    "back_button_alt": "Назад"
+    "verification_failed_generic": "Перевірка не вдалася: невірний код або перевірка повернула false.",
+    "already_have_account": "Вже є акаунт?",
+    "sign_up_with_google": "Реєстрація через Google",
+    "login_link": "Увійти"
   },
   "chat_input": {
     "placeholder": "Введіть повідомлення...",
@@ -452,9 +496,36 @@
   "user_profile": {
     "header_title": "Профіль користувача",
     "email_label": "Eлектронна пошта",
+    "name_label": "Ім'я",
     "user_name_label": "Ім'я користувача",
     "verified_label": "Підтверджений",
     "yes": "Так",
     "no": "Ні"
+  },
+  "password_validator": {
+    "length": "Мінімум 8 символів",
+    "uppercase": "Хоча б одна велика літера",
+    "lowercase": "Хоча б одна мала літера",
+    "number": "Хоча б одна цифра",
+    "special": "Хоча б один спецсимвол"
+  },
+  "validation": {
+    "password": {
+      "required": "Пароль обов'язковий",
+      "minLength": "Пароль повинен містити мінімум 8 символів",
+      "uppercase": "Повинен містити велику літеру",
+      "digit": "Повинен містити цифру",
+      "specialChar": "Повинен містити спецсимвол"
+    },
+    "name": {
+      "required": "Ім'я обов'язкове",
+      "minLength": "Ім'я повинно бути довшим за 2 символи",
+      "maxLength": "Ім'я повинно бути коротшим за 50 символів"
+    },
+    "email": {
+      "required": "Email обов'язковий",
+      "invalid": "Введіть коректний email",
+      "gmailOnly": "Підтримується реєстрація тільки з Gmail-акаунтів"
+    }
   }
 }

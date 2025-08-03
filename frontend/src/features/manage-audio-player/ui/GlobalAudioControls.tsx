@@ -1,9 +1,22 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { 
+  useState, 
+  useEffect, 
+  useRef 
+} from 'react';
 import Image from 'next/image';
-import { useGlobalAudio } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
-import { ICONS } from '@/shared/assets/Icons/icons';
+import { 
+  useGlobalAudio 
+} from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
+import { 
+  Play, 
+  Pause, 
+  Loop, 
+  OnSound, 
+  OffSound 
+} from '@/shared/assets/Icons/icons';
+import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
 
 const GlobalAudioControls: React.FC = () => {
   const {
@@ -62,50 +75,63 @@ const GlobalAudioControls: React.FC = () => {
     return null; // Don't render if no audio is currently active globally
   }
 
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div className="global-audio-options-panel">
-      <div className="global-audio-controls">
-        <button onClick={isPlaying ? pauseAudio : () => playAudio(currentAudioSrc)} className="audio-player-play-pause-button-dropdown">
-          <Image src={isPlaying ? ICONS.pause : ICONS.play} alt={isPlaying ? "Pause" : "Play"} width={20} height={20} className="audio-player-icon" />
+    <div className="w-full bg-[var(--color-surface)] p-3 border-b border-[var(--color-border)] shadow-md">
+      <div className="flex items-center gap-4 max-w-4xl mx-auto">
+        <button
+          onClick={isPlaying ? pauseAudio : () => playAudio(currentAudioSrc!)}
+          className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-accent)] text-white transition-transform hover:scale-105"
+        >
+          {isPlaying ? <Pause width={20} height={20} /> : <Play width={20} height={20} />}
         </button>
+        
+        <div className="text-sm font-mono text-[var(--color-text-secondary)] w-14 text-center">
+          {formatTime(currentTime)}
+        </div>
+
         <input
           type="range"
           min="0"
           max={duration}
           value={currentTime}
           onChange={(e) => seekAudio(parseFloat(e.target.value))}
-          className="audio-player-progress-slider-dropdown"
-          style={{
-            background: `linear-gradient(to right, #96C93D 0%, #96C93D ${(currentTime / duration) * 100}%, #4D4D4D ${(currentTime / duration) * 100}%, #4D4D4D 100%)`
-          }}
+          className="w-full h-1 bg-transparent rounded-lg appearance-none cursor-pointer"
+          style={{ background: `linear-gradient(to right, var(--color-gradient-start) ${progress}%, var(--color-disabled) ${progress}%)` }}
         />
-        <div className="audio-player-time-display">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </div>
-        <button onClick={toggleLoop} className={`audio-player-loop-button ${isLooping ? 'active' : ''}`}>
-          <Image src={ICONS.loop} alt="Loop" width={20} height={20} className="audio-player-icon-loop" />
-        </button>
-        <div
-          className="audio-player-volume-control"
-          ref={volumeControlRef} // Attach ref here
-          onClick={handleVolumeIconClick} // Change to onClick
-        >
-          {volume > 0 ? (
-            <Image src={ICONS.onSound} alt="On Volume" width={20} height={20} className="audio-player-icon-volume" />
-            ) : (
-            <Image src={ICONS.offSound} alt="Off Volume" width={20} height={20} className="audio-player-icon-volume" />
-          )}
 
+        <div className="text-sm font-mono text-[var(--color-text-secondary)] w-14 text-center">
+          {formatTime(duration)}
+        </div>
+
+        <button
+          onClick={toggleLoop}
+          className={`p-2 rounded-full transition-colors ${isLooping ? 'text-[var(--color-accent)] bg-[var(--color-accent)]/10' : `${variantsStylesIcons.iconAccent} hover:bg-black/10`}`}
+        >
+          <Loop className={variantsStylesIcons.iconAccent} />
+        </button>
+
+        <div className="relative flex items-center" ref={volumeControlRef}>
+          <button
+            onClick={handleVolumeIconClick}
+            className="p-2 rounded-full text-[var(--color-text-secondary)] hover:bg-black/10 transition-colors"
+          >
+            {volume > 0 ? <OnSound /> : <OffSound />}
+          </button>
           {showVolumeSlider && (
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={volume}
-              onChange={handleVolumeSliderChange}
-              className="audio-player-volume-slider"
-            />
+            <div className="absolute bottom-full mb-2 p-2 bg-[var(--color-surface-dark)] rounded-lg shadow-lg">
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={volume}
+                onChange={handleVolumeSliderChange}
+                className="w-24 h-1 bg-transparent rounded-lg appearance-none cursor-pointer"
+                style={{ background: `linear-gradient(to right, var(--color-success) ${volume * 100}%, var(--color-disabled) ${volume * 100}%)` }}
+              />
+            </div>
           )}
         </div>
       </div>

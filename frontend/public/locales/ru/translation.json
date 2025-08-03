@@ -13,6 +13,7 @@
     "createChannel": "Создать канал",
     "createGroup": "Создать группу",
     "nightMode": "Ночной режим",
+    "lightMode": "Светлый режим",
     "allNotifications": "Все уведомления",
     "support": "Поддержка",
     "myAccount": "Мой аккаунт",
@@ -190,6 +191,10 @@
   "feedbackFeed": {
     "title": "Лента обратной связи",
     "noFeedback": "Нет отзывов для отображения."
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "noNotifications": "Нет уведомлений."
   },
   "complaintFeed": {
     "title": "Лента жалоб",
@@ -381,6 +386,7 @@
     "logo_alt": "Логотип BrainMessenger",
     "title": "Войти в BrainMessenger",
     "email_label": "Электронная почта",
+    "field_password_email_prompt": "",
     "password_label": "Пароль",
     "email_required": "Электронная почта обязательна",
     "password_required": "Пароль обязателен",
@@ -404,41 +410,80 @@
     "sent_success": "Код подтверждения успешно отправлен!"
   },
   "register_page": {
+    "title": "Регистрация",
+    "next_button": "Далее",
+    "verify_button": "Подтвердить",
+    "verifying_button": "Проверка...",
+    "resend_code_button": "Отправить код еще раз",
+    "resending_code_button": "Отправка...",
+    "steps": [
+      {
+        "subtitle": "Шаг 1",
+        "prompt": "Создайте надежный пароль. Минимум 8 символов, должен содержать заглавную букву, цифру и спецсимвол.",
+        "fields": [
+          {
+            "name": "password",
+            "label": "Пароль",
+            "type": "password",
+            "icon": "Castle"
+          }
+        ]
+      },
+      {
+        "subtitle": "Шаг 2",
+        "prompt": "Как вас называть? Введите ваше имя. Оно будет отображаться в вашем профиле.",
+        "fields": [
+          {
+            "name": "name",
+            "label": "Ваше имя",
+            "type": "text",
+            "required": "Имя обязательно",
+            "icon": "Man"
+          }
+        ]
+      },
+      {
+        "subtitle": "Шаг 3",
+        "prompt": "Придумайте уникальное имя пользователя. Оно будет использоваться для идентификации в чате.",
+        "fields": [
+          {
+            "name": "username",
+            "label": "Имя пользователя",
+            "type": "text",
+            "required": "Имя пользователя обязательно",
+            "icon": "UsernameDog"
+          }
+        ]
+      },
+      {
+        "subtitle": "Шаг 4",
+        "prompt": "Введите ваш email. На него мы отправим код для подтверждения вашей учетной записи.",
+        "fields": [
+          {
+            "name": "email",
+            "label": "Электронная почта",
+            "type": "email",
+            "required": "Email обязателен",
+            "icon": "Mail"
+          }
+        ]
+      },
+      {
+        "subtitle": "Шаг 5",
+        "prompt": "Мы отправили 8-значный код подтверждения на <strong class=\"font-bold text-[var(--color-text-primary)]\">{{email}}</strong>. Пожалуйста, введите его ниже, чтобы завершить регистрацию.",
+        "component": "VerificationCodeInput"
+      }
+    ],
     "resend_code_unavailable": "Невозможно повторно отправить код: электронная почта недоступна.",
     "code_resent_success": "Код подтверждения отправлен повторно. Пожалуйста, проверьте свою электронную почту.",
     "resend_code_failed_generic": "Не удалось повторно отправить код подтверждения.",
     "resend_code_failed_with_error": "Не удалось повторно отправить код подтверждения: {{error}}",
-    "registration_success": "Регистрация успешна:",
-    "sign_up_with_google": "Регистрация через Google",
     "registration_error": "Ошибка регистрации:",
     "enter_complete_code": "Пожалуйста, введите полный 8-значный код.",
     "verification_failed_generic": "Проверка не удалась: неверный код или проверка вернула false.",
-    "verification_error_prefix": "Проверка не удалась:",
-    "resend_error_prefix": "Повторная отправка не удалась:",
-    "verification_success_redirect": "Проверка успешна! Перенаправление в чат...",
-    "sending_button": "Отправка...",
-    "get_code_again_button": "Получить код снова",
     "already_have_account": "Уже есть аккаунт?",
-    "login_link": "Войти",
-    "step_prefix": "Шаг",
-    "create_password_placeholder": "Пароль",
-    "input_field_empty": "Поле ввода пустое",
-    "password_too_short": "Пароль слишком короткий",
-    "password_too_long": "Пароль слишком длинный",
-    "password_requirements": "Пароль должен содержать заглавную букву и специальный символ",
-    "your_name_placeholder": "Ваше имя",
-    "name_too_short": "Имя слишком короткое",
-    "name_too_long": "Имя слишком длинное",
-    "username_placeholder": "Имя пользователя",
-    "username_too_short": "Имя пользователя слишком короткое",
-    "username_too_long": "Имя пользователя слишком длинное",
-    "email_placeholder": "Электронная почта",
-    "invalid_email_format": "Неверный формат электронной почты",
-    "verifying_button": "Проверка...",
-    "confirm_button": "Подтвердить",
-    "welcome_prompt": "Добро пожаловать, {{email}}! Чтобы завершить процесс регистрации, пожалуйста, введите код, который мы отправили вам по электронной почте.",
-    "next_button_alt": "Далее",
-    "back_button_alt": "Назад"
+    "sign_up_with_google": "Регистрация через Google",
+    "login_link": "Войти"
   },
   "chat_input": {
     "placeholder": "Введите сообщение...",
@@ -452,9 +497,36 @@
   "user_profile": {
     "header_title": "Профиль пользователя",
     "email_label": "Электронная почта",
+    "name_label": "Имя",
     "user_name_label": "Имя пользователя",
     "verified_label": "Подтвержден",
     "yes": "Да",
     "no": "Нет"
+  },
+  "password_validator": {
+    "length": "Минимум 8 символов",
+    "uppercase": "Хотя бы одна заглавная буква",
+    "lowercase": "Хотя бы одна строчная буква",
+    "number": "Хотя бы одна цифра",
+    "special": "Хотя бы один спецсимвол"
+  },
+  "validation": {
+    "password": {
+      "required": "Пароль обязателен",
+      "minLength": "Пароль должен содержать минимум 8 символов",
+      "uppercase": "Должен содержать заглавную букву",
+      "digit": "Должен содержать цифру",
+      "specialChar": "Должен содержать спецсимвол"
+    },
+    "name": {
+      "required": "Имя обязательно",
+      "minLength": "Имя должно быть длиннее 2 символов",
+      "maxLength": "Имя должно быть короче 50 символов"
+    },
+    "email": {
+      "required": "Email обязателен",
+      "invalid": "Введите корректный email",
+      "gmailOnly": "Поддерживается регистрация только с Gmail-аккаунтов"
+    }
   }
 }
