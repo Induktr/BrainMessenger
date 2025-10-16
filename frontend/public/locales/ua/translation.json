@@ -1,4 +1,8 @@
 {
+  "statusNetwork": {
+    "noConnection": "На даний момент у вас немає з'єднання. Спроба перепідключення...",
+    "poorConnection": "Погане з'єднання, спроба перепідключення..."
+  },
   "language": {
     "header_title": "Мова",
     "interface_label": "Мова інтерфейсу",

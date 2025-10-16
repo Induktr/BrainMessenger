@@ -12,12 +12,13 @@ import {
 import { 
   GET_FEEDBACK_COMPLAINTS
 } from '@/entities/feedback-complaint/model/feedback-complaint.queries';
-import BanUserModal from '../../entities/admin/ui/BanUserModal';
-import DeleteMessageModal from '../../entities/admin/ui/DeleteMessageModal';
-import { 
-  BAN_USER_MUTATION, 
-  DELETE_COMPLAINT_MESSAGE_MUTATION 
+import BanUserModal from '@/entities/admin/ui/BanUserModal';
+import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
+import {
+  BAN_USER_MUTATION,
+  DELETE_COMPLAINT_MESSAGE_MUTATION
 } from '@/entities/feedback-complaint/model/feedback-complaint.mutations';
+import ComplaintItem from './ComplaintItem';
 
 // More detailed interfaces to match backend data
 interface User {
@@ -83,13 +84,6 @@ const ComplaintFeedWidget: React.FC<ComplaintFeedWidgetProps> = ({ complaintItem
     setSelectedMessage(null);
   };
 
-  const statusColorMap = {
-    NEW: 'text-blue-500 bg-blue-100',
-    IN_PROGRESS: 'text-yellow-500 bg-yellow-100',
-    RESOLVED: 'text-green-500 bg-green-100',
-    REJECTED: 'text-red-500 bg-red-100',
-  };
-
   return (
     <div className="bg-surface rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-semibold text-text-primary mb-4">{t('complaintFeed.title')}</h2>
@@ -98,48 +92,12 @@ const ComplaintFeedWidget: React.FC<ComplaintFeedWidgetProps> = ({ complaintItem
       ) : (
         <ul className="space-y-4">
           {complaintItems.map((complaint) => (
-            <li key={complaint.id} className="bg-background p-4 rounded-lg shadow-sm border border-border">
-              <div className="flex justify-between items-center mb-2">
-                <p className="text-text-primary text-sm font-medium">
-                  <strong>{t('complaintFeed.userLabel')}</strong> {complaint.user ? `${complaint.user.name} (ID: ${complaint.user.id})` : t('admin_dashboard.not_available_short')}
-                </p>
-                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusColorMap[complaint.status]}`}>
-                  {complaint.status}
-                </span>
-              </div>
-              <p className="text-text-secondary text-xs mb-2">
-                <strong>{t('complaintFeed.createdAtLabel')}</strong> {new Date(complaint.createdAt).toLocaleString()}
-              </p>
-              <div className="mb-3">
-                <p className="text-text-primary text-sm">
-                  <strong>{t('complaintFeed.complaintLabel')}</strong> {complaint.content}
-                </p>
-                {complaint.message && (
-                  <div className="mt-2 p-3 bg-surface-dark rounded-md border border-border">
-                    <p className="text-text-secondary text-xs mb-1">{t('admin_dashboard.associated_message_label')}</p>
-                    <p className="text-text-primary text-sm">
-                      <strong>{t('complaintFeed.messageLabel')}</strong> {complaint.message.content} (ID: {complaint.message.id})
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => complaint.user && handleBanUserClick(complaint.user)}
-                  disabled={!complaint.user}
-                  className="flex-1 py-2 px-4 rounded-lg bg-danger text-white hover:opacity-90 disabled:bg-disabled disabled:text-text-secondary disabled:cursor-not-allowed transition-all duration-200"
-                >
-                  {t('complaintFeed.banUserButton')}
-                </button>
-                <button
-                  onClick={() => complaint.message && handleDeleteMessageClick(complaint.message)}
-                  disabled={!complaint.message}
-                  className="flex-1 py-2 px-4 rounded-lg bg-secondary text-white hover:opacity-90 disabled:bg-disabled disabled:text-text-secondary disabled:cursor-not-allowed transition-all duration-200"
-                >
-                  {t('complaintFeed.deleteMessageButton')}
-                </button>
-              </div>
-            </li>
+            <ComplaintItem
+              key={complaint.id}
+              complaint={complaint}
+              onBanUser={handleBanUserClick}
+              onDeleteMessage={handleDeleteMessageClick}
+            />
           ))}
         </ul>
       )}
@@ -151,10 +109,14 @@ const ComplaintFeedWidget: React.FC<ComplaintFeedWidgetProps> = ({ complaintItem
           userName={selectedUser.name}
         />
       )}
-      <DeleteMessageModal
+      <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleConfirmDelete}
+        title={t('complaintFeed.deleteModal.title')}
+        message={t('complaintFeed.deleteModal.message')}
+        confirmText={t('complaintFeed.deleteModal.confirmText')}
+        cancelText={t('common.cancel')}
       />
     </div>
   );

@@ -5,7 +5,6 @@ import React, {
   useState, 
   useCallback 
 } from 'react';
-import Image from 'next/image';
 import { 
   CloseModal 
 } from '@/shared/assets/Icons/icons';
@@ -23,10 +22,8 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, is
         handleCloseClick();
       }, 5000); // Notification visible for 5 seconds
       return () => clearTimeout(timer);
-    } else {
-      // When isVisible becomes false, start the fade-out transition
-      setIsShowing(false);
     }
+    setIsShowing(false);
   }, [isVisible]);
 
   const handleCloseClick = useCallback(() => {

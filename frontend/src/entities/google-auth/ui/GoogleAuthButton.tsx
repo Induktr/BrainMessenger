@@ -7,7 +7,8 @@ import {
 import { 
     useTranslation 
 } from 'react-i18next';
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
+import { AppRoutes } from '@/shared/config/paths'
 
 interface GoogleAuthButtonProps {
     type: 'login' | 'register'; // Prop to determine button text
@@ -17,7 +18,7 @@ interface GoogleAuthButtonProps {
 const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type, className }) => {
     const { t } = useTranslation();
 
-    const buttonTextKey = type === 'login' ? 'login_page.sign_in_with_google' : 'register_page.sign_up_with_google';
+    const buttonTextKey = type === AppRoutes.LOGIN ? 'login_page.sign_in_with_google' : 'register_page.sign_up_with_google';
 
     const handleGoogleLogin = () => {
         // Determine the correct redirect URL based on the environment

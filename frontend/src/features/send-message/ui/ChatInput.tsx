@@ -4,15 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import { SEND_MESSAGE } from '@/entities/message/model/message.queries';
 import { useTypingSender } from '@/hooks/useTypingSender';
-import Input from '@/shared/ui/Input/Input';
-import Button from '@/shared/ui/Button/Button';
-import Image from 'next/image'; // Import Image component
 import { UploadImage, Folder, Checkmark, SendButton } from '@/shared/assets/Icons/icons'; // Import icons
 import AttachmentPreview from '@/shared/ui/AttachmentPreview/AttachmentPreview'; // Import the new AttachmentPreview component
 import { isCodeSnippet } from '@/features/code-detector/model/codeDetector';
 import { ChatInputProps } from '@/features/send-message/model/send-message.types';
 import { useTranslation } from 'react-i18next';
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
 const ChatInput: React.FC<ChatInputProps> = ({
   chatId,
@@ -178,7 +175,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           onClick={handleFolderClick}
           disabled={isInputDisabled}
         >
-          <Folder className="w-6 h-6 text-[var(--color-text-secondary)]" />
+          <Folder className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
         </button>
         <input
           type="file"
@@ -206,9 +203,9 @@ const ChatInput: React.FC<ChatInputProps> = ({
           disabled={!canSendMessage || loading}
         >
           {editingMessage ? (
-            <Checkmark className="w-6 h-6 text-[var(--color-text-primary)]" />
+            <Checkmark className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
           ) : (
-            <SendButton className="w-6 h-6 text-[var(--color-text-primary)]" />
+            <SendButton className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
           )}
         </button>
       </div>

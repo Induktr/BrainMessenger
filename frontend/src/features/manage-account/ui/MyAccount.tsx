@@ -49,9 +49,10 @@ import {
 import clsx from 'clsx';
 import { 
   variantsStylesIcons 
-} from '@/shared/assets/variantStyles/variantStyles';
+} from '@/shared/assets/VariantStyles/variantStyles';
 import EditModal from './EditModal';
 import DropdownMenu from '@/shared/ui/DropdownMenu/DropdownMenu';
+import UserInfoCell from '@/shared/ui/UserInfoCell/UserInfoCell';
 
 const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
   const { t } = useTranslation();
@@ -161,6 +162,31 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
     // Depending on app flow, maybe redirect or show a message
     return null; // Or render a different component/message
   }
+
+  const userInfoCells = [
+    {
+      id: 'name',
+      label: t('myAccount.labels.name'),
+      value: user.name || t('myAccount.notAvailable'),
+      icon: <Account className="lg:w-6 lg:h-6 sm:w-5 sm:h-5 text-[var(--color-text-secondary)]" />,
+      onClick: () => handleEditClick('name'),
+    },
+    {
+      id: 'username',
+      label: t('myAccount.labels.username'),
+      value: `@${user.username || t('myAccount.notAvailable')}`,
+      icon: <UsernameDog className="lg:w-6 lg:h-6 sm:w-5 sm:h-5 text-[var(--color-text-secondary)]" />,
+      onClick: () => handleEditClick('username'),
+    },
+    {
+      id: 'email',
+      label: t('myAccount.labels.email'),
+      value: user.email || t('myAccount.notAvailable'),
+      icon: <Mail className="lg:w-6 lg:h-6 sm:w-5 sm:h-5 text-[var(--color-text-secondary)]" />,
+      onClick: () => handleEditClick('email'),
+      className: 'col-span-2 justify-self-center',
+    },
+  ];
 
   // Handle file selection
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -340,11 +366,11 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
           {/* Header */}
           <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4`}>
             <Button variant="ghost" size="icon" onClick={onBack}>
-              <ArrowLeft alt={t('myAccount.alt.back')} className="w-6 h-6" />
+              <ArrowLeft alt={t('myAccount.alt.back')} className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
             </Button>
-            <h2 className="text-lg font-semibold">{t('myAccount.userLabel.headerTitle')}</h2>
+            <h2 className="text-[20px] lg:text-2xl sm:text-[20px] font-semibold">{t('myAccount.userLabel.headerTitle')}</h2>
             <Button variant="ghost" size="icon" onClick={onClose}>
-              <CloseModal alt={t('myAccount.alt.close')} className="w-6 h-6" />
+              <CloseModal alt={t('myAccount.alt.close')} className="lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
             </Button>
           </div>
 
@@ -353,7 +379,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
             {/* Avatar and Dropdown Container */}
             <div className="relative">
               <div
-                className="relative w-32 h-32 rounded-full flex items-center justify-center text-4xl font-bold cursor-pointer group"
+                className="relative w-[80px] h-[80px] lg:w-[100px] lg:h-[100px] sm:w-[80px] sm:h-[80px] rounded-full flex items-center justify-center text-4xl font-bold cursor-pointer group"
                 style={{ backgroundColor: avatarData.color }}
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
@@ -386,8 +412,8 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
               </p>
             )}
             <div className="text-center">
-              <h2 className="text-2xl font-bold">{user.name || t('guest')}</h2>
-              <p className={clsx("text-sm", {
+              <h2 className="text-[20px] lg:text-2xl sm:text-[20px] font-bold">{user.name || t('guest')}</h2>
+              <p className={clsx("text-sm lg:text-base sm:text-sm", {
                 'text-[var(--color-success)]': user.status === 'online',
                 'text-[var(--color-text-secondary)]': user.status !== 'online'                
               })}>
@@ -395,7 +421,7 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
               </p>
             </div>
             <textarea
-              className="w-full bg-transparent text-center text-[var(--color-text-secondary)] resize-none focus:outline-none p-2 rounded-lg hover:bg-[var(--color-surface-dark)] focus:bg-[var(--color-surface-dark)]"
+              className="w-full text-sm bg-transparent text-center text-[var(--color-text-secondary)] resize-none focus:outline-none p-2 rounded-lg hover:bg-[var(--color-surface-dark)] focus:bg-[var(--color-surface-dark)]"
               value={biography}
               onChange={(e) => setBiography(e.target.value)}
               placeholder={t('myAccount.userLabel.bioPlaceholder')}
@@ -407,31 +433,19 @@ const MyAccount: React.FC<MyAccountProps> = ({ isOpen, onClose, onBack }) => {
           <div className="w-full my-6 border-t border-[var(--color-border)]"></div>
 
           {/* Detailed User Info */}
-          <div className={`${variantsStylesIcons.iconAccent} w-full space-y-4`}>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)]" onClick={() => handleEditClick('name')}>
-                <Account className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
-                <div>
-                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.name')}</p>
-                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">{user.name || t('myAccount.notAvailable')}</p>
-                </div>
-              </div>
-              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)]" onClick={() => handleEditClick('username')}>
-                <UsernameDog className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
-                <div>
-                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.username')}</p>
-                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">@{user.username || t('myAccount.notAvailable')}</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <div className="p-3 rounded-lg cursor-pointer hover:bg-[var(--color-surface-dark)] text-center" onClick={() => handleEditClick('email')}>
-                <Mail className="w-6 h-6 mx-auto mb-2 text-[var(--color-text-secondary)]" />
-                <div>
-                  <p className="text-xs text-[var(--color-text-secondary)]">{t('myAccount.labels.email')}</p>
-                  <p className="text-sm text-[var(--color-gradient-start)] font-medium">{user.email || t('myAccount.notAvailable')}</p>
-                </div>
-              </div>
+          {/* Detailed User Info */}
+          <div className={`${variantsStylesIcons.iconAccent} w-full`}>
+            <div className="grid grid-cols-2 gap-4">
+              {userInfoCells.map((cell) => (
+                <UserInfoCell
+                  key={cell.id}
+                  icon={cell.icon}
+                  label={cell.label}
+                  value={cell.value}
+                  onClick={cell.onClick}
+                  className={cell.className}
+                />
+              ))}
             </div>
           </div>
         </div>

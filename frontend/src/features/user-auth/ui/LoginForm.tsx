@@ -6,7 +6,7 @@ import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import GoogleAuthButton from '@/entities/google-auth/ui/GoogleAuthButton';
 import { Mail, Castle, Eye, EyeOff } from '@/shared/assets/Icons/icons';
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
 // Define the shape of the form inputs
 export interface LoginFormInputs {

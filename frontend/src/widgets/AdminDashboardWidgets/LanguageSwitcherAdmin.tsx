@@ -12,6 +12,22 @@ import {
   Ua 
 } from '@/shared/assets/Icons/icons';
 
+const languages = [
+  { code: 'en', nameKey: 'language.english', altKey: 'languageSwitcherAdmin.alt.en', Icon: En },
+  { code: 'ua', nameKey: 'language.ukrainian', altKey: 'languageSwitcherAdmin.alt.ua', Icon: Ua },
+  { code: 'ru', nameKey: 'language.russian', altKey: 'languageSwitcherAdmin.alt.ru', Icon: Ru },
+];
+
+const LanguageButton: React.FC<{ lang: typeof languages[0], onClick: (code: string) => void }> = ({ lang, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => onClick(lang.code)}>
+      <div className="mr-3"><lang.Icon alt={t(lang.altKey)} className="w-6 h-6" /></div>
+      <p className="text-text-primary">{t(lang.nameKey)}</p>
+    </Button>
+  );
+};
+
 const LanguageSwitcherAdmin: React.FC = () => {
   const { t } = useTranslation();
 
@@ -23,18 +39,9 @@ const LanguageSwitcherAdmin: React.FC = () => {
     <div className="bg-surface rounded-lg shadow-md p-6">
       <h3 className="text-xl font-semibold text-text-primary mb-4">{t('languageSwitcherAdmin.title')}</h3>
       <div className="flex flex-col space-y-3">
-        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('en')}>
-          <div className="mr-3"><En alt={t('languageSwitcherAdmin.alt.en')} className="w-6 h-6" /></div>
-          <p className="text-text-primary">{t('language.english')}</p>
-        </Button>
-        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('ua')}>
-          <div className="mr-3"><Ua alt={t('languageSwitcherAdmin.alt.ua')} className="w-6 h-6" /></div>
-          <p className="text-text-primary">{t('language.ukrainian')}</p>
-        </Button>
-        <Button className="flex items-center p-3 rounded-lg bg-background hover:bg-border transition-colors duration-200" onClick={() => changeLanguage('ru')}>
-          <div className="mr-3"><Ru alt={t('languageSwitcherAdmin.alt.ru')} className="w-6 h-6" /></div>
-          <p className="text-text-primary">{t('language.russian')}</p>
-        </Button>
+        {languages.map((lang) => (
+          <LanguageButton key={lang.code} lang={lang} onClick={changeLanguage} />
+        ))}
       </div>
     </div>
   );

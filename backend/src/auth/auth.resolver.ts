@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 import { BadRequestException, UseGuards, Inject, forwardRef, Logger } from '@nestjs/common'; // Import UseGuards, Inject, forwardRef
 import { LoginResponse } from './dto/login-response';
 import { RegisterInput } from './dto/register-input';

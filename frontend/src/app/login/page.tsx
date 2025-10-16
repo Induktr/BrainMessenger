@@ -18,20 +18,14 @@ import {
 } from 'next/navigation';
 
 import { 
-  LOGIN_USER,
-  SEND_VERIFICATION_EMAIL,
-  VERIFY_EMAIL
+  LOGIN_USER
 } from '@/entities/user/model/user.queries';
-import { 
-  useAuth 
-} from '@/app/providers/AuthProvider/AuthContext';
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 
 import AuthLayout from '@/shared/ui/AuthLayout/AuthLayout';
-import Modal from '@/shared/ui/Modal/Modal';
-import Button from '@/shared/ui/Button/Button';
-import LoginForm, { 
-  LoginFormInputs 
-} from '@/features/user-auth/ui/LoginForm';
+import LoginForm, { LoginFormInputs } from '@/features/user-auth/ui/LoginForm';
+import EmailVerificationModal from '@/features/user-auth/ui/EmailVerificationModal';
+import { AppRoutes } from '@/shared/config/paths';
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -45,16 +39,8 @@ const LoginPage = () => {
   // State for the settings modal
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  // State for the email verification modal
-  const [verificationCode, setVerificationCode] = useState('');
-  const [verificationError, setVerificationError] = useState('');
-  const [isResendingCode, setIsResendingCode] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
-
   // Mutations
   const [loginUser, { loading: loginLoading, error: loginError }] = useMutation(LOGIN_USER);
-  const [sendVerificationEmailMutation, { loading: isSendingVerificationEmail }] = useMutation(SEND_VERIFICATION_EMAIL);
-  const [verifyEmailMutation, { loading: isVerifyingEmail }] = useMutation(VERIFY_EMAIL);
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
@@ -68,7 +54,7 @@ const LoginPage = () => {
         setUserState(response.data.login.user);
 
         if (response.data.login.user.isVerified) {
-          router.replace('/chat');
+          router.replace(AppRoutes.CHAT);
         } else {
           setShowEmailVerificationModal(true);
         }
@@ -80,45 +66,8 @@ const LoginPage = () => {
     }
   };
 
-  const handleEmailVerificationModalClose = () => {
-    setShowEmailVerificationModal(false);
-    setVerificationCode('');
-    setVerificationError('');
-    setResendSuccess(false);
-    setIsResendingCode(false);
-  };
-
-  const handleResendVerificationEmail = async () => {
-    if (!user || isResendingCode) return;
-    setIsResendingCode(true);
-    setResendSuccess(false);
-    setVerificationError('');
-    try {
-      await sendVerificationEmailMutation({ variables: { email: user.email } });
-      setResendSuccess(true);
-    } catch (error: any) {
-      setVerificationError(error.message || t('login_page.resend_email_failed'));
-    } finally {
-      setIsResendingCode(false);
-    }
-  };
   const handleBack = () => {
-    router.push('/register');
-  }
-
-  const handleVerifyEmail = async () => {
-    if (!user) return;
-    setVerificationError('');
-    try {
-      const response = await verifyEmailMutation({ variables: { code: verificationCode } });
-      if (response.data?.verifyEmail) {
-        await refetchUser();
-        handleEmailVerificationModalClose();
-        router.replace('/chat'); // Redirect to chat after successful verification
-      }
-    } catch (error: any) {
-      setVerificationError(error.message || t('login_page.verification_error'));
-    }
+    router.push(AppRoutes.REGISTER);
   };
 
   return (
@@ -142,29 +91,12 @@ const LoginPage = () => {
         />
       </AuthLayout>
 
-      {showEmailVerificationModal && user && (
-        <Modal onClose={handleEmailVerificationModalClose} isOpen={showEmailVerificationModal}>
-          <div className="p-6 bg-[var(--color-surface)] rounded-lg shadow-lg text-center">
-            <h3 className="text-xl font-semibold text-[var(--color-text-primary)] mb-4">{t('verification.title')}</h3>
-            <p className="text-[var(--color-text-secondary)] mb-6">{t('verification.prompt', { email: user.email })}</p>
-            <input
-              type="text"
-              value={verificationCode}
-              onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder={t('verification.placeholder')}
-              className="w-full p-3 mb-4 bg-[var(--color-input-background)] border border-[var(--color-border)] rounded-lg text-[var(--color-text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-accent)]"
-            />
-            {verificationError && <p className="mt-1 text-sm text-[var(--color-danger)] mb-4">{verificationError}</p>}
-            <Button onClick={handleVerifyEmail} disabled={isVerifyingEmail} className="w-full mb-3" variant="primary">
-              {isVerifyingEmail ? t('verification.verifying') : t('verification.verify_button')}
-            </Button>
-            <Button onClick={handleResendVerificationEmail} disabled={isResendingCode} className="w-full" variant="secondary">
-              {isResendingCode ? t('verification.sending') : t('verification.resend_button')}
-            </Button>
-            {resendSuccess && <p className="mt-3 text-sm text-[var(--color-success)]">{t('verification.sent_success')}</p>}
-          </div>
-        </Modal>
-      )}
+      <EmailVerificationModal
+        isOpen={showEmailVerificationModal}
+        onClose={() => setShowEmailVerificationModal(false)}
+        onSuccess={() => router.replace(AppRoutes.CHAT)}
+        user={user}
+      />
     </>
   );
 };

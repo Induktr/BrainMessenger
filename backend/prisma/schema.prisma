@@ -119,27 +119,6 @@ model Call {
   updatedAt DateTime @updatedAt
 }
 
-// model Transaction {
-//   id        Int      @id @default(autoincrement()) // ID is Int here
-//   caller    User     @relation("CallsAsCaller", fields: [callerId], references: [id]) // Needs clarification
-//   callerId  String
-//   callee    User     @relation("CallsAsCallee", fields: [calleeId], references: [id]) // Needs clarification
-//   calleeId  String
-//   chat      Chat     @relation(fields: [chatId], references: [id]) // Needs clarification if chatId is UUID
-//   chatId    String
-//   status    String // Consider Enum (INITIATED, ACCEPTED, ENDED, MISSED etc.)
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
-
-// model Transaction {
-//   id        Int      @id @default(autoincrement()) // ID is Int here
-//   user      User     @relation(fields: [userId], references: [id]) // Mismatch: User ID is String (UUID)
-//   userId    String   // Should match User ID type
-//   amount    Decimal  @db.Decimal(10, 2)
-//   createdAt DateTime @default(now())
-// }
-
 model File {
   id         String   @id @default(uuid())
   name       String

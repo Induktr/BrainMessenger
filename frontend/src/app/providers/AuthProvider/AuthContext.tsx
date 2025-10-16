@@ -11,6 +11,7 @@ import Spinner from '@/shared/ui/Spinner/Spinner';
 import Image from 'next/image';
 import { Message, AuthContextType } from '@/features/user-auth/model/user-auth.types';
 import type { User } from '@/entities/user/model/user.types';
+import { AppRoutes } from '@/shared/config/paths';
 
 // Create the context with default values
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -83,7 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     fetchPolicy: 'network-only',
     skip: !accessToken,
     onCompleted: (data) => {
-      setUser(data?.getCurrentUser || null);
+      setUser(data?.getCurrentUser ?? null);
       setIsInitializing(false);
     },
     onError: () => {
@@ -163,19 +164,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [logout, refreshTokenMutation]);
 
   useEffect(() => {
-    if (user) {
-      startActivityTracking();
-      window.addEventListener('focus', handleFocus);
-      window.addEventListener('blur', handleBlur);
-    }
-    return () => {
-      stopActivityTracking();
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-    };
-  }, [user, startActivityTracking, stopActivityTracking, handleFocus, handleBlur]);
-
-  useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         refetch();
@@ -191,23 +179,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [refetch, handleFocus, handleBlur]);
 
   useEffect(() => {
-    if (isInitializing || loading) return;
+    if (isInitializing ?? loading) return;
 
-    const publicPaths = ['/login', '/register', '/'];
+    const publicPaths = [AppRoutes.LOGIN, AppRoutes.REGISTER, AppRoutes.WELCOME];
     const isPublicPath = publicPaths.includes(pathname);
 
     if (user) {
       const isModeratorOrAdmin = user.role === 'ADMIN' || user.role === 'MODERATOR';
       if (isPublicPath) {
-        router.replace(isModeratorOrAdmin ? '/admin' : '/chat');
-      } else if (isModeratorOrAdmin && !pathname.startsWith('/admin')) {
-        router.replace('/admin');
-      } else if (!isModeratorOrAdmin && pathname.startsWith('/admin')) {
-        router.replace('/chat');
+        router.replace(isModeratorOrAdmin ? AppRoutes.ADMIN : AppRoutes.CHAT);
+      } else if (isModeratorOrAdmin && !pathname.startsWith(AppRoutes.ADMIN)) {
+        router.replace(AppRoutes.ADMIN);
+      } else if (!isModeratorOrAdmin && pathname.startsWith(AppRoutes.ADMIN)) {
+        router.replace(AppRoutes.CHAT);
       }
     } else {
       if (!isPublicPath) {
-        router.replace('/login');
+        router.replace(AppRoutes.LOGIN);
       }
     }
   }, [user, isInitializing, loading, pathname, router]);

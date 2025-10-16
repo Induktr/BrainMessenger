@@ -32,3 +32,9 @@ export interface NotificationDropdownProps {
   isVisible: boolean;
   onClose: () => void;
 }
+
+export interface AllNotificationsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  notifications: Notification[]; // This will hold all past notifications
+}

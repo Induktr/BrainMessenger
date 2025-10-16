@@ -2,22 +2,24 @@
 
 import React from "react";
 import { useNetworkStatus } from "@/app/providers/NetworkStatusProvider/NetworkStatusContext";
+import { useTranslation } from "react-i18next";
 
 const NetworkStatusDropdown: React.FC = () => {
   const { isOnline, isPoorConnection } = useNetworkStatus();
+  const { t } = useTranslation();
 
   if (isOnline && !isPoorConnection) {
     return null; // No dropdown if connection is good
   }
 
-  let message = "";
-  let className = "";
+  let message: string | null = "";
+  let className: string | null = "";
 
   if (!isOnline) {
-    message = "На текущий момент, ваше соеденение отсутствует. Попытка переподключения...";
+    message = t("networkStatus.noConnection");
     className = "bg-[var(--color-danger)] text-[var(--color-text-primary)]";
   } else if (isPoorConnection) {
-    message = "Плохое соеденение, попытка переподключения...";
+    message = t("networkStatus.poorConnection");
     className = "bg-[var(--color-secondary)] text-[var(--color-text-primary)]";
   }
 

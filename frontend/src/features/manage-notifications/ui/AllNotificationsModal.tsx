@@ -2,18 +2,10 @@
 
 import React from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
-import {
-  Notification 
-} from '@/features/manage-notifications/model/notification.types';
 import { CloseModal } from '@/shared/assets/Icons/icons';
 import Button from '@/shared/ui/Button/Button';
 import { useTranslation } from 'react-i18next';
-
-interface AllNotificationsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  notifications: Notification[]; // This will hold all past notifications
-}
+import { AllNotificationsModalProps } from '@/features/manage-notifications/model/notification.types';
 
 const AllNotificationsModal: React.FC<AllNotificationsModalProps> = ({ isOpen, onClose, notifications }) => {
   const { t } = useTranslation();

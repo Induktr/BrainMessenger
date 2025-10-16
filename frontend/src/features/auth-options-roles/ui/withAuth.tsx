@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import Spinner from '@/shared/ui/Spinner/Spinner';
 import Image from 'next/image';
-import { WithAuthOptions } from '@/features/auth-options-roles/model/auth-options-roles.types'
+import { WithAuthOptions } from '@/features/auth-options-roles/model/auth-options-roles.types';
+import { AppRoutes } from '@/shared/config/paths';
 
 const withAuth = (WrappedComponent: React.ComponentType, options?: WithAuthOptions) => {
-  const { requiredRoles = [], redirectPath = '/login' } = options || {};
+  const { requiredRoles = [], redirectPath = AppRoutes.LOGIN } = options || {};
 
   const ComponentWithAuth = (props: any) => {
     const { user, isInitializing, queryLoading } = useAuth();
@@ -21,7 +22,7 @@ const withAuth = (WrappedComponent: React.ComponentType, options?: WithAuthOptio
           router.replace(redirectPath);
         } else if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
           // Authenticated but unauthorized role, redirect to chat or a specific unauthorized page
-          router.replace('/chat'); // Redirect to a default authenticated page
+          router.replace(AppRoutes.CHAT); // Redirect to a default authenticated page
         }
       }
     }, [user, isInitializing, queryLoading, router, requiredRoles, redirectPath]);

@@ -29,7 +29,7 @@ const AdminDashboardPage = () => {
   ];
 
   // Placeholder data for Complaint feed
-  const complaintItems = complaintsData?.feedbackComplaints || [
+  const complaintItems = complaintsData?.feedbackComplaints ?? [
     {
       id: 'c1',
       user: 'User A',
@@ -58,7 +58,7 @@ const AdminDashboardPage = () => {
     },
   ];
 
-  if (userStatsLoading || complaintsLoading) {
+  if (userStatsLoading ?? complaintsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <Spinner className="w-16 h-16 text-accent">
@@ -68,7 +68,7 @@ const AdminDashboardPage = () => {
     );
   }
 
-  if (userStatsError || complaintsError) {
+  if (userStatsError ?? complaintsError) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary p-4">
         <h1 className="text-3xl font-bold mb-4">{t('admin_dashboard.error_title')}</h1>
@@ -79,7 +79,7 @@ const AdminDashboardPage = () => {
     );
   }
 
-  const userStats = userStatsData?.getUserStats || { totalUsers: 120, activeUsers: 10, newUsersToday: 4 };
+  const userStats = userStatsData?.getUserStats ?? { totalUsers: 120, activeUsers: 10, newUsersToday: 4 };
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-text-primary">

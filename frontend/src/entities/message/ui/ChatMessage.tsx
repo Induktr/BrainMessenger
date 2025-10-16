@@ -16,6 +16,7 @@ import { File, UploadImage, Pdf } from '@/shared/assets/Icons/icons';
 import { SMILES } from '@/shared/assets/Smiles/smiles';
 import { ChatMessageProps } from '@/entities/message/model/message.types';
 import clsx from 'clsx';
+import Avatar from '@/shared/ui/Avatar/Avatar';
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
@@ -113,24 +114,23 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
             className={clsx('flex-shrink-0 cursor-pointer', isPoorConnection && 'blur-sm')}
             onClick={handleAvatarClick}
           >
-            {message.sender.avatarUrl ? (
-              <img src={message.sender.avatarUrl} alt={`${message.sender.name}'s avatar`} className={clsx('w-8 h-8 rounded-full', isPoorConnection && 'grayscale opacity-50')} />
-            ) : (
-              <div className="w-8 h-8 rounded-full bg-[var(--color-disabled)] flex items-center justify-center text-sm font-bold">
-                {message.sender.name.charAt(0).toUpperCase()}
-              </div>
-            )}
+            <Avatar
+              src={message.sender.avatarUrl}
+              name={message.sender.name}
+              size="sm"
+              className={clsx(isPoorConnection && 'grayscale opacity-50')}
+            />
           </div>
         )}
         <div
           className={clsx(
-            'max-w-md p-3 rounded-lg',
+            'max-w-md lg:max-w-md p-3 rounded-lg md:max-w-sm',
             isCurrentUser ? 'bg-[var(--color-gradient-start)]/30' : 'bg-[var(--color-surface)]',
             isSelected && 'ring-2 ring-[var(--color-accent)]'
           )}
         >
           {!isCurrentUser && (
-            <div className="text-xs font-bold text-[var(--color-accent)] mb-1">
+            <div className="text-sm font-bold text-[var(--color-text-secondary)] mb-1">
               {message.sender.name || message.sender.username || 'Unknown User'}
             </div>
           )}
@@ -144,7 +144,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                         <img
                           src={attachment.url}
                           alt={attachment.filename}
-                          className={clsx('max-w-xs max-h-96 rounded-lg object-cover cursor-pointer', isPoorConnection && 'blur-sm')}
+                          className={clsx('w-full max-h-96 rounded-lg object-cover cursor-pointer', isPoorConnection && 'blur-sm')}
                           onClick={() => onImageClick?.(attachment.url)}
                         />
                       )}
@@ -177,7 +177,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                 </div>
               )}
               {message.content && message.content.trim() !== '' && (
-                <div className="text-sm text-[var(--color-text-primary)] break-words overflow-wrap-anywhere">
+                <div className="text-base lg:text-[20px] sm:text-base text-[var(--color-text-primary)] break-words overflow-wrap-anywhere">
                   {message.content.startsWith('```') && message.content.endsWith('```') ? (
                     <SyntaxHighlighter language="javascript" style={atomDark} customStyle={{ borderRadius: '8px', margin: 0, padding: '1rem' }}>
                       {message.content.slice(3, -3).trim()}
@@ -206,20 +206,20 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEdi
                   return (
                     <span
                       key={emoji}
-                      className={clsx('cursor-pointer p-1 text-xs rounded-full transition-colors', isCurrentUserReaction ? 'bg-[var(--color-accent)]/30' : 'hover:bg-[var(--color-surface-dark)]')}
+                      className={clsx('cursor-pointer p-1 text-sm rounded-full transition-colors', isCurrentUserReaction ? 'bg-[var(--color-accent)]/30' : 'hover:bg-[var(--color-surface-dark)]')}
                       onClick={() => {
                         if (isCurrentUserReaction) {
                           removeMessageReaction({ variables: { messageId: message.id, emoji } });
                         }
                       }}
                     >
-                      {emoji} {reactionData.count > 1 && <span className="text-xs">{reactionData.count}</span>}
+                      {emoji} {reactionData.count > 1 && <span className="text-sm">{reactionData.count}</span>}
                     </span>
                   );
                 })}
               </div>
             )}
-            <div className="text-xs text-[var(--color-text-secondary)]">
+            <div className="text-sm text-[var(--color-text-secondary)]">
               {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>

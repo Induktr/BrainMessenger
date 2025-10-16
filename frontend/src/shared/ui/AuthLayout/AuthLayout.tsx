@@ -12,7 +12,7 @@ import {
 } from '@/shared/assets/Icons/icons';
 import { 
   variantsStylesIcons
-} from '@/shared/assets/variantStyles/variantStyles';
+} from '@/shared/assets/VariantStyles/variantStyles';
 
 interface AuthLayoutProps {
   subtitle: string;

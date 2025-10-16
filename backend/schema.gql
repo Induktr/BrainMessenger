@@ -2,11 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+
 type UserDto {
   id: ID!
   email: String!
   name: String!
-  username: String
+  username: String!
   isVerified: Boolean!
   twoFactorEnabled: Boolean
   twoFactorMethod: String
@@ -53,7 +54,7 @@ type MessageDto {
 type ChatDto {
   id: ID!
   name: String
-  type: String!
+  type: String! # ChatType!
   lastMessageSnippet: String
   lastMessageTimestamp: String
   unreadCount: Float!
@@ -79,7 +80,54 @@ type FileDto {
   createdAt: DateTime!
 }
 
+# enum AppClientType {
+#   WEB
+#   ANDROID
+# }
+
+# type DeviceInfo {
+#   """Тип устройства (например, "Desktop", "Mobile")"""
+#   type: String!
+#   """Операционная система (например, "Windows", "Linux")"""
+#   os: String!
+#   """Браузер (например, "Firefox", "Chrome")"""
+#   browser: String!
+# }
+
+# type GeolocationInfo {
+#   """Двухбуквенный код страны (например, "UA", "PL", "US")"""
+#   countryCode: String!
+
+#   """Полное название страны (например, "Ukraine", "Poland")"""
+#   countryName: String!
+
+#   """Название города (может отсутствовать)"""
+#   city: String
+
+#   """IP-адрес, по которому была определена информация"""
+#   ipAddress: String!
+# }
+
+# Новый тип, описывающий текущую сессию
+# type SessionInfo {
+#   """Клиент, с которого сделан запрос"""
+#   clientType: AppClientType!
+  
+#   """Информация об устройстве клиента"""
+#   deviceInfo: DeviceInfo!
+  
+#   """Геолокационная информация (из нашего предыдущего плана)"""
+#   geolocationInfo: GeolocationInfo!
+# }
+
+
+# type AppInfo {
+#   latestImportantVersion: String!
+# }
+
 type Query {
+  # getVersion: AppInfo!
+  # getSessionInfo: SessionInfo!
   getCurrentUser: UserDto
   getUser(id: ID!): UserDto
   getUsers: [UserDto!]!
@@ -123,7 +171,7 @@ type Mutation {
 
 input RegisterInput {
   name: String!
-  username: String
+  username: String!
   email: String!
   password: String!
 }
@@ -149,12 +197,24 @@ input UpdateUserInput {
 scalar Upload
 
 input CreateChatInput {
-  type: String!
-  name: String
+  type: ChatType!
+  name: String!
   participantIds: [ID!]!
 }
 
+
 type Subscription {
   newMessage(chatId: ID!): MessageDto!
+  updateStatusType(status: String): statusType!
   messageReactionRemoved(chatId: ID!): MessageReactionDto! # Add reaction removed subscription
+}
+
+enum StatusType {
+  ONLINE
+  OFFLINE
+}
+enum ChatType {
+  PRIVATE
+  GROUP
+  CHANNEL
 }

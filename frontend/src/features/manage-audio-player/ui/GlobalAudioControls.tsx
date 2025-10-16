@@ -5,7 +5,6 @@ import React, {
   useEffect, 
   useRef 
 } from 'react';
-import Image from 'next/image';
 import { 
   useGlobalAudio 
 } from '@/app/providers/GlobalAudioProvider/GlobalAudioContext';
@@ -16,7 +15,7 @@ import {
   OnSound, 
   OffSound 
 } from '@/shared/assets/Icons/icons';
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
 const GlobalAudioControls: React.FC = () => {
   const {

@@ -1,4 +1,8 @@
 {
+  "statusNetwork": {
+    "noConnection": "You are currently offline. Attempting to reconnect...",
+    "poorConnection": "Poor connection, attempting to reconnect..."
+  },
   "language": {
     "header_title": "Language",
     "interface_label": "Interface Language",

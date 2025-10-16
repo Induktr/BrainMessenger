@@ -26,7 +26,7 @@ const SearchWidget: React.FC<SearchWidgetProps> = ({
     <Input
       type="text"
       id="search"
-      placeholder={placeholder || t('search.placeholder')}
+      placeholder={placeholder ?? t('search.placeholder')}
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       icon={<Search className="w-5 h-5 text-[var(--color-text-secondary)]" />}

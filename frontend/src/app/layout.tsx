@@ -1,10 +1,7 @@
 'use client';
 
-import type { Metadata } from "next";
 import "./globals.css";
-
 import ApolloWrapper from '@/app/providers/ApolloWrapper';
-import BodyClassNameUpdater from '@/shared/ui/BodyClassNameUpdater/BodyClassNameUpdater';
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 import { LanguageProvider } from '@/app/providers/LanguageProvider';
 import { AuthProvider } from '@/app/providers/AuthProvider/AuthContext';
@@ -16,14 +13,10 @@ import { GlobalAudioProvider } from '@/app/providers/GlobalAudioProvider/GlobalA
 import { ImageGalleryProvider } from '@/features/gallery-images/ui/ImageGalleryContext';
 import ImageGallery from '@/features/gallery-images/ui/ImageGallery';
 import UserStatusUpdater from '@/features/update-user-status/ui/UserStatusUpdater';
-// Import Roboto font
 import { Roboto } from 'next/font/google';
-
-// Import i18n configuration
-import '../i18n';
+import { ReactScan } from "@/shared/ui/ReactScanComponent/ReactScanComponent";
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
-
 
 
 // Configure Roboto font
@@ -70,6 +63,7 @@ export default function RootLayout({
           </I18nextProvider>
         </LanguageProvider>
         </ThemeProvider>
+        {process.env.NODE_ENV === 'development' && <ReactScan />}
       </body>
     </html>
   );

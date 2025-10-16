@@ -1,10 +1,8 @@
 import React from 'react';
 import { ChatListItemProps } from '@/entities/chat/model/chat.types';
-import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
+import Avatar from '@/shared/ui/Avatar/Avatar';
 
 const ChatListItem: React.FC<ChatListItemProps> = ({ chat, isActive, onClick }) => {
-  const { letter, color } = generateAvatarData(chat.name);
-
   return (
     <div
       className={`flex items-center p-2 md:p-3 cursor-pointer transition-colors duration-200 ${
@@ -15,20 +13,12 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ chat, isActive, onClick }) 
       onClick={onClick}
     >
       <div className="relative mr-3 md:mr-4">
-        {chat.avatarUrl ? (
-          <img src={chat.avatarUrl} alt={chat.name} className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover" />
-        ) : (
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center">
-            {color && (
-              <div
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: color } }
-              >
-              <span className="text-lg md:text-xl font-bold text-[var(--color-text-primary)]">{letter}</span>
-            </div>
-            )}
-          </div>
-        )}
+        <Avatar
+          src={chat.avatarUrl}
+          name={chat.name}
+          className="w-10 h-10 md:w-12 md:h-12"
+          textClassName="text-lg md:text-xl text-white"
+        />
       </div>
 
       <div className="flex-1 min-w-0">

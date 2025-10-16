@@ -5,12 +5,11 @@ import Modal from '@/shared/ui/Modal/Modal';
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
 import { CloseModal } from '@/shared/assets/Icons/icons';
-import Image from 'next/image';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
 import { CREATE_CHANNEL } from '@/entities/channel/model/channel.queries';
 import { CreateChannelModalProps } from '@/features/create-chat/model/create-chat.types';
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
 const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose }) => {
   const [channelName, setChannelName] = useState('');
@@ -53,9 +52,9 @@ const CreateChannelModal: React.FC<CreateChannelModalProps> = ({ isOpen, onClose
       <div className="rounded-[10px]">
         {/* Header */}
         <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4 border-b border-[var(--color-border)]`}>
-          <h2 className="text-lg font-semibold">{t('createChannelModal.title')}</h2>
+          <h2 className="text-[20px] lg:text-2xl sm:text-[20px] font-semibold">{t('createChannelModal.title')}</h2>
           <Button variant="ghost" size="icon" onClick={handleCloseClick}>
-            <CloseModal alt={t('createChannelModal.alt.close')} className="w-6 h-6" />
+            <CloseModal alt={t('createChannelModal.alt.close')} className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
           </Button>
         </div>
 

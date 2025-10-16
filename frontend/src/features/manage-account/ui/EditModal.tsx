@@ -4,20 +4,7 @@ import Button from '@/shared/ui/Button/Button';
 import { 
   useTranslation 
 } from 'react-i18next';
-
-interface EditModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  editingField: 'name' | 'username' | 'email' | null;
-  editValue: string;
-  setEditValue: (value: string) => void;
-  editError: string;
-  isVerified?: boolean;
-  onResendVerificationEmail?: () => void;
-  isResendingCode?: boolean;
-  resendSuccess?: boolean;
-}
+import { EditModalProps } from '../model/manage-account.types';
 
 const EditModal: React.FC<EditModalProps> = ({
   isOpen,
@@ -37,7 +24,7 @@ const EditModal: React.FC<EditModalProps> = ({
   return (
     <Modal onClose={onClose} isOpen={isOpen}>
       <div className="text-[var(--color-text-primary)] rounded-[10px]">
-        <h3 className="text-lg font-semibold mb-4">{t('myAccount.editModal.title', { field: editingField })}</h3>
+        <h3 className="text-[20px] lg:text-2xl sm:text-[20px] font-semibold mb-4">{t('myAccount.editModal.title', { field: editingField })}</h3>
         <input
           type={editingField === 'email' ? 'email' : 'text'}
           value={editValue}
@@ -57,8 +44,8 @@ const EditModal: React.FC<EditModalProps> = ({
                 {isResendingCode ? t('myAccount.editModal.sending') : t('myAccount.editModal.resendButton')}
               </Button>
             )}
-            {resendSuccess && <p className="text-[var(--color-success)] mt-2">{t('myAccount.verifyModal.resendSuccess')}</p>}
-            {editError && <p className="text-[var(--color-danger)] mt-2">{editError}</p>}
+            {resendSuccess && <p className="text-[var(--color-success)] text-sm mt-2">{t('myAccount.verifyModal.resendSuccess')}</p>}
+            {editError && <p className="text-[var(--color-error)] text-sm mt-2">{editError}</p>}
           </div>
         )}
         <div className="flex justify-end gap-4 mt-6">

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
 import Button from '@/shared/ui/Button/Button';
-import Input from '@/shared/ui/Input/Input';
-import Image from 'next/image';
 import { CloseModal, Channel } from '@/shared/assets/Icons/icons';
 import { useMutation } from '@apollo/client';
 import { UPDATE_CHANNEL_PRIVACY, DELETE_CHANNEL } from '@/entities/channel/model/channel.queries';
@@ -10,8 +8,6 @@ import { useNotification } from '@/app/providers/NotificationProvider/Notificati
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
 import { ChannelDetailsModalProps } from '@/features/create-chat/model/create-chat.types';
-import { ChannelDto } from '@/entities/channel/model/channel.types';
-import { UserDto } from '@/entities/user/model/user.types';
 
 const ChannelDetailsModal: React.FC<ChannelDetailsModalProps> = ({
   isOpen,

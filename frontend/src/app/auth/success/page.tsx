@@ -9,6 +9,7 @@ import { VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/entities/user/model/use
 import Modal from '@/shared/ui/Modal/Modal';
 import Input from '@/shared/ui/Input/Input';
 import Button from '@/shared/ui/Button/Button';
+import { AppRoutes } from '@/shared/config/paths';
 
 const AuthSuccessPage = () => {
   const router = useRouter();
@@ -44,19 +45,19 @@ const AuthSuccessPage = () => {
           if (!userData.isVerified) {
             setShowEmailVerificationModal(true);
           } else {
-            router.replace('/chat');
+            router.replace(AppRoutes.CHAT);
           }
         } catch (error) {
           console.error('AuthSuccessPage: Failed to parse user data from URL:', error);
-          router.replace('/login?error=auth_failed');
+          router.replace(`${AppRoutes.LOGIN}?error=auth_failed`);
         }
       } else {
         console.error('AuthSuccessPage: Missing user data in URL.');
-        router.replace('/login?error=auth_failed');
+        router.replace(`${AppRoutes.LOGIN}?error=auth_failed0`);
       }
     } else {
       console.error('AuthSuccessPage: Missing access_token or refresh_token in URL.');
-      router.replace('/login?error=auth_failed');
+      router.replace(`${AppRoutes.LOGIN}?error=auth_failed`);
     }
   }, [searchParams, router, setUserState]);
 
@@ -94,7 +95,7 @@ const AuthSuccessPage = () => {
       if (response.data && response.data.verifyEmail) {
         refetchUser(); // Refetch user data to update isVerified status
         handleEmailVerificationModalClose();
-        router.replace('/chat'); // Redirect to chat after successful verification
+        router.replace(AppRoutes.CHAT); // Redirect to chat after successful verification
       }
     } catch (error: any) {
       console.error('Error verifying email:', error);

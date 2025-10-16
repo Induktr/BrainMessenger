@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException, NotImplementedException, ConflictExc
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 import * as crypto from 'crypto';
 import { addHours } from 'date-fns';
  
@@ -25,7 +25,7 @@ export class AuthService {
       const user = await this.prisma.user.findUnique({ where: { email } });
       
       // Если пользователь не найден или пароль не совпадает, возвращаем null
-      if (!user || !(await bcrypt.compare(pass, user.password))) {
+      if (!user || !(await bcryptjs.compare(pass, user.password))) {
         return null;
       }
       
@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
+    return bcryptjs.compare(plainPassword, hashedPassword);
   }
 
   async login(user: any): Promise<{ access_token: string; refresh_token: string; user: any }> {
@@ -292,7 +292,7 @@ export class AuthService {
       });
       this.logger.debug(`AuthService: User search result: ${user ? 'Found user ' + user.id : 'User not found'}`); // Log search result
       if (user) {
-          this.logger.debug(`AuthService: Found user ${user.id}, refresh token expires at: ${user.refreshTokenExpiresAt?.toISOString()}`); // Log expiry if user found
+        this.logger.debug(`AuthService: Found user ${user.id}, refresh token expires at: ${user.refreshTokenExpiresAt?.toISOString()}`); // Log expiry if user found
       }
 
 

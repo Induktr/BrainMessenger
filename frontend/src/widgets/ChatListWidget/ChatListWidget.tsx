@@ -1,21 +1,18 @@
 'use client';
 
-import React, { 
-  useState, 
+import React, {
   useEffect 
 } from 'react';
 import { 
   useTranslation 
 } from 'react-i18next';
 import ChatListItem from '@/entities/chat/ui/ChatListItem';
-import Spinner from '@/shared/ui/Spinner/Spinner';
 import { 
   useChatList 
 } from '@/hooks/useChatList';
 import { 
   Chat 
 } from '@/entities/chat/model/chat.types';
-import SearchWidget from '../SearchWidget/SearchWidget';
 import { 
   useLazyQuery, useMutation 
 } from '@apollo/client';

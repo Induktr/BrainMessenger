@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
 import { ArrowLeft, Options } from '@/shared/assets/Icons/icons';
 import { ChatHeaderProps } from '@/entities/chat/model/chat.types';
 import UserProfileModal from '@/entities/user/ui/UserProfileModal';
-import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
+import Avatar from '@/shared/ui/Avatar/Avatar';
+import Button from '@/shared/ui/Button/Button';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, status, avatar, onOpenChannelDetails, onBackButtonClick }) => {
   const [showDetailsUserModal, setShowDetailsUserModal] = useState(false);
@@ -18,9 +19,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, statu
   };
 
   const { dynamicStatus } = useStatusTyping(chatId, status);
-
-  const { letter, color } = generateAvatarData(title);
-
   const isTyping = dynamicStatus.includes('typing');
 
   return (
@@ -36,27 +34,19 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, statu
 
       <div className="flex items-center gap-3">
         {onBackButtonClick && (
-          <button 
+          <Button 
             onClick={onBackButtonClick} 
-            className="p-2 rounded-full hover:bg-surface-dark transition-colors md:hidden"
+            className="md:hidden"
+            variant="ghost"
           >
-            <ArrowLeft className="w-6 h-6 text-text-primary" />
-          </button>
+            <ArrowLeft className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
+          </Button>
         )}
         <button onClick={handleOpenUserDetails} className="flex items-center gap-3 text-left">
-          <div 
-            className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-lg"
-            style={{ backgroundColor: avatar ? 'transparent' : color }}
-          >
-            {avatar ? (
-              <img src={avatar} alt={title} width={40} height={40} className="rounded-full" />
-            ) : (
-              <span>{letter}</span>
-            )}
-          </div>
+          <Avatar src={avatar} name={title} size="md" />
           <div>
-            <h1 className="font-semibold text-text-primary leading-tight">{title}</h1>
-            <p className={`text-sm leading-tight ${isTyping ? 'text-accent' : 'text-text-secondary'}`}>
+            <h1 className="font-semibold text-[16px] text-[--color-text-primary] lg:text-[24px] sm:text-[16px] leading-tight">{title}</h1>
+            <p className={`text-sm lg:text-[16px] leading-tight ${isTyping ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-secondary)]'}`}>
               {dynamicStatus}
             </p>
           </div>
@@ -64,12 +54,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, statu
       </div>
 
       <div className="flex items-center">
-        <button 
+        <Button 
           onClick={onOpenChannelDetails} 
-          className="p-2 rounded-full hover:bg-surface-dark transition-colors"
+          variant="ghost"
         >
-          <Options className="w-6 h-6 text-text-primary" />
-        </button>
+          <Options className={`${variantsStylesIcons.iconSecondary} w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5`} />
+        </Button>
       </div>
     </header>
   );

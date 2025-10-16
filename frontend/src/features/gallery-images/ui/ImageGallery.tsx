@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import Image from 'next/image';
 import { Loop, Download, CloseModal, ArrowLeft, ArrowRight } from '@/shared/assets/Icons/icons';
 import { useImageGallery } from '@/features/gallery-images/ui/ImageGalleryContext';
 

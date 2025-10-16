@@ -23,8 +23,9 @@ import { useSubscription } from '@apollo/client'; // Import useSubscription
 import { useNotification } from '@/app/providers/NotificationProvider/NotificationContext'; // Import useNotification
 import NotificationDropdown from '@/features/manage-notifications/ui/NotificationDropdown'; // Import NotificationDropdown
 import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions'; // Import existing subscription
-import { variantsStylesIcons } from '@/shared/assets/variantStyles/variantStyles';
-import GlobalAudioControls from '@/features/manage-audio-player/ui/GlobalAudioControls';
+import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
+import ChatLayout from '@/widgets/ChatLayout/ChatLayout';
+import { AppRoutes } from '@/shared/config/paths';
 
 const ChatPage = () => {
   const { t } = useTranslation();
@@ -63,11 +64,6 @@ const ChatPage = () => {
   });
 
   useEffect(() => {
-    console.log('[ChatPage] Subscription loading state:', subscriptionLoading);
-    console.log('[ChatPage] Subscription error state:', subscriptionError);
-  }, [subscriptionLoading, subscriptionError]);
-
-  useEffect(() => {
     if (notification) {
       setIsNotificationDropdownVisible(true);
     }
@@ -82,11 +78,11 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!currentUser && !authLoading && !isInitializing) {
-      router.push('/');
+      router.push(AppRoutes.WELCOME);
     }
   }, [currentUser, authLoading, isInitializing, router]);
 
-  if (authLoading || isInitializing) {
+  if (authLoading ?? isInitializing) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[var(--color-background)]">
         <Spinner className="w-16 h-16 text-[var(--color-gradient-start)]" />
@@ -138,98 +134,88 @@ const ChatPage = () => {
 
   return (
     <GlobalAudioProvider>
-      <div className="flex flex-col md:flex-row h-full bg-[var(--color-background)] text-[var(--color-text-primary)]">
-        {openMenu && (
-          <div className="fixed inset-0 bg-[var(--color-backdrop)] z-40" onClick={() => setOpenMenu(false)}>
-            <div className="h-full w-64 bg-[var(--color-surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
-              <SidebarMenuWidget onOpenSettings={handleOpenSettings} onToggleTheme={handleToggleTheme} onToggleNotification={handleToggleNotification} />
+      <ChatLayout
+        isChatViewActive={isChatViewActive}
+        selectedChat={!!selectedChat}
+        sidebar={
+          <>
+            <div className={`${variantsStylesIcons.iconSecondary} flex items-center p-4 border-b border-[var(--color-border)]`}>
+              <Button variant="icon" className="mr-4" onClick={handleOpenMenu}>
+                <BurgerMenu className="w-5 h-5 lg:w-6 lg:h-6 sm:w-5 sm:h-5" />
+              </Button>
+              <SearchWidget searchQuery={searchQuery} setSearchQuery={setSearchQuery} placeholder={t('chat_page.search_placeholder')} />
             </div>
+            <div className="flex-1 overflow-y-auto">
+              <ChatListWidget onSelectChat={handleSelectChat} activeChatId={selectedChatId} searchQuery={searchQuery} />
+            </div>
+          </>
+        }
+        chatWindow={
+          <ChatWindowWidget
+            chatId={selectedChatId!}
+            isChannel={selectedChatType === 'CHANNEL'}
+            isChannelOwner={selectedChat!.channel?.owner.id === currentUser?.id}
+            isSubscribedToChannel={selectedChat!.participants.some((p: UserDto) => p.id === currentUser?.id)}
+            onSubscribe={handleSubscribe}
+            onUnsubscribe={handleUnsubscribe}
+            onSendMessageOrUpdate={handleSendMessageOrUpdate}
+            onOpenContextMenu={handleOpenContextMenu}
+            onBackButtonClick={() => setIsChatViewActive(false)} // Go back to chat list on mobile
+          />
+        }
+        welcomeScreen={
+          <div className="hidden md:flex flex-col items-center justify-center h-full text-center text-[var(--color-text-secondary)] p-4">
+            <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">{t('chat_page.welcome_title')}</h2>
+            <p className="text-lg max-w-md">{t('chat_page.welcome_message')}</p>
           </div>
-        )}
+        }
+      />
 
-        {/* Sidebar - Mobile First */}
-        <div className={`
-          ${isChatViewActive ? 'hidden' : 'flex'}
-          md:flex flex-col
-          w-full md:w-[320px] lg:w-[380px]
-          border-r border-[var(--color-border)]
-          bg-[var(--color-surface)]
-        `}>
-          <div className={`${variantsStylesIcons.iconSecondary} flex items-center p-4 border-b border-[var(--color-border)]`}>
-            <Button variant="icon" className="mr-4" onClick={handleOpenMenu}>
-              <BurgerMenu className="w-6 h-6 text-[var(--color-text-primary)]" />
-            </Button>
-            <SearchWidget searchQuery={searchQuery} setSearchQuery={setSearchQuery} placeholder={t('chat_page.search_placeholder')} />
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <ChatListWidget onSelectChat={handleSelectChat} activeChatId={selectedChatId} searchQuery={searchQuery} />
+      {openMenu && (
+        <div className="fixed inset-0 bg-[var(--color-backdrop)] z-40" onClick={() => setOpenMenu(false)}>
+          <div className="h-full w-64 bg-[var(--color-surface)] shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <SidebarMenuWidget onOpenSettings={handleOpenSettings} onToggleTheme={handleToggleTheme} onToggleNotification={handleToggleNotification} />
           </div>
         </div>
+      )}
 
-        {/* Chat Window - Mobile First */}
-        <div className={`
-          ${isChatViewActive ? 'flex' : 'hidden'}
-          md:flex flex-col flex-1
-          ${variantsStylesIcons.iconSecondary}
-        `}>
-          {selectedChat && selectedChatType && selectedChatName ? (
-            <ChatWindowWidget
-              chatId={selectedChatId!}
-              isChannel={selectedChatType === 'CHANNEL'}
-              isChannelOwner={selectedChat.channel?.owner.id === currentUser?.id}
-              isSubscribedToChannel={selectedChat.participants.some((p: UserDto) => p.id === currentUser?.id)}
-              onSubscribe={handleSubscribe}
-              onUnsubscribe={handleUnsubscribe}
-              onSendMessageOrUpdate={handleSendMessageOrUpdate}
-              onOpenContextMenu={handleOpenContextMenu}
-              onBackButtonClick={() => setIsChatViewActive(false)} // Go back to chat list on mobile
-            />
-          ) : (
-            <div className="hidden md:flex flex-col items-center justify-center h-full text-center text-[var(--color-text-secondary)] p-4">
-              <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-3">{t('chat_page.welcome_title')}</h2>
-              <p className="text-lg max-w-md">{t('chat_page.welcome_message')}</p>
-            </div>
-          )}
-        </div>
+      {openSettings && <Settings isOpen={openSettings} onClose={handleCloseSettings} />}
 
-        {openSettings && <Settings isOpen={openSettings} onClose={handleCloseSettings} />}
+      {showChatOptionsContextMenu && (
+        <ContextMenu
+          x={contextMenuX}
+          y={contextMenuY}
+          options={[
+            { label: t('chat_page.context_menu_delete_history'), onClick: () => { setShowDeleteChatHistoryConfirmModal(true); setShowChatOptionsContextMenu(false); } },
+            { label: t('chat_page.context_menu_delete_user_chat'), onClick: () => { setShowDeleteUserConfirmModal(true); setShowChatOptionsContextMenu(false); } },
+          ]}
+          onClose={() => setShowChatOptionsContextMenu(false)}
+        />
+      )}
 
-        {showChatOptionsContextMenu && (
-          <ContextMenu
-            x={contextMenuX}
-            y={contextMenuY}
-            options={[
-              { label: t('chat_page.context_menu_delete_history'), onClick: () => { setShowDeleteChatHistoryConfirmModal(true); setShowChatOptionsContextMenu(false); } },
-              { label: t('chat_page.context_menu_delete_user_chat'), onClick: () => { setShowDeleteUserConfirmModal(true); setShowChatOptionsContextMenu(false); } },
-            ]}
-            onClose={() => setShowChatOptionsContextMenu(false)}
-          />
-        )}
+      {showDeleteChatHistoryConfirmModal && (
+        <ConfirmationModal
+          isOpen={showDeleteChatHistoryConfirmModal}
+          onClose={() => setShowDeleteChatHistoryConfirmModal(false)}
+          onConfirm={onConfirmDeleteHistory}
+          title={t('chat_page.confirm_delete_history_title')}
+          message={t('chat_page.confirm_delete_history_message')}
+          confirmText={t('chat_page.confirm_delete_history_button')}
+          cancelText={t('chat_page.cancel_button')}
+        />
+      )}
 
-        {showDeleteChatHistoryConfirmModal && (
-          <ConfirmationModal
-            isOpen={showDeleteChatHistoryConfirmModal}
-            onClose={() => setShowDeleteChatHistoryConfirmModal(false)}
-            onConfirm={onConfirmDeleteHistory}
-            title={t('chat_page.confirm_delete_history_title')}
-            message={t('chat_page.confirm_delete_history_message')}
-            confirmText={t('chat_page.confirm_delete_history_button')}
-            cancelText={t('chat_page.cancel_button')}
-          />
-        )}
-
-        {showDeleteUserConfirmModal && (
-          <ConfirmationModal
-            isOpen={showDeleteUserConfirmModal}
-            onClose={() => setShowDeleteUserConfirmModal(false)}
-            onConfirm={onConfirmDeleteUserAndChat}
-            title={t('chat_page.confirm_delete_user_chat_title')}
-            message={t('chat_page.confirm_delete_user_chat_message')}
-            confirmText={t('chat_page.confirm_delete_user_chat_button')}
-            cancelText={t('chat_page.cancel_button')}
-          />
-        )}
-      </div>
+      {showDeleteUserConfirmModal && (
+        <ConfirmationModal
+          isOpen={showDeleteUserConfirmModal}
+          onClose={() => setShowDeleteUserConfirmModal(false)}
+          onConfirm={onConfirmDeleteUserAndChat}
+          title={t('chat_page.confirm_delete_user_chat_title')}
+          message={t('chat_page.confirm_delete_user_chat_message')}
+          confirmText={t('chat_page.confirm_delete_user_chat_button')}
+          cancelText={t('chat_page.cancel_button')}
+        />
+      )}
 
       {/* Notification Dropdown */}
       <NotificationDropdown

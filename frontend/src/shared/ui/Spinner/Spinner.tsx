@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
+import clsx from 'clsx';
 
 interface SpinnerProps {
-  className?: string;
-  children?: React.ReactNode; // Allow children to be passed
+  children?: ReactNode;
+  className?: string; 
 }
 
 const Spinner: React.FC<SpinnerProps> = ({ className, children }) => {
   return (
-    <div className={`spinner-bubble ${className || ''}`}>
-      {children} {/* Render children inside the bubble */}
-      <div className="spinner-shimmer"></div>
+    <div
+      className={clsx(
+        'animate-spin rounded-full border-2 border-solid border-accent border-t-transparent',
+        className
+      )}
+    >
+      {children}
     </div>
   );
 };

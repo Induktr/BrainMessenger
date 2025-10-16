@@ -6,14 +6,11 @@ import {
   useState 
 } from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
-import Button from '@/shared/ui/Button/Button';
 import Language from '@/features/change-language/ui/Language';
 import Support from '@/features/manage-settings/ui/Support';
-import { 
-  CloseModal, 
-  SwitchLang, 
-  SupportMenu 
-} from '@/shared/assets/Icons/icons';
+import { SwitchLang, SupportMenu } from '@/shared/assets/Icons/icons';
+import ModalHeader from '@/shared/ui/ModalHeader/ModalHeader';
+import ListItem from '@/shared/ui/ListItem/ListItem';
 import { 
   SmallSettingsProps 
 } from '@/features/manage-settings/model/settings.types';
@@ -24,10 +21,8 @@ import {
   useTheme 
 } from '@/app/providers/ThemeProvider/ThemeContext';
 import { 
-  variantsStylesBackground, 
   variantsStylesIcons, 
-  variantsStylesText 
-} from '@/shared/assets/variantStyles/variantStyles';
+} from '@/shared/assets/VariantStyles/variantStyles';
 
 const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
   const [currentView, setCurrentView] = useState('smallSettings');
@@ -65,17 +60,26 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
     setCurrentView('smallSettings');
   };
 
+  const navigationLinks = [
+    {
+      id: 'language',
+      icon: <SwitchLang className={`${variantsStylesIcons.iconAccent} w-5 h-5`} />,
+      text: t('smallSettings.language'),
+      onClick: handleLanguageClick,
+    },
+    {
+      id: 'support',
+      icon: <SupportMenu className={`${variantsStylesIcons.iconAccent} w-5 h-5`} />,
+      text: t('smallSettings.support'),
+      onClick: handleSupportClick,
+    },
+  ];
+
   return (
     <Modal isOpen={isOpen} onClose={handleCloseModal}>
       {currentView === 'smallSettings' && (
         <div className="text-[var(--color-text-primary)] p-5 rounded-[10px] w-full max-w-sm mx-auto flex flex-col gap-6">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold">{t('smallSettings.headerTitle')}</h2>
-            <Button variant="ghost" size="md" onClick={handleCloseModal} className="text-[var(--color-text-secondary)]">
-              <CloseModal className={`${variantsStylesIcons.iconSecondary} w-5 h-5`} />
-            </Button>
-          </div>
+          <ModalHeader title={t('smallSettings.headerTitle')} onClose={handleCloseModal} />
 
           {/* Theme Setting */}
           <div className="flex flex-col gap-2">
@@ -100,18 +104,15 @@ const SmallSettings: React.FC<SmallSettingsProps> = ({ isOpen, onClose }) => {
 
           {/* Navigation Buttons */}
           <div className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-4">
-            <button className="w-full flex justify-between items-center p-3 rounded-lg hover:bg-[var(--color-surface-dark)] transition-colors" onClick={handleLanguageClick}>
-              <div className="flex items-center gap-3">
-                <SwitchLang className={`${variantsStylesIcons.iconAccent} w-5 h-5`} />
-                <span className="font-semibold">{t('smallSettings.language')}</span>
-              </div>
-            </button>
-            <button className="w-full flex justify-between items-center p-3 rounded-lg hover:bg-[var(--color-surface-dark)] transition-colors" onClick={handleSupportClick}>
-              <div className="flex items-center gap-3">
-                <SupportMenu className={`${variantsStylesIcons.iconAccent} w-5 h-5`} />
-                <span className="font-semibold">{t('smallSettings.support')}</span>
-              </div>
-            </button>
+            {navigationLinks.map((link) => (
+              <ListItem
+                key={link.id}
+                icon={link.icon}
+                text={link.text}
+                onClick={link.onClick}
+                className="!p-3 hover:bg-[var(--color-surface-dark)]"
+              />
+            ))}
           </div>
 
           {/* Footer Description */}

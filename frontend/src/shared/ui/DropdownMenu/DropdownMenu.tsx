@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   variantsStylesIcons 
-} from '@/shared/assets/variantStyles/variantStyles';
+} from '@/shared/assets/VariantStyles/variantStyles';
 
 interface DropdownOption {
   label: string;
