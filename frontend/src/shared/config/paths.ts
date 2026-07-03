@@ -1,4 +1,4 @@
-export const AppRoutes = {
+export const APP_ROUTES: Record<string, string> = {
   WELCOME: '/',
   CHAT: '/chat',
   REGISTER: '/register',

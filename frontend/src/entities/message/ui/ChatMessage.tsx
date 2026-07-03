@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
+import { useState, useRef, useEffect, FC } from 'react';
 import UserProfileModal from '@/entities/user/ui/UserProfileModal';
 import ContextMenu from '@/shared/ui/ContextMenu/ContextMenu';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal/ConfirmationModal';
 import AudioPlayer from '@/features/manage-audio-player/ui/AudioPlayer';
 import Spinner from '@/shared/ui/Spinner/Spinner';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { DELETE_MESSAGE, ADD_MESSAGE_REACTION, REMOVE_MESSAGE_REACTION } from '@/entities/message/model/message.mutations';
 import LinkRenderer from '../../../features/link-renderer/ui/LinkRenderer';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -18,7 +17,7 @@ import { ChatMessageProps } from '@/entities/message/model/message.types';
 import clsx from 'clsx';
 import Avatar from '@/shared/ui/Avatar/Avatar';
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
+const ChatMessage: FC<ChatMessageProps> = ({ message, isCurrentUser, onEditMessage, onAudioEnded, currentlyPlayingAudio, setCurrentlyPlayingAudio, isSelected, isSelecting, isPoorConnection, isRecentMessage, currentUserId, onImageClick }) => {
   const [showUserProfileModal, setShowUserProfileModal] = useState(false);
   const [selectedProfileUserId, setSelectedProfileUserId] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; messageId: string; showEmojis?: boolean } | null>(null);

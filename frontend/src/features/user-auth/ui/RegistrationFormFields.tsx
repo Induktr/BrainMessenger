@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, FC, createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UseFormRegister, FieldErrors, UseFormWatch } from 'react-hook-form';
 import { RegisterFormInputs } from '@/features/user-auth/model/user-auth.types';
@@ -21,7 +21,7 @@ const iconComponents: { [key: string]: React.ElementType } = {
   Mail,
 };
 
-const RegistrationFormFields: React.FC<RegistrationFormFieldsProps> = ({ fields, register, errors, watch }) => {
+const RegistrationFormFields: FC<RegistrationFormFieldsProps> = ({ fields, register, errors, watch }) => {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [isSuggestionVisible, setIsSuggestionVisible] = useState(false);
@@ -108,7 +108,7 @@ const RegistrationFormFields: React.FC<RegistrationFormFieldsProps> = ({ fields,
           error={errors[field.name as keyof RegisterFormInputs]?.message}
           icon={
             field.icon && iconComponents[field.icon]
-              ? React.createElement(iconComponents[field.icon], { className: `${variantsStylesIcons.iconSecondary} w-6 h-6` })
+              ? createElement(iconComponents[field.icon], { className: `${variantsStylesIcons.iconSecondary} w-6 h-6` })
               : null
           }
           rightIcon={

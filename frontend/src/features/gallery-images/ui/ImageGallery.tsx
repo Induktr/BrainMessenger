@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loop, Download, CloseModal, ArrowLeft, ArrowRight } from '@/shared/assets/Icons/icons';
 import { useImageGallery } from '@/features/gallery-images/ui/ImageGalleryContext';
 
-const ImageGallery: React.FC = () => {
+export const ImageGallery: FC = () => {
   const { t } = useTranslation();
   const { isGalleryOpen, closeGallery, slides, currentImageIndex, setCurrentImageIndex } = useImageGallery();
   const [rotation, setRotation] = useState(0);

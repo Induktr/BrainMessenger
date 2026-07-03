@@ -56,10 +56,6 @@ export class ChatResolver {
 
     private readonly logger = new Logger(ChatResolver.name);
 
-  // =================================================================================================
-  // SUBSCRIPTIONS
-  // =================================================================================================
-
   @Subscription(() => TypingStatus, {
     filter: (payload, variables, context) => {
       const logger = new Logger('typingStatusFilter');
@@ -109,15 +105,7 @@ export class ChatResolver {
     }
     return (this.pubSub as any).asyncIterator('typingStatus');
   }
-
-  // =================================================================================================
-  // HELPER METHODS
-  // =================================================================================================
-
-  /**
-   * Maps a rich Prisma Chat object (with relations) to a ChatDto.
-   * This is the single source of truth for Chat DTO transformation.
-   */
+  
   private _mapUserToDto(user: any): UserDto | null {
     if (!user) {
       return null;
@@ -456,9 +444,7 @@ export class ChatResolver {
     const messagesToDelete = await this.messageService.findMany(messageIds);
  
     for (const message of messagesToDelete) {
-      if (message.senderId !== user.id) {
-        throw new Error('Unauthorized to delete one or more messages.');
-      }
+      if (message.senderId !== user.id) throw new Error('Unauthorized to delete one or more messages.');
     }
  
     await this.messageService.deleteManyMessages(messageIds);
@@ -472,17 +458,11 @@ export class ChatResolver {
     @CurrentUser() user: User,
   ): Promise<MessageDto> {
     const message = await this.messageService.findOne(messageId);
-    if (!message || message.senderId !== user.id) {
-      throw new Error('Unauthorized to update this message.');
-    }
+    if (!message || message.senderId !== user.id) throw new Error('Unauthorized to update this message.');
     const updatedMessage = await this.messageService.updateMessage(messageId, content);
-    if (!updatedMessage) {
-      throw new Error('Message not found or could not be updated.');
-    }
+    if (!updatedMessage) throw new Error('Message not found or could not be updated.');
     const messageDto = this._mapMessageToDto(updatedMessage);
-    if (!messageDto) {
-      throw new Error('Failed to map updated message to DTO.');
-    }
+    if (!messageDto) throw new Error('Failed to map updated message to DTO.');
     return messageDto;
   }
 
@@ -559,62 +539,45 @@ export class ChatResolver {
     
     // Fetch the fully updated message from the service
     const updatedMessage = await this.messageService.findOne(messageId);
-     if (!updatedMessage) {
-       throw new Error('Message not found after adding reaction.');
-     }
 
-    // Use our reliable mapper to create the DTO
+    if (!updatedMessage) throw new Error('Message not found after adding reaction.');
+
     const messageDto = this._mapMessageToDto(updatedMessage);
     
-    if (!messageDto) {
-        throw new Error('Failed to map message to DTO after adding reaction.');
-    }
-
-     // Publish reaction added event via PubSub
+    if (!messageDto) throw new Error('Failed to map message to DTO after adding reaction.');
      this.pubSub.publish('messageReactionAddedOrRemoved', {
        messageReactionAddedOrRemoved: messageDto,
-       chatId: messageDto.chatId, // Include chatId for filtering
+       chatId: messageDto.chatId,
      });
 
-    return messageDto; // Return the updated message DTO
+    return messageDto;
   }
 
-  @Mutation(() => MessageDto) // Return the updated message with reactions
+  @Mutation(() => MessageDto)
   @UseGuards(JwtAuthGuard)
   async removeMessageReaction(
     @Args('messageId', { type: () => ID }) messageId: string,
     @Args('emoji') emoji: string,
     @CurrentUser() user: User,
-  ): Promise<MessageDto> { // Change return type to MessageDto
-    if (!user || !user.id) {
-      throw new UnauthorizedException('Authentication required.');
-    }
-    // Remove the reaction using the message service
+  ): Promise<MessageDto> {
+    if (!user || !user.id) throw new UnauthorizedException('Authentication required.');
+
     await this.messageService.removeReaction(messageId, user.id, emoji);
 
-    // Fetch the updated message with reactions to return and publish
     const updatedMessage = await this.messageService.findOne(messageId);
-     if (!updatedMessage) {
-       // If message not found after removal, this indicates an issue or the message was deleted
-       // Depending on desired behavior, you might throw an error or return null/specific status
-       // For now, let's throw an error as the schema expects MessageDto!
-       throw new Error('Message not found after removing reaction.');
-     }
 
-    // Use our reliable mapper to create the DTO
+    if (!updatedMessage) throw new Error('Message not found after removing reaction.');
+
     const messageDto = this._mapMessageToDto(updatedMessage);
   
-    if (!messageDto) {
-      throw new Error('Failed to map message to DTO after removing reaction.');
-    }
+    if (!messageDto) throw new Error('Failed to map message to DTO after removing reaction.');
 
-     // Publish reaction removed event via PubSub
-     this.pubSub.publish('messageReactionAddedOrRemoved', {
-       messageReactionAddedOrRemoved: messageDto, // Ensure payload is wrapped correctly
-       chatId: messageDto.chatId, // Include chatId for filtering
-     });
+    this.pubSub.publish('messageReactionAddedOrRemoved', {
+      messageReactionAddedOrRemoved: messageDto,
+      chatId: messageDto.chatId,
+    });
 
-    return messageDto; // Return the updated message DTO
+    return messageDto;
   }
 
 
@@ -622,7 +585,7 @@ export class ChatResolver {
     nullable: true,
     filter: (payload, variables, context) => {
       const logger = new Logger('newMessageFilter');
-      // Rule 1: Basic payload and context validation
+      
       if (!payload || !context.req?.user) {
         logger.warn('Filter failed: Missing payload or user in context.');
         return false;

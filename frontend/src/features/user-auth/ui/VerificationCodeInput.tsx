@@ -1,20 +1,28 @@
-import React, { useState, useRef } from 'react';
+import {
+  useState,
+  useRef,
+  FC,
+  ClipboardEvent,
+  KeyboardEvent,
+  createRef
+} from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
+import { ServerError } from '@apollo/client/errors';
 import { VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/entities/user/model/user.queries';
 import { useFeedbackAnimation } from '@/hooks/useFeedbackAnimation';
 import InputCell from '@/shared/ui/InputCell/InputCell';
-import Button from '@/shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 
 interface VerificationCodeInputProps {
   email: string;
   onSuccess: () => void;
 }
 
-const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ email, onSuccess }) => {
+const VerificationCodeInput: FC<VerificationCodeInputProps> = ({ email, onSuccess }) => {
   const { t } = useTranslation();
   const [confirmationCode, setConfirmationCode] = useState<string[]>(Array(8).fill(''));
-  const inputRefs = useRef<Array<React.RefObject<HTMLInputElement | null>>>(Array(8).fill(null).map(() => React.createRef()));
+  const inputRefs = useRef<Array<React.RefObject<HTMLInputElement | null>>>(Array(8).fill(null).map(() => createRef()));
   
   const [verifyEmail, { loading: loadingVerification, error: errorVerification }] = useMutation(VERIFY_EMAIL);
   const [resendVerificationCode, { loading: loadingResend, error: errorResend }] = useMutation(SEND_VERIFICATION_EMAIL);
@@ -32,7 +40,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ email, on
     }
   };
 
-  const handleKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (index: number, event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Backspace' && confirmationCode[index] === '' && index > 0) {
       inputRefs.current[index - 1]?.current?.focus();
     } else if (event.key === 'Backspace' && confirmationCode[index] !== '') {
@@ -42,7 +50,7 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ email, on
     }
   };
 
-  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>) => {
+  const handlePaste = (event: ClipboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     const pastedData = event.clipboardData.getData('text');
     const codeArray = pastedData.slice(0, 8).split('');
@@ -78,9 +86,11 @@ const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({ email, on
         triggerGlitch();
       }
     } catch (e) {
-      setVerificationStatus('error');
+      if(e instanceof ServerError) {
+        console.error('Verification error:', e);
+        setVerificationStatus('error');
+      };
       triggerGlitch();
-      console.error('Verification error:', e);
     }
   };
 

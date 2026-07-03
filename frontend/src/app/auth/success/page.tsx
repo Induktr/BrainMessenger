@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import { VERIFY_EMAIL, SEND_VERIFICATION_EMAIL } from '@/entities/user/model/user.queries';
 import Modal from '@/shared/ui/Modal/Modal';
 import Input from '@/shared/ui/Input/Input';
-import Button from '@/shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import { AppRoutes } from '@/shared/config/paths';
+import { ServerError } from '@apollo/client';
 
 const AuthSuccessPage = () => {
   const router = useRouter();
@@ -93,14 +94,16 @@ const AuthSuccessPage = () => {
         variables: { code: verificationCode },
       });
       if (response.data && response.data.verifyEmail) {
-        refetchUser(); // Refetch user data to update isVerified status
+        refetchUser();
         handleEmailVerificationModalClose();
-        router.replace(AppRoutes.CHAT); // Redirect to chat after successful verification
+        router.replace(AppRoutes.CHAT);
       }
-    } catch (error: any) {
-      console.error('Error verifying email:', error);
-      setVerificationError(error.message || t('login_page.verification_error'));
-    }
+    } catch (error) {
+      if(error instanceof ServerError) {
+        console.error('Error verifying email:', error);
+        setVerificationError(error.message || t('login_page.verification_error'));
+      };
+    };
   };
 
   return (

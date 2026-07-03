@@ -1,7 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
-import { useQuery, useApolloClient, useMutation, useSubscription } from '@apollo/client';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
+import { useQuery, useApolloClient, useMutation, useSubscription } from '@apollo/client/react';
 import { GET_CURRENT_USER, UPDATE_LAST_ACTIVE, REFRESH_TOKEN_MUTATION } from '@/entities/user/model/user.queries';
 import { NEW_MESSAGE_SUBSCRIPTION } from '@/entities/message/model/message.subscriptions';
 import { useRouter, usePathname } from 'next/navigation';
@@ -12,11 +12,10 @@ import Image from 'next/image';
 import { Message, AuthContextType } from '@/features/user-auth/model/user-auth.types';
 import type { User } from '@/entities/user/model/user.types';
 import { AppRoutes } from '@/shared/config/paths';
+import { ServerError } from '@apollo/client';
 
-// Create the context with default values
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Create the AuthProvider component
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -54,30 +53,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = useCallback(async () => {
     console.log('[Auth] Logout process initiated.');
   
-    // Stop all background activity and clear local React state.
     stopActivityTracking();
     setUser(null);
     setAccessToken(null);
     setAccessTokenForApollo(null);
   
-    // Clear all data from localStorage to ensure a clean state.
     if (typeof window !== 'undefined') {
       localStorage.clear();
       console.log('[Auth] All data cleared from localStorage.');
     }
   
-    // Reset Apollo Client store to clear cache.
     try {
       await client.resetStore();
       console.log('[Auth] Apollo Client store reset successfully.');
     } catch (error) {
-      console.error('[Auth] Error resetting Apollo Client store:', error);
-    }
-  
-    // Force a redirect to the login page to ensure a full refresh.
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
+      if(error instanceof ServerError) console.error('[Auth] Error resetting Apollo Client store:', error);
+    };
+
+    if (typeof window !== 'undefined') window.location.href = '/login';
   }, [client, stopActivityTracking]);
 
   const { loading, error, refetch } = useQuery<{ getCurrentUser: User }>(GET_CURRENT_USER, {
@@ -98,7 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         await updateLastActive();
       } catch (err) {
-        // console.error('Error updating last active status:', err);
+        if(err instanceof ServerError) console.error('Error updating last active status:', err);
       }
     }
   }, [user, updateLastActive]);
@@ -194,9 +187,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         router.replace(AppRoutes.CHAT);
       }
     } else {
-      if (!isPublicPath) {
-        router.replace(AppRoutes.LOGIN);
-      }
+      if (!isPublicPath) router.replace(AppRoutes.LOGIN);
     }
   }, [user, isInitializing, loading, pathname, router]);
 

@@ -1,4 +1,4 @@
-export const variantsStylesIcons = {
+export const VARIANTS_ICONS = {
   'iconAccent': 'fill-[var(--color-text-primary)]',
   'iconGradientStart': 'fill-[var(--color-gradient-start)]',
   'iconPrimary': 'fill-[var(--color-background)]',
@@ -6,11 +6,11 @@ export const variantsStylesIcons = {
   'iconSecondary': 'fill-[var(--color-text-secondary)]',
 }
 
-export const variantsStylesBackground = {
+export const VARIANTS_BACKGROUND = {
   'backgroundAccent': 'bg-[var(--color-background)]',
 }
 
-export const variantsStylesText = {
+export const VARIANTS_TXT = {
   'textPrimary': 'bg-[var(--color-text-primary)]',
   'textSecondary': 'bg-[var(--color-background)]',
 }

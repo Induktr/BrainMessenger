@@ -1,15 +1,8 @@
-import React from 'react';
-import Button from '@/shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import { ArrowLeft, ArrowRight } from '@/shared/assets/Icons/icons';
 import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 import { useTranslation } from 'react-i18next';
-
-interface Slide {
-  image?: React.ReactNode;
-  icon?: React.ReactNode;
-  title: string;
-  description: string;
-}
+import { Slide } from '@/features/gallery-images/model/gallery-images.types';
 
 interface WelcomeCarouselProps {
   slides: Slide[];

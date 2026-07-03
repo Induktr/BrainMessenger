@@ -1,9 +1,10 @@
 'use client';
 
-import React, { 
+import { 
   useState, 
   useEffect, 
-  useRef 
+  useRef, 
+  FC
 } from 'react';
 import { 
   useGlobalAudio 
@@ -17,7 +18,7 @@ import {
 } from '@/shared/assets/Icons/icons';
 import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
-const GlobalAudioControls: React.FC = () => {
+const GlobalAudioControls: FC = () => {
   const {
     currentAudioSrc,
     isPlaying,
@@ -61,7 +62,7 @@ const GlobalAudioControls: React.FC = () => {
   }, [showVolumeSlider]); // Re-run effect when showVolumeSlider changes
 
   const handleVolumeSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVolume(parseFloat(e.target.value));
+    setVolume(Number.parseFloat(e.target.value));
   };
 
   const formatTime = (time: number) => {
@@ -70,9 +71,7 @@ const GlobalAudioControls: React.FC = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  if (!currentAudioSrc) {
-    return null; // Don't render if no audio is currently active globally
-  }
+  if (!currentAudioSrc) return null;
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 

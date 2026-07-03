@@ -1,16 +1,14 @@
 "use client";
 
-import React from "react";
+import { FC } from "react";
 import { useNetworkStatus } from "@/app/providers/NetworkStatusProvider/NetworkStatusContext";
 import { useTranslation } from "react-i18next";
 
-const NetworkStatusDropdown: React.FC = () => {
+const NetworkStatusDropdown: FC = () => {
   const { isOnline, isPoorConnection } = useNetworkStatus();
   const { t } = useTranslation();
 
-  if (isOnline && !isPoorConnection) {
-    return null; // No dropdown if connection is good
-  }
+  if (isOnline && !isPoorConnection) return null;
 
   let message: string | null = "";
   let className: string | null = "";

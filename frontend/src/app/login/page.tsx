@@ -1,6 +1,6 @@
 'use client';
 
-import React, { 
+import { 
   useState
 } from 'react';
 import { 
@@ -12,7 +12,7 @@ import {
 } from 'react-hook-form';
 import { 
   useMutation 
-} from '@apollo/client';
+} from '@apollo/client/react';
 import { 
   useRouter 
 } from 'next/navigation';

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PreviewData } from '@/features/link-renderer/model/link-renderer.types';
 
@@ -8,7 +8,7 @@ interface LinkPreviewProps {
   url: string;
 }
 
-const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
+const LinkPreview: FC<LinkPreviewProps> = ({ url }) => {
   const { t } = useTranslation();
   const [preview, setPreview] = useState<PreviewData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
           setPreview(data);
         }
       } catch (error) {
-        console.error('Failed to fetch link preview:', error);
+        if(error instanceof Error) console.error('Failed to fetch link preview:', error);
         setPreview(null);
       } finally {
         setLoading(false);
@@ -40,13 +40,9 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ url }) => {
     fetchPreview();
   }, [url]);
 
-  if (loading) {
-    return <div className="link-preview-loader">{t('linkPreview.loadingMessage')}</div>;
-  }
+  if (loading) return <div className="link-preview-loader">{t('linkPreview.loadingMessage')}</div>;
 
-  if (!preview) {
-    return null; // Don't render anything if there's no preview data
-  }
+  if (!preview) return null;
 
   return (
     <a

@@ -1,8 +1,8 @@
-import React from 'react';
 import { ChatListItemProps } from '@/entities/chat/model/chat.types';
 import Avatar from '@/shared/ui/Avatar/Avatar';
+import { FC } from 'react';
 
-const ChatListItem: React.FC<ChatListItemProps> = ({ chat, isActive, onClick }) => {
+const ChatListItem: FC<ChatListItemProps> = ({ chat, isActive, onClick }) => {
   return (
     <div
       className={`flex items-center p-2 md:p-3 cursor-pointer transition-colors duration-200 ${

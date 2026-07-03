@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { UserDto } from '../model/user.types';
 import Avatar from '@/shared/ui/Avatar/Avatar';
 
@@ -7,7 +7,7 @@ interface UserListItemProps {
   onClick: () => void;
 }
 
-const UserListItem: React.FC<UserListItemProps> = ({ user, onClick }) => {
+const UserListItem: FC<UserListItemProps> = ({ user, onClick }) => {
   return (
     <div
       className="flex items-center p-3 cursor-pointer transition-colors duration-200 hover:bg-[var(--color-surface)]"

@@ -1,14 +1,6 @@
-import { create } from 'zustand';
-import { State, Actions } from './types';
 import { 
   twMerge 
 } from 'tailwind-merge';
-
-export const useCountStore = create<State & Actions>((set) => ({
-  count: 0,
-  increment: (qty: number) => set((state) => ({ count: state.count + qty })),
-  decrement: (qty: number) => set((state) => ({ count: state.count - qty })),
-}))
 
 export const variantStyles = {
     primary: 'bg-gradient-to-r from-[var(--color-gradient-start)] to-[var(--color-gradient-end)] text-[var(--color-text-primary)] hover:opacity-90',

@@ -1,5 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty, IsString, IsOptional, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, MaxLength, Matches } from 'class-validator';
 
 @InputType()
 export class CreateChannelInput {
@@ -13,5 +13,6 @@ export class CreateChannelInput {
   @IsOptional()
   @IsString()
   @MaxLength(500)
+  @Matches()
   description?: string;
 }

@@ -1,9 +1,10 @@
 'use client';
 
-import React, { 
+import { 
   useEffect, 
   useState, 
-  useCallback 
+  useCallback, 
+  FC
 } from 'react';
 import { 
   CloseModal 
@@ -12,7 +13,7 @@ import {
   NotificationDropdownProps 
 } from '@/features/manage-notifications/model/notification.types';
 
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, isVisible, onClose }) => {
+const NotificationDropdown: FC<NotificationDropdownProps> = ({ message, isVisible, onClose }) => {
   const [isShowing, setIsShowing] = useState(false);
 
   useEffect(() => {
@@ -34,9 +35,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ message, is
     }, 500); // This duration should match the CSS transition duration
   }, [onClose]);
 
-  if (!isVisible && !isShowing) {
-    return null;
-  }
+  if (!isVisible && !isShowing) return null;
 
   return (
     <div

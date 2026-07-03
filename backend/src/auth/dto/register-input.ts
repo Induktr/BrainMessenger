@@ -18,6 +18,6 @@ export class RegisterInput {
   @Field()
   @IsNotEmpty()
   @Length(6, 50) // Increased max length to match frontend
-  @Matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*()]).*$/, { message: 'Password must contain at least one uppercase letter and one special character' }) // Added complexity validation
+  @Matches(/^(?=.*[A-Z])(?=.*[!@#$%^&*()]).*$/g, { message: 'Password must contain at least one uppercase letter and one special character' }) // Added complexity validation
   password: string;
 }

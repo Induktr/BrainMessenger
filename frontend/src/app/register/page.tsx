@@ -1,6 +1,6 @@
 'use client';
 
-import React, { 
+import { 
   useState, 
   useMemo 
 } from 'react';
@@ -14,11 +14,11 @@ import {
 import { 
   useRouter 
 } from 'next/navigation';
-import Button from '@/shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import ProgressIndicator from '@/shared/ui/ProgressIndicator/ProgressIndicator';
 import { 
   useMutation 
-} from '@apollo/client';
+} from '@apollo/client/react';
 import { 
   REGISTER_USER
 } from '@/entities/user/model/user.queries'; // Import mutations

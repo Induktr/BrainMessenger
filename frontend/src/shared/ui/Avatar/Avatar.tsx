@@ -1,16 +1,7 @@
-import React from 'react';
+import { FC } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { generateAvatarData } from '@/entities/user/model/user-generate-avatar';
-import clsx from 'clsx';
-
-type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
-
-export interface AvatarProps {
-  src?: string | null;
-  name: string;
-  size?: AvatarSize;
-  className?: string;
-  textClassName?: string;
-}
+import { AvatarSize, AvatarProps } from '@/shared/config/types';
 
 const sizeClasses: Record<AvatarSize, string> = {
   sm: 'w-8 h-8 text-sm',
@@ -19,32 +10,38 @@ const sizeClasses: Record<AvatarSize, string> = {
   xl: 'w-24 h-24 text-2xl',
 };
 
-const Avatar: React.FC<AvatarProps> = ({ src, name, size = 'md', className, textClassName }) => {
+const Avatar: FC<AvatarProps> = ({
+  src,
+  name,
+  size = 'md',
+  className,
+  textClassName
+}) => {
   const { letter, color } = generateAvatarData(name);
 
-  const containerClasses = clsx(
+  const containerClasses = twMerge(
     'rounded-full flex items-center justify-center object-cover font-bold',
     sizeClasses[size],
     className
   );
 
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        className={containerClasses}
-      />
-    );
-  }
-
   return (
-    <div
-      className={containerClasses}
-      style={{ backgroundColor: color }}
-    >
-      <span className={clsx('text-white', textClassName)}>{letter}</span>
-    </div>
+    <>
+      {src ? (
+        <img
+          src={src}
+          alt={name}
+          className={containerClasses}
+        />
+      ) : (
+        <div
+          className={containerClasses}
+          style={{ backgroundColor: color }}
+        >
+          <span className={twMerge('text-white', textClassName)}>{letter}</span>
+        </div>
+      )}
+    </>
   );
 };
 

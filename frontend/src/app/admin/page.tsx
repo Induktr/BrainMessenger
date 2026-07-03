@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import withAuth from '@/features/auth-options-roles/ui/withAuth';
 import { UserRole } from '@/entities/user/model/user.types';
 import UserStatsWidget from '@/widgets/AdminDashboardWidgets/UserStatsWidget';
 import FeedbackFeedWidget from '@/widgets/AdminDashboardWidgets/FeedbackFeedWidget';
 import ComplaintFeedWidget from '@/widgets/AdminDashboardWidgets/ComplaintFeedWidget';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { GET_USER_STATS } from '@/entities/user/model/user.queries';
 import { GET_FEEDBACK_COMPLAINTS } from '@/entities/feedback-complaint/model/feedback-complaint.queries';
 import Spinner from '@/shared/ui/Spinner/Spinner';
@@ -22,13 +22,11 @@ const AdminDashboardPage = () => {
   const { data: userStatsData, loading: userStatsLoading, error: userStatsError } = useQuery(GET_USER_STATS);
   const { data: complaintsData, loading: complaintsLoading, error: complaintsError } = useQuery(GET_FEEDBACK_COMPLAINTS);
 
-  // Placeholder data for Feedback feed
   const feedbackItems = [
     { id: '1', user: 'User A', message: t('admin_dashboard.feedback_great_app'), timestamp: '2025-07-01T10:00:00Z', source: 'Google Play' },
     { id: '2', user: 'User B', message: t('admin_dashboard.feedback_needs_features'), timestamp: '2025-07-01T11:00:00Z', source: 'BrainMessenger Landing Page' },
   ];
-
-  // Placeholder data for Complaint feed
+  
   const complaintItems = complaintsData?.feedbackComplaints ?? [
     {
       id: 'c1',

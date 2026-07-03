@@ -1,7 +1,7 @@
 'use client';
 
-// frontend/src/ui/Settings.tsx
 import { 
+  FC,
   useEffect, 
   useState 
 } from 'react';
@@ -14,15 +14,15 @@ import {
   Account, 
   SwitchLang, 
   SettingsMenu
-} from '@/shared/assets/Icons/icons'; // Keep import for now
-import Button from '@/shared/ui/Button/Button';
+} from '@/shared/assets/Icons/icons';
+import { Button } from '@/shared/ui/Button/Button';
 import ListItem from '@/shared/ui/ListItem/ListItem';
 import { 
   useAuth 
-} from '@/app/providers/AuthProvider/AuthContext'; // Import useAuth hook
+} from '@/app/providers/AuthProvider/AuthContext';
 import { 
   generateAvatarData
-} from '@/entities/user/model/user-generate-avatar'; // Import avatar utility
+} from '@/entities/user/model/user-generate-avatar';
 import { 
   SettingsProps
 } from '@/features/manage-settings/model/settings.types';
@@ -33,15 +33,13 @@ import {
   variantsStylesIcons 
 } from '@/shared/assets/VariantStyles/variantStyles';
 
-const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
-  const [currentView, setCurrentView] = useState('settings'); // 'settings', 'myaccount', 'language', 'premium'
-  const { user, queryLoading } = useAuth(); // Get user and loading state from context
+const Settings: FC<SettingsProps> = ({ isOpen, onClose }) => {
+  const [currentView, setCurrentView] = useState('settings');
+  const { user, queryLoading } = useAuth();
   const { t } = useTranslation();
- 
-  // Generate avatar data
+
   const avatarData = generateAvatarData(user?.name);
- 
-  // Reset view when modal is closed
+
   useEffect(() => {
     if (!isOpen) {
       setCurrentView('settings');
@@ -50,24 +48,16 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
 
   const handleCloseModal = () => {
     onClose();
-    setCurrentView('settings'); // Reset view on close
+    setCurrentView('settings');
   };
 
-  const handleBackClick = () => {
-    setCurrentView('settings'); // Go back to main settings
-  };
+  const handleBackClick = () => setCurrentView('settings');
 
-  const handleMyAccountClick = () => {
-    setCurrentView('myaccount');
-  };
+  const handleMyAccountClick = () => setCurrentView('myaccount');
 
-  const handleLanguageClick = () => {
-    setCurrentView('language');
-  };
+  const handleLanguageClick = () => setCurrentView('language');
 
-  const handlePremiumClick = () => {
-    setCurrentView('advancedSettings');
-  };
+  const handlePremiumClick = () => setCurrentView('advancedSettings');
 
   const settingsOptions = [
     {
@@ -94,7 +84,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
     <Modal onClose={handleCloseModal} isOpen={isOpen}>
       {currentView === 'settings' && (
         <div className="text-[var(--color-text-primary)] max-w-[456px] rounded-[10px] mx-auto">
-          {/* Settings Header */}
+
           <div className={`${variantsStylesIcons.iconSecondary} flex justify-between items-center pb-4`}>
             <h2 className="text-[20px] lg:text-2xl sm:text-[20px] font-medium">{t('settings.headerTitle')}</h2>
             <Button variant="ghost" onClick={handleCloseModal}>
@@ -102,7 +92,6 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
             </Button>
           </div>
 
-          {/* User Profile Section */}
           <div className="flex items-center py-6 mb-3">
             <div className="relative mr-4">
               {user?.avatarUrl ? (
@@ -120,8 +109,6 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className="border-1 border-[var(--color-gradient-start)]"></div>
-          {/* Settings Options List */}
-          {/* Settings Options List */}
           <div className={`${variantsStylesIcons.iconAccent} space-y-2 mt-4`}>
             {settingsOptions.map((option) => (
               <ListItem
@@ -138,7 +125,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
 
       {currentView === 'myaccount' && (
         <MyAccount
-          isOpen={isOpen} // Pass isOpen to keep the modal open
+          isOpen={isOpen}
           onClose={handleCloseModal}
           onBack={handleBackClick}
         />
@@ -146,7 +133,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
 
       {currentView === 'language' && (
         <Language
-          isOpen={isOpen} // Pass isOpen to keep the modal open
+          isOpen={isOpen}
           onClose={handleCloseModal}
           onBack={handleBackClick}
         />
@@ -154,7 +141,7 @@ const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
 
       {currentView === 'advancedSettings' && (
         <AdvancedSettings
-          isOpen={isOpen} // Pass isOpen to keep the modal open
+          isOpen={isOpen}
           onClose={handleCloseModal}
           onBack={handleBackClick}
         />

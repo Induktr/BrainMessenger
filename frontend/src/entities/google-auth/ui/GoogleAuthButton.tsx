@@ -1,6 +1,5 @@
-import React from 'react';
-import Image from 'next/image';
-import Button from '@/shared/ui/Button/Button';
+import { FC } from 'react';
+import { Button } from '@/shared/ui/Button/Button';
 import { 
     Google 
 } from '@/shared/assets/Icons/icons';
@@ -11,17 +10,16 @@ import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles
 import { AppRoutes } from '@/shared/config/paths'
 
 interface GoogleAuthButtonProps {
-    type: 'login' | 'register'; // Prop to determine button text
-    className?: string; // Optional className prop for additional styling
+    type: 'login' | 'register';
+    className?: string;
 }
 
-const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ type, className }) => {
+const GoogleAuthButton: FC<GoogleAuthButtonProps> = ({ type, className }) => {
     const { t } = useTranslation();
 
     const buttonTextKey = type === AppRoutes.LOGIN ? 'login_page.sign_in_with_google' : 'register_page.sign_up_with_google';
 
     const handleGoogleLogin = () => {
-        // Determine the correct redirect URL based on the environment
         const redirectUrl = process.env.NODE_ENV === 'development'
             ? 'http://localhost:4000/auth/google/callback'
             : 'https://brainmessenger.onrender.com/auth/google/callback';

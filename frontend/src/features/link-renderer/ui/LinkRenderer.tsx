@@ -1,22 +1,21 @@
-import React from 'react';
-import LinkPreview from './LinkPreview'; // Import the new component
+import { FC } from 'react';
+import LinkPreview from './LinkPreview';
 
 interface LinkRendererProps {
   text: string;
 }
 
-const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
+const LinkRenderer: FC<LinkRendererProps> = ({ text }) => {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(urlRegex);
 
-  // Find the first URL in the message to use for the preview
-  const firstUrl = parts.find(part => part.match(urlRegex)) || null;
+  const firstUrl = text.match(urlRegex)?.[0] || null;
+
+  const parts = [firstUrl];
 
   return (
     <>
-      {/* Render all parts of the message, including all links as text */}
       {parts.map((part, index) => {
-        if (part.match(urlRegex)) {
+        if (part?.match(urlRegex)) {
           return (
             <a
               key={index}
@@ -31,8 +30,7 @@ const LinkRenderer: React.FC<LinkRendererProps> = ({ text }) => {
         }
         return part;
       })}
-
-      {/* After rendering all message parts, render the preview for the first URL */}
+      
       {firstUrl && (
         <div className="link-preview-container">
           <LinkPreview url={firstUrl} />

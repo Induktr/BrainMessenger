@@ -1,30 +1,29 @@
 'use client';
 
-import React from 'react';
+import { FC } from 'react';
 import Modal from '@/shared/ui/Modal/Modal';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client/react';
 import { GET_USER_BY_ID } from '@/entities/user/model/user.queries';
 import { Account, CloseModal } from '@/shared/assets/Icons/icons';
-import { useAuth } from '@/app/providers/AuthProvider/AuthContext'; // To check if it's the current user
+import { useAuth } from '@/app/providers/AuthProvider/AuthContext';
 import Avatar from '@/shared/ui/Avatar/Avatar';
 import { UserProfileModalProps } from '@/entities/user/model/user.types';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 import { useTranslation } from 'react-i18next';
-import { Mail, UsernameDog, Shield } from '@/shared/assets/Icons/icons'; // Import icons for email and username
-import Button from '@/shared/ui/Button/Button';
+import { UsernameDog, Shield } from '@/shared/assets/Icons/icons';
+import { Button } from '@/shared/ui/Button/Button';
 
 import type { User } from '@/entities/user/model/user.types';
 
-const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, userId, status }) => {
-  const { user: currentUser } = useAuth(); // Get current authenticated user
+const UserProfileModal: FC<UserProfileModalProps> = ({ isOpen, onClose, userId, status }) => {
+  const { user: currentUser } = useAuth();
   const { data, loading, error } = useQuery<{ getUser: User }>(GET_USER_BY_ID, {
     variables: { id: userId },
-    skip: !userId || !isOpen, // Skip query if no userId or modal is not open
+    skip: !userId || !isOpen,
   });
 
   const user = data?.getUser;
-  const isCurrentUserProfile = currentUser?.id === userId; // Check if viewing own profile
-
+  const isCurrentUserProfile = currentUser?.id === userId;
   const { t } = useTranslation();
 
   const { dynamicStatus } = useStatusTyping(userId, status || 'offline' || 'online');

@@ -7,14 +7,11 @@ import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { createClient } from 'graphql-ws';
 import { onError } from '@apollo/client/link/error';
-import { ApolloLink, FetchResult } from '@apollo/client';
+import { ApolloLink, FetchResult, execute, Operation } from '@apollo/client';
 import Observable from 'zen-observable';
-import { execute, Operation } from '@apollo/client/link/core';
 import { REFRESH_TOKEN_MUTATION } from '@/entities/user/model/user.queries';
-import * as Sentry from "@sentry/nextjs"; // Import Sentry
+import * as Sentry from "@sentry/nextjs";
 
-// Configure the HTTP link for queries and mutations
-// Determine the backend URL dynamically based on the frontend's location
 const isBrowser = typeof window !== 'undefined';
 
 const getBackendUrl = (protocol: string) => {

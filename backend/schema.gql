@@ -78,6 +78,35 @@ type FileDto {
   type: String!
   uploader: UserDto
   createdAt: DateTime!
+};
+
+type FeedbackDto {
+  id: String
+  user: UserDto
+  message: String
+  timestamp: DateTime
+  source: String
+}
+
+type MessageComplaint {
+  id: String
+  author: UserDto
+  text: String
+}
+
+enum StatusComplaints {
+  NEW
+  IN_PROGRESS
+}
+
+type ComplaintDto {
+  id:  String
+  user: UserDto
+  reason: String
+  timestamp: DateTime
+  source: String
+  message: MessageComplaint
+  status: StatusComplaints
 }
 
 # enum AppClientType {
@@ -128,6 +157,8 @@ type FileDto {
 type Query {
   # getVersion: AppInfo!
   # getSessionInfo: SessionInfo!
+  createFeedBack(id: ID!): [FeedbackDto!]
+  createComplaint(id: ID!): [ComplaintDto!]
   getCurrentUser: UserDto
   getUser(id: ID!): UserDto
   getUsers: [UserDto!]!

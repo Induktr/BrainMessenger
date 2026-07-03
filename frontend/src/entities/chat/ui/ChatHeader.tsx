@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { ArrowLeft, Options } from '@/shared/assets/Icons/icons';
 import { ChatHeaderProps } from '@/entities/chat/model/chat.types';
 import UserProfileModal from '@/entities/user/ui/UserProfileModal';
 import useStatusTyping from '@/entities/chat/model/useStatusTyping';
 import Avatar from '@/shared/ui/Avatar/Avatar';
-import Button from '@/shared/ui/Button/Button';
+import { Button } from '@/shared/ui/Button/Button';
 import { variantsStylesIcons } from '@/shared/assets/VariantStyles/variantStyles';
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ chatId, partnerId, title, status, avatar, onOpenChannelDetails, onBackButtonClick }) => {
+const ChatHeader: FC<ChatHeaderProps> = ({ chatId, partnerId, title, status, avatar, onOpenChannelDetails, onBackButtonClick }) => {
   const [showDetailsUserModal, setShowDetailsUserModal] = useState(false);
 
   const handleOpenUserDetails = () => {

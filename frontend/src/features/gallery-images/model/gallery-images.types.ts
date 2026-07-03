@@ -1,7 +1,15 @@
+import { Component } from "react";
+
 export interface Slide {
-    src: string;
-    alt: string;
-    description?: string;
+  type: string;
+  icon?: any;
+  image?: string;
+  title: string;
+  description?: string;
+  src?: string;
+  alt: string;
+  width?: number;
+  height?: number;
 }
 
 export interface ImageGalleryContextType {

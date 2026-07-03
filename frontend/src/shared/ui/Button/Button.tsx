@@ -1,17 +1,14 @@
-import React from 'react';
+import { FC } from 'react';
+import { twMerge } from 'tailwind-merge';
 import { 
-  twMerge 
-} from 'tailwind-merge';
-import { 
-  useCountStore, 
-  variantStyles, 
-  sizeStyles, 
-  baseStyles, 
-  disabledStyles 
+  variantStyles,
+  sizeStyles,
+  baseStyles,
+  disabledStyles
 } from '@/shared/config/constants';
 import { ButtonProps } from '@/shared/config/types';
 
-const Button: React.FC<ButtonProps> = ({
+export const Button: FC<ButtonProps> = ({
   children,
   className,
   variant = 'primary',
@@ -33,5 +30,3 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-
-export default Button;
